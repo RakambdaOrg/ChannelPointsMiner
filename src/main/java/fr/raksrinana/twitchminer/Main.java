@@ -1,0 +1,93 @@
+package fr.raksrinana.twitchminer;
+
+import fr.raksrinana.twitchminer.api.kraken.KrakenApi;
+import fr.raksrinana.twitchminer.api.passport.PassportApi;
+import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
+import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
+import fr.raksrinana.twitchminer.cli.CLIParameters;
+import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.miner.Miner;
+import fr.raksrinana.twitchminer.miner.Streamer;
+import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import kong.unirest.*;
+import kong.unirest.jackson.JacksonObjectMapper;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
+import picocli.CommandLine;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import static kong.unirest.HeaderNames.USER_AGENT;
+
+@Log4j2
+public class Main{
+	@Getter
+	private static CLIParameters parameters;
+	@Getter
+	private static TwitchLogin twitchLogin;
+	
+	@SneakyThrows
+	public static void main(String[] args){
+		parameters = loadEnv(args);
+		preSetup();
+		
+		var config = Configuration.getInstance();
+		try{
+			twitchLogin = new PassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()).login();
+		}
+		catch(CaptchaSolveRequired e){
+			log.error("A captcha solve is required, please log in through your browser and solve it");
+		}
+		catch(Exception e){
+			log.error("Failed to login", e);
+			return;
+		}
+		
+		var miner = new Miner();
+		if(config.isLoadFollows()){
+			log.info("Loading streamers from follow list");
+			KrakenApi.getFollows().stream()
+					.map(f -> new Streamer(f.getChannel().getId(), f.getChannel().getName()))
+					.forEach(miner::addStreamer);
+		}
+		
+		miner.mine();
+	}
+	
+	@NotNull
+	private static CLIParameters loadEnv(@NotNull String[] args){
+		var parameters = new CLIParameters();
+		var cli = new CommandLine(parameters);
+		cli.registerConverter(Path.class, Paths::get);
+		cli.setUnmatchedArgumentsAllowed(true);
+		try{
+			cli.parseArgs(args);
+		}
+		catch(CommandLine.ParameterException e){
+			log.error("Failed to parse arguments", e);
+			cli.usage(System.out);
+			throw new IllegalStateException("Failed to load environment");
+		}
+		
+		return parameters;
+	}
+	
+	private static void preSetup(){
+		Unirest.config()
+				.enableCookieManagement(true)
+				.setObjectMapper(new JacksonObjectMapper(JacksonUtils.getMapper()))
+				.setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0")
+				.interceptor(new Interceptor(){
+					@Override
+					public void onRequest(HttpRequest<?> request, Config config){
+						Interceptor.super.onRequest(request, config);
+					}
+					
+					@Override
+					public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config){
+						Interceptor.super.onResponse(response, request, config);
+					}
+				});
+	}
+}

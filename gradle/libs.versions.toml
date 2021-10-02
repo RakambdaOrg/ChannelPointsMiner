@@ -1,0 +1,40 @@
+[versions]
+slf4j-version = "2.0.0-alpha5"
+log4j2-version = "2.14.1"
+log4j2-slf4j-version = "2.14.1"
+unirest-version = "4.0.0-RC1"
+picocli-version = "4.6.1"
+jackson-version = "2.13.0"
+httpclient-version = "4.5.13"
+lang3-version = "3.12.0"
+jetbrains-annotations-version = "22.0.0"
+
+shadow-version = "7.0.0"
+names-version = "0.39.0"
+lombok-version = "6.2.0"
+jib-version = "3.1.4"
+
+[libraries]
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
+log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2-version" }
+log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j18-impl", version.ref = "log4j2-slf4j-version" }
+unirest-java = { group = "com.konghq", name = "unirest-java", version.ref = "unirest-version" }
+unirest-objectmapper-jackson = { group = "com.konghq", name = "unirest-objectmapper-jackson", version.ref = "unirest-version" }
+picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-version" }
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson-version" }
+jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jackson-version" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-version" }
+httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "httpclient-version" }
+lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
+jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
+
+[bundles]
+jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]
+log4j2 = ["log4j2-core", "log4j2-slf4j"]
+unirest = ["unirest-java", "unirest-objectmapper-jackson"]
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }
+names = { id = "com.github.ben-manes.versions", version.ref = "names-version" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok-version" }
+jib = { id = "com.google.cloud.tools.jib", version.ref = "jib-version" }

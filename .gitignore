@@ -1,0 +1,9 @@
+/.idea
+/.gradle
+/build
+/out
+/target
+/authentication
+
+*.iml
+config.json
