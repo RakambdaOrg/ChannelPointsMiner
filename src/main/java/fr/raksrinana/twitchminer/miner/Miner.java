@@ -7,6 +7,8 @@ import fr.raksrinana.twitchminer.api.gql.data.types.Game;
 import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedProperties;
 import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedRequest;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
+import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketClient;
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +19,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
-import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Log4j2
 public class Miner{
@@ -25,6 +27,7 @@ public class Miner{
 	
 	private final Set<Streamer> streamers;
 	private final ScheduledExecutorService scheduledExecutor;
+	private TwitchWebSocketClient websocket;
 	
 	public Miner(){
 		streamers = new HashSet<>();
@@ -36,12 +39,24 @@ public class Miner{
 		streamers.add(streamer);
 	}
 	
-	public void mine(){
+	public void start() throws InterruptedException{
 		log.info("Starting miner");
 		
+		websocket = new TwitchWebSocketClient();
+		websocket.connectBlocking();
+		
 		// scheduledExecutor.scheduleWithFixedDelay(this::updateChannelPointsContext, 0, 30, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(this::updateStreamInfo, 0, 10, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(this::sendMinutesWatched, 0, 1, MINUTES);
+		// scheduledExecutor.scheduleWithFixedDelay(this::updateStreamInfo, 0, 10, MINUTES);
+		// scheduledExecutor.scheduleWithFixedDelay(this::sendMinutesWatched, 0, 1, MINUTES);
+		scheduledExecutor.scheduleWithFixedDelay(this::websocketPing, 0, 30, SECONDS);
+		
+		websocket.listenTopic(TopicName.COMMUNITY_POINTS_USER_V1, Main.getTwitchLogin().getUserId());
+	}
+	
+	private void websocketPing(){
+		if(websocket.isOpen() && !websocket.isClosing()){
+			websocket.ping();
+		}
 	}
 	
 	@SneakyThrows
@@ -66,7 +81,6 @@ public class Miner{
 			if(TwitchApi.sendMinutesWatched(streamer.getSpadeUrl(), request)){
 			
 			}
-			Thread.sleep(30000);
 		}
 		
 		log.debug("Done sending minutes watched");

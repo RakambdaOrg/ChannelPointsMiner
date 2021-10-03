@@ -38,6 +38,10 @@ public class JacksonUtils{
 		return getMapper().readValue(is, type);
 	}
 	
+	public static <T> T read(@NotNull String value, @NotNull TypeReference<T> type) throws IOException{
+		return getMapper().readValue(value, type);
+	}
+	
 	public static void write(@NotNull OutputStream os, @NotNull Object value) throws IOException{
 		getMapper().writeValue(os, value);
 	}

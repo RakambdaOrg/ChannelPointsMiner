@@ -20,12 +20,14 @@ dependencies {
     implementation(libs.bundles.jackson)
     implementation(libs.httpclient)
     implementation(libs.lang3)
+    implementation(libs.websocket)
 
     compileOnly(libs.jetbrainsAnnotations)
 }
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://projectlombok.org/edge-releases") }
 }
 
 tasks {
@@ -72,8 +74,8 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 jib {
@@ -100,4 +102,7 @@ jib {
     container {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
+}
+lombok{
+    version.set("edge-SNAPSHOT")
 }

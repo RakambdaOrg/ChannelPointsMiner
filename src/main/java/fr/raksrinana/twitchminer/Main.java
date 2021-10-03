@@ -52,7 +52,7 @@ public class Main{
 					.forEach(miner::addStreamer);
 		}
 		
-		miner.mine();
+		miner.start();
 	}
 	
 	@NotNull
