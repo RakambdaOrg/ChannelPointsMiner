@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.api.passport.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.raksrinana.twitchminer.api.passport.PassportApi;
 import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 @Data
 @Builder
 public class LoginRequest{
+	@JsonProperty("client_id")
+	@Builder.Default
+	private String clientId = PassportApi.CLIENT_ID;
 	@Builder.Default
 	@JsonProperty("undelete_user")
 	private boolean undeleteUser = false;

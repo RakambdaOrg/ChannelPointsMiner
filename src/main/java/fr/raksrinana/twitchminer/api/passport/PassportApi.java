@@ -23,7 +23,7 @@ import static kong.unirest.HeaderNames.CONTENT_TYPE;
 @Log4j2
 public class PassportApi{
 	private static final String ENDPOINT = "https://passport.twitch.tv";
-	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+	public static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	
 	private final String username;
 	private final String password;
