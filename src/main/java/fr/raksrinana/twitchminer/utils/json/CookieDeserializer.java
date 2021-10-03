@@ -2,11 +2,19 @@ package fr.raksrinana.twitchminer.utils.json;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import kong.unirest.Cookie;
 import java.io.IOException;
 
-public class CookieDeserializer extends JsonDeserializer<Cookie>{
+public class CookieDeserializer extends StdDeserializer<Cookie>{
+	public CookieDeserializer(){
+		this(null);
+	}
+	
+	protected CookieDeserializer(Class<?> vc){
+		super(vc);
+	}
+	
 	@Override
 	public Cookie deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
 		return new Cookie(p.getValueAsString());

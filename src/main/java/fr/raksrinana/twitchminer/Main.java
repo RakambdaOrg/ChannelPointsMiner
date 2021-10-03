@@ -81,12 +81,14 @@ public class Main{
 				.interceptor(new Interceptor(){
 					@Override
 					public void onRequest(HttpRequest<?> request, Config config){
-						Interceptor.super.onRequest(request, config);
+						log.trace("Sending request to {}", request.getUrl());
 					}
 					
 					@Override
 					public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config){
-						Interceptor.super.onResponse(response, request, config);
+						if(!response.isSuccess()){
+							log.error("Failed to request {} got statusCode `{}` and parsing error: {}", request.getUrl(), response.getStatus(), response.getParsingError());
+						}
 					}
 				});
 	}

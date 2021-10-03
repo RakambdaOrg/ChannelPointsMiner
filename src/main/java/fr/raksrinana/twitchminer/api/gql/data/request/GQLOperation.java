@@ -1,7 +1,5 @@
 package fr.raksrinana.twitchminer.api.gql.data.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.api.gql.data.response.GQLResponse;
 import kong.unirest.GenericType;
@@ -10,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public abstract class GQLOperation<T>{
 	private static final String PERSISTED_QUERY_EXTENSION_NAME = "persistedQuery";

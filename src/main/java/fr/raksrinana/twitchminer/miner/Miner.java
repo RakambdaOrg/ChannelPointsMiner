@@ -1,6 +1,8 @@
 package fr.raksrinana.twitchminer.miner;
 
 import fr.raksrinana.twitchminer.api.gql.GQLApi;
+import fr.raksrinana.twitchminer.api.gql.data.response.GQLResponse;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
@@ -20,21 +22,26 @@ public class Miner{
 	}
 	
 	public void addStreamer(@NotNull Streamer streamer){
-		log.info("Added streamer {} to the mining list", streamer.getUsername());
+		log.info("Added to the mining list: {}", streamer.getUsername());
 		streamers.add(streamer);
 	}
 	
 	public void mine(){
 		log.info("Starting miner");
 		
-		scheduledExecutor.scheduleAtFixedRate(this::updateChannelPointsContext, 0, 30, MINUTES);
+		scheduledExecutor.scheduleWithFixedDelay(this::updateChannelPointsContext, 0, 30, MINUTES);
 	}
 	
+	@SneakyThrows
 	private void updateChannelPointsContext(){
 		log.debug("Updating channel points context");
 		for(var streamer : streamers){
 			log.trace("Updating channel points context for {}", streamer.getUsername());
-			var a = GQLApi.channelPointsContext(streamer.getUsername());
+			GQLApi.channelPointsContext(streamer.getUsername())
+					.map(GQLResponse::getData)
+					.ifPresent(streamer::setChannelPointsContext);
+			Thread.sleep(500);
 		}
+		log.debug("Done updating channel points context");
 	}
 }

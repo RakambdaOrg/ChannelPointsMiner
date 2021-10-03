@@ -1,8 +1,6 @@
 package fr.raksrinana.twitchminer.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
@@ -16,8 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @NoArgsConstructor
 @Log4j2

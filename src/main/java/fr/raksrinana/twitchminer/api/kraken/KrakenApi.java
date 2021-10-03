@@ -39,7 +39,6 @@ public class KrakenApi{
 				.asObject(GetFollowsResponse.class);
 		
 		if(!response.isSuccess()){
-			log.error("Failed to get follows, statusCode={}", response.getStatus());
 			return List.of();
 		}
 		

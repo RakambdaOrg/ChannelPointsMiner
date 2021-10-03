@@ -1,15 +1,11 @@
 package fr.raksrinana.twitchminer.api.gql.data.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.raksrinana.twitchminer.api.gql.data.response.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.response.reportmenuitem.ReportMenuItemData;
 import kong.unirest.GenericType;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class ReportMenuItemOperation extends GQLOperation<ReportMenuItemData>{
 	public ReportMenuItemOperation(String username){

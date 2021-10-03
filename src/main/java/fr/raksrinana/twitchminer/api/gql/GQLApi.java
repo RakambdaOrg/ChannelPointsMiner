@@ -30,7 +30,11 @@ public class GQLApi{
 				.asObject(operation.getResponseType());
 		
 		if(!response.isSuccess()){
-			log.error("Failed to perform GQL request, status={}, parsing={}", response.getStatus(), response.getParsingError());
+			Unirest.post(ENDPOINT)
+					.header(AUTHORIZATION, "OAuth " + Main.getTwitchLogin().getAccessToken())
+					.body(operation)
+					.asString()
+					.ifSuccess(r -> log.info(r.getBody()));
 			return Optional.empty();
 		}
 		

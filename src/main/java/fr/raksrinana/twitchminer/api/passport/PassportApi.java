@@ -100,33 +100,25 @@ public class PassportApi{
 	 */
 	@NotNull
 	private TwitchLogin handleResponse(@NotNull HttpResponse<LoginResponse> response) throws IOException{
-		saveAuthentication(response);
-		return TwitchLogin.builder()
+		var twitchLogin = TwitchLogin.builder()
 				.username(username)
 				.accessToken(response.getBody().getAccessToken())
 				.cookies(response.getCookies())
 				.build();
+		saveAuthentication(twitchLogin);
+		return twitchLogin;
 	}
 	
 	/**
 	 * Save authentication received from response into a file.
 	 *
-	 * @param response Response containing authentication to save.
+	 * @param twitchLogin Authentication to save.
 	 *
 	 * @throws IOException File failed to write.
 	 */
-	private void saveAuthentication(@NotNull HttpResponse<LoginResponse> response) throws IOException{
-		if(response.getCookies().isEmpty()){
-			return;
-		}
-		
-		var authentication = PersistentAuthentication.builder()
-				.accessToken(response.getBody().getAccessToken())
-				.cookies(response.getCookies())
-				.build();
-		
+	private void saveAuthentication(@NotNull TwitchLogin twitchLogin) throws IOException{
 		Files.createDirectories(userAuthenticationFile.getParent());
-		JacksonUtils.write(Files.newOutputStream(userAuthenticationFile, CREATE, TRUNCATE_EXISTING), authentication);
+		JacksonUtils.write(Files.newOutputStream(userAuthenticationFile, CREATE, TRUNCATE_EXISTING), twitchLogin);
 	}
 	
 	/**
