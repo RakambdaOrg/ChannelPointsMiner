@@ -48,7 +48,7 @@ public class Main{
 		if(config.isLoadFollows()){
 			log.info("Loading streamers from follow list");
 			KrakenApi.getFollows().stream()
-					.map(f -> new Streamer(f.getChannel().getId(), f.getChannel().getName()))
+					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName()))
 					.forEach(miner::addStreamer);
 		}
 		
@@ -88,6 +88,9 @@ public class Main{
 					public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config){
 						if(!response.isSuccess()){
 							log.error("Failed to request {} got statusCode `{}` and parsing error: {}", request.getUrl(), response.getStatus(), response.getParsingError());
+						}
+						else{
+							log.trace("Received successful response for {} with statusCode `{}`", request.getUrl(), response.getStatus());
 						}
 					}
 				});

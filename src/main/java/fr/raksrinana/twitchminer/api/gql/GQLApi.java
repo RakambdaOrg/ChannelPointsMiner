@@ -1,12 +1,16 @@
 package fr.raksrinana.twitchminer.api.gql;
 
 import fr.raksrinana.twitchminer.Main;
-import fr.raksrinana.twitchminer.api.gql.data.request.ChannelPointsContextOperation;
-import fr.raksrinana.twitchminer.api.gql.data.request.GQLOperation;
-import fr.raksrinana.twitchminer.api.gql.data.request.ReportMenuItemOperation;
-import fr.raksrinana.twitchminer.api.gql.data.response.GQLResponse;
-import fr.raksrinana.twitchminer.api.gql.data.response.channelpointscontext.ChannelPointsContextData;
-import fr.raksrinana.twitchminer.api.gql.data.response.reportmenuitem.ReportMenuItemData;
+import fr.raksrinana.twitchminer.api.gql.data.GQLOperation;
+import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextData;
+import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextOperation;
+import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
+import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsOperation;
+import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemOperation;
+import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
+import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelOperation;
 import kong.unirest.Unirest;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -44,5 +48,13 @@ public class GQLApi{
 	@NotNull
 	public static Optional<GQLResponse<ChannelPointsContextData>> channelPointsContext(String username){
 		return postRequest(new ChannelPointsContextOperation(username));
+	}
+	
+	public static Optional<GQLResponse<VideoPlayerStreamInfoOverlayChannelData>> videoPlayerStreamInfoOverlayChannel(String username){
+		return postRequest(new VideoPlayerStreamInfoOverlayChannelOperation(username));
+	}
+	
+	public static Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(String id){
+		return postRequest(new DropsHighlightServiceAvailableDropsOperation(id));
 	}
 }
