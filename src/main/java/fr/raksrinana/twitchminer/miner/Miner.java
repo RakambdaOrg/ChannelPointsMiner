@@ -1,24 +1,34 @@
 package fr.raksrinana.twitchminer.miner;
 
+import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.types.Game;
+import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedProperties;
+import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedRequest;
+import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Log4j2
 public class Miner{
+	private static final String SITE_PLAYER = "site";
+	
 	private final Set<Streamer> streamers;
 	private final ScheduledExecutorService scheduledExecutor;
 	
 	public Miner(){
 		streamers = new HashSet<>();
-		scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+		scheduledExecutor = Executors.newScheduledThreadPool(4);
 	}
 	
 	public void addStreamer(@NotNull Streamer streamer){
@@ -31,6 +41,35 @@ public class Miner{
 		
 		// scheduledExecutor.scheduleWithFixedDelay(this::updateChannelPointsContext, 0, 30, MINUTES);
 		scheduledExecutor.scheduleWithFixedDelay(this::updateStreamInfo, 0, 10, MINUTES);
+		scheduledExecutor.scheduleWithFixedDelay(this::sendMinutesWatched, 0, 1, MINUTES);
+	}
+	
+	@SneakyThrows
+	private void sendMinutesWatched(){
+		log.debug("Sending minutes watched");
+		var toSendMinutesWatched = streamers.stream()
+				.filter(Streamer::isStreaming)
+				.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
+				.limit(2)
+				.collect(Collectors.toSet());
+		
+		for(var streamer : toSendMinutesWatched){
+			log.debug("Sending minutes watched for {}", streamer.getUsername());
+			var request = new MinuteWatchedRequest(MinuteWatchedProperties.builder()
+					.channelId(streamer.getId())
+					.broadcastId(streamer.getBroadcastId().orElse(null))
+					.player(SITE_PLAYER)
+					.userId(Main.getTwitchLogin().getUserId())
+					.game(streamer.getGame().map(Game::getName).orElse(null))
+					.build());
+			
+			if(TwitchApi.sendMinutesWatched(streamer.getSpadeUrl(), request)){
+			
+			}
+			Thread.sleep(30000);
+		}
+		
+		log.debug("Done sending minutes watched");
 	}
 	
 	@SneakyThrows
@@ -38,26 +77,19 @@ public class Miner{
 		log.debug("Updating stream info");
 		for(var streamer : streamers){
 			log.trace("Updating stream info for {}", streamer.getUsername());
+			var wasStreaming = streamer.isStreaming();
+			
 			GQLApi.videoPlayerStreamInfoOverlayChannel(streamer.getUsername())
 					.map(GQLResponse::getData)
 					.ifPresentOrElse(
 							streamer::setVideoPlayerStreamInfoOverlayChannel,
 							() -> streamer.setVideoPlayerStreamInfoOverlayChannel(null));
-			Thread.sleep(500);
-		}
-		log.debug("Done updating stream info");
-	}
-	
-	@SneakyThrows
-	private void updateChannelPointsContext(){
-		log.debug("Updating channel points context");
-		for(var streamer : streamers){
-			log.trace("Updating channel points context for {}", streamer.getUsername());
-			GQLApi.channelPointsContext(streamer.getUsername())
-					.map(GQLResponse::getData)
-					.ifPresentOrElse(
-							streamer::setChannelPointsContext,
-							() -> streamer.setChannelPointsContext(null));
+			
+			if(streamer.isStreaming() && !wasStreaming){
+				Optional.ofNullable(streamer.getUrl())
+						.flatMap(TwitchApi::getSpadeUrl)
+						.ifPresent(streamer::setSpadeUrl);
+			}
 			
 			if(streamer.updateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
 				GQLApi.dropsHighlightServiceAvailableDrops(streamer.getId())
@@ -69,6 +101,23 @@ public class Miner{
 			else{
 				streamer.setDropsHighlightServiceAvailableDrops(null);
 			}
+			
+			Thread.sleep(500);
+		}
+		log.debug("Done updating stream info");
+	}
+	
+	@SneakyThrows
+	private void updateChannelPointsContext(){
+		log.debug("Updating channel points context");
+		for(var streamer : streamers){
+			log.trace("Updating channel points context for {}", streamer.getUsername());
+			
+			GQLApi.channelPointsContext(streamer.getUsername())
+					.map(GQLResponse::getData)
+					.ifPresentOrElse(
+							streamer::setChannelPointsContext,
+							() -> streamer.setChannelPointsContext(null));
 			
 			Thread.sleep(500);
 		}

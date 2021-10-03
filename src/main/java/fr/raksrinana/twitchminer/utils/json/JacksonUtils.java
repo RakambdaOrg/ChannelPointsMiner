@@ -1,5 +1,6 @@
 package fr.raksrinana.twitchminer.utils.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.jetbrains.annotations.NotNull;
@@ -39,5 +40,9 @@ public class JacksonUtils{
 	
 	public static void write(@NotNull OutputStream os, @NotNull Object value) throws IOException{
 		getMapper().writeValue(os, value);
+	}
+	
+	public static String writeAsString(@NotNull Object value) throws JsonProcessingException{
+		return getMapper().writeValueAsString(value);
 	}
 }
