@@ -29,6 +29,9 @@ public class Streamer{
 	@Getter
 	@ToString.Include
 	private final String username;
+	@NotNull
+	@Getter
+	private StreamerSettings settings;
 	
 	@JsonProperty("url")
 	private URL url;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.api.ws.data.request.ListenTopicRequest;
 import fr.raksrinana.twitchminer.api.ws.data.request.TwitchWebSocketRequest;
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
@@ -17,16 +18,19 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Log4j2
 public class TwitchWebSocketClient extends WebSocketClient{
 	private static final URI WEBSOCKET_URI = URI.create("wss://pubsub-edge.twitch.tv/v1");
 	
+	private final List<Topics> topics;
 	private final List<TwitchWebSocketListener> listeners;
 	
 	public TwitchWebSocketClient(){
 		super(WEBSOCKET_URI);
 		setConnectionLostTimeout(180);
+		topics = new ArrayList<>();
 		listeners = new ArrayList<>();
 	}
 	
@@ -49,7 +53,8 @@ public class TwitchWebSocketClient extends WebSocketClient{
 			log.info("Parsed message: {}", message);
 			
 			listeners.forEach(listener -> listener.onMessage(message));
-		}catch(Exception e){
+		}
+		catch(Exception e){
 			log.error("Failed to handle WebSocket message", e);
 		}
 	}
@@ -84,6 +89,17 @@ public class TwitchWebSocketClient extends WebSocketClient{
 	}
 	
 	public void listenTopic(@NotNull Topics topics){
+		this.topics.add(topics);
 		send(new ListenTopicRequest(topics));
+	}
+	
+	public boolean isTopicListened(@NotNull Topic topic){
+		return topics.stream()
+				.flatMap(t -> t.getTopics().stream())
+				.anyMatch(t -> Objects.equals(t, topic));
+	}
+	
+	public int getTopicCount(){
+		return topics.stream().mapToInt(Topics::getTopicCount).sum();
 	}
 }

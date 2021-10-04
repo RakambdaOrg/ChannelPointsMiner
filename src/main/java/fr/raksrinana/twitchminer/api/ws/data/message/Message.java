@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.api.ws.data.response;
+package fr.raksrinana.twitchminer.api.ws.data.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -11,16 +11,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(value = {
-		@JsonSubTypes.Type(value = PongResponse.class, name = "PONG"),
-		@JsonSubTypes.Type(value = ResponseResponse.class, name = "RESPONSE"),
-		@JsonSubTypes.Type(value = MessageResponse.class, name = "MESSAGE"),
+		@JsonSubTypes.Type(value = ViewCountMessage.class, name = "viewcount"),
 })
 @ToString
-public abstract class TwitchWebSocketResponse{
+public abstract class Message{
 	@JsonProperty("type")
 	private String type;
 	
-	public TwitchWebSocketResponse(String type){
+	public Message(String type){
 		this.type = type;
 	}
 }

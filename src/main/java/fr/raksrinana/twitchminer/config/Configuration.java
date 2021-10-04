@@ -3,6 +3,7 @@ package fr.raksrinana.twitchminer.config;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.Main;
+import fr.raksrinana.twitchminer.miner.StreamerSettings;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,9 @@ public class Configuration{
 	@JsonProperty("loadFollows")
 	@Comment(value = "Load streamers to scrape from follow list.", defaultValue = "false")
 	private boolean loadFollows = false;
+	@JsonProperty("defaultStreamerSettings")
+	@Comment(value = "Default settings for the streamers mined")
+	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
 	
 	public static Configuration getInstance(){
 		if(Objects.isNull(INSTANCE)){

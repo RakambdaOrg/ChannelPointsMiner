@@ -34,12 +34,19 @@ public class JacksonUtils{
 		return mapper;
 	}
 	
+	@NotNull
 	public static <T> T read(@NotNull InputStream is, @NotNull TypeReference<T> type) throws IOException{
 		return getMapper().readValue(is, type);
 	}
 	
+	@NotNull
 	public static <T> T read(@NotNull String value, @NotNull TypeReference<T> type) throws IOException{
 		return getMapper().readValue(value, type);
+	}
+	
+	@NotNull
+	public static <T> T readUpdate(@NotNull T object, @NotNull String value) throws JsonProcessingException{
+		return getMapper().readerForUpdating(object).readValue(value);
 	}
 	
 	public static void write(@NotNull OutputStream os, @NotNull Object value) throws IOException{

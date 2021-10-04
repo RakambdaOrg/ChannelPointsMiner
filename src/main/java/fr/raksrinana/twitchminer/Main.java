@@ -8,6 +8,7 @@ import fr.raksrinana.twitchminer.cli.CLIParameters;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.miner.Miner;
 import fr.raksrinana.twitchminer.miner.Streamer;
+import fr.raksrinana.twitchminer.miner.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
@@ -45,14 +46,14 @@ public class Main{
 		}
 		
 		var miner = new Miner();
+		miner.start();
+		
 		if(config.isLoadFollows()){
 			log.info("Loading streamers from follow list");
 			KrakenApi.getFollows().stream()
-					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName()))
+					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), StreamerSettingsFactory.readStreamerSettings()))
 					.forEach(miner::addStreamer);
 		}
-		
-		miner.start();
 	}
 	
 	@NotNull

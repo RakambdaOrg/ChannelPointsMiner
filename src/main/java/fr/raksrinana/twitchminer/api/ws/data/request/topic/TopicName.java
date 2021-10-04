@@ -3,6 +3,8 @@ package fr.raksrinana.twitchminer.api.ws.data.request.topic;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import java.util.Objects;
+import java.util.Optional;
 
 @Getter
 @RequiredArgsConstructor
@@ -16,4 +18,13 @@ public enum TopicName{
 	@Getter(onMethod_ = @JsonValue)
 	private final String value;
 	private final boolean ownUserTopic;
+	
+	public static Optional<TopicName> fromValue(String value){
+		for(var topic : TopicName.values()){
+			if(Objects.equals(value, topic.getValue())){
+				return Optional.of(topic);
+			}
+		}
+		return Optional.empty();
+	}
 }
