@@ -1,0 +1,13 @@
+name: Feature request
+description: Suggest an idea for this project
+labels: ["type: 🧱 enhancement"]
+assignees:
+  - RakSrinaNa
+body:
+  - type: textarea
+    id: describing
+    attributes:
+      label: Describe the feature
+      description: Describe the feature/enhacement you wish to have
+    validations:
+      required: true

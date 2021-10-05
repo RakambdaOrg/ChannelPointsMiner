@@ -1,0 +1,28 @@
+name: Bug report
+description: Create a report to help us improve
+labels: ["type: 🐛 bug"]
+assignees:
+  - RakSrinaNa
+body:
+  - type: textarea
+    id: describing
+    attributes:
+      label: Describe the bug
+      description: Describe what happens and what you expected instead
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: false
