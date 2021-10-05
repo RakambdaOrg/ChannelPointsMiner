@@ -38,6 +38,10 @@ public class Miner implements AutoCloseable{
 	}
 	
 	public void addStreamer(@NotNull Streamer streamer){
+		if(streamers.contains(streamer)){
+			log.debug("Streamer {} is already being mined", streamer);
+			return;
+		}
 		log.info("Added to the mining list: {}", streamer);
 		
 		updateStreamInfo(streamer);
@@ -61,7 +65,7 @@ public class Miner implements AutoCloseable{
 		scheduledExecutor.scheduleWithFixedDelay(this::updateChannelPointsContext, 0, 30, MINUTES);
 		scheduledExecutor.scheduleWithFixedDelay(this::updateStreamInfo, 0, 10, MINUTES);
 		scheduledExecutor.scheduleWithFixedDelay(this::sendMinutesWatched, 0, 1, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(this::websocketPing, 30, 30, SECONDS);
+		scheduledExecutor.scheduleAtFixedRate(this::websocketPing, 25, 25, SECONDS);
 		
 		websocketPool.listenTopic(COMMUNITY_POINTS_USER_V1, Main.getTwitchLogin().getUserId());
 	}
@@ -163,6 +167,10 @@ public class Miner implements AutoCloseable{
 		if(actualDelay > 0){
 			Thread.sleep(actualDelay);
 		}
+	}
+	
+	public boolean hasStreamerWithUsername(@NotNull String username){
+		return streamers.stream().anyMatch(s -> Objects.equals(s.getUsername(), username));
 	}
 	
 	@Override

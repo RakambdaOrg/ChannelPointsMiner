@@ -1,5 +1,8 @@
 package fr.raksrinana.twitchminer;
 
+import fr.raksrinana.twitchminer.api.gql.GQLApi;
+import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.twitchminer.api.kraken.KrakenApi;
 import fr.raksrinana.twitchminer.api.passport.PassportApi;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
@@ -48,9 +51,20 @@ public class Main{
 		var miner = new Miner();
 		miner.start();
 		
+		config.getStreamers().stream()
+				.map(streamer -> {
+					var user = GQLApi.reportMenuItem(streamer.getUsername())
+							.map(GQLResponse::getData)
+							.map(ReportMenuItemData::getUser)
+							.orElseThrow(() -> new RuntimeException("Failed to get streamer id for " + streamer.getUsername()));
+					return new Streamer(user.getId(), streamer.getUsername(), StreamerSettingsFactory.readStreamerSettings());
+				})
+				.forEach(miner::addStreamer);
+		
 		if(config.isLoadFollows()){
 			log.info("Loading streamers from follow list");
 			KrakenApi.getFollows().stream()
+					.filter(follow -> !miner.hasStreamerWithUsername(follow.getChannel().getName()))
 					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), StreamerSettingsFactory.readStreamerSettings()))
 					.forEach(miner::addStreamer);
 		}

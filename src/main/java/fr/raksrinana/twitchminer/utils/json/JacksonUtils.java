@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.Objects;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.*;
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_TRAILING_COMMA;
@@ -25,10 +26,13 @@ public class JacksonUtils{
 					.enable(ALLOW_TRAILING_COMMA)
 					.enable(ACCEPT_CASE_INSENSITIVE_ENUMS)
 					.enable(ALLOW_COMMENTS)
+					// .disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
+					// .disable(FAIL_ON_UNKNOWN_PROPERTIES)
 					.visibility(FIELD, ANY)
 					.visibility(GETTER, NONE)
 					.visibility(SETTER, NONE)
 					.visibility(CREATOR, NONE)
+					.serializationInclusion(NON_NULL)
 					.build();
 		}
 		return mapper;

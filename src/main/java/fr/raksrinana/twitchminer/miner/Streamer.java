@@ -18,12 +18,13 @@ import java.util.Optional;
 import static fr.raksrinana.twitchminer.api.Constants.TWITCH_URL;
 
 @RequiredArgsConstructor
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Log4j2
 public class Streamer{
 	@NotNull
 	@Getter
+	@EqualsAndHashCode.Include
 	private final String id;
 	@NotNull
 	@Getter

@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -43,6 +45,9 @@ public class Configuration{
 	@JsonProperty("defaultStreamerSettings")
 	@Comment(value = "Default settings for the streamers mined")
 	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
+	@JsonProperty("streamers")
+	@Comment("List of streamers to scrape")
+	private Set<StreamerConfiguration> streamers = new HashSet<>();
 	
 	public static Configuration getInstance(){
 		if(Objects.isNull(INSTANCE)){

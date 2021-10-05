@@ -27,6 +27,21 @@ public class GQLApi{
 	}
 	
 	@NotNull
+	public static Optional<GQLResponse<ChannelPointsContextData>> channelPointsContext(@NotNull String username){
+		return postRequest(new ChannelPointsContextOperation(username));
+	}
+	
+	@NotNull
+	public static Optional<GQLResponse<VideoPlayerStreamInfoOverlayChannelData>> videoPlayerStreamInfoOverlayChannel(@NotNull String username){
+		return postRequest(new VideoPlayerStreamInfoOverlayChannelOperation(username));
+	}
+	
+	@NotNull
+	public static Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(@NotNull String id){
+		return postRequest(new DropsHighlightServiceAvailableDropsOperation(id));
+	}
+	
+	@NotNull
 	private static <T> Optional<GQLResponse<T>> postRequest(@NotNull GQLOperation<T> operation){
 		var response = Unirest.post(ENDPOINT)
 				.header(AUTHORIZATION, "OAuth " + Main.getTwitchLogin().getAccessToken())
@@ -43,18 +58,5 @@ public class GQLApi{
 		}
 		
 		return Optional.ofNullable(response.getBody());
-	}
-	
-	@NotNull
-	public static Optional<GQLResponse<ChannelPointsContextData>> channelPointsContext(String username){
-		return postRequest(new ChannelPointsContextOperation(username));
-	}
-	
-	public static Optional<GQLResponse<VideoPlayerStreamInfoOverlayChannelData>> videoPlayerStreamInfoOverlayChannel(String username){
-		return postRequest(new VideoPlayerStreamInfoOverlayChannelOperation(username));
-	}
-	
-	public static Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(String id){
-		return postRequest(new DropsHighlightServiceAvailableDropsOperation(id));
 	}
 }
