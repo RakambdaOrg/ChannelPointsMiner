@@ -2,13 +2,12 @@ package fr.raksrinana.twitchminer.api.ws;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.api.ws.data.request.ListenTopicRequest;
 import fr.raksrinana.twitchminer.api.ws.data.request.PingRequest;
 import fr.raksrinana.twitchminer.api.ws.data.request.TwitchWebSocketRequest;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
+import fr.raksrinana.twitchminer.api.ws.data.response.PongResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.ResponseResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
@@ -68,6 +67,9 @@ public class TwitchWebSocketClient extends WebSocketClient{
 					close(ABNORMAL_CLOSE, "Invalid credentials");
 				}
 			}
+			if(message instanceof PongResponse){
+				onPong();
+			}
 			listeners.forEach(listener -> listener.onWebSocketMessage(message));
 		}
 		catch(Exception e){
@@ -87,6 +89,10 @@ public class TwitchWebSocketClient extends WebSocketClient{
 	
 	@Override
 	public void onWebsocketPong(WebSocket conn, Framedata f){
+		onPong();
+	}
+	
+	private void onPong(){
 		lastPong = System.currentTimeMillis();
 	}
 	
@@ -104,10 +110,6 @@ public class TwitchWebSocketClient extends WebSocketClient{
 		catch(JsonProcessingException e){
 			log.error("Failed to convert WebSocket message to json", e);
 		}
-	}
-	
-	public void listenTopic(@NotNull TopicName name, @NotNull String target){
-		listenTopic(Topics.buildFromName(name, target, Main.getTwitchLogin().getAccessToken()));
 	}
 	
 	public void listenTopic(@NotNull Topics topics){

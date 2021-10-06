@@ -11,7 +11,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(value = {
-		@JsonSubTypes.Type(value = ViewCountMessage.class, name = "viewcount"),
+		@JsonSubTypes.Type(value = ViewCount.class, name = "viewcount"),
+		@JsonSubTypes.Type(value = GlobalLastViewedContentUpdated.class, name = "global-last-viewed-content-updated"),
+		@JsonSubTypes.Type(value = PointsEarned.class, name = "points-earned"),
+		@JsonSubTypes.Type(value = ClaimAvailable.class, name = "claim-available"),
+		@JsonSubTypes.Type(value = StreamDown.class, name = "stream-down"),
 })
 @ToString
 public abstract class Message{

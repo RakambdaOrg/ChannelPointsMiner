@@ -2,12 +2,7 @@ package fr.raksrinana.twitchminer.api.ws.data.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
@@ -29,21 +24,5 @@ public class MessageData{
 	@JsonProperty("message")
 	public void setMessage(String value) throws IOException{
 		message = JacksonUtils.read(value, new TypeReference<>(){});
-	}
-	
-	static class MessageDeserializer extends StdDeserializer<Message>{
-		protected MessageDeserializer(){
-			this(null);
-		}
-		
-		protected MessageDeserializer(Class<?> vc){
-			super(vc);
-		}
-		
-		@Override
-		public Message deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException{
-			var mapper = (ObjectMapper) p.getCodec();
-			return mapper.readValue(p.getValueAsString(), Message.class);
-		}
 	}
 }

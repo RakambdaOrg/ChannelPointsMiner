@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CommunityPointsMultiplier extends GQLType{
 	@JsonProperty("reasonCode")
-	private ReasonCode reasonCode;
+	private MultiplierReasonCode reasonCode;
 	@JsonProperty("factor")
 	private float factor;
 	

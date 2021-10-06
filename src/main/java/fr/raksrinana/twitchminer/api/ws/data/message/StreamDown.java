@@ -8,17 +8,15 @@ import lombok.Getter;
 import lombok.ToString;
 import java.time.Instant;
 
-@JsonTypeName("viewcount")
+@JsonTypeName("stream-down")
 @Getter
 @ToString(callSuper = true)
-public class ViewCountMessage extends Message{
+public class StreamDown extends Message{
 	@JsonProperty("server_time")
 	@JsonDeserialize(using = TwitchTimestampDeserializer.class)
 	private Instant serverTime;
-	@JsonProperty("viewers")
-	private int viewers;
 	
-	public ViewCountMessage(){
-		super("viewcount");
+	public StreamDown(){
+		super("stream-down");
 	}
 }
