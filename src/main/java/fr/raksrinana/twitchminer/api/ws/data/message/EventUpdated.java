@@ -8,7 +8,6 @@ import fr.raksrinana.twitchminer.utils.json.UnknownDeserializer;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -16,14 +15,22 @@ import java.util.List;
 @Getter
 @ToString(callSuper = true)
 public class EventUpdated extends Message{
-	@JsonProperty("timestamp")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	private Instant timestamp;
-	@JsonProperty("event")
-	private Event event;
+	@JsonProperty("data")
+	private Data data;
 	
 	public EventUpdated(){
 		super("event-updated");
+	}
+	
+	@Getter
+	@NoArgsConstructor
+	@ToString
+	static class Data{
+		@JsonProperty("timestamp")
+		@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
+		private ZonedDateTime timestamp;
+		@JsonProperty("event")
+		private Event event;
 	}
 	
 	@Getter
