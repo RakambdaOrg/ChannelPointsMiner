@@ -16,6 +16,7 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = PointsEarned.class, name = "points-earned"),
 		@JsonSubTypes.Type(value = ClaimAvailable.class, name = "claim-available"),
 		@JsonSubTypes.Type(value = StreamDown.class, name = "stream-down"),
+		@JsonSubTypes.Type(value = StreamUp.class, name = "stream-up"),
 })
 @ToString
 public abstract class Message{

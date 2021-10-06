@@ -63,8 +63,13 @@ public class TwitchWebSocketClient extends WebSocketClient{
 			log.info("Parsed message: {}", message);
 			
 			if(message instanceof ResponseResponse responseMessage){
-				if(responseMessage.hasError() && Objects.equals("ERR_BADAUTH", responseMessage.getError())){
-					close(ABNORMAL_CLOSE, "Invalid credentials");
+				if(responseMessage.hasError()){
+					if(Objects.equals("ERR_BADAUTH", responseMessage.getError())){
+						close(ABNORMAL_CLOSE, "Invalid credentials");
+					}
+					else{
+						log.error("Received error response {}", responseMessage);
+					}
 				}
 			}
 			if(message instanceof PongResponse){
