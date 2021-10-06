@@ -10,8 +10,8 @@ import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.cli.CLIParameters;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.miner.Miner;
-import fr.raksrinana.twitchminer.miner.Streamer;
-import fr.raksrinana.twitchminer.miner.StreamerSettingsFactory;
+import fr.raksrinana.twitchminer.miner.data.Streamer;
+import fr.raksrinana.twitchminer.miner.data.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
@@ -51,22 +51,28 @@ public class Main{
 		var miner = new Miner();
 		miner.start();
 		
-		config.getStreamers().stream()
-				.map(streamer -> {
-					var user = GQLApi.reportMenuItem(streamer.getUsername())
-							.map(GQLResponse::getData)
-							.map(ReportMenuItemData::getUser)
-							.orElseThrow(() -> new RuntimeException("Failed to get streamer id for " + streamer.getUsername()));
-					return new Streamer(user.getId(), streamer.getUsername(), StreamerSettingsFactory.readStreamerSettings());
-				})
-				.forEach(miner::addStreamer);
-		
-		if(config.isLoadFollows()){
-			log.info("Loading streamers from follow list");
-			KrakenApi.getFollows().stream()
-					.filter(follow -> !miner.hasStreamerWithUsername(follow.getChannel().getName()))
-					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), StreamerSettingsFactory.readStreamerSettings()))
+		try{
+			config.getStreamers().stream()
+					.map(streamer -> {
+						var user = GQLApi.reportMenuItem(streamer.getUsername())
+								.map(GQLResponse::getData)
+								.map(ReportMenuItemData::getUser)
+								.orElseThrow(() -> new RuntimeException("Failed to get streamer id for " + streamer.getUsername()));
+						return new Streamer(user.getId(), streamer.getUsername(), StreamerSettingsFactory.readStreamerSettings());
+					})
 					.forEach(miner::addStreamer);
+			
+			if(config.isLoadFollows()){
+				log.info("Loading streamers from follow list");
+				KrakenApi.getFollows().stream()
+						.filter(follow -> !miner.hasStreamerWithUsername(follow.getChannel().getName()))
+						.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), StreamerSettingsFactory.readStreamerSettings()))
+						.forEach(miner::addStreamer);
+			}
+		}
+		catch(Exception e){
+			log.error("Failed starting up", e);
+			miner.close();
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.miner;
+package fr.raksrinana.twitchminer.miner.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextData;

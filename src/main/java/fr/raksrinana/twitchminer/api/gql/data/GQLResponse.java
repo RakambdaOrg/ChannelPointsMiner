@@ -22,4 +22,13 @@ public class GQLResponse<T>{
 	@JsonProperty("data")
 	@Nullable
 	private T data;
+	@JsonProperty("error")
+	@Nullable
+	private String error;
+	@JsonProperty("status")
+	@Nullable
+	private Integer status;
+	@JsonProperty("message")
+	@Nullable
+	private String message;
 }

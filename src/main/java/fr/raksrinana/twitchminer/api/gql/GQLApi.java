@@ -11,6 +11,7 @@ import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemOperation;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelOperation;
+import fr.raksrinana.twitchminer.api.passport.exceptions.InvalidCredentials;
 import kong.unirest.Unirest;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,9 @@ public class GQLApi{
 					.body(operation)
 					.asString()
 					.ifSuccess(r -> log.info(r.getBody()));
+			if(response.getStatus() == 401){
+				throw new RuntimeException(new InvalidCredentials(response.getStatus(), "Invalid credentials provided"));
+			}
 			return Optional.empty();
 		}
 		

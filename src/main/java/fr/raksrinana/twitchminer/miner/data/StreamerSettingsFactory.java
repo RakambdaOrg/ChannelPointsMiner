@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.miner;
+package fr.raksrinana.twitchminer.miner.data;
 
 import fr.raksrinana.twitchminer.config.Configuration;
 import org.jetbrains.annotations.NotNull;

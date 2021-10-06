@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.miner;
+package fr.raksrinana.twitchminer.miner.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

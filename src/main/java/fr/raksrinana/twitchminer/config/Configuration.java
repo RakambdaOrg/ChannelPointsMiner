@@ -3,7 +3,7 @@ package fr.raksrinana.twitchminer.config;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.Main;
-import fr.raksrinana.twitchminer.miner.StreamerSettings;
+import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
