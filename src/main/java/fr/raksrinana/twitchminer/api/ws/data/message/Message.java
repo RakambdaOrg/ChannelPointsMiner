@@ -13,10 +13,13 @@ import lombok.ToString;
 @JsonSubTypes(value = {
 		@JsonSubTypes.Type(value = ViewCount.class, name = "viewcount"),
 		@JsonSubTypes.Type(value = GlobalLastViewedContentUpdated.class, name = "global-last-viewed-content-updated"),
+		@JsonSubTypes.Type(value = ChannelLastViewedContentUpdated.class, name = "channel-last-viewed-content-updated"),
 		@JsonSubTypes.Type(value = PointsEarned.class, name = "points-earned"),
 		@JsonSubTypes.Type(value = ClaimAvailable.class, name = "claim-available"),
+		@JsonSubTypes.Type(value = ClaimClaimed.class, name = "claim-claimed"),
 		@JsonSubTypes.Type(value = StreamDown.class, name = "stream-down"),
 		@JsonSubTypes.Type(value = StreamUp.class, name = "stream-up"),
+		@JsonSubTypes.Type(value = EventUpdated.class, name = "event-updated"),
 })
 @ToString
 public abstract class Message{

@@ -60,7 +60,7 @@ public class TwitchWebSocketClient extends WebSocketClient{
 		try{
 			log.trace("Received Websocket message: {}", messageStr);
 			var message = JacksonUtils.read(messageStr, new TypeReference<TwitchWebSocketResponse>(){});
-			log.info("Parsed message: {}", message);
+			log.trace("Parsed message: {}", message);
 			
 			if(message instanceof ResponseResponse responseMessage){
 				if(responseMessage.hasError()){

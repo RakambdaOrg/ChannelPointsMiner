@@ -1,0 +1,26 @@
+package fr.raksrinana.twitchminer.api.ws.data.message.subtype;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import java.time.ZonedDateTime;
+
+@Getter
+@NoArgsConstructor
+@ToString
+public class Claim{
+	@JsonProperty("id")
+	private String id;
+	@JsonProperty("user_id")
+	private String userId;
+	@JsonProperty("channel_id")
+	private String channelId;
+	@JsonProperty("point_gain")
+	private PointGain pointGain;
+	@JsonProperty("created_at")
+	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
+	private ZonedDateTime createdAt;
+}

@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import java.time.Instant;
 
-@JsonTypeName("claim-available")
+@JsonTypeName("claim-claimed")
 @Getter
 @ToString(callSuper = true)
-public class ClaimAvailable extends Message{
+public class ClaimClaimed extends Message{
 	@JsonProperty("data")
 	private Data data;
 	
-	public ClaimAvailable(){
-		super("claim-available");
+	public ClaimClaimed(){
+		super("claim-claimed");
 	}
 	
 	@Getter
