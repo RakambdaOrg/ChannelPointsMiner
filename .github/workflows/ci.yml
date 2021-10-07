@@ -54,9 +54,19 @@ jobs:
         uses: gradle/gradle-build-action@v2.0-beta.4
         with:
           arguments: test
-      - name: Report test results
-        uses: allegro-actions/junit-reporter@v1
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Report JUnit tests
+        uses: dorny/test-reporter@v1
+        if: always()
         with:
+          name: JUnit Tests
           path: 'build/test-results/test/*.xml'
-          show: 'all'
+          reporter: java-junit
+          fail-on-error: 'false'
+      - name: Upload JUnit reports
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: junit-test-results
+          path: build/test-results/test/*.xml
+          if-no-files-found: error
+          retention-days: 14
