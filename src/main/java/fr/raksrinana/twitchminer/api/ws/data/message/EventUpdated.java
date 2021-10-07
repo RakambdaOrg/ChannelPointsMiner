@@ -136,9 +136,21 @@ public class EventUpdated extends Message{
 		private String userId;
 		@JsonProperty("result")
 		@JsonDeserialize(using = UnknownDeserializer.class)
-		private Object result;
+		private Result result;
 		@JsonProperty("user_display_name")
 		private String userDisplayName;
+	}
+	
+	@Getter
+	@NoArgsConstructor
+	@ToString
+	static class Result{
+		@JsonProperty("type")
+		private ResultType type;
+		@JsonProperty("points_won")
+		private Integer pointsWon;
+		@JsonProperty("is_acknowledged")
+		private boolean isAcknowledged;
 	}
 	
 	enum ByType{
@@ -146,11 +158,21 @@ public class EventUpdated extends Message{
 	}
 	
 	enum Status{
-		ACTIVE
+		ACTIVE,
+		RESOLVE_PENDING,
+		RESOLVED,
+		LOCKED,
+		CANCEL_PENDING,
+		CANCELED
 	}
 	
 	enum Color{
 		BLUE,
 		PINK
+	}
+	
+	enum ResultType{
+		WIN,
+		LOSE
 	}
 }

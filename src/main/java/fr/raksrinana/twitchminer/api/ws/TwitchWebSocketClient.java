@@ -58,7 +58,7 @@ public class TwitchWebSocketClient extends WebSocketClient{
 	@Override
 	public void onMessage(String messageStr){
 		try{
-			log.trace("Received Websocket message: {}", messageStr);
+			log.trace("Received Websocket message: {}", messageStr.strip());
 			var message = JacksonUtils.read(messageStr, new TypeReference<TwitchWebSocketResponse>(){});
 			log.trace("Parsed message: {}", message);
 			

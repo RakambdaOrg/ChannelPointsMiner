@@ -25,7 +25,7 @@
         </Routing>
     </Appenders>
     <Loggers>
-        <Logger level="warn" name="org.java-websocket" additivity="false">
+        <Logger level="warn" name="org.java_websocket" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="router"/>
         </Logger>
