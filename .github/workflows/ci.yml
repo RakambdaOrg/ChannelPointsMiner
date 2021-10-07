@@ -55,7 +55,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: test-results
+          name: junit-test-results
           path: build/test-results/test/*.xml
           if-no-files-found: error
           retention-days: 14
