@@ -10,9 +10,12 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
+      - name: Download test report artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: test-results
       - uses: dorny/test-reporter@v1
         with:
-          artifact: test-results
           name: JUnit Tests
           path: '*.xml'
           reporter: java-junit

@@ -57,3 +57,5 @@ jobs:
         with:
           name: test-results
           path: build/test-results/test/*.xml
+          if-no-files-found: error
+          retention-days: 14
