@@ -28,7 +28,8 @@ jobs:
           cache: 'gradle'
       - name: Set gradlew executable
         run: chmod +x ./gradlew
-      - uses: gradle/gradle-build-action@v2
+      - name: Build project
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: build
 
@@ -49,13 +50,13 @@ jobs:
           cache: 'gradle'
       - name: Set gradlew executable
         run: chmod +x ./gradlew
-      - uses: gradle/gradle-build-action@v2.0-beta.4
+      - name: Run tests
+        uses: gradle/gradle-build-action@v2.0-beta.4
         with:
           arguments: test
-      - uses: actions/upload-artifact@v2
-        if: always()
+      - name: Report test results
+        uses: allegro-actions/junit-reporter@v1
+        if: ${{ github.event_name == 'pull_request' }}
         with:
-          name: junit-test-results
-          path: build/test-results/test/*.xml
-          if-no-files-found: error
-          retention-days: 14
+          path: 'build/test-results/test/*.xml'
+          show: 'all'
