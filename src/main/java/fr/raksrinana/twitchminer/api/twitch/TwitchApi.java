@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -71,7 +72,7 @@ public class TwitchApi{
 	
 	public static boolean sendMinutesWatched(@NotNull URL spadeUrl, @NotNull MinuteWatchedRequest request){
 		try{
-			var requestStr = JacksonUtils.writeAsString(request);
+			var requestStr = JacksonUtils.writeAsString(List.of(request));
 			var requestBase64 = new String(Base64.getEncoder().encode(requestStr.getBytes(UTF_8)), UTF_8);
 			
 			var response = Unirest.post(spadeUrl.toString())

@@ -5,6 +5,7 @@ import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPoints
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.raksrinana.twitchminer.api.gql.data.types.BroadcastSettings;
 import fr.raksrinana.twitchminer.api.gql.data.types.Game;
+import fr.raksrinana.twitchminer.api.gql.data.types.Stream;
 import fr.raksrinana.twitchminer.api.gql.data.types.User;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import lombok.*;
@@ -65,8 +66,8 @@ public class Streamer{
 	public Optional<String> getBroadcastId(){
 		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
 				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
-				.map(User::getBroadcastSettings)
-				.map(BroadcastSettings::getId);
+				.map(User::getStream)
+				.map(Stream::getId);
 	}
 	
 	@Nullable
