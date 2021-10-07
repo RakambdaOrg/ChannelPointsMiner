@@ -26,6 +26,8 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
           cache: 'gradle'
+      - name: Set gradlew executable
+        run: chmod +x ./gradlew
       - uses: gradle/gradle-build-action@v2
         with:
           arguments: build
@@ -45,7 +47,9 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
           cache: 'gradle'
-      - uses: gradle/gradle-build-action@v2
+      - name: Set gradlew executable
+        run: chmod +x ./gradlew
+      - uses: gradle/gradle-build-action@v2.0-beta.4
         with:
           arguments: test
       - uses: actions/upload-artifact@v2
