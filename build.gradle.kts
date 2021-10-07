@@ -23,6 +23,11 @@ dependencies {
     implementation(libs.websocket)
 
     compileOnly(libs.jetbrainsAnnotations)
+
+    testImplementation(libs.bundles.junit)
+    testRuntimeOnly(libs.junitEngine)
+
+    testImplementation(libs.assertj)
 }
 
 repositories {

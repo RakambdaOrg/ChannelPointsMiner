@@ -9,6 +9,8 @@ httpclient-version = "4.5.13"
 lang3-version = "3.12.0"
 jetbrains-annotations-version = "22.0.0"
 websocket-version = "1.5.2"
+junit-version = "5.3.1"
+assertj-version = "3.21.0"
 
 shadow-version = "7.0.0"
 names-version = "0.39.0"
@@ -28,12 +30,17 @@ jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-datab
 httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "httpclient-version" }
 lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version"}
+websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version" }
+junitApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
+junitParams = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
+junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-version" }
+assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-version" }
 
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]
 log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-objectmapper-jackson"]
+junit = ["junitApi", "junitParams"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }

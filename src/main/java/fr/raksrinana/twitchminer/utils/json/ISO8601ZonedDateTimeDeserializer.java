@@ -22,6 +22,10 @@ public class ISO8601ZonedDateTimeDeserializer extends StdDeserializer<ZonedDateT
 	@Override
 	@Nullable
 	public ZonedDateTime deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext context) throws IOException{
-		return ZonedDateTime.parse(jsonParser.getValueAsString(), ISO_DATE_TIME).withZoneSameInstant(systemDefault());
+		var value = jsonParser.getValueAsString();
+		if(value.isBlank()){
+			return null;
+		}
+		return ZonedDateTime.parse(value, ISO_DATE_TIME).withZoneSameInstant(systemDefault());
 	}
 }

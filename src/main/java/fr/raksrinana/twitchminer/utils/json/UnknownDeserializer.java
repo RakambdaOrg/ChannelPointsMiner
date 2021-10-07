@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 @Log4j2
-public class UnknownDeserializer extends StdDeserializer<Object>{
+public class UnknownDeserializer extends StdDeserializer<String>{
 	public UnknownDeserializer(){
 		this(null);
 	}
@@ -20,9 +20,11 @@ public class UnknownDeserializer extends StdDeserializer<Object>{
 	
 	@Override
 	@Nullable
-	public Object deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext deserializationContext) throws IOException{
+	public String deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext deserializationContext) throws IOException{
 		var currentLocation = jsonParser.getCurrentLocation();
-		log.warn("Got actual value for field {} (l:{},c:{}) : {}", jsonParser.getCurrentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), jsonParser.readValueAsTree().toString());
-		return jsonParser.getValueAsString();
+		var treeNode = jsonParser.readValueAsTree();
+		var treeNodeStr = treeNode == null ? null : treeNode.toString();
+		log.warn("Got actual value for field {} (l:{},c:{}) : {}", jsonParser.getCurrentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), treeNodeStr);
+		return treeNodeStr;
 	}
 }
