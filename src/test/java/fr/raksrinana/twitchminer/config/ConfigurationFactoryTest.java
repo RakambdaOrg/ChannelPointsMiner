@@ -21,7 +21,9 @@ class ConfigurationFactoryTest{
 	
 	@Test
 	void getInstance() throws URISyntaxException{
-		var testConfig = Paths.get(getClass().getClassLoader().getResource("config/config.json").toURI());
+		var classLoader = getClass().getClassLoader();
+		var resource = classLoader.getResource("config/config.json");
+		var testConfig = Paths.get(resource.toURI());
 		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
 		var expected = Configuration.builder()
