@@ -59,6 +59,12 @@ tasks {
         useJUnitPlatform()
     }
 
+    jacocoTestReport {
+        reports {
+            xml.required.set(true)
+        }
+    }
+
     shadowJar {
         archiveBaseName.set(project.name)
         archiveClassifier.set("shaded")

@@ -54,7 +54,11 @@ jobs:
         uses: gradle/gradle-build-action@v2.0-beta.4
         with:
           arguments: test
-      - name: Report JUnit tests
+      - name: Generate JaCoCo report
+        uses: gradle/gradle-build-action@v2.0-beta.4
+        with:
+          arguments: jacocoTestReport
+      - name: Publish JUnit results
         uses: dorny/test-reporter@v1
         if: always()
         with:
@@ -62,19 +66,31 @@ jobs:
           path: 'build/test-results/test/*.xml'
           reporter: java-junit
           fail-on-error: 'false'
-      - name: Upload JUnit reports
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: junit-test-results
-          path: build/test-results/test/*.xml
-          if-no-files-found: error
-          retention-days: 14
       - name: Publish coverage on CodeCov
         uses: codecov/codecov-action@v2
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: build/jacoco/test.exec
+          files: build/reports/jacoco/test/jacocoTestReport.xml
           flags: unittests
           name: codecov-github-actions
+      - name: Upload JUnit reports
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: junit-test-results
+          path: |
+            build/test-results/test/*.xml
+            build/reports/tests/tests
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload JaCoCo reports
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: junit-test-results
+          path: |
+            build/reports/jacoco/test/*.xml
+            build/reports/jacoco
+          if-no-files-found: error
+          retention-days: 14
