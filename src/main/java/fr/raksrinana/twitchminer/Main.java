@@ -1,21 +1,13 @@
 package fr.raksrinana.twitchminer;
 
-import fr.raksrinana.twitchminer.api.gql.GQLApi;
-import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
-import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemData;
-import fr.raksrinana.twitchminer.api.kraken.KrakenApi;
 import fr.raksrinana.twitchminer.api.passport.PassportApi;
-import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
-import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
+import fr.raksrinana.twitchminer.cli.CLIHolder;
 import fr.raksrinana.twitchminer.cli.CLIParameters;
-import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.config.ConfigurationFactory;
 import fr.raksrinana.twitchminer.miner.Miner;
-import fr.raksrinana.twitchminer.miner.data.Streamer;
-import fr.raksrinana.twitchminer.miner.data.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -26,58 +18,19 @@ import static kong.unirest.HeaderNames.USER_AGENT;
 
 @Log4j2
 public class Main{
-	@Getter
-	private static CLIParameters parameters;
-	@Getter
-	private static TwitchLogin twitchLogin;
-	
 	@SneakyThrows
 	public static void main(String[] args){
-		parameters = loadEnv(args);
+		CLIHolder.setInstance(parseCLIParameters(args));
 		preSetup();
 		
-		var config = Configuration.getInstance();
-		try{
-			twitchLogin = new PassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()).login();
-		}
-		catch(CaptchaSolveRequired e){
-			log.error("A captcha solve is required, please log in through your browser and solve it");
-		}
-		catch(Exception e){
-			log.error("Failed to login", e);
-			return;
-		}
+		var config = ConfigurationFactory.getInstance();
 		
-		var miner = new Miner();
+		var miner = new Miner(config, new PassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()));
 		miner.start();
-		
-		try{
-			config.getStreamers().stream()
-					.map(streamer -> {
-						var user = GQLApi.reportMenuItem(streamer.getUsername())
-								.map(GQLResponse::getData)
-								.map(ReportMenuItemData::getUser)
-								.orElseThrow(() -> new RuntimeException("Failed to get streamer id for " + streamer.getUsername()));
-						return new Streamer(user.getId(), streamer.getUsername(), StreamerSettingsFactory.readStreamerSettings());
-					})
-					.forEach(miner::addStreamer);
-			
-			if(config.isLoadFollows()){
-				log.info("Loading streamers from follow list");
-				KrakenApi.getFollows().stream()
-						.filter(follow -> !miner.hasStreamerWithUsername(follow.getChannel().getName()))
-						.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), StreamerSettingsFactory.readStreamerSettings()))
-						.forEach(miner::addStreamer);
-			}
-		}
-		catch(Exception e){
-			log.error("Failed starting up", e);
-			miner.close();
-		}
 	}
 	
 	@NotNull
-	private static CLIParameters loadEnv(@NotNull String[] args){
+	private static CLIParameters parseCLIParameters(@NotNull String[] args){
 		var parameters = new CLIParameters();
 		var cli = new CommandLine(parameters);
 		cli.registerConverter(Path.class, Paths::get);

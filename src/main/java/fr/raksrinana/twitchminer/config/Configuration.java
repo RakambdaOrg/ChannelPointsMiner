@@ -1,30 +1,24 @@
 package fr.raksrinana.twitchminer.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Log4j2
 public class Configuration{
-	@JsonIgnore
-	private static Configuration INSTANCE;
-	
 	@NotNull
 	@JsonProperty("username")
 	@Comment(value = "Username of your Twitch account.")
@@ -35,31 +29,23 @@ public class Configuration{
 	private String password;
 	@JsonProperty("use2FA")
 	@Comment(value = "If this account uses 2FA set this to true to directly ask for it.", defaultValue = "false")
+	@Builder.Default
 	private boolean use2Fa = false;
 	@NotNull
 	@JsonProperty("authenticationFolder")
 	@Comment(value = "Path to a folder that contains authentication used to log back in after a restart.", defaultValue = "./authentication")
+	@Builder.Default
 	private Path authenticationFolder = Paths.get("authentication");
 	@JsonProperty("loadFollows")
 	@Comment(value = "Load streamers to scrape from follow list.", defaultValue = "false")
+	@Builder.Default
 	private boolean loadFollows = false;
 	@JsonProperty("defaultStreamerSettings")
 	@Comment(value = "Default settings for the streamers mined")
+	@Builder.Default
 	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
 	@JsonProperty("streamers")
 	@Comment("List of streamers to scrape")
+	@Builder.Default
 	private Set<StreamerConfiguration> streamers = new HashSet<>();
-	
-	public static Configuration getInstance(){
-		if(Objects.isNull(INSTANCE)){
-			try(var fis = Files.newInputStream(Main.getParameters().getConfigurationFile())){
-				INSTANCE = JacksonUtils.read(fis, new TypeReference<>(){});
-			}
-			catch(IOException e){
-				log.error("Failed to read main configuration", e);
-				throw new IllegalStateException("No main config found");
-			}
-		}
-		return INSTANCE;
-	}
 }

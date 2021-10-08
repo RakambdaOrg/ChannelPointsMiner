@@ -1,17 +1,21 @@
 package fr.raksrinana.twitchminer.cli;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SuppressWarnings("FieldMayBeFinal")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-@CommandLine.Command(name = "twitch-miner", mixinStandardHelpOptions = true)
+@Builder
+@Command(name = "twitch-miner", mixinStandardHelpOptions = true)
 public class CLIParameters{
 	@Option(names = {
 			"-s",
@@ -19,5 +23,6 @@ public class CLIParameters{
 	},
 			description = "The configuration file")
 	@NotNull
+	@Builder.Default
 	private Path configurationFile = Paths.get("config.json");
 }

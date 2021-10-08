@@ -22,7 +22,6 @@ import static java.util.stream.Collector.Characteristics.*;
 @EqualsAndHashCode
 public class Topics{
 	@JsonProperty("topics")
-	@Singular
 	private Set<Topic> topics = new HashSet<>();
 	@JsonProperty("auth_token")
 	@ToString.Exclude
@@ -33,7 +32,7 @@ public class Topics{
 				.name(topicName)
 				.target(target);
 		
-		var topicsBuilder = Topics.builder().topic(topicBuilder.build());
+		var topicsBuilder = Topics.builder().topics(Set.of(topicBuilder.build()));
 		if(topicName.isOwnUserTopic()){
 			topicsBuilder = topicsBuilder.authToken(authToken);
 		}

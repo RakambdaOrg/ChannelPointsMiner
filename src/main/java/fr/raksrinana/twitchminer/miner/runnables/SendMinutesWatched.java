@@ -1,6 +1,5 @@
 package fr.raksrinana.twitchminer.miner.runnables;
 
-import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.api.gql.data.types.Game;
 import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedProperties;
 import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedRequest;
@@ -44,13 +43,13 @@ public class SendMinutesWatched implements Runnable{
 		}
 	}
 	
-	private void send(Streamer streamer) throws InterruptedException{
+	private void send(Streamer streamer){
 		log.debug("Sending minutes watched for {}", streamer);
 		var request = new MinuteWatchedRequest(MinuteWatchedProperties.builder()
 				.channelId(streamer.getId())
 				.broadcastId(streamer.getBroadcastId().orElse(null))
 				.player(SITE_PLAYER)
-				.userId(Main.getTwitchLogin().getUserId())
+				.userId(miner.getTwitchLogin().getUserId())
 				.game(streamer.getGame().map(Game::getName).orElse(null))
 				.build());
 		

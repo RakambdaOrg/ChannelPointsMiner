@@ -29,7 +29,7 @@ dependencies {
     testRuntimeOnly(libs.junitEngine)
 
     testImplementation(libs.assertj)
-    testImplementation(libs.mockito)
+    testImplementation(libs.bundles.mockito)
 }
 
 repositories {

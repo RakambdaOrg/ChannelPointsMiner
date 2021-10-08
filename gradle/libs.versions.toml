@@ -32,17 +32,20 @@ httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version
 lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
 websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version" }
-junitApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
-junitParams = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
+junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
+junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
 junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-version" }
 assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-version" }
-mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
+mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito-version" }
+mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito-version" }
 
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]
 log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-objectmapper-jackson"]
-junit = ["junitApi", "junitParams"]
+junit = ["junit-api", "junit-params"]
+mockito = ["mockito-core", "mockito-inline", "mockito-junit"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }

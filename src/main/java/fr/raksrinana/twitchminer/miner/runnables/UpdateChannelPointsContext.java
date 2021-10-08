@@ -1,6 +1,5 @@
 package fr.raksrinana.twitchminer.miner.runnables;
 
-import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
@@ -33,7 +32,7 @@ public class UpdateChannelPointsContext implements Runnable{
 	public void update(@NotNull Streamer streamer){
 		log.trace("Updating channel points context for {}", streamer);
 		
-		GQLApi.channelPointsContext(streamer.getUsername())
+		miner.getGqlApi().channelPointsContext(streamer.getUsername())
 				.map(GQLResponse::getData)
 				.ifPresentOrElse(
 						streamer::setChannelPointsContext,

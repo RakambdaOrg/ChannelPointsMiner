@@ -1,12 +1,12 @@
 package fr.raksrinana.twitchminer.miner.data;
 
-import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.config.ConfigurationFactory;
 import org.jetbrains.annotations.NotNull;
 
 public class StreamerSettingsFactory{
 	@NotNull
 	public static StreamerSettings getDefaultSettings(){
-		return Configuration.getInstance().getDefaultStreamerSettings();
+		return ConfigurationFactory.getInstance().getDefaultStreamerSettings();
 	}
 	
 	@NotNull

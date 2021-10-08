@@ -2,6 +2,8 @@ package fr.raksrinana.twitchminer.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class StreamerConfiguration{
 	@JsonProperty("username")
 	@Comment("Username of the streamer")

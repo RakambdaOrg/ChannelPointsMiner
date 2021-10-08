@@ -1,9 +1,10 @@
 package fr.raksrinana.twitchminer.api.helix;
 
-import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.api.helix.data.follows.Follow;
 import fr.raksrinana.twitchminer.api.helix.data.follows.GetFollowsResponse;
+import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import kong.unirest.Unirest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -12,21 +13,24 @@ import java.util.Objects;
 import static kong.unirest.HeaderNames.AUTHORIZATION;
 
 @Log4j2
+@RequiredArgsConstructor
 public class HelixApi{
 	private static final String ENDPOINT = "https://api.twitch.tv/helix";
 	private static final String CLIENT_ID = "jzkbprff40iqj646a697cyrvl0zt2m6";
 	
+	private final TwitchLogin twitchLogin;
+	
 	@NotNull
-	public static List<Follow> getFollows(){
+	public List<Follow> getFollows(){
 		return getFollows(100, null);
 	}
 	
 	@NotNull
-	public static List<Follow> getFollows(int limit, String page){
+	public List<Follow> getFollows(int limit, String page){
 		var query = Unirest.get(ENDPOINT + "/users/follows")
-				.header(AUTHORIZATION, "Bearer " + Main.getTwitchLogin().getAccessToken())
+				.header(AUTHORIZATION, "Bearer " + twitchLogin.getAccessToken())
 				.header("Client-Id", CLIENT_ID)
-				.queryString("fromId", Main.getTwitchLogin().getUserId())
+				.queryString("fromId", twitchLogin.getUserId())
 				.queryString("first", limit);
 		
 		if(Objects.nonNull(page)){

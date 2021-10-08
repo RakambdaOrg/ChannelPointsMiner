@@ -48,7 +48,7 @@ public class TwitchLogin{
 					.findAny()
 					.map(Cookie::getValue)
 					.map(v -> v.split("%")[0])
-					.or(() -> GQLApi.reportMenuItem(username)
+					.or(() -> new GQLApi(this).reportMenuItem(username)
 							.map(GQLResponse::getData)
 							.map(ReportMenuItemData::getUser)
 							.map(User::getId))

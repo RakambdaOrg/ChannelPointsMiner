@@ -1,7 +1,5 @@
 package fr.raksrinana.twitchminer.api.ws;
 
-import fr.raksrinana.twitchminer.Main;
-import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
 import lombok.extern.log4j.Log4j2;
@@ -37,10 +35,6 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 				.filter(WebSocketClient::isOpen)
 				.filter(client -> !client.isClosing())
 				.forEach(TwitchWebSocketClient::ping);
-	}
-	
-	public void listenTopic(@NotNull TopicName name, @NotNull String target){
-		listenTopic(Topics.buildFromName(name, target, Main.getTwitchLogin().getAccessToken()));
 	}
 	
 	public void listenTopic(@NotNull Topics topics){

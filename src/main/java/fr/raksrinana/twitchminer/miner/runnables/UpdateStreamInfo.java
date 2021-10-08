@@ -1,6 +1,5 @@
 package fr.raksrinana.twitchminer.miner.runnables;
 
-import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.miner.IMiner;
@@ -36,7 +35,7 @@ public class UpdateStreamInfo implements Runnable{
 		log.trace("Updating stream info for {}", streamer);
 		var wasStreaming = streamer.isStreaming();
 		
-		GQLApi.videoPlayerStreamInfoOverlayChannel(streamer.getUsername())
+		miner.getGqlApi().videoPlayerStreamInfoOverlayChannel(streamer.getUsername())
 				.map(GQLResponse::getData)
 				.ifPresentOrElse(
 						streamer::setVideoPlayerStreamInfoOverlayChannel,
@@ -49,7 +48,7 @@ public class UpdateStreamInfo implements Runnable{
 		}
 		
 		if(streamer.updateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
-			GQLApi.dropsHighlightServiceAvailableDrops(streamer.getId())
+			miner.getGqlApi().dropsHighlightServiceAvailableDrops(streamer.getId())
 					.map(GQLResponse::getData)
 					.ifPresentOrElse(
 							streamer::setDropsHighlightServiceAvailableDrops,
