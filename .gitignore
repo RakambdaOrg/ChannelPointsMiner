@@ -6,4 +6,4 @@
 /authentication
 
 *.iml
-config.json
+/config.json

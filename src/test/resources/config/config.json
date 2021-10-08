@@ -1,0 +1,18 @@
+{
+  "username": "username",
+  "password": "password",
+  "use2FA": true,
+  "loadFollows": true,
+  "defaultStreamerSettings": {
+    "makePredictions": true,
+    "followRaid": true
+  },
+  "streamers": [
+    {
+      "username": "streamer1"
+    },
+    {
+      "username": "streamer2"
+    }
+  ]
+}

@@ -21,9 +21,7 @@ class ConfigurationFactoryTest{
 	
 	@Test
 	void getInstance() throws URISyntaxException{
-		var classLoader = getClass().getClassLoader();
-		var resource = classLoader.getResource("config/config.json");
-		var testConfig = Paths.get(resource.toURI());
+		var testConfig = Paths.get(getClass().getClassLoader().getResource("config/config.json").toURI());
 		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
 		var expected = Configuration.builder()
@@ -38,7 +36,7 @@ class ConfigurationFactoryTest{
 				))
 				.build();
 		
-		try (var cliHolder = Mockito.mockStatic(CLIHolder.class)) {
+		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){
 			cliHolder.when(CLIHolder::getInstance).thenReturn(cliParameters);
 			
 			var firstInstance = ConfigurationFactory.getInstance();
