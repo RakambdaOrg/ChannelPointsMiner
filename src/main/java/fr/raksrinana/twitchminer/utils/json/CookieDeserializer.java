@@ -17,6 +17,10 @@ public class CookieDeserializer extends StdDeserializer<Cookie>{
 	
 	@Override
 	public Cookie deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
-		return new Cookie(p.getValueAsString());
+		var value = p.getValueAsString();
+		if(value.isBlank()){
+			return null;
+		}
+		return new Cookie(value);
 	}
 }

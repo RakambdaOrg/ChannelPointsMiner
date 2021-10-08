@@ -22,6 +22,10 @@ public class ColorDeserializer extends StdDeserializer<Color>{
 	@Override
 	@Nullable
 	public Color deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext deserializationContext) throws IOException{
-		return Color.decode(jsonParser.getValueAsString());
+		var value = jsonParser.getValueAsString();
+		if(value.isBlank()){
+			return null;
+		}
+		return Color.decode(value);
 	}
 }

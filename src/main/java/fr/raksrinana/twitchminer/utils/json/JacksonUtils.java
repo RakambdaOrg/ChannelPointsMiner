@@ -48,11 +48,6 @@ public class JacksonUtils{
 		return getMapper().readValue(value, type);
 	}
 	
-	@NotNull
-	public static <T> T readUpdate(@NotNull T object, @NotNull String value) throws JsonProcessingException{
-		return getMapper().readerForUpdating(object).readValue(value);
-	}
-	
 	public static void write(@NotNull OutputStream os, @NotNull Object value) throws IOException{
 		getMapper().writeValue(os, value);
 	}

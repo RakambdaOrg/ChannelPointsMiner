@@ -11,6 +11,7 @@ jetbrains-annotations-version = "22.0.0"
 websocket-version = "1.5.2"
 junit-version = "5.3.1"
 assertj-version = "3.21.0"
+mockito-version = "4.0.0"
 
 shadow-version = "7.0.0"
 names-version = "0.39.0"
@@ -35,6 +36,7 @@ junitApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.re
 junitParams = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
 junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-version" }
 assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-version" }
+mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
 
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]

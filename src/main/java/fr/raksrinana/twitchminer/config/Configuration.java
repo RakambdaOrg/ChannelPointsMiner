@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.twitchminer.Main;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
@@ -51,10 +52,8 @@ public class Configuration{
 	
 	public static Configuration getInstance(){
 		if(Objects.isNull(INSTANCE)){
-			var configurationReader = JacksonUtils.getMapper().readerFor(Configuration.class);
-			
 			try(var fis = Files.newInputStream(Main.getParameters().getConfigurationFile())){
-				INSTANCE = configurationReader.readValue(fis);
+				INSTANCE = JacksonUtils.read(fis, new TypeReference<>(){});
 			}
 			catch(IOException e){
 				log.error("Failed to read main configuration", e);

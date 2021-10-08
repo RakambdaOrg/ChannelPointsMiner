@@ -18,8 +18,13 @@ public class TwitchTimestampDeserializer extends StdDeserializer<Instant>{
 	
 	@Override
 	public Instant deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
-		var rawValue = BigDecimal.valueOf(p.getValueAsDouble());
-		var seconds = rawValue.intValue();
-		return Instant.ofEpochSecond(seconds);
+		var value = p.getValueAsString();
+		if(value.isBlank()){
+			return null;
+		}
+		var number = new BigDecimal(value);
+		var seconds = number.intValue();
+		var nanos = number.remainder(BigDecimal.ONE).movePointRight(9).longValue();
+		return Instant.ofEpochSecond(seconds).plusNanos(nanos);
 	}
 }
