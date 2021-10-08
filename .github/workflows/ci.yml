@@ -70,3 +70,13 @@ jobs:
           path: build/test-results/test/*.xml
           if-no-files-found: error
           retention-days: 14
+      - name: Publish coverage on CodeCov
+        uses: codecov/codecov-action@v2
+        if: always()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/jacoco/TwitchMiner.exec
+          flags: unittests
+          name: codecov-github-actions
+          fail_ci_if_error: true # optional (default = false)
+          verbose: true # optional (default = false)
