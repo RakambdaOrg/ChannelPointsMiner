@@ -13,8 +13,10 @@ import lombok.*;
 @Builder
 public class StreamerSettings implements Cloneable{
 	@JsonProperty("makePredictions")
+	@Builder.Default
 	private boolean makePredictions = false;
 	@JsonProperty("followRaid")
+	@Builder.Default
 	private boolean followRaid = false;
 	
 	@Override

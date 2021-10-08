@@ -22,6 +22,7 @@ import static java.util.stream.Collector.Characteristics.*;
 @EqualsAndHashCode
 public class Topics{
 	@JsonProperty("topics")
+	@Builder.Default
 	private Set<Topic> topics = new HashSet<>();
 	@JsonProperty("auth_token")
 	@ToString.Exclude
