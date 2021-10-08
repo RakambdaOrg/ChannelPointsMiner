@@ -2,6 +2,7 @@ plugins {
     idea
     java
     application
+    jacoco
     alias(libs.plugins.shadow)
     alias(libs.plugins.names)
     alias(libs.plugins.lombok)
