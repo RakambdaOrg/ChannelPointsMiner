@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: junit-test-results
+          name: jacoco-test-results
           path: |
             build/reports/jacoco/test/*.xml
             build/reports/jacoco
