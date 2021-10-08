@@ -75,8 +75,6 @@ jobs:
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: build/jacoco/TwitchMiner.exec
+          files: build/jacoco/test.exec
           flags: unittests
           name: codecov-github-actions
-          fail_ci_if_error: true # optional (default = false)
-          verbose: true # optional (default = false)
