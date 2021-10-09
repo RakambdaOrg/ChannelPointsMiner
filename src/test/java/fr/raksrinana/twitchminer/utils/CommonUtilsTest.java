@@ -7,7 +7,7 @@ import static org.awaitility.Awaitility.await;
 class CommonUtilsTest{
 	@RepeatedTest(5)
 	void sleepInRange(){
-		await().atLeast(Duration.ofMillis(250)).atMost(Duration.ofMillis(750)).until(() -> {
+		await().atLeast(Duration.ofMillis(200)).atMost(Duration.ofMillis(800)).until(() -> {
 			CommonUtils.randomSleep(500, 200);
 			return true;
 		});

@@ -407,7 +407,7 @@ class MinerTest{
 	
 	@Test
 	void captchaLogin() throws LoginException, IOException{
-		when(passportApi.login()).thenThrow(new CaptchaSolveRequired(500, "For tests"));
+		when(passportApi.login()).thenThrow(new CaptchaSolveRequired(400, -1, "For tests"));
 		
 		assertThrows(IllegalStateException.class, () -> tested.start());
 	}

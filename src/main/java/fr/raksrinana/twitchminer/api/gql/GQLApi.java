@@ -60,7 +60,7 @@ public class GQLApi{
 					.asString()
 					.ifSuccess(r -> log.info(r.getBody()));
 			if(response.getStatus() == 401){
-				throw new RuntimeException(new InvalidCredentials(response.getStatus(), "Invalid credentials provided"));
+				throw new RuntimeException(new InvalidCredentials(response.getStatus(), -1, "Invalid credentials provided"));
 			}
 			return Optional.empty();
 		}

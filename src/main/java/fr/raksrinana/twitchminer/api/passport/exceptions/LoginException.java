@@ -8,10 +8,11 @@ import org.jetbrains.annotations.Nullable;
  */
 @Getter
 public class LoginException extends Exception{
-	private final Integer errorCode;
-	
-	public LoginException(@Nullable Integer errorCode, @Nullable String description){
-		super("Failed to login (%d): %s".formatted(errorCode, description));
-		this.errorCode = errorCode;
+	public LoginException(int statusCode, @Nullable Integer errorCode, @Nullable String description){
+		super("Failed to login (%d)[%d]: %s".formatted(
+				statusCode,
+				errorCode == null ? -1 : errorCode,
+				description
+		));
 	}
 }

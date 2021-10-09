@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
  * Error while login in, credentials are invalid.
  */
 public class InvalidCredentials extends LoginException{
-	public InvalidCredentials(@Nullable Integer errorCode, @Nullable String description){
-		super(errorCode, description);
+	public InvalidCredentials(int statusCode, @Nullable Integer errorCode, @Nullable String description){
+		super(statusCode, errorCode, description);
 	}
 }

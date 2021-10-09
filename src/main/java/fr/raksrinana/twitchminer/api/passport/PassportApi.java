@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Scanner;
+import static fr.raksrinana.twitchminer.utils.CommonUtils.getUserInput;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static kong.unirest.ContentType.APPLICATION_JSON;
@@ -143,21 +143,6 @@ public class PassportApi{
 	}
 	
 	/**
-	 * Get a user input.
-	 *
-	 * @param message The message to be displayed before asking input.
-	 *
-	 * @return User input.
-	 */
-	@NotNull
-	private static String getUserInput(@NotNull String message){
-		System.out.println(message);
-		
-		var scanner = new Scanner(System.in);
-		return scanner.nextLine();
-	}
-	
-	/**
 	 * Log in onto Twitch.
 	 *
 	 * @param loginRequest The login parameters to send
@@ -176,19 +161,25 @@ public class PassportApi{
 				.asObject(LoginResponse.class);
 		
 		if(!response.isSuccess()){
-			var body = response.getBody();
-			var errorCode = body.getErrorCode();
+			var statusCode = response.getStatus();
 			
+			var body = response.getBody();
+			if(Objects.isNull(body)){
+				throw new LoginException(statusCode, -1, "No body received");
+			}
+			
+			var errorCode = body.getErrorCode();
+			var errorDescription = body.getErrorDescription();
 			if(Objects.isNull(errorCode)){
-				throw new LoginException(errorCode, body.getErrorDescription());
+				throw new LoginException(statusCode, errorCode, errorDescription);
 			}
 			
 			switch(errorCode){
-				case 1000 -> throw new CaptchaSolveRequired(errorCode, body.getErrorDescription());
-				case 3011, 3012 -> throw new MissingAuthy2FA(errorCode, body.getErrorDescription());
-				case 3022, 3023 -> throw new MissingTwitchGuard(errorCode, body.getErrorDescription());
-				case 3001, 3003 -> throw new InvalidCredentials(errorCode, body.getErrorDescription());
-				default -> throw new LoginException(errorCode, body.getErrorDescription());
+				case 1000 -> throw new CaptchaSolveRequired(statusCode, errorCode, errorDescription);
+				case 3001, 3003 -> throw new InvalidCredentials(statusCode, errorCode, errorDescription);
+				case 3011, 3012 -> throw new MissingAuthy2FA(statusCode, errorCode, errorDescription);
+				case 3022, 3023 -> throw new MissingTwitchGuard(statusCode, errorCode, errorDescription);
+				default -> throw new LoginException(statusCode, errorCode, errorDescription);
 			}
 		}
 		

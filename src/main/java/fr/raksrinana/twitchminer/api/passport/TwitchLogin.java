@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.twitchminer.api.gql.data.types.User;
+import fr.raksrinana.twitchminer.factory.ApiFactory;
 import fr.raksrinana.twitchminer.utils.json.CookieDeserializer;
 import fr.raksrinana.twitchminer.utils.json.CookieSerializer;
 import kong.unirest.Cookie;
@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +38,8 @@ public class TwitchLogin{
 	@JsonProperty("cookies")
 	@JsonDeserialize(contentUsing = CookieDeserializer.class)
 	@JsonSerialize(contentUsing = CookieSerializer.class)
-	private List<Cookie> cookies;
+	@Builder.Default
+	private List<Cookie> cookies = new ArrayList<>();
 	@JsonProperty("userId")
 	private String userId;
 	
@@ -48,7 +50,7 @@ public class TwitchLogin{
 					.findAny()
 					.map(Cookie::getValue)
 					.map(v -> v.split("%")[0])
-					.or(() -> new GQLApi(this).reportMenuItem(username)
+					.or(() -> ApiFactory.getGqlApi(this).reportMenuItem(username)
 							.map(GQLResponse::getData)
 							.map(ReportMenuItemData::getUser)
 							.map(User::getId))
