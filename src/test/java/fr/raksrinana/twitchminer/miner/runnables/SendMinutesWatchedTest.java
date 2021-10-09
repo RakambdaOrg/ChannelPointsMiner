@@ -28,7 +28,6 @@ class SendMinutesWatchedTest{
 	private static final String SITE_PLAYER = "site";
 	private static final String USER_ID = "user-id";
 	private static final String GAME_NAME = "game-name";
-	private static URL SPADE_URL;
 	
 	@InjectMocks
 	private SendMinutesWatched tested;
@@ -44,9 +43,11 @@ class SendMinutesWatchedTest{
 	@Mock
 	private Game game;
 	
+	private URL spadeUrl;
+	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		SPADE_URL = new URL("https://google.com/");
+		spadeUrl = new URL("https://google.com/");
 		
 		lenient().when(miner.getTwitchApi()).thenReturn(twitchApi);
 		lenient().when(miner.getStreamers()).thenReturn(List.of(streamer));
@@ -55,7 +56,7 @@ class SendMinutesWatchedTest{
 		lenient().when(twitchLogin.getUserId()).thenReturn(USER_ID);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
-		lenient().when(streamer.getSpadeUrl()).thenReturn(SPADE_URL);
+		lenient().when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
 		lenient().when(streamer.getStreamId()).thenReturn(Optional.of(STREAM_ID));
 		lenient().when(streamer.isStreaming()).thenReturn(true);
 	}
@@ -75,7 +76,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendMinutesWatched(SPADE_URL, expected);
+		verify(twitchApi).sendMinutesWatched(spadeUrl, expected);
 	}
 	
 	@Test
@@ -91,7 +92,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendMinutesWatched(SPADE_URL, expected);
+		verify(twitchApi).sendMinutesWatched(spadeUrl, expected);
 	}
 	
 	@Test
@@ -105,7 +106,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendMinutesWatched(SPADE_URL, expected);
+		verify(twitchApi).sendMinutesWatched(spadeUrl, expected);
 	}
 	
 	@Test
@@ -142,5 +143,12 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, times(2)).sendMinutesWatched(any(), any());
+	}
+	
+	@Test
+	void sendingMinutesWatchedException(){
+		when(twitchApi.sendMinutesWatched(any(), any())).thenThrow(new RuntimeException("For tests"));
+		
+		assertDoesNotThrow(() -> tested.run());
 	}
 }

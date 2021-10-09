@@ -7,6 +7,7 @@ import fr.raksrinana.twitchminer.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 import java.util.Optional;
 
 @Log4j2
@@ -40,10 +41,15 @@ public class UpdateStreamInfo implements Runnable{
 						streamer::setVideoPlayerStreamInfoOverlayChannel,
 						() -> streamer.setVideoPlayerStreamInfoOverlayChannel(null));
 		
-		if(streamer.isStreaming() && !wasStreaming){
-			Optional.ofNullable(streamer.getChannelUrl())
-					.flatMap(miner.getTwitchApi()::getSpadeUrl)
-					.ifPresent(streamer::setSpadeUrl);
+		if(streamer.isStreaming()){
+			if(Objects.isNull(streamer.getSpadeUrl())){
+				Optional.ofNullable(streamer.getChannelUrl())
+						.flatMap(miner.getTwitchApi()::getSpadeUrl)
+						.ifPresent(streamer::setSpadeUrl);
+			}
+		}
+		else{
+			streamer.setSpadeUrl(null);
 		}
 		
 		if(streamer.updateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){

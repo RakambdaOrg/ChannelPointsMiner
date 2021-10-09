@@ -1,6 +1,8 @@
 package fr.raksrinana.twitchminer.api.gql.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -12,12 +14,16 @@ import java.util.Map;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class GQLResponse<T>{
 	@JsonProperty("errors")
 	@NotNull
+	@Builder.Default
 	private List<GQLError> errors = new LinkedList<>();
 	@JsonProperty("extensions")
 	@NotNull
+	@Builder.Default
 	private Map<String, Object> extensions = new HashMap<>();
 	@JsonProperty("data")
 	@Nullable
