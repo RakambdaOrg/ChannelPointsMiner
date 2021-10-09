@@ -1,20 +1,24 @@
 package fr.raksrinana.twitchminer.miner.data;
 
-import fr.raksrinana.twitchminer.config.ConfigurationFactory;
+import fr.raksrinana.twitchminer.config.Configuration;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+@RequiredArgsConstructor
 public class StreamerSettingsFactory{
+	private final Configuration configuration;
+	
 	@NotNull
-	public static StreamerSettings getDefaultSettings(){
-		return ConfigurationFactory.getInstance().getDefaultStreamerSettings();
+	public StreamerSettings getDefaultSettings(){
+		return configuration.getDefaultStreamerSettings();
 	}
 	
 	@NotNull
-	public static StreamerSettings readStreamerSettings(){
+	public StreamerSettings readStreamerSettings(){
 		try{
 			return getDefaultSettings().clone();
 		}
-		catch(Exception e){
+		catch(CloneNotSupportedException e){
 			throw new RuntimeException("Failed to read streamer settings", e);
 		}
 	}

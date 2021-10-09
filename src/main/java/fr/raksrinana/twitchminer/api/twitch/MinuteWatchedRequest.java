@@ -6,6 +6,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class MinuteWatchedRequest{
 	@JsonProperty("event")
 	private final String event = "minute-watched";

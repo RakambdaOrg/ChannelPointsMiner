@@ -9,11 +9,12 @@ httpclient-version = "4.5.13"
 lang3-version = "3.12.0"
 jetbrains-annotations-version = "22.0.0"
 websocket-version = "1.5.2"
-junit-version = "5.3.1"
+junit-version = "5.8.1"
 assertj-version = "3.21.0"
 mockito-version = "4.0.0"
+awaitility-version = "4.1.0"
 
-shadow-version = "7.0.0"
+shadow-version = "7.1.0"
 names-version = "0.39.0"
 lombok-version = "6.2.0"
 jib-version = "3.1.4"
@@ -24,6 +25,7 @@ log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version
 log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j18-impl", version.ref = "log4j2-slf4j-version" }
 unirest-java = { group = "com.konghq", name = "unirest-java", version.ref = "unirest-version" }
 unirest-objectmapper-jackson = { group = "com.konghq", name = "unirest-objectmapper-jackson", version.ref = "unirest-version" }
+unirestMocks = { group = "com.konghq", name = "unirest-mocks", version.ref = "unirest-version" }
 picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-version" }
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson-version" }
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jackson-version" }
@@ -39,6 +41,7 @@ assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
 mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito-version" }
 mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito-version" }
+awaitility = { group = "org.awaitility", name = "awaitility", version.ref = "awaitility-version" }
 
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]

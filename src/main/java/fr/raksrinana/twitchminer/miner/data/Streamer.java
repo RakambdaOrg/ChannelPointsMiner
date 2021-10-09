@@ -1,9 +1,7 @@
 package fr.raksrinana.twitchminer.miner.data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextData;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
-import fr.raksrinana.twitchminer.api.gql.data.types.BroadcastSettings;
 import fr.raksrinana.twitchminer.api.gql.data.types.Game;
 import fr.raksrinana.twitchminer.api.gql.data.types.Stream;
 import fr.raksrinana.twitchminer.api.gql.data.types.User;
@@ -13,10 +11,10 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
-import static fr.raksrinana.twitchminer.api.Constants.TWITCH_URL;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -35,8 +33,7 @@ public class Streamer{
 	@Getter
 	private StreamerSettings settings;
 	
-	@JsonProperty("url")
-	private URL url;
+	private URL channelUrl;
 	
 	@Nullable
 	@Setter
@@ -58,37 +55,32 @@ public class Streamer{
 	
 	public Optional<Game> getGame(){
 		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
-				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
-				.map(User::getBroadcastSettings)
-				.map(BroadcastSettings::getGame);
+				.flatMap(VideoPlayerStreamInfoOverlayChannelData::getGame);
 	}
 	
-	public Optional<String> getBroadcastId(){
+	public Optional<String> getStreamId(){
 		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
-				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
-				.map(User::getStream)
+				.flatMap(VideoPlayerStreamInfoOverlayChannelData::getStream)
 				.map(Stream::getId);
 	}
 	
 	@Nullable
-	public URL getUrl(){
-		if(Objects.isNull(url)){
+	public URL getChannelUrl(){
+		if(Objects.isNull(channelUrl)){
 			try{
-				url = new URL(TWITCH_URL, getUsername());
+				channelUrl = URI.create("https://www.twitch.tv/").resolve(getUsername()).toURL();
 			}
 			catch(MalformedURLException e){
 				log.error("Failed to construct streamer url", e);
 			}
 		}
-		return url;
+		return channelUrl;
 	}
 	
 	public boolean isStreamingGame(){
-		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
-				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
-				.map(User::getBroadcastSettings)
-				.map(BroadcastSettings::getGame)
-				.map(game -> Objects.nonNull(game.getName()))
+		return getGame()
+				.map(Game::getName)
+				.map(game -> !game.isBlank())
 				.orElse(false);
 	}
 	

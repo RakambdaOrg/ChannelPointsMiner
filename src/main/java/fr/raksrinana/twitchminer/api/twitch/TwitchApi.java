@@ -22,7 +22,7 @@ public class TwitchApi{
 	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade_url\":\"(.*?)\"");
 	
 	@NotNull
-	public static Optional<URL> getSpadeUrl(@NotNull URL streamerUrl){
+	public Optional<URL> getSpadeUrl(@NotNull URL streamerUrl){
 		return getSettingsUrl(streamerUrl)
 				.map(settingsUrl -> {
 					var response = Unirest.get(settingsUrl.toString()).asString();
@@ -48,7 +48,7 @@ public class TwitchApi{
 	}
 	
 	@NotNull
-	private static Optional<URL> getSettingsUrl(@NotNull URL streamerUrl){
+	private Optional<URL> getSettingsUrl(@NotNull URL streamerUrl){
 		var response = Unirest.get(streamerUrl.toString()).asString();
 		
 		if(!response.isSuccess()){
@@ -70,7 +70,7 @@ public class TwitchApi{
 		}
 	}
 	
-	public static boolean sendMinutesWatched(@NotNull URL spadeUrl, @NotNull MinuteWatchedRequest request){
+	public boolean sendMinutesWatched(@NotNull URL spadeUrl, @NotNull MinuteWatchedRequest request){
 		try{
 			var requestStr = JacksonUtils.writeAsString(List.of(request));
 			var requestBase64 = new String(Base64.getEncoder().encode(requestStr.getBytes(UTF_8)), UTF_8);

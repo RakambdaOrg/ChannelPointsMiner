@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.miner;
 
 import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
+import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,9 @@ public interface IMiner{
 	
 	@Nullable
 	GQLApi getGqlApi();
+	
+	@Nullable
+	TwitchApi getTwitchApi();
 	
 	/**
 	 * Add a streamer to the list being mined.

@@ -2,10 +2,7 @@ package fr.raksrinana.twitchminer.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class StreamerConfiguration{
 	@JsonProperty("username")
 	@Comment("Username of the streamer")
@@ -23,21 +21,8 @@ public class StreamerConfiguration{
 	@Nullable
 	private StreamerSettings settings;
 	
-	@Override
-	public boolean equals(Object o){
-		if(this == o){
-			return true;
-		}
-		if(o == null || getClass() != o.getClass()){
-			return false;
-		}
-		
-		StreamerConfiguration that = (StreamerConfiguration) o;
-		return username.equalsIgnoreCase(that.username);
-	}
-	
-	@Override
-	public int hashCode(){
-		return username.toLowerCase().hashCode();
+	@EqualsAndHashCode.Include
+	private String normalizedUsername() {
+		return username.toLowerCase();
 	}
 }

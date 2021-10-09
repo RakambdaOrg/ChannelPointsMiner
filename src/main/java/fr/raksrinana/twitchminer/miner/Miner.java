@@ -8,6 +8,7 @@ import fr.raksrinana.twitchminer.api.kraken.KrakenApi;
 import fr.raksrinana.twitchminer.api.passport.PassportApi;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
+import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
@@ -39,6 +40,7 @@ public class Miner implements AutoCloseable, IMiner{
 	@Getter
 	private final TwitchWebSocketPool webSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
+	private final StreamerSettingsFactory streamerSettingsFactory;
 	
 	private final UpdateChannelPointsContext updateChannelPointsContext;
 	private final UpdateStreamInfo updateStreamInfo;
@@ -49,6 +51,8 @@ public class Miner implements AutoCloseable, IMiner{
 	private GQLApi gqlApi;
 	private KrakenApi krakenApi;
 	private HelixApi helixApi;
+	@Getter
+	private TwitchApi twitchApi;
 	
 	public Miner(@NotNull Configuration configuration, @NotNull PassportApi passportApi){
 		this.configuration = configuration;
@@ -57,6 +61,7 @@ public class Miner implements AutoCloseable, IMiner{
 		streamers = new HashSet<>();
 		webSocketPool = new TwitchWebSocketPool();
 		scheduledExecutor = Executors.newScheduledThreadPool(4);
+		streamerSettingsFactory = new StreamerSettingsFactory(configuration);
 		
 		updateChannelPointsContext = new UpdateChannelPointsContext(this);
 		updateStreamInfo = new UpdateStreamInfo(this);
@@ -90,7 +95,7 @@ public class Miner implements AutoCloseable, IMiner{
 							.map(GQLResponse::getData)
 							.map(ReportMenuItemData::getUser)
 							.orElseThrow(() -> new RuntimeException("Failed to get streamer id for " + streamer.getUsername()));
-					return new Streamer(user.getId(), streamer.getUsername(), StreamerSettingsFactory.readStreamerSettings());
+					return new Streamer(user.getId(), streamer.getUsername(), streamerSettingsFactory.readStreamerSettings());
 				})
 				.forEach(this::addStreamer);
 	}
@@ -100,7 +105,7 @@ public class Miner implements AutoCloseable, IMiner{
 			log.info("Loading streamers from follow list");
 			krakenApi.getFollows().stream()
 					.filter(follow -> !hasStreamerWithUsername(follow.getChannel().getName()))
-					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), StreamerSettingsFactory.readStreamerSettings()))
+					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), streamerSettingsFactory.readStreamerSettings()))
 					.forEach(this::addStreamer);
 		}
 	}
@@ -116,6 +121,7 @@ public class Miner implements AutoCloseable, IMiner{
 			gqlApi = new GQLApi(twitchLogin);
 			helixApi = new HelixApi(twitchLogin);
 			krakenApi = new KrakenApi(twitchLogin);
+			twitchApi = new TwitchApi();
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");

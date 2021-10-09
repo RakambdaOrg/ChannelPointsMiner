@@ -6,18 +6,25 @@ import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigurationFactoryTest{
 	@Mock
 	private CLIParameters cliParameters;
+	
+	@BeforeEach
+	void setUp(){
+		ConfigurationFactory.resetInstance();
+	}
 	
 	@Test
 	void getInstance() throws URISyntaxException{
@@ -45,7 +52,17 @@ class ConfigurationFactoryTest{
 			assertThat(firstInstance).usingRecursiveComparison().isEqualTo(expected);
 			assertThat(secondInstance).isSameAs(firstInstance);
 		}
+	}
+	
+	@Test
+	void noFile(){
+		var testConfig = Paths.get("fake/file.json");
+		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
-		ConfigurationFactory.getInstance();
+		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){
+			cliHolder.when(CLIHolder::getInstance).thenReturn(cliParameters);
+			
+			assertThrows(IllegalStateException.class, ConfigurationFactory::getInstance);
+		}
 	}
 }

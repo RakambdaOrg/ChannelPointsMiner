@@ -4,15 +4,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.URLDeserializer;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.util.Objects;
+import java.util.Optional;
 
 @JsonTypeName("User")
 @Getter
+@AllArgsConstructor
+@Builder
 @EqualsAndHashCode(of = {"id"}, callSuper = true)
 public class User extends GQLType{
 	@JsonProperty("id")
@@ -48,5 +53,10 @@ public class User extends GQLType{
 	
 	public boolean isStreaming(){
 		return Objects.nonNull(getStream());
+	}
+	
+	public Optional<Game> getGame(){
+		return Optional.ofNullable(broadcastSettings)
+				.map(BroadcastSettings::getGame);
 	}
 }

@@ -1,7 +1,6 @@
 package fr.raksrinana.twitchminer.miner.runnables;
 
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
-import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.utils.CommonUtils;
@@ -42,8 +41,8 @@ public class UpdateStreamInfo implements Runnable{
 						() -> streamer.setVideoPlayerStreamInfoOverlayChannel(null));
 		
 		if(streamer.isStreaming() && !wasStreaming){
-			Optional.ofNullable(streamer.getUrl())
-					.flatMap(TwitchApi::getSpadeUrl)
+			Optional.ofNullable(streamer.getChannelUrl())
+					.flatMap(miner.getTwitchApi()::getSpadeUrl)
 					.ifPresent(streamer::setSpadeUrl);
 		}
 		

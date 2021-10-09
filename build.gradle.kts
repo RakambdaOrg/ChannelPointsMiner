@@ -30,6 +30,8 @@ dependencies {
 
     testImplementation(libs.assertj)
     testImplementation(libs.bundles.mockito)
+    testImplementation(libs.awaitility)
+    testImplementation(libs.unirestMocks)
 }
 
 repositories {

@@ -19,14 +19,18 @@ public class ConfigurationFactory{
 	 */
 	public static Configuration getInstance(){
 		if(Objects.isNull(INSTANCE)){
-			try(var fis = Files.newInputStream(CLIHolder.getInstance().getConfigurationFile())){
+			var configurationFile = CLIHolder.getInstance().getConfigurationFile();
+			try(var fis = Files.newInputStream(configurationFile)){
 				INSTANCE = JacksonUtils.read(fis, new TypeReference<>(){});
 			}
 			catch(IOException e){
-				log.error("Failed to read main configuration", e);
-				throw new IllegalStateException("No main config found");
+				throw new IllegalStateException("No main config found", e);
 			}
 		}
 		return INSTANCE;
+	}
+	
+	protected static void resetInstance(){
+		INSTANCE = null;
 	}
 }

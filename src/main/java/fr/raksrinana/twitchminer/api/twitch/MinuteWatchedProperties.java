@@ -1,15 +1,13 @@
 package fr.raksrinana.twitchminer.api.twitch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class MinuteWatchedProperties{
 	@JsonProperty("channel_id")
 	private String channelId;
