@@ -41,11 +41,13 @@ class UpdateStreamInfoTest{
 	private Streamer streamer;
 	@Mock
 	private User user;
+	@Mock
+	private GQLResponse<VideoPlayerStreamInfoOverlayChannelData> gqlResponse;
+	@Mock
+	private VideoPlayerStreamInfoOverlayChannelData videoPlayerStreamInfoOverlayChannelData;
 	
 	private URL spadeUrl;
 	private URL streamerUrl;
-	private VideoPlayerStreamInfoOverlayChannelData videoPlayerStreamInfoOverlayChannelData;
-	private GQLResponse<VideoPlayerStreamInfoOverlayChannelData> gqlResponse;
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
@@ -60,12 +62,8 @@ class UpdateStreamInfoTest{
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
 		lenient().when(streamer.getChannelUrl()).thenReturn(streamerUrl);
 		
-		videoPlayerStreamInfoOverlayChannelData = VideoPlayerStreamInfoOverlayChannelData.builder()
-				.user(user)
-				.build();
-		gqlResponse = GQLResponse.<VideoPlayerStreamInfoOverlayChannelData> builder()
-				.data(videoPlayerStreamInfoOverlayChannelData)
-				.build();
+		lenient().when(gqlResponse.getData()).thenReturn(videoPlayerStreamInfoOverlayChannelData);
+		lenient().when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
 	}
 	
 	@Test
@@ -155,10 +153,9 @@ class UpdateStreamInfoTest{
 	
 	@Test
 	void updateWithDataStreamingUpdateCampaign(){
-		var data = DropsHighlightServiceAvailableDropsData.builder().build();
-		var response = GQLResponse.<DropsHighlightServiceAvailableDropsData> builder()
-				.data(data)
-				.build();
+		var data = mock(DropsHighlightServiceAvailableDropsData.class);
+		var response = (GQLResponse<DropsHighlightServiceAvailableDropsData>) mock(GQLResponse.class);
+		when(response.getData()).thenReturn(data);
 		
 		when(streamer.isStreaming()).thenReturn(true);
 		when(streamer.updateCampaigns()).thenReturn(true);

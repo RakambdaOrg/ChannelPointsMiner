@@ -13,18 +13,18 @@ import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.factory.ApiFactory;
+import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
+import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
-import fr.raksrinana.twitchminer.miner.data.StreamerSettingsFactory;
-import fr.raksrinana.twitchminer.miner.runnables.SendMinutesWatched;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateChannelPointsContext;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
-import fr.raksrinana.twitchminer.miner.runnables.WebSocketPing;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -42,8 +42,8 @@ public class Miner implements AutoCloseable, IMiner{
 	private final ScheduledExecutorService scheduledExecutor;
 	private final StreamerSettingsFactory streamerSettingsFactory;
 	
-	private final UpdateChannelPointsContext updateChannelPointsContext;
-	private final UpdateStreamInfo updateStreamInfo;
+	private UpdateChannelPointsContext updateChannelPointsContext;
+	private UpdateStreamInfo updateStreamInfo;
 	
 	@Getter
 	private TwitchLogin twitchLogin;
@@ -54,17 +54,18 @@ public class Miner implements AutoCloseable, IMiner{
 	@Getter
 	private TwitchApi twitchApi;
 	
-	public Miner(@NotNull Configuration configuration, @NotNull PassportApi passportApi){
+	public Miner(@NotNull Configuration configuration,
+			@NotNull PassportApi passportApi,
+			@NotNull StreamerSettingsFactory streamerSettingsFactory,
+			@NotNull TwitchWebSocketPool webSocketPool,
+			@NotNull ScheduledExecutorService scheduledExecutor){
 		this.configuration = configuration;
 		this.passportApi = passportApi;
+		this.streamerSettingsFactory = streamerSettingsFactory;
+		this.webSocketPool = webSocketPool;
+		this.scheduledExecutor = scheduledExecutor;
 		
 		streamers = new HashSet<>();
-		webSocketPool = new TwitchWebSocketPool();
-		scheduledExecutor = Executors.newScheduledThreadPool(4);
-		streamerSettingsFactory = new StreamerSettingsFactory(configuration);
-		
-		updateChannelPointsContext = new UpdateChannelPointsContext(this);
-		updateStreamInfo = new UpdateStreamInfo(this);
 	}
 	
 	/**
@@ -79,10 +80,10 @@ public class Miner implements AutoCloseable, IMiner{
 		loadStreamersFromConfiguration();
 		loadStreamersFromFollows();
 		
-		scheduledExecutor.scheduleWithFixedDelay(updateChannelPointsContext, 0, 30, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(updateStreamInfo, 0, 10, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(new SendMinutesWatched(this), 0, 1, MINUTES);
-		scheduledExecutor.scheduleAtFixedRate(new WebSocketPing(this), 25, 25, SECONDS);
+		scheduledExecutor.scheduleWithFixedDelay(getUpdateChannelPointsContext(), 0, 30, MINUTES);
+		scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 10, MINUTES);
+		scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.getSendMinutesWatched(this), 0, 1, MINUTES);
+		scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.getWebSocketPing(this), 25, 25, SECONDS);
 		
 		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().getUserId());
 	}
@@ -94,9 +95,14 @@ public class Miner implements AutoCloseable, IMiner{
 					var user = gqlApi.reportMenuItem(streamer.getUsername())
 							.map(GQLResponse::getData)
 							.map(ReportMenuItemData::getUser)
-							.orElseThrow(() -> new RuntimeException("Failed to get streamer id for " + streamer.getUsername()));
+							.orElse(null);
+					if(Objects.isNull(user)){
+						log.error("Failed to get streamer " + streamer.getUsername());
+						return null;
+					}
 					return new Streamer(user.getId(), streamer.getUsername(), streamerSettingsFactory.readStreamerSettings());
 				})
+				.filter(Objects::nonNull)
 				.forEach(this::addStreamer);
 	}
 	
@@ -118,10 +124,10 @@ public class Miner implements AutoCloseable, IMiner{
 	private void login(){
 		try{
 			twitchLogin = passportApi.login();
-			gqlApi = new GQLApi(twitchLogin);
-			helixApi = new HelixApi(twitchLogin);
-			krakenApi = new KrakenApi(twitchLogin);
-			twitchApi = new TwitchApi();
+			gqlApi = ApiFactory.getGqlApi(twitchLogin);
+			helixApi = ApiFactory.getHelixApi(twitchLogin);
+			krakenApi = ApiFactory.getKrakenApi(twitchLogin);
+			twitchApi = ApiFactory.getTwitchApi();
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");
@@ -139,8 +145,8 @@ public class Miner implements AutoCloseable, IMiner{
 		}
 		log.info("Added to the mining list: {}", streamer);
 		
-		updateStreamInfo.update(streamer);
-		updateChannelPointsContext.update(streamer);
+		getUpdateStreamInfo().update(streamer);
+		getUpdateChannelPointsContext().update(streamer);
 		
 		listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 		
@@ -161,6 +167,20 @@ public class Miner implements AutoCloseable, IMiner{
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
 		webSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
+	}
+	
+	private UpdateChannelPointsContext getUpdateChannelPointsContext(){
+		if(Objects.isNull(updateChannelPointsContext)){
+			updateChannelPointsContext = MinerRunnableFactory.getUpdateChannelPointsContext(this);
+		}
+		return updateChannelPointsContext;
+	}
+	
+	private UpdateStreamInfo getUpdateStreamInfo(){
+		if(Objects.isNull(updateChannelPointsContext)){
+			updateStreamInfo = MinerRunnableFactory.getUpdateStreamInfo(this);
+		}
+		return updateStreamInfo;
 	}
 	
 	@Override

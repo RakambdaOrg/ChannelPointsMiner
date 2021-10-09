@@ -1,7 +1,9 @@
-package fr.raksrinana.twitchminer.config;
+package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.cli.CLIHolder;
 import fr.raksrinana.twitchminer.cli.CLIParameters;
+import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.config.StreamerConfiguration;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import org.mockito.Mock;
 import org.mockito.Mockito;

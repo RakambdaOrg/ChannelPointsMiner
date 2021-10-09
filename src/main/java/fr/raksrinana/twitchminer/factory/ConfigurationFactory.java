@@ -1,7 +1,8 @@
-package fr.raksrinana.twitchminer.config;
+package fr.raksrinana.twitchminer.factory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.twitchminer.cli.CLIHolder;
+import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import lombok.extern.log4j.Log4j2;
 import java.io.IOException;

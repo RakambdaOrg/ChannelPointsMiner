@@ -1,9 +1,11 @@
 package fr.raksrinana.twitchminer;
 
 import fr.raksrinana.twitchminer.api.passport.PassportApi;
+import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.cli.CLIHolder;
 import fr.raksrinana.twitchminer.cli.CLIParameters;
-import fr.raksrinana.twitchminer.config.ConfigurationFactory;
+import fr.raksrinana.twitchminer.factory.ConfigurationFactory;
+import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.Miner;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.*;
@@ -14,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.Executors;
 import static kong.unirest.HeaderNames.USER_AGENT;
 
 @Log4j2
@@ -25,7 +28,12 @@ public class Main{
 		
 		var config = ConfigurationFactory.getInstance();
 		
-		var miner = new Miner(config, new PassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()));
+		var miner = new Miner(
+				config,
+				new PassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
+				new StreamerSettingsFactory(config),
+				new TwitchWebSocketPool(),
+				Executors.newScheduledThreadPool(4));
 		miner.start();
 	}
 	

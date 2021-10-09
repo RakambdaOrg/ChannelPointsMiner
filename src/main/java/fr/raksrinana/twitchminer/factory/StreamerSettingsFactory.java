@@ -1,6 +1,7 @@
-package fr.raksrinana.twitchminer.miner.data;
+package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
