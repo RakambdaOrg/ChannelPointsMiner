@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("Channel")
@@ -26,6 +25,6 @@ public class Channel extends GQLType{
 	@Nullable
 	private CommunityPointsChannelSettings communityPointsSettings;
 	@JsonProperty("viewerDropCampaigns")
-	@Builder.Default
-	private List<DropCampaign> viewerDropCampaigns = new ArrayList<>();
+	@Nullable
+	private List<DropCampaign> viewerDropCampaigns;
 }
