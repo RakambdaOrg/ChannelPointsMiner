@@ -1,14 +1,13 @@
 package fr.raksrinana.twitchminer.api.ws.data.response;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
 @JsonTypeName("PONG")
 @Getter
-@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class PongResponse extends TwitchWebSocketResponse{
-	public PongResponse(){
-		super("PONG");
-	}
 }

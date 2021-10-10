@@ -1,8 +1,8 @@
 package fr.raksrinana.twitchminer.api.ws.data.message;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -21,12 +21,7 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = StreamUp.class, name = "stream-up"),
 		@JsonSubTypes.Type(value = EventUpdated.class, name = "event-updated"),
 })
+@EqualsAndHashCode
 @ToString
 public abstract class Message{
-	@JsonProperty("type")
-	private String type;
-	
-	public Message(String type){
-		this.type = type;
-	}
 }

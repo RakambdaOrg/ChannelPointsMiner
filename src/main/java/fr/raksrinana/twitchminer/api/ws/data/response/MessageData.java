@@ -6,13 +6,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import java.io.IOException;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode
 @ToString
 public class MessageData{
 	@JsonProperty("topic")

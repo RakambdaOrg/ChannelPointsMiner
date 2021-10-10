@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.api.ws.data.message.subtype;
+package fr.raksrinana.twitchminer.api.ws.data.message.eventupdated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -13,16 +13,10 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Claim{
-	@JsonProperty("id")
-	private String id;
-	@JsonProperty("user_id")
-	private String userId;
-	@JsonProperty("channel_id")
-	private String channelId;
-	@JsonProperty("point_gain")
-	private PointGain pointGain;
-	@JsonProperty("created_at")
+public class EventUpdatedData{
+	@JsonProperty("timestamp")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	private ZonedDateTime createdAt;
+	private ZonedDateTime timestamp;
+	@JsonProperty("event")
+	private Event event;
 }

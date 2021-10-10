@@ -1,22 +1,22 @@
-package fr.raksrinana.twitchminer.api.ws.data.message;
+package fr.raksrinana.twitchminer.api.ws.data.message.channellastviewedcontentupdated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.TwitchTimestampDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import java.time.Instant;
 
-@JsonTypeName("viewcount")
 @Getter
-@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@EqualsAndHashCode
 @ToString
-public class ViewCount extends Message{
-	@JsonProperty("server_time")
+public class ChannelLastViewedContentUpdatedData{
+	@JsonProperty("timestamp")
 	@JsonDeserialize(using = TwitchTimestampDeserializer.class)
-	private Instant serverTime;
-	@JsonProperty("viewers")
-	private int viewers;
+	private Instant timestamp;
+	@JsonProperty("channel_last_viewed_content")
+	private ChannelLastViewedContent channelLastViewedContent;
 }
