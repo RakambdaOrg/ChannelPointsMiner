@@ -40,6 +40,7 @@ import lombok.*;
 		@JsonSubTypes.Type(value = TimeBasedDrop.class, name = "TimeBasedDrop"),
 		@JsonSubTypes.Type(value = DropBenefitEdge.class, name = "DropBenefitEdge"),
 		@JsonSubTypes.Type(value = DropBenefit.class, name = "DropBenefit"),
+		@JsonSubTypes.Type(value = CommunityPointsClaim.class, name = "CommunityPointsClaim"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

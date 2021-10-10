@@ -2,8 +2,6 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.UnknownDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,9 +17,8 @@ import java.util.List;
 @ToString
 public class CommunityPointsProperties extends GQLType{
 	@JsonProperty("availableClaim")
-	@JsonDeserialize(using = UnknownDeserializer.class)
 	@Nullable
-	private Object availableClaim;
+	private CommunityPointsClaim availableClaim;
 	@JsonProperty("balance")
 	private int balance;
 	@JsonProperty("activeMultipliers")

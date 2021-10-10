@@ -1,0 +1,177 @@
+{
+  "data": {
+    "community": {
+      "id": "987654321",
+      "displayName": "streamername",
+      "channel": {
+        "id": "987654321",
+        "self": {
+          "communityPoints": {
+            "availableClaim": {
+              "id": "claim-id",
+              "__typename": "CommunityPointsClaim"
+            },
+            "__typename": "CommunityPointsProperties",
+            "balance": 0,
+            "activeMultipliers": [],
+            "canRedeemRewardsForFree": false,
+            "lastViewedContent": [
+              {
+                "contentType": "AUTOMATIC_REWARD",
+                "lastViewedAt": "2021-10-05T20:59:11.067754116Z",
+                "__typename": "CommunityPointsLastViewedContentByType"
+              }, {
+                "contentType": "CUSTOM_REWARD",
+                "lastViewedAt": "2021-10-05T20:59:11.067754117Z",
+                "__typename": "CommunityPointsLastViewedContentByType"
+              }
+            ],
+            "userRedemptions": []
+          },
+          "__typename": "ChannelSelfEdge"
+        },
+        "__typename": "Channel",
+        "communityPointsSettings": {
+          "name": "points name",
+          "image": {
+            "url": "https://image",
+            "url2x": "https://image2x",
+            "url4x": "https://image4x",
+            "__typename": "CommunityPointsImage"
+          },
+          "__typename": "CommunityPointsChannelSettings",
+          "automaticRewards": [
+            {
+              "id": "reward-id",
+              "backgroundColor": null,
+              "cost": null,
+              "defaultBackgroundColor": "#FF6905",
+              "defaultCost": 600,
+              "defaultImage": {
+                "url": "https://image",
+                "url2x": "https://image2x",
+                "url4x": "https://image4x",
+                "__typename": "CommunityPointsImage"
+              },
+              "image": null,
+              "isEnabled": true,
+              "isHiddenForSubs": false,
+              "minimumCost": 10,
+              "type": "SEND_HIGHLIGHTED_MESSAGE",
+              "updatedForIndicatorAt": null,
+              "globallyUpdatedForIndicatorAt": "2019-09-03T21:00:00Z",
+              "__typename": "CommunityPointsAutomaticReward"
+            }
+          ],
+          "customRewards": [],
+          "goals": [],
+          "isEnabled": true,
+          "raidPointAmount": 250,
+          "emoteVariants": [
+            {
+              "id": "147258369",
+              "isUnlockable": true,
+              "emote": {
+                "id": "147258369",
+                "token": "emotetoken",
+                "__typename": "CommunityPointsEmote"
+              },
+              "modifications": [
+                {
+                  "id": "147258369_BW",
+                  "emote": {
+                    "id": "147258369_BW",
+                    "token": "emotetoken_BW",
+                    "__typename": "CommunityPointsEmote"
+                  },
+                  "modifierIconDark": {
+                    "url": "https://image",
+                    "url2x": "https://image2x",
+                    "url4x": "https://image4x",
+                    "__typename": "CommunityPointsImage"
+                  },
+                  "modifierIconLight": {
+                    "url": "https://image",
+                    "url2x": "https://image2x",
+                    "url4x": "https://image4x",
+                    "__typename": "CommunityPointsImage"
+                  },
+                  "title": "Greyscale",
+                  "globallyUpdatedForIndicatorAt": "2019-09-03T21:00:00Z",
+                  "__typename": "CommunityPointsEmoteModification"
+                }
+              ],
+              "__typename": "CommunityPointsEmoteVariant"
+            }
+          ],
+          "earning": {
+            "id": "abcdefghijklmnopqrstuvwxyz",
+            "averagePointsPerHour": 220,
+            "cheerPoints": 350,
+            "claimPoints": 50,
+            "followPoints": 300,
+            "passiveWatchPoints": 10,
+            "raidPoints": 250,
+            "subscriptionGiftPoints": 500,
+            "watchStreakPoints": [
+              {
+                "points": 300,
+                "__typename": "CommunityPointsWatchStreakEarningSettings"
+              }, {
+                "points": 350,
+                "__typename": "CommunityPointsWatchStreakEarningSettings"
+              }, {
+                "points": 400,
+                "__typename": "CommunityPointsWatchStreakEarningSettings"
+              }, {
+                "points": 450,
+                "__typename": "CommunityPointsWatchStreakEarningSettings"
+              }
+            ],
+            "multipliers": [
+              {
+                "reasonCode": "SUB_T1",
+                "factor": 0.2,
+                "__typename": "CommunityPointsMultiplier"
+              }, {
+                "reasonCode": "SUB_T2",
+                "factor": 0.4,
+                "__typename": "CommunityPointsMultiplier"
+              }, {
+                "reasonCode": "SUB_T3",
+                "factor": 1,
+                "__typename": "CommunityPointsMultiplier"
+              }
+            ],
+            "__typename": "CommunityPointsChannelEarningSettings"
+          }
+        }
+      },
+      "__typename": "User",
+      "self": {
+        "isModerator": false,
+        "__typename": "UserSelfConnection"
+      }
+    },
+    "currentUser": {
+      "id": "123456789",
+      "communityPoints": {
+        "lastViewedContent": [
+          {
+            "contentID": "SINGLE_MESSAGE_BYPASS_SUB_MODE",
+            "contentType": "AUTOMATIC_REWARD",
+            "lastViewedAt": "2021-10-06T19:50:35.443714534Z",
+            "__typename": "CommunityPointsLastViewedContentByTypeAndID"
+          }
+        ],
+        "__typename": "CommunityPointsUserProperties"
+      },
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 74,
+    "operationName": "ChannelPointsContext",
+    "requestID": "request-id"
+  }
+}
