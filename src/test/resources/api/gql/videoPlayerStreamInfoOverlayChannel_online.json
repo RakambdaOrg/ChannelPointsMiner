@@ -1,0 +1,40 @@
+{
+  "data": {
+    "user": {
+      "id": "123456789",
+      "profileURL": "https://google.com/streamer",
+      "displayName": "streamername",
+      "login": "streamer",
+      "profileImageURL": "https://google.com/streamer/profile",
+      "broadcastSettings": {
+        "id": "147258369",
+        "title": "title",
+        "game": {
+          "id": "123",
+          "displayName": "gamename",
+          "name": "game",
+          "__typename": "Game"
+        },
+        "__typename": "BroadcastSettings"
+      },
+      "stream": {
+        "id": "369258147",
+        "viewersCount": 2586,
+        "tags": [
+          {
+            "id": "tag-id",
+            "localizedName": "name",
+            "__typename": "Tag"
+          }
+        ],
+        "__typename": "Stream"
+      },
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 58,
+    "operationName": "VideoPlayerStreamInfoOverlayChannel",
+    "requestID": "request-id"
+  }
+}

@@ -35,6 +35,7 @@ import lombok.*;
 		@JsonSubTypes.Type(value = Tag.class, name = "Tag"),
 		@JsonSubTypes.Type(value = User.class, name = "User"),
 		@JsonSubTypes.Type(value = UserSelfConnection.class, name = "UserSelfConnection"),
+		@JsonSubTypes.Type(value = Inventory.class, name = "Inventory"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

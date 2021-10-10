@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @NoArgsConstructor
@@ -36,4 +33,8 @@ public class GQLResponse<T>{
 	@JsonProperty("message")
 	@Nullable
 	private String message;
+	
+	public boolean isError(){
+		return Objects.nonNull(error) || !errors.isEmpty();
+	}
 }

@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("Stream")
@@ -17,12 +20,16 @@ import java.util.List;
 @ToString
 public class Stream extends GQLType{
 	@JsonProperty("id")
+	@NotNull
 	private String id;
 	@JsonProperty("createdAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
+	@Nullable
 	private ZonedDateTime createdAt;
 	@JsonProperty("viewersCount")
 	private int viewersCount;
 	@JsonProperty("tags")
-	private List<Tag> tags;
+	@NotNull
+	@Builder.Default
+	private List<Tag> tags = new ArrayList<>();
 }

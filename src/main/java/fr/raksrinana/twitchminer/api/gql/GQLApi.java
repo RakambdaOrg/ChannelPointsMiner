@@ -60,6 +60,12 @@ public class GQLApi{
 			return Optional.empty();
 		}
 		
+		var body = response.getBody();
+		if(body.isError()){
+			log.error("Received GQL error response: {}", body);
+			return Optional.empty();
+		}
+		
 		return Optional.ofNullable(response.getBody());
 	}
 }

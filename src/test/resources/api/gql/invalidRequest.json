@@ -1,0 +1,18 @@
+{
+  "errors": [
+    {
+      "message": "error description",
+      "locations": [
+        {
+          "line": 1,
+          "column": 44
+        }
+      ]
+    }
+  ],
+  "extensions": {
+    "durationMilliseconds": 2,
+    "operationName": "operation-name",
+    "requestID": "request-id"
+  }
+}

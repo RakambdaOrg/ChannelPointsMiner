@@ -6,26 +6,20 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.UnknownDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
-@JsonTypeName("Channel")
+@JsonTypeName("Inventory")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class Channel extends GQLType{
-	@JsonProperty("id")
+public class Inventory extends GQLType{
+	@JsonProperty("gameEventDrops")
+	@JsonDeserialize(contentUsing = UnknownDeserializer.class)
 	@NotNull
-	private String id;
-	@JsonProperty("self")
-	@Nullable
-	private ChannelSelfEdge self;
-	@JsonProperty("communityPointsSettings")
-	@Nullable
-	private CommunityPointsChannelSettings communityPointsSettings;
-	@JsonProperty("viewerDropCampaigns")
-	@JsonDeserialize(using = UnknownDeserializer.class)
-	private Object viewerDropCampaigns;
+	@Builder.Default
+	private List<Object> gameEventDrops = new ArrayList<>();
 }

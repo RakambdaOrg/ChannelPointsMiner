@@ -64,7 +64,7 @@ class GQLApiReportMenuItemTest{
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/reportMenuItemOffline.json"))
+				.thenReturn(TestUtils.getAllResourceContent("api/gql/reportMenuItem_offline.json"))
 				.withStatus(200);
 		
 		assertThat(tested.reportMenuItem(USERNAME)).isPresent().get().isEqualTo(expected);
@@ -97,7 +97,7 @@ class GQLApiReportMenuItemTest{
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/reportMenuItemOnline.json"))
+				.thenReturn(TestUtils.getAllResourceContent("api/gql/reportMenuItem_online.json"))
 				.withStatus(200);
 		
 		var result = tested.reportMenuItem(USERNAME);
@@ -115,6 +115,19 @@ class GQLApiReportMenuItemTest{
 				.withStatus(401);
 		
 		assertThrows(RuntimeException.class, () -> tested.reportMenuItem(USERNAME));
+		
+		unirest.verifyAll();
+	}
+	
+	@Test
+	void invalidRequest(){
+		unirest.expect(POST, "https://gql.twitch.tv/gql")
+				.header("Authorization", "OAuth " + ACCESS_TOKEN)
+				.body(VALID_QUERY.formatted(USERNAME))
+				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidRequest.json"))
+				.withStatus(200);
+		
+		assertThat(tested.reportMenuItem(USERNAME)).isEmpty();
 		
 		unirest.verifyAll();
 	}

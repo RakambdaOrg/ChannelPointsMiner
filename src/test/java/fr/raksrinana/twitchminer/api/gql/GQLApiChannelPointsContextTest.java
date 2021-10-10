@@ -188,7 +188,7 @@ class GQLApiChannelPointsContextTest{
 	}
 	
 	@Test
-	void channelPointsContextInvalidCredentials(){
+	void invalidCredentials(){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
@@ -201,7 +201,20 @@ class GQLApiChannelPointsContextTest{
 	}
 	
 	@Test
-	void channelPointsContextInvalidResponse(){
+	void invalidRequest(){
+		unirest.expect(POST, "https://gql.twitch.tv/gql")
+				.header("Authorization", "OAuth " + ACCESS_TOKEN)
+				.body(VALID_QUERY.formatted(USERNAME))
+				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidRequest.json"))
+				.withStatus(200);
+		
+		assertThat(tested.channelPointsContext(USERNAME)).isEmpty();
+		
+		unirest.verifyAll();
+	}
+	
+	@Test
+	void invalidResponse(){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))

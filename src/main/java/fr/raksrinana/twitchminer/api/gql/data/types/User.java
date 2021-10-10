@@ -51,6 +51,9 @@ public class User extends GQLType{
 	@JsonProperty("broadcastSettings")
 	@Nullable
 	private BroadcastSettings broadcastSettings;
+	@JsonProperty("inventory")
+	@Nullable
+	private Inventory inventory;
 	
 	public boolean isStreaming(){
 		return Objects.nonNull(stream);
