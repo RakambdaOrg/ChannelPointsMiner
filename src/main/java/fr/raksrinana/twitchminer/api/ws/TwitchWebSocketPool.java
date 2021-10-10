@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.api.ws;
 
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
+import fr.raksrinana.twitchminer.factory.TwitchWebSocketClientFactory;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
+import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
 public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListener{
@@ -57,7 +59,7 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	@NotNull
 	private TwitchWebSocketClient createNewClient(){
 		try{
-			var client = new TwitchWebSocketClient();
+			var client = TwitchWebSocketClientFactory.createClient();
 			client.addListener(this);
 			client.connectBlocking();
 			clients.add(client);
@@ -69,6 +71,10 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 		}
 	}
 	
+	public void addListener(@NotNull TwitchWebSocketListener twitchWebSocketListener){
+		listeners.add(twitchWebSocketListener);
+	}
+	
 	@Override
 	public void onWebSocketMessage(@NotNull TwitchWebSocketResponse message){
 		listeners.forEach(l -> l.onWebSocketMessage(message));
@@ -77,8 +83,14 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	@Override
 	public void onWebSocketClosed(@NotNull TwitchWebSocketClient client, int code, @Nullable String reason, boolean remote){
 		clients.remove(client);
-		var allTopics = client.getTopics().stream().collect(new Topics.TopicsCollector());
-		listenTopic(allTopics);
+		if(code != NORMAL){
+			var allTopics = client.getTopics().stream().collect(new Topics.TopicsCollector());
+			listenTopic(allTopics);
+		}
+	}
+	
+	public int getClientCount(){
+		return clients.size();
 	}
 	
 	@Override

@@ -87,7 +87,7 @@ class MinerTest{
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
 		lenient().when(passportApi.login()).thenReturn(twitchLogin);
-		lenient().when(streamerSettingsFactory.readStreamerSettings()).thenReturn(streamerSettings);
+		lenient().when(streamerSettingsFactory.createStreamerSettings()).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.isFollowRaid()).thenReturn(false);
 		lenient().when(streamerSettings.isMakePredictions()).thenReturn(false);
 		lenient().when(twitchLogin.getUserId()).thenReturn(USER_ID);
@@ -104,11 +104,11 @@ class MinerTest{
 	void setupIsDoneFromConfig() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
@@ -133,11 +133,11 @@ class MinerTest{
 	void setupIsDoneFromConfigWithPredictions() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
@@ -165,11 +165,11 @@ class MinerTest{
 	void setupIsDoneFromConfigWithRaid() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
@@ -196,11 +196,11 @@ class MinerTest{
 	void setupIsDoneFromConfigWithUnknownUser() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
@@ -226,12 +226,12 @@ class MinerTest{
 	void setupIsDoneFromFollows() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.getKrakenApi(twitchLogin)).thenReturn(krakenApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -263,12 +263,12 @@ class MinerTest{
 	void setupIsDoneFromFollowsWithPredictions() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.getKrakenApi(twitchLogin)).thenReturn(krakenApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -303,12 +303,12 @@ class MinerTest{
 	void setupIsDoneFromFollowsWithRaid() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.getKrakenApi(twitchLogin)).thenReturn(krakenApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -342,12 +342,12 @@ class MinerTest{
 	void duplicateStreamerIsAddedOnce() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.getKrakenApi(twitchLogin)).thenReturn(krakenApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -379,11 +379,11 @@ class MinerTest{
 	void addDuplicateStreamer(){
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
 				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::getTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.getGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.getUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));

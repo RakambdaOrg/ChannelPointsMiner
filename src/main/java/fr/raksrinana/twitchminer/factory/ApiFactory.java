@@ -9,22 +9,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class ApiFactory{
 	@NotNull
-	public static GQLApi getGqlApi(@NotNull TwitchLogin twitchLogin){
+	public static GQLApi createGqlApi(@NotNull TwitchLogin twitchLogin){
 		return new GQLApi(twitchLogin);
 	}
 	
 	@NotNull
-	public static HelixApi getHelixApi(@NotNull TwitchLogin twitchLogin){
+	public static HelixApi createHelixApi(@NotNull TwitchLogin twitchLogin){
 		return new HelixApi(twitchLogin);
 	}
 	
 	@NotNull
-	public static KrakenApi getKrakenApi(@NotNull TwitchLogin twitchLogin){
+	public static KrakenApi createKrakenApi(@NotNull TwitchLogin twitchLogin){
 		return new KrakenApi(twitchLogin);
 	}
 	
 	@NotNull
-	public static TwitchApi getTwitchApi(){
+	public static TwitchApi createTwitchApi(){
 		return new TwitchApi();
 	}
 }

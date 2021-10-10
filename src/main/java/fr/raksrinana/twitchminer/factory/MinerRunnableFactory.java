@@ -9,22 +9,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class MinerRunnableFactory{
 	@NotNull
-	public static UpdateChannelPointsContext getUpdateChannelPointsContext(@NotNull IMiner miner){
+	public static UpdateChannelPointsContext createUpdateChannelPointsContext(@NotNull IMiner miner){
 		return new UpdateChannelPointsContext(miner);
 	}
 	
 	@NotNull
-	public static UpdateStreamInfo getUpdateStreamInfo(@NotNull IMiner miner){
+	public static UpdateStreamInfo createUpdateStreamInfo(@NotNull IMiner miner){
 		return new UpdateStreamInfo(miner);
 	}
 	
 	@NotNull
-	public static SendMinutesWatched getSendMinutesWatched(@NotNull IMiner miner){
+	public static SendMinutesWatched createSendMinutesWatched(@NotNull IMiner miner){
 		return new SendMinutesWatched(miner);
 	}
 	
 	@NotNull
-	public static WebSocketPing getWebSocketPing(@NotNull IMiner miner){
+	public static WebSocketPing createWebSocketPing(@NotNull IMiner miner){
 		return new WebSocketPing(miner);
 	}
 }

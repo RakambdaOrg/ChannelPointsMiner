@@ -64,7 +64,7 @@ class TwitchLoginTest{
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.getGqlApi(tested)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
 			
 			assertThat(tested.getUserId()).isEqualTo(USER_ID);
 		}
@@ -78,11 +78,11 @@ class TwitchLoginTest{
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.getGqlApi(tested)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
 			
 			assertThat(tested.getUserId()).isEqualTo(USER_ID);
 			
-			apiFactory.verify(() -> ApiFactory.getGqlApi(any()));
+			apiFactory.verify(() -> ApiFactory.createGqlApi(any()));
 		}
 	}
 	
@@ -94,7 +94,7 @@ class TwitchLoginTest{
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.getGqlApi(tested)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
 			
 			when(gqlApi.reportMenuItem(USERNAME)).thenReturn(Optional.empty());
 			

@@ -15,7 +15,7 @@ public class StreamerSettingsFactory{
 	}
 	
 	@NotNull
-	public StreamerSettings readStreamerSettings(){
+	public StreamerSettings createStreamerSettings(){
 		try{
 			return getDefaultSettings().clone();
 		}

@@ -33,7 +33,7 @@ class StreamerSettingsFactoryTest{
 	
 	@Test
 	void getStreamerConfiguration(){
-		assertThat(tested.readStreamerSettings()).isNotSameAs(DEFAULT)
+		assertThat(tested.createStreamerSettings()).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(DEFAULT);
 	}
 }

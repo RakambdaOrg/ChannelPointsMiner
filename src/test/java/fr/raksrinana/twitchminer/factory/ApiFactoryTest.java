@@ -6,7 +6,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class ApiFactoryTest{
@@ -15,21 +14,21 @@ class ApiFactoryTest{
 	
 	@Test
 	void getGqlApi(){
-		assertThat(ApiFactory.getGqlApi(twitchLogin)).isNotNull();
+		assertThat(ApiFactory.createGqlApi(twitchLogin)).isNotNull();
 	}
 	
 	@Test
 	void getHelixApi(){
-		assertThat(ApiFactory.getHelixApi(twitchLogin)).isNotNull();
+		assertThat(ApiFactory.createHelixApi(twitchLogin)).isNotNull();
 	}
 	
 	@Test
 	void getKrakenApi(){
-		assertThat(ApiFactory.getKrakenApi(twitchLogin)).isNotNull();
+		assertThat(ApiFactory.createKrakenApi(twitchLogin)).isNotNull();
 	}
 	
 	@Test
 	void getTwitchApi(){
-		assertThat(ApiFactory.getTwitchApi()).isNotNull();
+		assertThat(ApiFactory.createTwitchApi()).isNotNull();
 	}
 }

@@ -82,8 +82,8 @@ public class Miner implements AutoCloseable, IMiner{
 		
 		scheduledExecutor.scheduleWithFixedDelay(getUpdateChannelPointsContext(), 0, 30, MINUTES);
 		scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 10, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.getSendMinutesWatched(this), 0, 1, MINUTES);
-		scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.getWebSocketPing(this), 25, 25, SECONDS);
+		scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendMinutesWatched(this), 0, 1, MINUTES);
+		scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
 		
 		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().getUserId());
 	}
@@ -100,7 +100,7 @@ public class Miner implements AutoCloseable, IMiner{
 						log.error("Failed to get streamer " + streamer.getUsername());
 						return null;
 					}
-					return new Streamer(user.getId(), streamer.getUsername(), streamerSettingsFactory.readStreamerSettings());
+					return new Streamer(user.getId(), streamer.getUsername(), streamerSettingsFactory.createStreamerSettings());
 				})
 				.filter(Objects::nonNull)
 				.forEach(this::addStreamer);
@@ -111,7 +111,7 @@ public class Miner implements AutoCloseable, IMiner{
 			log.info("Loading streamers from follow list");
 			krakenApi.getFollows().stream()
 					.filter(follow -> !hasStreamerWithUsername(follow.getChannel().getName()))
-					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), streamerSettingsFactory.readStreamerSettings()))
+					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), streamerSettingsFactory.createStreamerSettings()))
 					.forEach(this::addStreamer);
 		}
 	}
@@ -124,10 +124,10 @@ public class Miner implements AutoCloseable, IMiner{
 	private void login(){
 		try{
 			twitchLogin = passportApi.login();
-			gqlApi = ApiFactory.getGqlApi(twitchLogin);
-			helixApi = ApiFactory.getHelixApi(twitchLogin);
-			krakenApi = ApiFactory.getKrakenApi(twitchLogin);
-			twitchApi = ApiFactory.getTwitchApi();
+			gqlApi = ApiFactory.createGqlApi(twitchLogin);
+			helixApi = ApiFactory.createHelixApi(twitchLogin);
+			krakenApi = ApiFactory.createKrakenApi(twitchLogin);
+			twitchApi = ApiFactory.createTwitchApi();
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");
@@ -171,14 +171,14 @@ public class Miner implements AutoCloseable, IMiner{
 	
 	private UpdateChannelPointsContext getUpdateChannelPointsContext(){
 		if(Objects.isNull(updateChannelPointsContext)){
-			updateChannelPointsContext = MinerRunnableFactory.getUpdateChannelPointsContext(this);
+			updateChannelPointsContext = MinerRunnableFactory.createUpdateChannelPointsContext(this);
 		}
 		return updateChannelPointsContext;
 	}
 	
 	private UpdateStreamInfo getUpdateStreamInfo(){
 		if(Objects.isNull(updateChannelPointsContext)){
-			updateStreamInfo = MinerRunnableFactory.getUpdateStreamInfo(this);
+			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
 		}
 		return updateStreamInfo;
 	}
