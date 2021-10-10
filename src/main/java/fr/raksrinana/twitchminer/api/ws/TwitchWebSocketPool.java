@@ -2,12 +2,12 @@ package fr.raksrinana.twitchminer.api.ws;
 
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
+import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.factory.TwitchWebSocketClientFactory;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +30,7 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	
 	public void ping(){
 		clients.stream()
-				.filter(client -> Instant.now().isAfter(Instant.ofEpochMilli(client.getLastPong()).plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
+				.filter(client -> TimeFactory.now().isAfter(client.getLastPong().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
 				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
 		
 		clients.stream()

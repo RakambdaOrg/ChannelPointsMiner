@@ -195,7 +195,7 @@ class TwitchWebSocketPoolTest{
 			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastPong()).thenReturn(NOW.minusSeconds(10).toEpochMilli());
+			when(client.getLastPong()).thenReturn(NOW.minusSeconds(10));
 			when(client.isOpen()).thenReturn(true);
 			when(client.isClosing()).thenReturn(false);
 			
@@ -213,7 +213,7 @@ class TwitchWebSocketPoolTest{
 			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600).toEpochMilli());
+			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
 			when(client.isOpen()).thenReturn(true);
 			when(client.isClosing()).thenReturn(true);
 			
@@ -233,7 +233,7 @@ class TwitchWebSocketPoolTest{
 			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600).toEpochMilli());
+			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
 			when(client.isOpen()).thenReturn(false);
 			
 			assertDoesNotThrow(() -> tested.listenTopic(topics));

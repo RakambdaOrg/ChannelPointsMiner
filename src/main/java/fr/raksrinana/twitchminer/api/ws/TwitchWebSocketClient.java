@@ -10,6 +10,7 @@ import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.api.ws.data.response.PongResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.ResponseResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
+import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +21,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.*;
 import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 
@@ -30,17 +32,15 @@ public class TwitchWebSocketClient extends WebSocketClient{
 	@Getter
 	private final Set<Topics> topics;
 	private final List<TwitchWebSocketListener> listeners;
-	private long lastPing;
 	@Getter
-	private long lastPong;
+	private Instant lastPong;
 	
 	public TwitchWebSocketClient(){
 		super(WEBSOCKET_URI);
 		setConnectionLostTimeout(0);
 		topics = new HashSet<>();
 		listeners = new ArrayList<>();
-		lastPing = 0;
-		lastPong = 0;
+		lastPong = Instant.EPOCH;
 	}
 	
 	@Override
@@ -98,12 +98,11 @@ public class TwitchWebSocketClient extends WebSocketClient{
 	}
 	
 	private void onPong(){
-		lastPong = System.currentTimeMillis();
+		lastPong = TimeFactory.now();
 	}
 	
 	public void ping(){
 		send(new PingRequest());
-		lastPing = System.currentTimeMillis();
 	}
 	
 	private void send(@NotNull TwitchWebSocketRequest request){
