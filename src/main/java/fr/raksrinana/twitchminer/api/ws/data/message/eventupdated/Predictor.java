@@ -3,7 +3,6 @@ package fr.raksrinana.twitchminer.api.ws.data.message.eventupdated;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
-import fr.raksrinana.twitchminer.utils.json.UnknownDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +33,6 @@ public class Predictor{
 	@JsonProperty("user_id")
 	private String userId;
 	@JsonProperty("result")
-	@JsonDeserialize(using = UnknownDeserializer.class)
 	private Result result;
 	@JsonProperty("user_display_name")
 	private String userDisplayName;
