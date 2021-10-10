@@ -2,11 +2,11 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.UnknownDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonTypeName("Channel")
 @Getter
@@ -26,6 +26,6 @@ public class Channel extends GQLType{
 	@Nullable
 	private CommunityPointsChannelSettings communityPointsSettings;
 	@JsonProperty("viewerDropCampaigns")
-	@JsonDeserialize(using = UnknownDeserializer.class)
-	private Object viewerDropCampaigns;
+	@Builder.Default
+	private List<DropCampaign> viewerDropCampaigns = new ArrayList<>();
 }

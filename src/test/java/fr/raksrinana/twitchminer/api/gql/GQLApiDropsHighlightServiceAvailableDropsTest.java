@@ -3,9 +3,7 @@ package fr.raksrinana.twitchminer.api.gql;
 import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
-import fr.raksrinana.twitchminer.api.gql.data.types.Channel;
-import fr.raksrinana.twitchminer.api.gql.data.types.Inventory;
-import fr.raksrinana.twitchminer.api.gql.data.types.User;
+import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import kong.unirest.MockClient;
 import org.mockito.InjectMocks;
@@ -14,7 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
+import static java.time.ZoneOffset.UTC;
 import static kong.unirest.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +42,64 @@ class GQLApiDropsHighlightServiceAvailableDropsTest{
 		unirest = MockClient.register();
 		
 		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
+	}
+	
+	@Test
+	void nominalWithDrops() throws MalformedURLException{
+		var game = Game.builder()
+				.id("159357")
+				.name("game-name")
+				.build();
+		var expected = GQLResponse.<DropsHighlightServiceAvailableDropsData> builder()
+				.extensions(Map.of(
+						"durationMilliseconds", 31,
+						"operationName", "DropsHighlightService_AvailableDrops",
+						"requestID", "request-id"
+				))
+				.data(DropsHighlightServiceAvailableDropsData.builder()
+						.channel(Channel.builder()
+								.id("123456789")
+								.viewerDropCampaigns(List.of(DropCampaign.builder()
+										.id("campaign-id")
+										.name("campaign-name")
+										.game(game)
+										.detailsUrl(new URL("https://google.com/campaign-info"))
+										.endAt(ZonedDateTime.of(2021, 10, 11, 5, 0, 0, 0, UTC))
+										.imageUrl(new URL("https://google.com/campaign-image"))
+										.timeBasedDrops(List.of(TimeBasedDrop.builder()
+														.id("drop-id")
+														.name("drop-name")
+														.startAt(ZonedDateTime.of(2021,10,4,15,0,0,0,UTC))
+														.endAt(ZonedDateTime.of(2021,10,11,5,0,0,0,UTC))
+														.benefitEdges(List.of(DropBenefitEdge.builder()
+																		.benefit(DropBenefit.builder()
+																				.id("benefit-id")
+																				.name("benefit-name")
+																				.game(game)
+																				.imageAssetUrl(new URL("https://google.com/drop-image"))
+																				.build())
+																		.entitlementLimit(1)
+																.build()))
+														.requiredMinutesWatched(240)
+												.build()))
+										.build()))
+								.build())
+						.currentUser(User.builder()
+								.id("987654321")
+								.inventory(Inventory.builder().build())
+								.build())
+						.build())
+				.build();
+		
+		unirest.expect(POST, "https://gql.twitch.tv/gql")
+				.header("Authorization", "OAuth " + ACCESS_TOKEN)
+				.body(VALID_QUERY.formatted(STREAMER_ID))
+				.thenReturn(TestUtils.getAllResourceContent("api/gql/dropsHighlightServiceAvailableDrops_withDrops.json"))
+				.withStatus(200);
+		
+		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
+		
+		unirest.verifyAll();
 	}
 	
 	@Test

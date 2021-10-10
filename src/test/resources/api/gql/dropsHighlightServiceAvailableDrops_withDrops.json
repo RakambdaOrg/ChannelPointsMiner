@@ -1,0 +1,64 @@
+{
+  "data": {
+    "channel": {
+      "id": "123456789",
+      "viewerDropCampaigns": [
+        {
+          "id": "campaign-id",
+          "name": "campaign-name",
+          "game": {
+            "id": "159357",
+            "name": "game-name",
+            "__typename": "Game"
+          },
+          "detailsURL": "https://google.com/campaign-info",
+          "endAt": "2021-10-11T05:00:00Z",
+          "imageURL": "https://google.com/campaign-image",
+          "eventBasedDrops": [],
+          "timeBasedDrops": [
+            {
+              "id": "drop-id",
+              "name": "drop-name",
+              "startAt": "2021-10-04T15:00:00Z",
+              "endAt": "2021-10-11T05:00:00Z",
+              "benefitEdges": [
+                {
+                  "benefit": {
+                    "id": "benefit-id",
+                    "name": "benefit-name",
+                    "game": {
+                      "name": "game-name",
+                      "id": "159357",
+                      "__typename": "Game"
+                    },
+                    "imageAssetURL": "https://google.com/drop-image",
+                    "__typename": "DropBenefit"
+                  },
+                  "entitlementLimit": 1,
+                  "__typename": "DropBenefitEdge"
+                }
+              ],
+              "requiredMinutesWatched": 240,
+              "__typename": "TimeBasedDrop"
+            }
+          ],
+          "__typename": "DropCampaign"
+        }
+      ],
+      "__typename": "Channel"
+    },
+    "currentUser": {
+      "id": "987654321",
+      "inventory": {
+        "gameEventDrops": [],
+        "__typename": "Inventory"
+      },
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 31,
+    "operationName": "DropsHighlightService_AvailableDrops",
+    "requestID": "request-id"
+  }
+}
