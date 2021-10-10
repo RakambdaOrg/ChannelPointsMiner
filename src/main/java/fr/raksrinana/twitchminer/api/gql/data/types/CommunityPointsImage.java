@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.URLDeserializer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import java.net.URL;
 
 @JsonTypeName("CommunityPointsImage")
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class CommunityPointsImage extends GQLType{
 	@JsonProperty("url")
 	@JsonDeserialize(using = URLDeserializer.class)
@@ -21,8 +24,4 @@ public class CommunityPointsImage extends GQLType{
 	@JsonProperty("url4x")
 	@JsonDeserialize(using = URLDeserializer.class)
 	private URL url4X;
-	
-	public CommunityPointsImage(){
-		super("CommunityPointsImage");
-	}
 }

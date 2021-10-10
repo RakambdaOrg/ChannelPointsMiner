@@ -2,16 +2,15 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 @JsonTypeName("Game")
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"}, callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class Game extends GQLType{
 	@JsonProperty("id")
 	private String id;
@@ -19,8 +18,4 @@ public class Game extends GQLType{
 	private String displayName;
 	@JsonProperty("name")
 	private String name;
-	
-	public Game(){
-		super("Game");
-	}
 }

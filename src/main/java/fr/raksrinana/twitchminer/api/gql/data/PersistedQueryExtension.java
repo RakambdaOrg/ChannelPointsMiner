@@ -1,14 +1,14 @@
 package fr.raksrinana.twitchminer.api.gql.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@EqualsAndHashCode
 public class PersistedQueryExtension{
 	@JsonProperty("version")
 	private int version;

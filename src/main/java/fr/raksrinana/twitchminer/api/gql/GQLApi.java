@@ -54,11 +54,6 @@ public class GQLApi{
 				.asObject(operation.getResponseType());
 		
 		if(!response.isSuccess()){
-			Unirest.post(ENDPOINT)
-					.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
-					.body(operation)
-					.asString()
-					.ifSuccess(r -> log.info(r.getBody()));
 			if(response.getStatus() == 401){
 				throw new RuntimeException(new InvalidCredentials(response.getStatus(), -1, "Invalid credentials provided"));
 			}

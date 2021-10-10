@@ -1,17 +1,10 @@
 package fr.raksrinana.twitchminer.api.gql.data.types;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "__typename")
 @JsonSubTypes(value = {
 		@JsonSubTypes.Type(value = BroadcastSettings.class, name = "BroadcastSettings"),
@@ -45,7 +38,4 @@ import org.jetbrains.annotations.NotNull;
 })
 @EqualsAndHashCode
 public abstract class GQLType{
-	@JsonProperty("__typename")
-	@NotNull
-	private String typename;
 }

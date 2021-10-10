@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import static java.time.ZoneId.systemDefault;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class ISO8601ZonedDateTimeDeserializer extends StdDeserializer<ZonedDateTime>{
@@ -26,6 +25,6 @@ public class ISO8601ZonedDateTimeDeserializer extends StdDeserializer<ZonedDateT
 		if(value.isBlank()){
 			return null;
 		}
-		return ZonedDateTime.parse(value, ISO_DATE_TIME).withZoneSameInstant(systemDefault());
+		return ZonedDateTime.parse(value, ISO_DATE_TIME);
 	}
 }

@@ -1,16 +1,13 @@
 package fr.raksrinana.twitchminer.api.passport;
 
+import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.passport.data.LoginResponse;
 import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.twitchminer.utils.CommonUtils;
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.Cookie;
 import kong.unirest.MockClient;
-import kong.unirest.Unirest;
-import kong.unirest.jackson.JacksonObjectMapper;
-import lombok.SneakyThrows;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +17,10 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
+import static fr.raksrinana.twitchminer.TestUtils.copyFromResources;
+import static fr.raksrinana.twitchminer.TestUtils.getResourcePath;
 import static kong.unirest.ContentType.APPLICATION_JSON;
 import static kong.unirest.HeaderNames.CONTENT_TYPE;
 import static kong.unirest.HttpMethod.POST;
@@ -50,9 +47,7 @@ class PassportApiTest{
 	
 	@BeforeEach
 	void setUp(){
-		Unirest.config().reset()
-				.clearDefaultHeaders()
-				.setObjectMapper(new JacksonObjectMapper(JacksonUtils.getMapper()));
+		TestUtils.setupUnirest();
 		unirest = MockClient.register();
 		
 		tested = new PassportApi(USERNAME, PASSWORD, authFolder, false);
@@ -370,13 +365,5 @@ class PassportApiTest{
 		assertThat(authFile).exists();
 	}
 	
-	@SneakyThrows
-	private Path getResourcePath(String resource){
-		return Paths.get(getClass().getClassLoader().getResource(resource).toURI());
-	}
-	
-	@SneakyThrows
-	private Path copyFromResources(String resource, Path target){
-		return Files.copy(getResourcePath(resource), target);
-	}
+
 }

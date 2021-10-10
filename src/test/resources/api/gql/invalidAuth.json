@@ -1,0 +1,5 @@
+{
+  "error": "Unauthorized",
+  "status": 401,
+  "message": "The \"Authorization\" token is invalid."
+}

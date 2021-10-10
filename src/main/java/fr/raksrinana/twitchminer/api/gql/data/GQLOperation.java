@@ -2,12 +2,16 @@ package fr.raksrinana.twitchminer.api.gql.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import kong.unirest.GenericType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
 @Getter
+@EqualsAndHashCode
+@ToString
 public abstract class GQLOperation<T>{
 	private static final String PERSISTED_QUERY_EXTENSION_NAME = "persistedQuery";
 	

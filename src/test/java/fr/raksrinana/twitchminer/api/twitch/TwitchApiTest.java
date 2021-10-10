@@ -1,10 +1,9 @@
 package fr.raksrinana.twitchminer.api.twitch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.MockClient;
-import kong.unirest.Unirest;
-import kong.unirest.jackson.JacksonObjectMapper;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +41,7 @@ class TwitchApiTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		Unirest.config().reset()
-				.clearDefaultHeaders()
-				.setObjectMapper(new JacksonObjectMapper(JacksonUtils.getMapper()));
+		TestUtils.setupUnirest();
 		unirest = MockClient.register();
 		
 		streamerUrl = new URL(STREAMER_URL);

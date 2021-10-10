@@ -2,21 +2,17 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 @JsonTypeName("Tag")
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"id"}, callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class Tag extends GQLType{
 	@JsonProperty("id")
 	private String id;
 	@JsonProperty("localizedName")
 	private String localizedName;
-	
-	public Tag(){
-		super("Tag");
-	}
 }

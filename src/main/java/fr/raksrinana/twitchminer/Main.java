@@ -70,6 +70,7 @@ public class Main{
 					public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config){
 						if(!response.isSuccess()){
 							log.error("Failed to request {} got statusCode `{}` and parsing error: {}", request.getUrl(), response.getStatus(), response.getParsingError());
+							response.getParsingError().ifPresent(ex -> log.error("Failed to parse body: {}", ex.getOriginalBody()));
 						}
 						else{
 							log.trace("Received successful response for {} with statusCode `{}`", request.getUrl(), response.getStatus());

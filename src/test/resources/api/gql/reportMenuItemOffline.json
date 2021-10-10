@@ -1,0 +1,18 @@
+{
+  "data": {
+    "requestInfo": {
+      "countryCode": "US",
+      "__typename": "RequestInfo"
+    },
+    "user": {
+      "id": "123456789",
+      "stream": null,
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 41,
+    "operationName": "ReportMenuItem",
+    "requestID": "request-id"
+  }
+}

@@ -5,16 +5,17 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.ColorDeserializer;
 import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import java.awt.Color;
 import java.time.ZonedDateTime;
 
 @JsonTypeName("CommunityPointsCommunityGoal")
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"id"}, callSuper = true)
+@Builder
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class CommunityPointsCommunityGoal extends GQLType{
 	@JsonProperty("backgroundColor")
 	@JsonDeserialize(using = ColorDeserializer.class)
@@ -49,8 +50,4 @@ public class CommunityPointsCommunityGoal extends GQLType{
 	private Status status;
 	@JsonProperty("title")
 	private String title;
-	
-	public CommunityPointsCommunityGoal(){
-		super("CommunityPointsCommunityGoal");
-	}
 }

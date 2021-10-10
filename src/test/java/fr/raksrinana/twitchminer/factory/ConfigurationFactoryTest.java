@@ -1,5 +1,6 @@
 package fr.raksrinana.twitchminer.factory;
 
+import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.cli.CLIHolder;
 import fr.raksrinana.twitchminer.cli.CLIParameters;
 import fr.raksrinana.twitchminer.config.Configuration;
@@ -30,7 +31,7 @@ class ConfigurationFactoryTest{
 	
 	@Test
 	void getInstance() throws URISyntaxException{
-		var testConfig = Paths.get(getClass().getClassLoader().getResource("config/config.json").toURI());
+		var testConfig = TestUtils.getResourcePath("config/config.json");
 		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
 		var expected = Configuration.builder()

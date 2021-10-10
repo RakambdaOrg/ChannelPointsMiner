@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.URLDeserializer;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.net.URL;
@@ -16,9 +13,11 @@ import java.util.Optional;
 
 @JsonTypeName("User")
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"}, callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class User extends GQLType{
 	@JsonProperty("id")
 	@NotNull
@@ -45,14 +44,11 @@ public class User extends GQLType{
 	@JsonDeserialize(using = URLDeserializer.class)
 	private URL profileImageUrl;
 	@JsonProperty("broadcastSettings")
+	@Nullable
 	private BroadcastSettings broadcastSettings;
 	
-	public User(){
-		super("User");
-	}
-	
 	public boolean isStreaming(){
-		return Objects.nonNull(getStream());
+		return Objects.nonNull(stream);
 	}
 	
 	public Optional<Game> getGame(){

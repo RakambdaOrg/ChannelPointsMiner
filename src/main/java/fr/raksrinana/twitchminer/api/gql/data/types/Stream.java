@@ -4,18 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 @JsonTypeName("Stream")
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id"}, callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class Stream extends GQLType{
 	@JsonProperty("id")
 	private String id;
@@ -26,8 +25,4 @@ public class Stream extends GQLType{
 	private int viewersCount;
 	@JsonProperty("tags")
 	private List<Tag> tags;
-	
-	public Stream(){
-		super("Stream");
-	}
 }
