@@ -26,6 +26,7 @@ public class User extends GQLType{
 	@Nullable
 	private String displayName;
 	@JsonProperty("login")
+	@Nullable
 	private String login;
 	@JsonProperty("stream")
 	@Nullable
@@ -34,14 +35,18 @@ public class User extends GQLType{
 	@Nullable
 	private UserSelfConnection self;
 	@JsonProperty("channel")
+	@Nullable
 	private Channel channel;
 	@JsonProperty("communityPoints")
+	@Nullable
 	private CommunityPointsUserProperties communityPoints;
 	@JsonProperty("profileURL")
 	@JsonDeserialize(using = URLDeserializer.class)
+	@Nullable
 	private URL profileUrl;
 	@JsonProperty("profileImageURL")
 	@JsonDeserialize(using = URLDeserializer.class)
+	@Nullable
 	private URL profileImageUrl;
 	@JsonProperty("broadcastSettings")
 	@Nullable

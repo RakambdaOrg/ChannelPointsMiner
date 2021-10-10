@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 import java.time.ZonedDateTime;
 
 @JsonTypeName("CommunityPointsLastViewedContentByTypeAndID")
@@ -16,10 +17,13 @@ import java.time.ZonedDateTime;
 @ToString
 public class CommunityPointsLastViewedContentByTypeAndID extends GQLType{
 	@JsonProperty("contentID")
+	@NotNull
 	private ContentId contentId;
 	@JsonProperty("contentType")
+	@NotNull
 	private ContentType contentType;
 	@JsonProperty("lastViewedAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
+	@NotNull
 	private ZonedDateTime lastViewedAt;
 }

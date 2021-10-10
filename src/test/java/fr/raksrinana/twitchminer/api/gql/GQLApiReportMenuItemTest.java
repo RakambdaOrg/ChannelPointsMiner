@@ -23,9 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GQLApiTest{
+class GQLApiReportMenuItemTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String USERNAME = "username";
+	private static final String VALID_QUERY = "{\"operationName\":\"ReportMenuItem\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\"}},\"variables\":{\"channelLogin\":\"%s\"}}";
 	
 	@InjectMocks
 	private GQLApi tested;
@@ -43,7 +44,7 @@ class GQLApiTest{
 	}
 	
 	@Test
-	void reportMenuItemOffline(){
+	void nominalOffline(){
 		var expected = GQLResponse.<ReportMenuItemData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 41,
@@ -62,7 +63,7 @@ class GQLApiTest{
 		
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body("{\"operationName\":\"ReportMenuItem\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\"}},\"variables\":{\"channelLogin\":\"%s\"}}".formatted(USERNAME))
+				.body(VALID_QUERY.formatted(USERNAME))
 				.thenReturn(TestUtils.getAllResourceContent("api/gql/reportMenuItemOffline.json"))
 				.withStatus(200);
 		
@@ -72,7 +73,7 @@ class GQLApiTest{
 	}
 	
 	@Test
-	void reportMenuItemOnline(){
+	void nominalOnline(){
 		var expected = GQLResponse.<ReportMenuItemData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 41,
@@ -95,7 +96,7 @@ class GQLApiTest{
 		
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body("{\"operationName\":\"ReportMenuItem\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\"}},\"variables\":{\"channelLogin\":\"%s\"}}".formatted(USERNAME))
+				.body(VALID_QUERY.formatted(USERNAME))
 				.thenReturn(TestUtils.getAllResourceContent("api/gql/reportMenuItemOnline.json"))
 				.withStatus(200);
 		
@@ -106,16 +107,10 @@ class GQLApiTest{
 	}
 	
 	@Test
-	void reportInvalidCredentials(){
-		var expected = GQLResponse.<ReportMenuItemData> builder()
-				.error("Unauthorized")
-				.status(401)
-				.message("The \"Authorization\" token is invalid.")
-				.build();
-		
+	void invalidCredentials(){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body("{\"operationName\":\"ReportMenuItem\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\"}},\"variables\":{\"channelLogin\":\"%s\"}}".formatted(USERNAME))
+				.body(VALID_QUERY.formatted(USERNAME))
 				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidAuth.json"))
 				.withStatus(401);
 		
@@ -125,10 +120,10 @@ class GQLApiTest{
 	}
 	
 	@Test
-	void reportInvalidResponse(){
+	void invalidResponse(){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body("{\"operationName\":\"ReportMenuItem\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\"}},\"variables\":{\"channelLogin\":\"%s\"}}".formatted(USERNAME))
+				.body(VALID_QUERY.formatted(USERNAME))
 				.thenReturn()
 				.withStatus(500);
 		

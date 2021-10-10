@@ -1,15 +1,13 @@
 package fr.raksrinana.twitchminer.api.gql.data.reportmenuitem;
 
 import fr.raksrinana.twitchminer.api.gql.data.GQLOperation;
-import fr.raksrinana.twitchminer.api.gql.data.PersistedQueryExtension;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.PersistedQueryExtension;
 import kong.unirest.GenericType;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
-@Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class ReportMenuItemOperation extends GQLOperation<ReportMenuItemData>{

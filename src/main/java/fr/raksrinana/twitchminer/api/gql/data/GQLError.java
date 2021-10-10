@@ -17,5 +17,6 @@ public class GQLError{
 	private String message;
 	@JsonProperty("locations")
 	@NotNull
+	@Builder.Default
 	private List<Location> locations = new LinkedList<>();
 }

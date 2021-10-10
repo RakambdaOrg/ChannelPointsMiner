@@ -3,6 +3,8 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("CommunityPointsChannelEarningSettings")
@@ -14,6 +16,7 @@ import java.util.List;
 @ToString
 public class CommunityPointsChannelEarningSettings extends GQLType{
 	@JsonProperty("id")
+	@NotNull
 	private String id;
 	@JsonProperty("averagePointsPerHour")
 	private int averagePointsPerHour;
@@ -30,7 +33,11 @@ public class CommunityPointsChannelEarningSettings extends GQLType{
 	@JsonProperty("subscriptionGiftPoints")
 	private int subscriptionGiftPoints;
 	@JsonProperty("watchStreakPoints")
-	private List<CommunityPointsWatchStreakEarningSettings> watchStreakPoints;
+	@NotNull
+	@Builder.Default
+	private List<CommunityPointsWatchStreakEarningSettings> watchStreakPoints = new ArrayList<>();
 	@JsonProperty("multipliers")
-	private List<CommunityPointsMultiplier> multipliers;
+	@NotNull
+	@Builder.Default
+	private List<CommunityPointsMultiplier> multipliers = new ArrayList<>();
 }

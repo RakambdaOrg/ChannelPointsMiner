@@ -3,6 +3,8 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("CommunityPointsUserProperties")
@@ -14,5 +16,7 @@ import java.util.List;
 @ToString
 public class CommunityPointsUserProperties extends GQLType{
 	@JsonProperty("lastViewedContent")
-	private List<CommunityPointsLastViewedContentByTypeAndID> lastViewedContent;
+	@NotNull
+	@Builder.Default
+	private List<CommunityPointsLastViewedContentByTypeAndID> lastViewedContent = new ArrayList<>();
 }

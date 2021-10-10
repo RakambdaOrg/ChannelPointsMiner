@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.utils.json.UnknownDeserializer;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("CommunityPointsProperties")
@@ -17,15 +20,22 @@ import java.util.List;
 public class CommunityPointsProperties extends GQLType{
 	@JsonProperty("availableClaim")
 	@JsonDeserialize(using = UnknownDeserializer.class)
+	@Nullable
 	private Object availableClaim;
 	@JsonProperty("balance")
 	private int balance;
 	@JsonProperty("activeMultipliers")
-	private List<CommunityPointsMultiplier> activeMultipliers;
+	@NotNull
+	@Builder.Default
+	private List<CommunityPointsMultiplier> activeMultipliers = new ArrayList<>();
 	@JsonProperty("canRedeemRewardsForFree")
 	private boolean canRedeemRewardsForFree;
 	@JsonProperty("lastViewedContent")
-	private List<CommunityPointsLastViewedContentByType> lastViewedContent;
+	@NotNull
+	@Builder.Default
+	private List<CommunityPointsLastViewedContentByType> lastViewedContent = new ArrayList<>();
 	@JsonProperty("userRedemptions")
-	private List<CommunityPointsCustomRewardUserRedemption> userRedemptions;
+	@NotNull
+	@Builder.Default
+	private List<CommunityPointsCustomRewardUserRedemption> userRedemptions = new ArrayList<>();
 }

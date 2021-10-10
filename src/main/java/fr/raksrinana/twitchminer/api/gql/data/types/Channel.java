@@ -17,7 +17,9 @@ public class Channel extends GQLType{
 	@NotNull
 	private String id;
 	@JsonProperty("self")
+	@NotNull
 	private ChannelSelfEdge self;
 	@JsonProperty("communityPointsSettings")
+	@NotNull
 	private CommunityPointsChannelSettings communityPointsSettings;
 }
