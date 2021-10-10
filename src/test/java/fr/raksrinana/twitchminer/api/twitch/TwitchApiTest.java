@@ -57,7 +57,7 @@ class TwitchApiTest{
 		unirest.expect(POST, SPADE_URL)
 				.body("{\"data\":\"%s\"}".formatted(expectedData))
 				.thenReturn()
-				.withStatus(200);
+				.withStatus(204);
 		
 		assertThat(tested.sendMinutesWatched(spadeUrl, new MinuteWatchedRequest(MinuteWatchedProperties.builder()
 				.userId(USER_ID)
@@ -79,7 +79,7 @@ class TwitchApiTest{
 		unirest.expect(POST, SPADE_URL)
 				.body("{\"data\":\"%s\"}".formatted(expectedData))
 				.thenReturn()
-				.withStatus(200);
+				.withStatus(204);
 		
 		assertThat(tested.sendMinutesWatched(spadeUrl, new MinuteWatchedRequest(MinuteWatchedProperties.builder()
 				.userId(USER_ID)
