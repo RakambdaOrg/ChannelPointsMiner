@@ -43,6 +43,10 @@ public class TwitchLogin{
 	@JsonProperty("userId")
 	private String userId;
 	
+	public int getUserIdAsInt(){
+		return Integer.parseInt(getUserId());
+	}
+	
 	public String getUserId(){
 		if(Objects.isNull(userId)){
 			userId = cookies.stream()

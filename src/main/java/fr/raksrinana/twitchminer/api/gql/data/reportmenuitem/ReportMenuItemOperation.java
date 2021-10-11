@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class ReportMenuItemOperation extends GQLOperation<ReportMenuItemData>{
-	public ReportMenuItemOperation(String username){
+	public ReportMenuItemOperation(@NotNull String username){
 		super("ReportMenuItem");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c"));
 		addVariable("channelLogin", username);

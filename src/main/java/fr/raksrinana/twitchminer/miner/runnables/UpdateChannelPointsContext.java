@@ -37,5 +37,7 @@ public class UpdateChannelPointsContext implements Runnable{
 				.ifPresentOrElse(
 						streamer::setChannelPointsContext,
 						() -> streamer.setChannelPointsContext(null));
+		
+		streamer.getClaimId().ifPresent(claimId -> miner.getGqlApi().claimCommunityPoints(streamer.getId(), claimId));
 	}
 }

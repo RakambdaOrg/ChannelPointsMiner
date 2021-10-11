@@ -2,7 +2,8 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @Getter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "__typename")
@@ -41,6 +42,7 @@ import lombok.*;
 		@JsonSubTypes.Type(value = DropBenefitEdge.class, name = "DropBenefitEdge"),
 		@JsonSubTypes.Type(value = DropBenefit.class, name = "DropBenefit"),
 		@JsonSubTypes.Type(value = CommunityPointsClaim.class, name = "CommunityPointsClaim"),
+		@JsonSubTypes.Type(value = ClaimCommunityPointsPayload.class, name = "ClaimCommunityPointsPayload"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

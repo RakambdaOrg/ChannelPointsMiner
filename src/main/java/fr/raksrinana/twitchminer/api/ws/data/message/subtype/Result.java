@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.api.ws.data.message.eventupdated;
+package fr.raksrinana.twitchminer.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;

@@ -20,6 +20,8 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = StreamDown.class, name = "stream-down"),
 		@JsonSubTypes.Type(value = StreamUp.class, name = "stream-up"),
 		@JsonSubTypes.Type(value = EventUpdated.class, name = "event-updated"),
+		@JsonSubTypes.Type(value = EventCreated.class, name = "event-created"),
+		@JsonSubTypes.Type(value = Commercial.class, name = "commercial"),
 })
 @EqualsAndHashCode
 @ToString

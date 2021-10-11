@@ -2,6 +2,9 @@ package fr.raksrinana.twitchminer.api.twitch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.twitchminer.TestUtils;
+import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedEvent;
+import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
+import fr.raksrinana.twitchminer.api.twitch.data.PlayerEvent;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.MockClient;
 import org.mockito.Mockito;
@@ -18,10 +21,11 @@ import static kong.unirest.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TwitchApiTest{
-	private static final String USER_ID = "user-id";
+	private static final int USER_ID = 123456789;
 	private static final String BROADCAST_ID = "broadcast-id";
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String PLAYER = "player";
@@ -50,7 +54,7 @@ class TwitchApiTest{
 	
 	@Test
 	void sendMinutesWatched(){
-		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":\"%s\"}}]"
+		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(CHANNEL_ID, BROADCAST_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
@@ -59,20 +63,22 @@ class TwitchApiTest{
 				.thenReturn()
 				.withStatus(204);
 		
-		assertThat(tested.sendMinutesWatched(spadeUrl, new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-				.userId(USER_ID)
-				.broadcastId(BROADCAST_ID)
-				.channelId(CHANNEL_ID)
-				.player(PLAYER)
-				.build()))
-		).isTrue();
+		var request = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.userId(USER_ID)
+						.broadcastId(BROADCAST_ID)
+						.channelId(CHANNEL_ID)
+						.player(PLAYER)
+						.build())
+				.build();
+		assertThat(tested.sendPlayerEvents(spadeUrl, request)).isTrue();
 		
 		unirest.verifyAll();
 	}
 	
 	@Test
 	void sendMinutesWatchedWithGame(){
-		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":\"%s\",\"game\":\"%s\"}}]"
+		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d,\"game\":\"%s\"}}]"
 				.formatted(CHANNEL_ID, BROADCAST_ID, PLAYER, USER_ID, GAME);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
@@ -81,21 +87,23 @@ class TwitchApiTest{
 				.thenReturn()
 				.withStatus(204);
 		
-		assertThat(tested.sendMinutesWatched(spadeUrl, new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-				.userId(USER_ID)
-				.broadcastId(BROADCAST_ID)
-				.channelId(CHANNEL_ID)
-				.player(PLAYER)
-				.game(GAME)
-				.build()))
-		).isTrue();
+		var request = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.userId(USER_ID)
+						.broadcastId(BROADCAST_ID)
+						.channelId(CHANNEL_ID)
+						.player(PLAYER)
+						.game(GAME)
+						.build())
+				.build();
+		assertThat(tested.sendPlayerEvents(spadeUrl, request)).isTrue();
 		
 		unirest.verifyAll();
 	}
 	
 	@Test
 	void sendMinutesWatchedNotSuccess(){
-		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":\"%s\"}}]"
+		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(CHANNEL_ID, BROADCAST_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
@@ -104,13 +112,15 @@ class TwitchApiTest{
 				.thenReturn()
 				.withStatus(400);
 		
-		assertThat(tested.sendMinutesWatched(spadeUrl, new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-				.userId(USER_ID)
-				.broadcastId(BROADCAST_ID)
-				.channelId(CHANNEL_ID)
-				.player(PLAYER)
-				.build()))
-		).isFalse();
+		var request = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.userId(USER_ID)
+						.broadcastId(BROADCAST_ID)
+						.channelId(CHANNEL_ID)
+						.player(PLAYER)
+						.build())
+				.build();
+		assertThat(tested.sendPlayerEvents(spadeUrl, request)).isFalse();
 		
 		unirest.verifyAll();
 	}
@@ -118,15 +128,19 @@ class TwitchApiTest{
 	@Test
 	void sendMinutesWatchedJsonError(){
 		try(var jacksonUtils = Mockito.mockStatic(JacksonUtils.class)){
-			jacksonUtils.when(() -> JacksonUtils.writeAsString(any())).thenThrow(mock(JsonProcessingException.class));
+			var exception = mock(JsonProcessingException.class);
+			when(exception.getStackTrace()).thenReturn(new StackTraceElement[0]);
+			jacksonUtils.when(() -> JacksonUtils.writeAsString(any(PlayerEvent[].class))).thenThrow(exception);
 			
-			assertThat(tested.sendMinutesWatched(spadeUrl, new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-					.userId(USER_ID)
-					.broadcastId(BROADCAST_ID)
-					.channelId(CHANNEL_ID)
-					.player(PLAYER)
-					.build()))
-			).isFalse();
+			var request = MinuteWatchedEvent.builder()
+					.properties(MinuteWatchedProperties.builder()
+							.userId(USER_ID)
+							.broadcastId(BROADCAST_ID)
+							.channelId(CHANNEL_ID)
+							.player(PLAYER)
+							.build())
+					.build();
+			assertThat(tested.sendPlayerEvents(spadeUrl, request)).isFalse();
 		}
 	}
 	

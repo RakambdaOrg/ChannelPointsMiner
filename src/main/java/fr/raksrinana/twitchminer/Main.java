@@ -33,7 +33,8 @@ public class Main{
 				new PassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
 				new StreamerSettingsFactory(config),
 				new TwitchWebSocketPool(),
-				Executors.newScheduledThreadPool(4));
+				Executors.newScheduledThreadPool(4),
+				Executors.newCachedThreadPool());
 		miner.start();
 	}
 	

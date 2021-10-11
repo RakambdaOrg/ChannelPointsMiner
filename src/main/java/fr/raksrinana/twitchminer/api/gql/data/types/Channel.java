@@ -6,6 +6,7 @@ import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 @JsonTypeName("Channel")
 @Getter
@@ -27,4 +28,8 @@ public class Channel extends GQLType{
 	@JsonProperty("viewerDropCampaigns")
 	@Nullable
 	private List<DropCampaign> viewerDropCampaigns;
+	
+	public Optional<CommunityPointsClaim> getClaim(){
+		return Optional.ofNullable(self).flatMap(ChannelSelfEdge::getClaim);
+	}
 }

@@ -13,17 +13,19 @@ import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
+import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.config.StreamerConfiguration;
 import fr.raksrinana.twitchminer.factory.ApiFactory;
+import fr.raksrinana.twitchminer.factory.MessageHandlerFactory;
 import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
+import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateChannelPointsContext;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +36,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +52,6 @@ class MinerTest{
 	private static final String USER_ID = "user-id";
 	private static final String ACCESS_TOKEN = "access-token";
 	
-	@InjectMocks
 	private Miner tested;
 	
 	@Mock
@@ -62,7 +65,10 @@ class MinerTest{
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
 	@Mock
-	private ScheduledExecutorService executor;
+	private ScheduledExecutorService scheduledExecutorService;
+	@Mock
+	private ExecutorService executorService;
+	
 	@Mock
 	private TwitchLogin twitchLogin;
 	@Mock
@@ -86,6 +92,8 @@ class MinerTest{
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
+		tested = new Miner(configuration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService);
+		
 		lenient().when(passportApi.login()).thenReturn(twitchLogin);
 		lenient().when(streamerSettingsFactory.createStreamerSettings()).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.isFollowRaid()).thenReturn(false);
@@ -98,6 +106,12 @@ class MinerTest{
 		lenient().when(reportMenuItemResponse.getData()).thenReturn(reportMenuItemData);
 		lenient().when(reportMenuItemData.getUser()).thenReturn(user);
 		lenient().when(user.getId()).thenReturn(STREAMER_ID);
+		
+		lenient().when(executorService.submit(any(Runnable.class))).thenAnswer(invocation -> {
+			var runnable = invocation.getArgument(0, Runnable.class);
+			runnable.run();
+			return CompletableFuture.completedFuture(null);
+		});
 	}
 	
 	@Test
@@ -423,7 +437,22 @@ class MinerTest{
 	void close(){
 		assertDoesNotThrow(() -> tested.close());
 		
-		verify(executor).shutdown();
+		verify(scheduledExecutorService).shutdown();
+		verify(executorService).shutdown();
 		verify(webSocketPool).close();
+	}
+	
+	@Test
+	void claimAvailableIsForwarded(){
+		try(var factory = mockStatic(MessageHandlerFactory.class)){
+			var handler = (MessageHandler<ClaimAvailable>) mock(MessageHandler.class);
+			factory.when(() -> MessageHandlerFactory.createClaimAvailableHandler(tested)).thenReturn(handler);
+			
+			var message = mock(ClaimAvailable.class);
+			assertDoesNotThrow(() -> tested.onTwitchMessage(message));
+			
+			verify(executorService).submit(any(Runnable.class));
+			verify(handler).handle(message);
+		}
 	}
 }
