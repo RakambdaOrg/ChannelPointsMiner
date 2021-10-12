@@ -15,10 +15,10 @@ import org.jetbrains.annotations.Nullable;
 public class ClaimCommunityPointsPayload extends GQLType{
 	@JsonProperty("claim")
 	@Nullable
-	private Object claim;
+	private CommunityPointsClaim claim;
 	@JsonProperty("currentPoints")
 	@Nullable
-	private Object currentPoints;
+	private Integer currentPoints;
 	@JsonProperty("error")
 	@Nullable
 	private ClaimCommunityPointsError error;

@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,22 +33,27 @@ public class TwitchLogin{
 	
 	@Getter
 	@JsonProperty("username")
+	@NotNull
 	private String username;
 	@Getter
 	@JsonProperty("accessToken")
+	@NotNull
 	private String accessToken;
 	@JsonProperty("cookies")
 	@JsonDeserialize(contentUsing = CookieDeserializer.class)
 	@JsonSerialize(contentUsing = CookieSerializer.class)
 	@Builder.Default
+	@NotNull
 	private List<Cookie> cookies = new ArrayList<>();
 	@JsonProperty("userId")
+	@Nullable
 	private String userId;
 	
 	public int getUserIdAsInt(){
 		return Integer.parseInt(getUserId());
 	}
 	
+	@NotNull
 	public String getUserId(){
 		if(Objects.isNull(userId)){
 			userId = cookies.stream()

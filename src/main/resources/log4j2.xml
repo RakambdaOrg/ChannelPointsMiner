@@ -18,20 +18,20 @@
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
 
-        <Routing name="router">
-            <Routes pattern="\$\${env:LOG_TO_FILE}">
-                <Route ref="file" key="TRUE" />
-            </Routes>
-        </Routing>
+        <!--        <Routing name="router">-->
+        <!--            <Routes pattern="\$\${env:LOG_TO_FILE}">-->
+        <!--                <Route ref="file" key="TRUE" />-->
+        <!--            </Routes>-->
+        <!--        </Routing>-->
     </Appenders>
     <Loggers>
         <Logger level="warn" name="org.java_websocket" additivity="false">
             <AppenderRef ref="console"/>
-            <AppenderRef ref="router"/>
+            <AppenderRef ref="file"/>
         </Logger>
         <Root level="trace" additivity="false">
             <AppenderRef ref="console"/>
-            <AppenderRef ref="router"/>
+            <AppenderRef ref="file"/>
         </Root>
     </Loggers>
 </Configuration>

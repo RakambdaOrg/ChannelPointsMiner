@@ -60,7 +60,6 @@ class TwitchLoginTest{
 	void getUserIdFromApi(){
 		var tested = TwitchLogin.builder()
 				.username(USERNAME)
-				.cookies(List.of())
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
@@ -74,7 +73,6 @@ class TwitchLoginTest{
 	void getUserIdSavesResult(){
 		var tested = TwitchLogin.builder()
 				.username(USERNAME)
-				.cookies(List.of())
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
@@ -90,7 +88,6 @@ class TwitchLoginTest{
 	void getUserIdFromApiNoResponse(){
 		var tested = TwitchLogin.builder()
 				.username(USERNAME)
-				.cookies(List.of())
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
@@ -101,4 +98,15 @@ class TwitchLoginTest{
 			assertThrows(IllegalStateException.class, () -> tested.getUserId());
 		}
 	}
+	
+	@Test
+	void getUserIdAsInt(){
+		var tested = TwitchLogin.builder()
+				.username(USERNAME)
+				.userId("123456")
+				.build();
+		
+		assertThat(tested.getUserIdAsInt()).isEqualTo(123456);
+	}
+}
 }

@@ -4,6 +4,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +16,10 @@ class UserTest{
 	private BroadcastSettings broadcastSettings;
 	@Mock
 	private Game game;
+	@Mock
+	private Channel channel;
+	@Mock
+	private CommunityPointsClaim communityPointsClaim;
 	
 	@Test
 	void isStream(){
@@ -53,5 +58,30 @@ class UserTest{
 		var tested = User.builder().id("id").build();
 		
 		assertThat(tested.getGame()).isEmpty();
+	}
+	
+	@Test
+	void getClaim(){
+		var tested = User.builder().id("id").channel(channel).build();
+		
+		when(channel.getClaim()).thenReturn(Optional.of(communityPointsClaim));
+		
+		assertThat(tested.getClaim()).isPresent().get().isEqualTo(communityPointsClaim);
+	}
+	
+	@Test
+	void getClaimEmpty(){
+		var tested = User.builder().id("id").channel(channel).build();
+		
+		when(channel.getClaim()).thenReturn(Optional.empty());
+		
+		assertThat(tested.getClaim()).isEmpty();
+	}
+	
+	@Test
+	void getClaimNull(){
+		var tested = User.builder().id("id").build();
+		
+		assertThat(tested.getClaim()).isEmpty();
 	}
 }

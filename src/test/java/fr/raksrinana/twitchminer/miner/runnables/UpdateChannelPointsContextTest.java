@@ -19,6 +19,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UpdateChannelPointsContextTest{
 	private static final String STREAMER_USERNAME = "streamer-username";
+	private static final String CLAIM_ID = "claim-id";
+	private static final String CHANNEL_ID = "channel-id";
 	
 	@InjectMocks
 	private UpdateChannelPointsContext tested;
@@ -36,6 +38,8 @@ class UpdateChannelPointsContextTest{
 		lenient().when(miner.getStreamers()).thenReturn(List.of(streamer));
 		
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
+		lenient().when(streamer.getId()).thenReturn(CHANNEL_ID);
+		lenient().when(streamer.getClaimId()).thenReturn(Optional.empty());
 	}
 	
 	@Test
@@ -51,6 +55,7 @@ class UpdateChannelPointsContextTest{
 		
 		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(streamer).setChannelPointsContext(data);
+		verify(gqlApi, never()).claimCommunityPoints(any(), any());
 	}
 	
 	@Test
@@ -78,5 +83,22 @@ class UpdateChannelPointsContextTest{
 		when(gqlApi.channelPointsContext(any())).thenThrow(new RuntimeException("For tests"));
 		
 		assertDoesNotThrow(() -> tested.run());
+	}
+	
+	@Test
+	void claimPresent(){
+		var data = ChannelPointsContextData.builder().build();
+		var response = GQLResponse.<ChannelPointsContextData> builder()
+				.data(data)
+				.build();
+		
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(response));
+		when(streamer.getClaimId()).thenReturn(Optional.of(CLAIM_ID));
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
+		verify(streamer).setChannelPointsContext(data);
+		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
 	}
 }
