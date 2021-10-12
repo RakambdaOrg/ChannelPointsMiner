@@ -40,7 +40,7 @@ class KrakenApiTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		when(twitchLogin.getUserId()).thenReturn(USER_ID);
+		when(twitchLogin.fetchUserId()).thenReturn(USER_ID);
 		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		
 		nominalFollow = Follow.builder()

@@ -46,7 +46,6 @@ class PassportApiTest{
 	private PassportApi tested;
 	
 	private Path authFile;
-	
 	@BeforeEach
 	void setUp(){
 		tested = new PassportApi(USERNAME, PASSWORD, authFolder, false);

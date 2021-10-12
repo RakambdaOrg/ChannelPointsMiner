@@ -99,7 +99,7 @@ class MinerTest{
 		lenient().when(streamerSettingsFactory.createStreamerSettings()).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.isFollowRaid()).thenReturn(false);
 		lenient().when(streamerSettings.isMakePredictions()).thenReturn(false);
-		lenient().when(twitchLogin.getUserId()).thenReturn(USER_ID);
+		lenient().when(twitchLogin.fetchUserId()).thenReturn(USER_ID);
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		
 		lenient().when(streamerConfiguration.getUsername()).thenReturn(STREAMER_USERNAME);

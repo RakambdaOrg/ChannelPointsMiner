@@ -97,7 +97,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendMinutesWatched(this), 0, 1, MINUTES);
 		scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
 		
-		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().getUserId());
+		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 	}
 	
 	private void loadStreamersFromConfiguration(){
@@ -163,7 +163,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 		
 		if(streamer.getSettings().isMakePredictions()){
-			listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().getUserId());
+			listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId());
 			listenTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 		}
 		if(streamer.getSettings().isFollowRaid()){

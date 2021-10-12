@@ -52,7 +52,7 @@ class TwitchLoginTest{
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			assertThat(tested.getUserId()).isEqualTo(USER_ID);
+			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
 			
 			apiFactory.verifyNoInteractions();
 		}
@@ -68,7 +68,7 @@ class TwitchLoginTest{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
 			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
 			
-			assertThat(tested.getUserId()).isEqualTo(USER_ID);
+			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
 		}
 	}
 	
@@ -82,7 +82,7 @@ class TwitchLoginTest{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
 			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
 			
-			assertThat(tested.getUserId()).isEqualTo(USER_ID);
+			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
 			
 			apiFactory.verify(() -> ApiFactory.createGqlApi(any()));
 		}
@@ -100,7 +100,7 @@ class TwitchLoginTest{
 			
 			when(gqlApi.reportMenuItem(USERNAME)).thenReturn(Optional.empty());
 			
-			assertThrows(IllegalStateException.class, () -> tested.getUserId());
+			assertThrows(IllegalStateException.class, () -> tested.fetchUserId());
 		}
 	}
 	

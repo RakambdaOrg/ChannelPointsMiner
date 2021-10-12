@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.extension.*;
 
 @Log4j2
-public class UnirestMockExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterAllCallback{
+public class UnirestMockExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterEachCallback{
 	@Getter
 	private MockClient unirest;
 	
@@ -29,17 +29,16 @@ public class UnirestMockExtension implements Extension, BeforeAllCallback, Befor
 						}
 					}
 				});
-		
-		unirest = MockClient.register();
 	}
 	
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception{
 		Unirest.config().clearDefaultHeaders();
+		unirest = MockClient.register();
 	}
 	
 	@Override
-	public void afterAll(ExtensionContext context){
+	public void afterEach(ExtensionContext context){
 		MockClient.clear();
 	}
 	

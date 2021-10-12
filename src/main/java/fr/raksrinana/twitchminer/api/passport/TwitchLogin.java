@@ -12,10 +12,7 @@ import fr.raksrinana.twitchminer.factory.ApiFactory;
 import fr.raksrinana.twitchminer.utils.json.CookieDeserializer;
 import fr.raksrinana.twitchminer.utils.json.CookieSerializer;
 import kong.unirest.Cookie;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -28,12 +25,15 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
+@ToString(onlyExplicitlyIncluded = true)
 public class TwitchLogin{
 	private static final String PERSISTENT_COOKIE_NAME = "persistent";
 	
 	@Getter
 	@JsonProperty("username")
 	@NotNull
+	@ToString.Include
 	private String username;
 	@Getter
 	@JsonProperty("accessToken")
@@ -47,14 +47,15 @@ public class TwitchLogin{
 	private List<Cookie> cookies = new ArrayList<>();
 	@JsonProperty("userId")
 	@Nullable
+	@ToString.Include
 	private String userId;
 	
 	public int getUserIdAsInt(){
-		return Integer.parseInt(getUserId());
+		return Integer.parseInt(fetchUserId());
 	}
 	
 	@NotNull
-	public String getUserId(){
+	public String fetchUserId(){
 		if(Objects.isNull(userId)){
 			userId = cookies.stream()
 					.filter(c -> Objects.equals(c.getName(), PERSISTENT_COOKIE_NAME))

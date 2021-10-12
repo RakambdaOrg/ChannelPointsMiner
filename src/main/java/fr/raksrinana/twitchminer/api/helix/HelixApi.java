@@ -30,7 +30,7 @@ public class HelixApi{
 		var query = Unirest.get(ENDPOINT + "/users/follows")
 				.header(AUTHORIZATION, "Bearer " + twitchLogin.getAccessToken())
 				.header("Client-Id", CLIENT_ID)
-				.queryString("fromId", twitchLogin.getUserId())
+				.queryString("fromId", twitchLogin.fetchUserId())
 				.queryString("first", limit);
 		
 		if(Objects.nonNull(page)){
