@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class GQLApiReportMenuItemTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String USERNAME = "username";
-	private static final String VALID_QUERY = "{\"operationName\":\"ReportMenuItem\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\"}},\"variables\":{\"channelLogin\":\"%s\"}}";
+	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\",\"version\":1}},\"operationName\":\"ReportMenuItem\",\"variables\":{\"channelLogin\":\"%s\"}}";
 	
 	@RegisterExtension
 	private static final UnirestMockExtension unirest = new UnirestMockExtension();

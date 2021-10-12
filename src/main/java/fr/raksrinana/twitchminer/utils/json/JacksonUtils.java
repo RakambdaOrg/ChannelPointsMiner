@@ -15,6 +15,7 @@ import static com.fasterxml.jackson.annotation.PropertyAccessor.*;
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_TRAILING_COMMA;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
+import static com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
 
 public class JacksonUtils{
 	private static JsonMapper mapper;
@@ -23,6 +24,7 @@ public class JacksonUtils{
 	public static JsonMapper getMapper(){
 		if(Objects.isNull(mapper)){
 			mapper = JsonMapper.builder()
+					.enable(SORT_PROPERTIES_ALPHABETICALLY)
 					.enable(ALLOW_TRAILING_COMMA)
 					.enable(ACCEPT_CASE_INSENSITIVE_ENUMS)
 					.enable(ALLOW_COMMENTS)

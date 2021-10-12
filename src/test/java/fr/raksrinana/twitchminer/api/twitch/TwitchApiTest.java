@@ -53,8 +53,8 @@ class TwitchApiTest{
 	
 	@Test
 	void sendMinutesWatched(){
-		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
-				.formatted(CHANNEL_ID, BROADCAST_ID, PLAYER, USER_ID);
+		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
+				.formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
 		unirest.expect(POST, SPADE_URL)
@@ -77,8 +77,8 @@ class TwitchApiTest{
 	
 	@Test
 	void sendMinutesWatchedWithGame(){
-		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d,\"game\":\"%s\"}}]"
-				.formatted(CHANNEL_ID, BROADCAST_ID, PLAYER, USER_ID, GAME);
+		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"game\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
+				.formatted(BROADCAST_ID, CHANNEL_ID, GAME, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
 		unirest.expect(POST, SPADE_URL)
@@ -102,8 +102,8 @@ class TwitchApiTest{
 	
 	@Test
 	void sendMinutesWatchedNotSuccess(){
-		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"channel_id\":\"%s\",\"broadcast_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
-				.formatted(CHANNEL_ID, BROADCAST_ID, PLAYER, USER_ID);
+		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
+				.formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
 		unirest.expect(POST, SPADE_URL)

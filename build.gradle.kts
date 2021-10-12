@@ -32,6 +32,7 @@ dependencies {
     testImplementation(libs.bundles.mockito)
     testImplementation(libs.awaitility)
     testImplementation(libs.unirestMocks)
+    testImplementation(libs.bundles.jsonUnit)
 }
 
 repositories {

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 class GQLApiDropsHighlightServiceAvailableDropsTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String STREAMER_ID = "streamer-id";
-	public static final String VALID_QUERY = "{\"operationName\":\"DropsHighlightService_AvailableDrops\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075\"}},\"variables\":{\"channelID\":\"%s\"}}";
+	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}";
 	
 	@RegisterExtension
 	private static final UnirestMockExtension unirest = new UnirestMockExtension();
