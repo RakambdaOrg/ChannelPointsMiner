@@ -31,6 +31,8 @@ class UpdateChannelPointsContextTest{
 	private GQLApi gqlApi;
 	@Mock
 	private Streamer streamer;
+	@Mock
+	private ChannelPointsContextData channelPointsContextData;
 	
 	@BeforeEach
 	void setUp(){
@@ -44,9 +46,8 @@ class UpdateChannelPointsContextTest{
 	
 	@Test
 	void updateWithData(){
-		var data = ChannelPointsContextData.builder().build();
 		var response = GQLResponse.<ChannelPointsContextData> builder()
-				.data(data)
+				.data(channelPointsContextData)
 				.build();
 		
 		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(response));
@@ -54,7 +55,7 @@ class UpdateChannelPointsContextTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
-		verify(streamer).setChannelPointsContext(data);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(gqlApi, never()).claimCommunityPoints(any(), any());
 	}
 	
@@ -87,9 +88,8 @@ class UpdateChannelPointsContextTest{
 	
 	@Test
 	void claimPresent(){
-		var data = ChannelPointsContextData.builder().build();
 		var response = GQLResponse.<ChannelPointsContextData> builder()
-				.data(data)
+				.data(channelPointsContextData)
 				.build();
 		
 		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(response));
@@ -98,7 +98,7 @@ class UpdateChannelPointsContextTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
-		verify(streamer).setChannelPointsContext(data);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
 	}
 }

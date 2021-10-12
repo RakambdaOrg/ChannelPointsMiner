@@ -13,23 +13,25 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ChannelPointsContextDataTest{
 	@Mock
+	private User community;
+	@Mock
 	private User user;
 	@Mock
 	private CommunityPointsClaim communityPointsClaim;
 	
 	@Test
 	void getClaim(){
-		when(user.getClaim()).thenReturn(Optional.of(communityPointsClaim));
+		when(community.getClaim()).thenReturn(Optional.of(communityPointsClaim));
 		
-		var tested = ChannelPointsContextData.builder().community(user).build();
+		var tested = ChannelPointsContextData.builder().currentUser(user).community(community).build();
 		assertThat(tested.getClaim()).isPresent().get().isEqualTo(communityPointsClaim);
 	}
 	
 	@Test
 	void getClaimEmpty(){
-		when(user.getClaim()).thenReturn(Optional.empty());
+		when(community.getClaim()).thenReturn(Optional.empty());
 		
-		var tested = ChannelPointsContextData.builder().community(user).build();
+		var tested = ChannelPointsContextData.builder().currentUser(user).community(community).build();
 		assertThat(tested.getClaim()).isEmpty();
 	}
 }

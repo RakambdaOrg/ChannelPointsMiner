@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelTest{
+	private static final String CHANNEL_ID = "channel-id";
+	
 	@Mock
 	private ChannelSelfEdge self;
 	@Mock
@@ -19,7 +21,7 @@ class ChannelTest{
 	void getClaim(){
 		when(self.getClaim()).thenReturn(Optional.of(communityPointsClaim));
 		
-		var tested = Channel.builder().self(self).build();
+		var tested = Channel.builder().id(CHANNEL_ID).self(self).build();
 		Assertions.assertThat(tested.getClaim()).isPresent().get().isEqualTo(communityPointsClaim);
 	}
 	
@@ -27,13 +29,13 @@ class ChannelTest{
 	void getClaimEmpty(){
 		when(self.getClaim()).thenReturn(Optional.empty());
 		
-		var tested = Channel.builder().self(self).build();
+		var tested = Channel.builder().id(CHANNEL_ID).self(self).build();
 		Assertions.assertThat(tested.getClaim()).isEmpty();
 	}
 	
 	@Test
 	void getClaimNull(){
-		var tested = Channel.builder().build();
+		var tested = Channel.builder().id(CHANNEL_ID).build();
 		Assertions.assertThat(tested.getClaim()).isEmpty();
 	}
 }
