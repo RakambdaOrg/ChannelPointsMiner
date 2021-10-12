@@ -1,26 +1,26 @@
 package fr.raksrinana.twitchminer.api.passport;
 
-import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.passport.data.LoginResponse;
 import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
+import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import fr.raksrinana.twitchminer.utils.CommonUtils;
 import kong.unirest.Cookie;
-import kong.unirest.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import static fr.raksrinana.twitchminer.TestUtils.copyFromResources;
-import static fr.raksrinana.twitchminer.TestUtils.getResourcePath;
+import static fr.raksrinana.twitchminer.tests.TestUtils.copyFromResources;
+import static fr.raksrinana.twitchminer.tests.TestUtils.getResourcePath;
 import static kong.unirest.ContentType.APPLICATION_JSON;
 import static kong.unirest.HeaderNames.CONTENT_TYPE;
 import static kong.unirest.HttpMethod.POST;
@@ -37,19 +37,18 @@ class PassportApiTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String TWO_FACTOR = "123456";
 	
+	@RegisterExtension
+	private static final UnirestMockExtension unirest = new UnirestMockExtension();
+	
 	@TempDir
 	private Path authFolder;
 	
 	private PassportApi tested;
 	
 	private Path authFile;
-	private MockClient unirest;
 	
 	@BeforeEach
 	void setUp(){
-		TestUtils.setupUnirest();
-		unirest = MockClient.register();
-		
 		tested = new PassportApi(USERNAME, PASSWORD, authFolder, false);
 		
 		authFile = authFolder.resolve(USERNAME + ".json");

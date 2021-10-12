@@ -1,19 +1,20 @@
 package fr.raksrinana.twitchminer.api.gql;
 
-import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.claimcommunitypoints.ClaimCommunityPointsData;
 import fr.raksrinana.twitchminer.api.gql.data.types.ClaimCommunityPointsError;
 import fr.raksrinana.twitchminer.api.gql.data.types.ClaimCommunityPointsPayload;
 import fr.raksrinana.twitchminer.api.gql.data.types.CommunityPointsClaim;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
-import kong.unirest.MockClient;
+import fr.raksrinana.twitchminer.tests.TestUtils;
+import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.Map;
 import static fr.raksrinana.twitchminer.api.gql.data.types.ClaimErrorCode.NOT_FOUND;
 import static kong.unirest.HttpMethod.POST;
@@ -28,18 +29,17 @@ class GQLApiClaimCommunityPointsTest{
 	private static final String CLAIM_ID = "claim-id";
 	public static final String VALID_QUERY = "{\"operationName\":\"ClaimCommunityPoints\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"46aaeebe02c99afdf4fc97c7c0cba964124bf6b0af229395f1f6d1feed05b3d0\"}},\"variables\":{\"input\":{\"channelID\":\"%s\",\"claimID\":\"%s\"}}}";
 	
+	@RegisterExtension
+	private static final UnirestMockExtension unirest = new UnirestMockExtension();
+	
 	@InjectMocks
 	private GQLApi tested;
 	
 	@Mock
 	private TwitchLogin twitchLogin;
-	private MockClient unirest;
 	
 	@BeforeEach
 	void setUp(){
-		TestUtils.setupUnirest();
-		unirest = MockClient.register();
-		
 		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 	}
 	

@@ -1,20 +1,20 @@
 package fr.raksrinana.twitchminer.api.kraken;
 
-import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.kraken.data.follows.Channel;
 import fr.raksrinana.twitchminer.api.kraken.data.follows.Follow;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
-import kong.unirest.MockClient;
+import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
-import static fr.raksrinana.twitchminer.TestUtils.getAllResourceContent;
+import static fr.raksrinana.twitchminer.tests.TestUtils.getAllResourceContent;
 import static java.time.ZoneOffset.UTC;
 import static kong.unirest.HttpMethod.GET;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,20 +27,19 @@ class KrakenApiTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String CLIENT_ID = "jzkbprff40iqj646a697cyrvl0zt2m6";
 	
+	@RegisterExtension
+	private static final UnirestMockExtension unirest = new UnirestMockExtension();
+	
 	@InjectMocks
 	private KrakenApi tested;
 	
 	@Mock
 	private TwitchLogin twitchLogin;
 	
-	private MockClient unirest;
 	private Follow nominalFollow;
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		TestUtils.setupUnirest();
-		unirest = MockClient.register();
-		
 		when(twitchLogin.getUserId()).thenReturn(USER_ID);
 		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		

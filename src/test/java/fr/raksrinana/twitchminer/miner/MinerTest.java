@@ -14,6 +14,7 @@ import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
+import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.config.StreamerConfiguration;
@@ -443,16 +444,26 @@ class MinerTest{
 	}
 	
 	@Test
-	void claimAvailableIsForwarded(){
+	void unknownMessageIsNotForwarded(){
+		var message = mock(Message.class);
+		assertDoesNotThrow(() -> tested.onTwitchMessage(message));
+		
+		verify(executorService).submit(any(Runnable.class));
+	}
+	
+	@Test
+	void claimAvailableIsForwardedAndHandlerCreatedOnce(){
 		try(var factory = mockStatic(MessageHandlerFactory.class)){
 			var handler = (MessageHandler<ClaimAvailable>) mock(MessageHandler.class);
 			factory.when(() -> MessageHandlerFactory.createClaimAvailableHandler(tested)).thenReturn(handler);
 			
 			var message = mock(ClaimAvailable.class);
 			assertDoesNotThrow(() -> tested.onTwitchMessage(message));
+			assertDoesNotThrow(() -> tested.onTwitchMessage(message));
 			
-			verify(executorService).submit(any(Runnable.class));
-			verify(handler).handle(message);
+			verify(executorService, times(2)).submit(any(Runnable.class));
+			verify(handler, times(2)).handle(message);
+			factory.verify(() -> MessageHandlerFactory.createClaimAvailableHandler(tested), times(1));
 		}
 	}
 }

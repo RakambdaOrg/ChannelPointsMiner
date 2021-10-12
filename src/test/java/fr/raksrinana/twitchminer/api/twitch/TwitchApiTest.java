@@ -1,17 +1,17 @@
 package fr.raksrinana.twitchminer.api.twitch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.twitchminer.api.twitch.data.PlayerEvent;
+import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
-import kong.unirest.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
@@ -37,17 +37,16 @@ class TwitchApiTest{
 	private static final String SPADE_BODY = "\"spade_url\":\"%s\"".formatted(SPADE_URL);
 	private static final String SPADE_BODY_INVALID_FORMAT = "\"spade_url\":\"%s\"".formatted("https://google.com:-80/");
 	
+	@RegisterExtension
+	private static final UnirestMockExtension unirest = new UnirestMockExtension();
+	
 	private final TwitchApi tested = new TwitchApi();
 	
-	private MockClient unirest;
 	private URL streamerUrl;
 	private URL spadeUrl;
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		TestUtils.setupUnirest();
-		unirest = MockClient.register();
-		
 		streamerUrl = new URL(STREAMER_URL);
 		spadeUrl = new URL(SPADE_URL);
 	}
