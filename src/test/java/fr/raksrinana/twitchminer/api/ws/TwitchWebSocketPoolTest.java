@@ -191,12 +191,13 @@ class TwitchWebSocketPoolTest{
 		
 		when(response.getData()).thenReturn(data);
 		when(data.getMessage()).thenReturn(message);
+		when(data.getTopic()).thenReturn(topic);
 		
 		assertDoesNotThrow(() -> tested.addListener(twitchMessageListener));
 		assertDoesNotThrow(() -> tested.onWebSocketMessage(twitchWebSocketResponse));
 		assertDoesNotThrow(() -> tested.onWebSocketMessage(response));
 		
-		verify(twitchMessageListener).onTwitchMessage(message);
+		verify(twitchMessageListener).onTwitchMessage(topic, message);
 	}
 	
 	@Test

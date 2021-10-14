@@ -4,6 +4,7 @@ import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.twitchminer.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Claim;
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,6 +33,8 @@ class ClaimAvailableHandlerTest{
 	private ClaimAvailableData claimAvailableData;
 	@Mock
 	private Claim claim;
+	@Mock
+	private Topic topic;
 	
 	@BeforeEach
 	void setUp(){
@@ -45,7 +48,7 @@ class ClaimAvailableHandlerTest{
 		when(claim.getId()).thenReturn(CLAIM_ID);
 		when(claim.getChannelId()).thenReturn(CHANNEL_ID);
 		
-		assertDoesNotThrow(() -> tested.handle(claimAvailable));
+		assertDoesNotThrow(() -> tested.handle(topic, claimAvailable));
 		
 		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
 	}

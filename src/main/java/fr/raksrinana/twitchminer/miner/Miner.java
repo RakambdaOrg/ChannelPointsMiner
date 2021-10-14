@@ -13,13 +13,11 @@ import fr.raksrinana.twitchminer.api.ws.TwitchMessageListener;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.twitchminer.api.ws.data.message.Message;
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.factory.ApiFactory;
-import fr.raksrinana.twitchminer.factory.MessageHandlerFactory;
-import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
-import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.twitchminer.factory.*;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateChannelPointsContext;
@@ -87,6 +85,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	public void start(){
 		log.info("Starting miner");
 		webSocketPool.addListener(this);
+		webSocketPool.addListener(EventLoggerFactory.create(this));
 		
 		login();
 		loadStreamersFromConfiguration();
@@ -182,13 +181,13 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	}
 	
 	@Override
-	public void onTwitchMessage(@NotNull Message message){
-		handlerExecutor.submit(() -> handleMessage(message));
+	public void onTwitchMessage(@NotNull Topic topic, @NotNull Message message){
+		handlerExecutor.submit(() -> handleMessage(topic, message));
 	}
 	
-	private void handleMessage(@NotNull Message message){
+	private void handleMessage(@NotNull Topic topic, @NotNull Message message){
 		if(message instanceof ClaimAvailable claimAvailable){
-			getClaimAvailableHandler().handle(claimAvailable);
+			getClaimAvailableHandler().handle(topic, claimAvailable);
 		}
 	}
 	

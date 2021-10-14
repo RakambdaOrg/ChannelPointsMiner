@@ -15,13 +15,11 @@ import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.twitchminer.api.ws.data.message.Message;
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.config.StreamerConfiguration;
-import fr.raksrinana.twitchminer.factory.ApiFactory;
-import fr.raksrinana.twitchminer.factory.MessageHandlerFactory;
-import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
-import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.twitchminer.factory.*;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
@@ -90,6 +88,10 @@ class MinerTest{
 	private ReportMenuItemData reportMenuItemData;
 	@Mock
 	private GQLResponse<ReportMenuItemData> reportMenuItemResponse;
+	@Mock
+	private Topic topic;
+	@Mock
+	private EventLogger eventLogger;
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
@@ -118,12 +120,15 @@ class MinerTest{
 	@Test
 	void setupIsDoneFromConfig() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
-				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
+				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class);
+				var eventLoggerFactory = Mockito.mockStatic(EventLoggerFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			
+			eventLoggerFactory.when(() -> EventLoggerFactory.create(tested)).thenReturn(eventLogger);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
@@ -446,7 +451,7 @@ class MinerTest{
 	@Test
 	void unknownMessageIsNotForwarded(){
 		var message = mock(Message.class);
-		assertDoesNotThrow(() -> tested.onTwitchMessage(message));
+		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
 		verify(executorService).submit(any(Runnable.class));
 	}
@@ -458,11 +463,11 @@ class MinerTest{
 			factory.when(() -> MessageHandlerFactory.createClaimAvailableHandler(tested)).thenReturn(handler);
 			
 			var message = mock(ClaimAvailable.class);
-			assertDoesNotThrow(() -> tested.onTwitchMessage(message));
-			assertDoesNotThrow(() -> tested.onTwitchMessage(message));
+			assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
+			assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 			
 			verify(executorService, times(2)).submit(any(Runnable.class));
-			verify(handler, times(2)).handle(message);
+			verify(handler, times(2)).handle(topic, message);
 			factory.verify(() -> MessageHandlerFactory.createClaimAvailableHandler(tested), times(1));
 		}
 	}

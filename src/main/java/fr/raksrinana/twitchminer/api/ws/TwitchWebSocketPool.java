@@ -79,8 +79,9 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	@Override
 	public void onWebSocketMessage(@NotNull TwitchWebSocketResponse response){
 		if(response instanceof MessageResponse m){
+			var topic = m.getData().getTopic();
 			var message = m.getData().getMessage();
-			listeners.forEach(l -> l.onTwitchMessage(message));
+			listeners.forEach(l -> l.onTwitchMessage(topic, message));
 		}
 	}
 	
