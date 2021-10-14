@@ -1,0 +1,18 @@
+{
+  "data": {
+    "claimCommunityPoints": {
+      "claim": null,
+      "currentPoints": null,
+      "error": {
+        "code": "NOT_FOUND",
+        "__typename": "ClaimCommunityPointsError"
+      },
+      "__typename": "ClaimCommunityPointsPayload"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 7,
+    "operationName": "ClaimCommunityPoints",
+    "requestID": "request-id"
+  }
+}

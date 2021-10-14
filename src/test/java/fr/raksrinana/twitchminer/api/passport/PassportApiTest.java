@@ -1,35 +1,38 @@
 package fr.raksrinana.twitchminer.api.passport;
 
-import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.passport.data.LoginResponse;
 import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
+import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import fr.raksrinana.twitchminer.utils.CommonUtils;
 import kong.unirest.Cookie;
-import kong.unirest.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import static fr.raksrinana.twitchminer.TestUtils.copyFromResources;
-import static fr.raksrinana.twitchminer.TestUtils.getResourcePath;
+import static fr.raksrinana.twitchminer.tests.TestUtils.*;
 import static kong.unirest.ContentType.APPLICATION_JSON;
 import static kong.unirest.HeaderNames.CONTENT_TYPE;
 import static kong.unirest.HttpMethod.POST;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class PassportApiTest{
+	private static final String USER_PASS_REQUEST = "{\"client_id\":\"%s\",\"password\":\"%s\",\"remember_me\":true,\"undelete_user\":false,\"username\":\"%s\"}";
+	private static final String USER_PASS_2FA_REQUEST = "{\"authy_token\":\"%s\",\"client_id\":\"%s\",\"password\":\"%s\",\"remember_me\":true,\"undelete_user\":false,\"username\":\"%s\"}";
+	private static final String USER_PASS_TWITCHGUARD_REQUEST = "{\"client_id\":\"%s\",\"password\":\"%s\",\"remember_me\":true,\"twitchguard_code\":\"%s\",\"undelete_user\":false,\"username\":\"%s\"}";
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String USERNAME = "username";
 	private static final String PASSWORD = "password";
@@ -37,19 +40,17 @@ class PassportApiTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String TWO_FACTOR = "123456";
 	
+	@RegisterExtension
+	private static final UnirestMockExtension unirest = new UnirestMockExtension();
+	
 	@TempDir
 	private Path authFolder;
 	
 	private PassportApi tested;
 	
 	private Path authFile;
-	private MockClient unirest;
-	
 	@BeforeEach
 	void setUp(){
-		TestUtils.setupUnirest();
-		unirest = MockClient.register();
-		
 		tested = new PassportApi(USERNAME, PASSWORD, authFolder, false);
 		
 		authFile = authFolder.resolve(USERNAME + ".json");
@@ -60,7 +61,7 @@ class PassportApiTest{
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
-				.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 				.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).build())
 				.withHeader("Set-Cookie", "yummy_cookie=choco")
 				.withHeader("Set-Cookie", "yummy_cake=vanilla")
@@ -76,7 +77,8 @@ class PassportApiTest{
 				.build();
 		
 		assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
-		assertThat(authFile).exists().hasSameTextualContentAs(getResourcePath("api/passport/expectedAuth.json"));
+		assertThat(authFile).exists().isNotEmptyFile();
+		assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
 		
 		unirest.verifyAll();
 	}
@@ -91,7 +93,7 @@ class PassportApiTest{
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\",\"authy_token\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD, TWO_FACTOR))
+					.body(USER_PASS_2FA_REQUEST.formatted(TWO_FACTOR, CLIENT_ID, PASSWORD, USERNAME))
 					.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).build())
 					.withHeader("Set-Cookie", "yummy_cookie=choco")
 					.withHeader("Set-Cookie", "yummy_cake=vanilla")
@@ -107,7 +109,8 @@ class PassportApiTest{
 					.build();
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
-			assertThat(authFile).exists().hasSameTextualContentAs(getResourcePath("api/passport/expectedAuth.json"));
+			assertThat(authFile).exists().isNotEmptyFile();
+			assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
 			
 			unirest.verifyAll();
 		}
@@ -124,14 +127,14 @@ class PassportApiTest{
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+					.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 					.thenReturn(LoginResponse.builder().errorCode(errorCode).errorDescription("For tests").build())
 					.withStatus(400);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\",\"authy_token\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD, TWO_FACTOR))
+					.body(USER_PASS_2FA_REQUEST.formatted(TWO_FACTOR, CLIENT_ID, PASSWORD, USERNAME))
 					.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).build())
 					.withHeader("Set-Cookie", "yummy_cookie=choco")
 					.withHeader("Set-Cookie", "yummy_cake=vanilla")
@@ -147,7 +150,8 @@ class PassportApiTest{
 					.build();
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
-			assertThat(authFile).exists().hasSameTextualContentAs(getResourcePath("api/passport/expectedAuth.json"));
+			assertThat(authFile).exists().isNotEmptyFile();
+			assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
 			
 			unirest.verifyAll();
 		}
@@ -164,14 +168,14 @@ class PassportApiTest{
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+					.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 					.thenReturn(LoginResponse.builder().errorCode(errorCode).errorDescription("For tests").build())
 					.withStatus(400);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\",\"twitchguard_code\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD, TWO_FACTOR))
+					.body(USER_PASS_TWITCHGUARD_REQUEST.formatted(CLIENT_ID, PASSWORD, TWO_FACTOR, USERNAME))
 					.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).build())
 					.withHeader("Set-Cookie", "yummy_cookie=choco")
 					.withHeader("Set-Cookie", "yummy_cake=vanilla")
@@ -187,7 +191,8 @@ class PassportApiTest{
 					.build();
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
-			assertThat(authFile).exists().hasSameTextualContentAs(getResourcePath("api/passport/expectedAuth.json"));
+			assertThat(authFile).exists().isNotEmptyFile();
+			assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
 			
 			unirest.verifyAll();
 		}
@@ -198,7 +203,7 @@ class PassportApiTest{
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
-				.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 				.thenReturn(LoginResponse.builder().errorCode(1000).errorDescription("For tests").build())
 				.withStatus(400);
 		
@@ -217,7 +222,7 @@ class PassportApiTest{
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
-				.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 				.thenReturn(LoginResponse.builder().errorCode(errorCode).errorDescription("For tests").build())
 				.withStatus(400);
 		
@@ -234,14 +239,14 @@ class PassportApiTest{
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+					.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 					.thenReturn(LoginResponse.builder().errorCode(3011).errorDescription("For tests").build())
 					.withStatus(400);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\",\"authy_token\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD, TWO_FACTOR))
+					.body(USER_PASS_2FA_REQUEST.formatted(TWO_FACTOR, CLIENT_ID, PASSWORD, USERNAME))
 					.thenReturn(LoginResponse.builder().errorCode(3001).errorDescription("For tests").build())
 					.withStatus(400);
 			
@@ -259,14 +264,14 @@ class PassportApiTest{
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+					.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 					.thenReturn(LoginResponse.builder().errorCode(3022).errorDescription("For tests").build())
 					.withStatus(400);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 					.header("Client-Id", CLIENT_ID)
-					.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\",\"twitchguard_code\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD, TWO_FACTOR))
+					.body(USER_PASS_TWITCHGUARD_REQUEST.formatted(CLIENT_ID, PASSWORD, TWO_FACTOR, USERNAME))
 					.thenReturn(LoginResponse.builder().errorCode(3001).errorDescription("For tests").build())
 					.withStatus(400);
 			
@@ -282,7 +287,7 @@ class PassportApiTest{
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
-				.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 				.thenReturn(LoginResponse.builder().errorCode(9999).errorDescription("For tests").build())
 				.withStatus(400);
 		
@@ -297,7 +302,7 @@ class PassportApiTest{
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
-				.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 				.thenReturn(LoginResponse.builder().errorDescription("For tests").build())
 				.withStatus(400);
 		
@@ -312,7 +317,7 @@ class PassportApiTest{
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
-				.body("{\"client_id\":\"%s\",\"undelete_user\":false,\"remember_me\":true,\"username\":\"%s\",\"password\":\"%s\"}".formatted(CLIENT_ID, USERNAME, PASSWORD))
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
 				.thenReturn()
 				.withStatus(500);
 		

@@ -2,9 +2,9 @@ package fr.raksrinana.twitchminer.miner.runnables;
 
 import fr.raksrinana.twitchminer.api.gql.data.types.Game;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
-import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedProperties;
-import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedRequest;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
+import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedEvent;
+import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import org.mockito.InjectMocks;
@@ -26,7 +26,7 @@ class SendMinutesWatchedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAM_ID = "stream-id";
 	private static final String SITE_PLAYER = "site";
-	private static final String USER_ID = "user-id";
+	private static final int USER_ID = 123456789;
 	private static final String GAME_NAME = "game-name";
 	
 	@InjectMocks
@@ -53,7 +53,7 @@ class SendMinutesWatchedTest{
 		lenient().when(miner.getStreamers()).thenReturn(List.of(streamer));
 		lenient().when(miner.getTwitchLogin()).thenReturn(twitchLogin);
 		
-		lenient().when(twitchLogin.getUserId()).thenReturn(USER_ID);
+		lenient().when(twitchLogin.getUserIdAsInt()).thenReturn(USER_ID);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
 		lenient().when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
@@ -66,47 +66,53 @@ class SendMinutesWatchedTest{
 		when(streamer.getGame()).thenReturn(Optional.of(game));
 		when(game.getName()).thenReturn(GAME_NAME);
 		
-		var expected = new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-				.channelId(STREAMER_ID)
-				.broadcastId(STREAM_ID)
-				.player(SITE_PLAYER)
-				.userId(USER_ID)
-				.game(GAME_NAME)
-				.build());
+		var expected = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.channelId(STREAMER_ID)
+						.broadcastId(STREAM_ID)
+						.player(SITE_PLAYER)
+						.userId(USER_ID)
+						.game(GAME_NAME)
+						.build())
+				.build();
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendMinutesWatched(spadeUrl, expected);
+		verify(twitchApi).sendPlayerEvents(spadeUrl, expected);
 	}
 	
 	@Test
 	void sendingMinutesWatchedNoGameName(){
 		when(streamer.getGame()).thenReturn(Optional.of(game));
 		
-		var expected = new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-				.channelId(STREAMER_ID)
-				.broadcastId(STREAM_ID)
-				.player(SITE_PLAYER)
-				.userId(USER_ID)
-				.build());
+		var expected = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.channelId(STREAMER_ID)
+						.broadcastId(STREAM_ID)
+						.player(SITE_PLAYER)
+						.userId(USER_ID)
+						.build())
+				.build();
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendMinutesWatched(spadeUrl, expected);
+		verify(twitchApi).sendPlayerEvents(spadeUrl, expected);
 	}
 	
 	@Test
 	void sendingMinutesWatchedNoGame(){
-		var expected = new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-				.channelId(STREAMER_ID)
-				.broadcastId(STREAM_ID)
-				.player(SITE_PLAYER)
-				.userId(USER_ID)
-				.build());
+		var expected = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.channelId(STREAMER_ID)
+						.broadcastId(STREAM_ID)
+						.player(SITE_PLAYER)
+						.userId(USER_ID)
+						.build())
+				.build();
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendMinutesWatched(spadeUrl, expected);
+		verify(twitchApi).sendPlayerEvents(spadeUrl, expected);
 	}
 	
 	@Test
@@ -115,7 +121,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi, never()).sendMinutesWatched(any(), any());
+		verify(twitchApi, never()).sendPlayerEvents(any(), any());
 	}
 	
 	@Test
@@ -124,7 +130,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi, never()).sendMinutesWatched(any(), any());
+		verify(twitchApi, never()).sendPlayerEvents(any(), any());
 	}
 	
 	@Test
@@ -133,7 +139,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi, times(2)).sendMinutesWatched(any(), any());
+		verify(twitchApi, times(2)).sendPlayerEvents(any(), any());
 	}
 	
 	@Test
@@ -142,12 +148,12 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi, times(2)).sendMinutesWatched(any(), any());
+		verify(twitchApi, times(2)).sendPlayerEvents(any(), any());
 	}
 	
 	@Test
 	void sendingMinutesWatchedException(){
-		when(twitchApi.sendMinutesWatched(any(), any())).thenThrow(new RuntimeException("For tests"));
+		when(twitchApi.sendPlayerEvents(any(), any())).thenThrow(new RuntimeException("For tests"));
 		
 		assertDoesNotThrow(() -> tested.run());
 	}

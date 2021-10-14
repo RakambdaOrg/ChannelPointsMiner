@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Location{
 	@JsonProperty("line")
 	private int line;

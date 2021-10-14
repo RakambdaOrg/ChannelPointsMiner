@@ -1,7 +1,9 @@
-package fr.raksrinana.twitchminer.api.twitch;
+package fr.raksrinana.twitchminer.api.twitch.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 @NoArgsConstructor
@@ -10,13 +12,17 @@ import lombok.*;
 @EqualsAndHashCode
 public class MinuteWatchedProperties{
 	@JsonProperty("channel_id")
+	@NotNull
 	private String channelId;
 	@JsonProperty("broadcast_id")
+	@NotNull
 	private String broadcastId;
 	@JsonProperty("player")
+	@NotNull
 	private String player;
 	@JsonProperty("user_id")
-	private String userId;
+	private int userId;
 	@JsonProperty("game")
+	@Nullable
 	private String game;
 }

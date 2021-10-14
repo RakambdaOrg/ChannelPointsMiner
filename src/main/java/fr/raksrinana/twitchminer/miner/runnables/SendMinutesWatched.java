@@ -1,8 +1,8 @@
 package fr.raksrinana.twitchminer.miner.runnables;
 
 import fr.raksrinana.twitchminer.api.gql.data.types.Game;
-import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedProperties;
-import fr.raksrinana.twitchminer.api.twitch.MinuteWatchedRequest;
+import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedEvent;
+import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.utils.CommonUtils;
@@ -43,14 +43,21 @@ public class SendMinutesWatched implements Runnable{
 	
 	private void send(Streamer streamer){
 		log.debug("Sending minutes watched for {}", streamer);
-		var request = new MinuteWatchedRequest(MinuteWatchedProperties.builder()
-				.channelId(streamer.getId())
-				.broadcastId(streamer.getStreamId().orElse(null))
-				.player(SITE_PLAYER)
-				.userId(miner.getTwitchLogin().getUserId())
-				.game(streamer.getGame().map(Game::getName).orElse(null))
-				.build());
+		var streamId = streamer.getStreamId();
+		if(streamId.isEmpty()){
+			return;
+		}
 		
-		miner.getTwitchApi().sendMinutesWatched(streamer.getSpadeUrl(), request);
+		var request = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.channelId(streamer.getId())
+						.broadcastId(streamId.get())
+						.player(SITE_PLAYER)
+						.userId(miner.getTwitchLogin().getUserIdAsInt())
+						.game(streamer.getGame().map(Game::getName).orElse(null))
+						.build())
+				.build();
+		
+		miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
 	}
 }

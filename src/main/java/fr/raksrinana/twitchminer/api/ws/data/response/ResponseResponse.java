@@ -2,16 +2,15 @@ package fr.raksrinana.twitchminer.api.ws.data.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import java.util.Objects;
 
 @JsonTypeName("RESPONSE")
 @Getter
 @Builder
 @EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class ResponseResponse extends TwitchWebSocketResponse{
 	@JsonProperty("error")

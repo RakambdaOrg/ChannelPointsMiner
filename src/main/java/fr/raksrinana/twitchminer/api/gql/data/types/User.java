@@ -55,6 +55,10 @@ public class User extends GQLType{
 	@Nullable
 	private Inventory inventory;
 	
+	public Optional<CommunityPointsClaim> getClaim(){
+		return Optional.ofNullable(channel).flatMap(Channel::getClaim);
+	}
+	
 	public boolean isStreaming(){
 		return Objects.nonNull(stream);
 	}

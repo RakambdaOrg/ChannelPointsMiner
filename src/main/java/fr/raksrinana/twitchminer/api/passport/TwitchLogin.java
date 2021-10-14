@@ -12,10 +12,9 @@ import fr.raksrinana.twitchminer.factory.ApiFactory;
 import fr.raksrinana.twitchminer.utils.json.CookieDeserializer;
 import fr.raksrinana.twitchminer.utils.json.CookieSerializer;
 import kong.unirest.Cookie;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,24 +25,37 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
+@ToString(onlyExplicitlyIncluded = true)
 public class TwitchLogin{
 	private static final String PERSISTENT_COOKIE_NAME = "persistent";
 	
 	@Getter
 	@JsonProperty("username")
+	@NotNull
+	@ToString.Include
 	private String username;
 	@Getter
 	@JsonProperty("accessToken")
+	@NotNull
 	private String accessToken;
 	@JsonProperty("cookies")
 	@JsonDeserialize(contentUsing = CookieDeserializer.class)
 	@JsonSerialize(contentUsing = CookieSerializer.class)
 	@Builder.Default
+	@NotNull
 	private List<Cookie> cookies = new ArrayList<>();
 	@JsonProperty("userId")
+	@Nullable
+	@ToString.Include
 	private String userId;
 	
-	public String getUserId(){
+	public int getUserIdAsInt(){
+		return Integer.parseInt(fetchUserId());
+	}
+	
+	@NotNull
+	public String fetchUserId(){
 		if(Objects.isNull(userId)){
 			userId = cookies.stream()
 					.filter(c -> Objects.equals(c.getName(), PERSISTENT_COOKIE_NAME))

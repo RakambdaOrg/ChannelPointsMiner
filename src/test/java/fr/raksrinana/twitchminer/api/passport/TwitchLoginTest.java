@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 class TwitchLoginTest{
 	private static final String USER_ID = "user-id";
 	private static final String USERNAME = "username";
+	private static final String ACCESS_TOKEN = "access-token";
 	
 	@Mock
 	private GQLApi gqlApi;
@@ -45,12 +46,13 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdFromCookies(){
 		var tested = TwitchLogin.builder()
+				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
 				.cookies(List.of(new Cookie("persistent=%s%%3A%%3Aabcdefghijklmnopqrstuvwxyz".formatted(USER_ID))))
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			assertThat(tested.getUserId()).isEqualTo(USER_ID);
+			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
 			
 			apiFactory.verifyNoInteractions();
 		}
@@ -59,28 +61,28 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdFromApi(){
 		var tested = TwitchLogin.builder()
+				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
-				.cookies(List.of())
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
 			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
 			
-			assertThat(tested.getUserId()).isEqualTo(USER_ID);
+			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
 		}
 	}
 	
 	@Test
 	void getUserIdSavesResult(){
 		var tested = TwitchLogin.builder()
+				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
-				.cookies(List.of())
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
 			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
 			
-			assertThat(tested.getUserId()).isEqualTo(USER_ID);
+			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
 			
 			apiFactory.verify(() -> ApiFactory.createGqlApi(any()));
 		}
@@ -89,8 +91,8 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdFromApiNoResponse(){
 		var tested = TwitchLogin.builder()
+				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
-				.cookies(List.of())
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
@@ -98,7 +100,18 @@ class TwitchLoginTest{
 			
 			when(gqlApi.reportMenuItem(USERNAME)).thenReturn(Optional.empty());
 			
-			assertThrows(IllegalStateException.class, () -> tested.getUserId());
+			assertThrows(IllegalStateException.class, () -> tested.fetchUserId());
 		}
+	}
+	
+	@Test
+	void getUserIdAsInt(){
+		var tested = TwitchLogin.builder()
+				.accessToken(ACCESS_TOKEN)
+				.username(USERNAME)
+				.userId("123456")
+				.build();
+		
+		assertThat(tested.getUserIdAsInt()).isEqualTo(123456);
 	}
 }

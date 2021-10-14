@@ -1,7 +1,10 @@
 package fr.raksrinana.twitchminer.api.ws;
 
+import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
+import fr.raksrinana.twitchminer.api.ws.data.response.MessageData;
+import fr.raksrinana.twitchminer.api.ws.data.response.MessageResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.factory.TwitchWebSocketClientFactory;
@@ -35,7 +38,7 @@ class TwitchWebSocketPoolTest{
 	@Mock
 	private TwitchWebSocketResponse twitchWebSocketResponse;
 	@Mock
-	private TwitchWebSocketListener twitchWebSocketListener;
+	private TwitchMessageListener twitchMessageListener;
 	
 	@BeforeEach
 	void setUp(){
@@ -182,10 +185,19 @@ class TwitchWebSocketPoolTest{
 	
 	@Test
 	void messagesAreRedirected(){
-		assertDoesNotThrow(() -> tested.addListener(twitchWebSocketListener));
-		assertDoesNotThrow(() -> tested.onWebSocketMessage(twitchWebSocketResponse));
+		var response = mock(MessageResponse.class);
+		var data = mock(MessageData.class);
+		var message = mock(Message.class);
 		
-		verify(twitchWebSocketListener).onWebSocketMessage(twitchWebSocketResponse);
+		when(response.getData()).thenReturn(data);
+		when(data.getMessage()).thenReturn(message);
+		when(data.getTopic()).thenReturn(topic);
+		
+		assertDoesNotThrow(() -> tested.addListener(twitchMessageListener));
+		assertDoesNotThrow(() -> tested.onWebSocketMessage(twitchWebSocketResponse));
+		assertDoesNotThrow(() -> tested.onWebSocketMessage(response));
+		
+		verify(twitchMessageListener).onTwitchMessage(topic, message);
 	}
 	
 	@Test

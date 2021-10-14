@@ -4,6 +4,8 @@ import fr.raksrinana.twitchminer.api.gql.data.GQLOperation;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextData;
 import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextOperation;
+import fr.raksrinana.twitchminer.api.gql.data.claimcommunitypoints.ClaimCommunityPointsData;
+import fr.raksrinana.twitchminer.api.gql.data.claimcommunitypoints.ClaimCommunityPointsOperation;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsOperation;
 import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemData;
@@ -42,8 +44,13 @@ public class GQLApi{
 	}
 	
 	@NotNull
-	public Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(@NotNull String id){
-		return postRequest(new DropsHighlightServiceAvailableDropsOperation(id));
+	public Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(@NotNull String channelId){
+		return postRequest(new DropsHighlightServiceAvailableDropsOperation(channelId));
+	}
+	
+	@NotNull
+	public Optional<GQLResponse<ClaimCommunityPointsData>> claimCommunityPoints(@NotNull String channelId, @NotNull String claimId){
+		return postRequest(new ClaimCommunityPointsOperation(channelId, claimId));
 	}
 	
 	@NotNull

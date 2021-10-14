@@ -35,7 +35,7 @@ public class KrakenApi{
 				.header(AUTHORIZATION, "Bearer " + twitchLogin.getAccessToken())
 				.header(ACCEPT, "application/vnd.twitchtv.v5+json")
 				.header("Client-Id", CLIENT_ID)
-				.routeParam("userId", twitchLogin.getUserId())
+				.routeParam("userId", twitchLogin.fetchUserId())
 				.queryString("limit", limit)
 				.queryString("offset", offset)
 				.queryString("direction", "asc")

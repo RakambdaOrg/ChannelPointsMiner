@@ -1,17 +1,18 @@
 package fr.raksrinana.twitchminer.api.gql;
 
-import fr.raksrinana.twitchminer.TestUtils;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
-import kong.unirest.MockClient;
+import fr.raksrinana.twitchminer.tests.TestUtils;
+import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
@@ -27,20 +28,19 @@ import static org.mockito.Mockito.when;
 class GQLApiDropsHighlightServiceAvailableDropsTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String STREAMER_ID = "streamer-id";
-	public static final String VALID_QUERY = "{\"operationName\":\"DropsHighlightService_AvailableDrops\",\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075\"}},\"variables\":{\"channelID\":\"%s\"}}";
+	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}";
+	
+	@RegisterExtension
+	private static final UnirestMockExtension unirest = new UnirestMockExtension();
 	
 	@InjectMocks
 	private GQLApi tested;
 	
 	@Mock
 	private TwitchLogin twitchLogin;
-	private MockClient unirest;
 	
 	@BeforeEach
 	void setUp(){
-		TestUtils.setupUnirest();
-		unirest = MockClient.register();
-		
 		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 	}
 	

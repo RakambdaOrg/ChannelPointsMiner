@@ -9,14 +9,17 @@ import fr.raksrinana.twitchminer.api.passport.PassportApi;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
+import fr.raksrinana.twitchminer.api.ws.TwitchMessageListener;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
+import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
+import fr.raksrinana.twitchminer.api.ws.data.message.Message;
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.factory.ApiFactory;
-import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
-import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.twitchminer.factory.*;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
+import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateChannelPointsContext;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
 import lombok.Getter;
@@ -25,13 +28,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Log4j2
-public class Miner implements AutoCloseable, IMiner{
+public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private final Configuration configuration;
 	private final PassportApi passportApi;
 	
@@ -40,10 +44,13 @@ public class Miner implements AutoCloseable, IMiner{
 	@Getter
 	private final TwitchWebSocketPool webSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
+	private final ExecutorService handlerExecutor;
 	private final StreamerSettingsFactory streamerSettingsFactory;
 	
 	private UpdateChannelPointsContext updateChannelPointsContext;
 	private UpdateStreamInfo updateStreamInfo;
+	
+	private MessageHandler<ClaimAvailable> claimAvailableHandler;
 	
 	@Getter
 	private TwitchLogin twitchLogin;
@@ -58,12 +65,14 @@ public class Miner implements AutoCloseable, IMiner{
 			@NotNull PassportApi passportApi,
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchWebSocketPool webSocketPool,
-			@NotNull ScheduledExecutorService scheduledExecutor){
+			@NotNull ScheduledExecutorService scheduledExecutor,
+			@NotNull ExecutorService handlerExecutor){
 		this.configuration = configuration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
 		this.webSocketPool = webSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
+		this.handlerExecutor = handlerExecutor;
 		
 		streamers = new HashSet<>();
 	}
@@ -75,6 +84,8 @@ public class Miner implements AutoCloseable, IMiner{
 	 */
 	public void start(){
 		log.info("Starting miner");
+		webSocketPool.addListener(this);
+		webSocketPool.addListener(EventLoggerFactory.create(this));
 		
 		login();
 		loadStreamersFromConfiguration();
@@ -85,7 +96,7 @@ public class Miner implements AutoCloseable, IMiner{
 		scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendMinutesWatched(this), 0, 1, MINUTES);
 		scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
 		
-		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().getUserId());
+		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 	}
 	
 	private void loadStreamersFromConfiguration(){
@@ -151,7 +162,7 @@ public class Miner implements AutoCloseable, IMiner{
 		listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 		
 		if(streamer.getSettings().isMakePredictions()){
-			listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().getUserId());
+			listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId());
 			listenTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 		}
 		if(streamer.getSettings().isFollowRaid()){
@@ -167,6 +178,24 @@ public class Miner implements AutoCloseable, IMiner{
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
 		webSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
+	}
+	
+	@Override
+	public void onTwitchMessage(@NotNull Topic topic, @NotNull Message message){
+		handlerExecutor.submit(() -> handleMessage(topic, message));
+	}
+	
+	private void handleMessage(@NotNull Topic topic, @NotNull Message message){
+		if(message instanceof ClaimAvailable claimAvailable){
+			getClaimAvailableHandler().handle(topic, claimAvailable);
+		}
+	}
+	
+	private MessageHandler<ClaimAvailable> getClaimAvailableHandler(){
+		if(Objects.isNull(claimAvailableHandler)){
+			claimAvailableHandler = MessageHandlerFactory.createClaimAvailableHandler(this);
+		}
+		return claimAvailableHandler;
 	}
 	
 	private UpdateChannelPointsContext getUpdateChannelPointsContext(){
@@ -186,6 +215,7 @@ public class Miner implements AutoCloseable, IMiner{
 	@Override
 	public void close(){
 		scheduledExecutor.shutdown();
+		handlerExecutor.shutdown();
 		webSocketPool.close();
 	}
 }

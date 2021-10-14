@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class GQLError{
 	@JsonProperty("message")
 	@NotNull
@@ -19,4 +20,8 @@ public class GQLError{
 	@NotNull
 	@Builder.Default
 	private List<Location> locations = new LinkedList<>();
+	@JsonProperty("path")
+	@NotNull
+	@Builder.Default
+	private List<String> path = new LinkedList<>();
 }

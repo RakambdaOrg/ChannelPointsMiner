@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.api.twitch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.raksrinana.twitchminer.api.twitch.data.PlayerEvent;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
@@ -10,7 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -70,13 +70,14 @@ public class TwitchApi{
 		}
 	}
 	
-	public boolean sendMinutesWatched(@NotNull URL spadeUrl, @NotNull MinuteWatchedRequest request){
+	public boolean sendPlayerEvents(@NotNull URL spadeUrl, @NotNull PlayerEvent... events){
 		try{
-			var requestStr = JacksonUtils.writeAsString(List.of(request));
+			var requestStr = JacksonUtils.writeAsString(events);
 			var requestBase64 = new String(Base64.getEncoder().encode(requestStr.getBytes(UTF_8)), UTF_8);
+			var data = new JSONObject(Map.of("data", requestBase64));
 			
 			var response = Unirest.post(spadeUrl.toString())
-					.body(new JSONObject(Map.of("data", requestBase64)))
+					.body(data)
 					.asEmpty();
 			
 			return response.isSuccess();

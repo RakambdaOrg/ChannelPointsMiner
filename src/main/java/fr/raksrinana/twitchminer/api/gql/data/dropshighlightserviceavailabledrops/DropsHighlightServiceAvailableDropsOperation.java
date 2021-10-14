@@ -13,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class DropsHighlightServiceAvailableDropsOperation extends GQLOperation<DropsHighlightServiceAvailableDropsData>{
-	public DropsHighlightServiceAvailableDropsOperation(String username){
+	public DropsHighlightServiceAvailableDropsOperation(@NotNull String channelId){
 		super("DropsHighlightService_AvailableDrops");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075"));
-		addVariable("channelID", username);
+		addVariable("channelID", channelId);
 	}
 	
 	@Override

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class ChannelPointsContextOperation extends GQLOperation<ChannelPointsContextData>{
-	public ChannelPointsContextOperation(String username){
+	public ChannelPointsContextOperation(@NotNull String username){
 		super("ChannelPointsContext");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "9988086babc615a918a1e9a722ff41d98847acac822645209ac7379eecb27152"));
 		addVariable("channelLogin", username);

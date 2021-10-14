@@ -1,0 +1,21 @@
+{
+  "data": {
+    "claimCommunityPoints": {
+      "claim": {
+        "id": "claim-id",
+        "multipliers": [],
+        "pointsEarnedBaseline": 50,
+        "pointsEarnedTotal": 50,
+        "__typename": "CommunityPointsClaim"
+      },
+      "currentPoints": 1500,
+      "error": null,
+      "__typename": "ClaimCommunityPointsPayload"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 55,
+    "operationName": "ClaimCommunityPoints",
+    "requestID": "request-id"
+  }
+}

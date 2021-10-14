@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.api.ws;
 
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
+import fr.raksrinana.twitchminer.api.ws.data.response.MessageResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.factory.TwitchWebSocketClientFactory;
@@ -21,7 +22,7 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	private static final int SOCKET_TIMEOUT_MINUTES = 5;
 	
 	private final Collection<TwitchWebSocketClient> clients;
-	private final List<TwitchWebSocketListener> listeners;
+	private final List<TwitchMessageListener> listeners;
 	
 	public TwitchWebSocketPool(){
 		clients = new ArrayList<>();
@@ -71,13 +72,17 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 		}
 	}
 	
-	public void addListener(@NotNull TwitchWebSocketListener twitchWebSocketListener){
-		listeners.add(twitchWebSocketListener);
+	public void addListener(@NotNull TwitchMessageListener listener){
+		listeners.add(listener);
 	}
 	
 	@Override
-	public void onWebSocketMessage(@NotNull TwitchWebSocketResponse message){
-		listeners.forEach(l -> l.onWebSocketMessage(message));
+	public void onWebSocketMessage(@NotNull TwitchWebSocketResponse response){
+		if(response instanceof MessageResponse m){
+			var topic = m.getData().getTopic();
+			var message = m.getData().getMessage();
+			listeners.forEach(l -> l.onTwitchMessage(topic, message));
+		}
 	}
 	
 	@Override

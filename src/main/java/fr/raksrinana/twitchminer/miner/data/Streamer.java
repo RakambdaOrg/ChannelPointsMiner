@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.miner.data;
 
 import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextData;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
+import fr.raksrinana.twitchminer.api.gql.data.types.CommunityPointsClaim;
 import fr.raksrinana.twitchminer.api.gql.data.types.Game;
 import fr.raksrinana.twitchminer.api.gql.data.types.Stream;
 import fr.raksrinana.twitchminer.api.gql.data.types.User;
@@ -51,6 +52,12 @@ public class Streamer{
 	
 	public boolean updateCampaigns(){
 		return true;
+	}
+	
+	public Optional<String> getClaimId(){
+		return Optional.ofNullable(channelPointsContext)
+				.flatMap(ChannelPointsContextData::getClaim)
+				.map(CommunityPointsClaim::getId);
 	}
 	
 	public Optional<Game> getGame(){
