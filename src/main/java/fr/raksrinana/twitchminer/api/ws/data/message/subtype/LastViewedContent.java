@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -27,5 +27,5 @@ public class LastViewedContent{
 	@JsonProperty("last_viewed_at")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@Nullable
-	private Instant lastViewedAt;
+	private ZonedDateTime lastViewedAt;
 }
