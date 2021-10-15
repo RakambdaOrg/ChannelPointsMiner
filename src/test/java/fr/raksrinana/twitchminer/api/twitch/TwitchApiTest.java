@@ -58,7 +58,7 @@ class TwitchApiTest{
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
 		unirest.expect(POST, SPADE_URL)
-				.body("{\"data\":\"%s\"}".formatted(expectedData))
+				.body("data=%s".formatted(expectedData))
 				.thenReturn()
 				.withStatus(204);
 		
@@ -82,7 +82,7 @@ class TwitchApiTest{
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
 		unirest.expect(POST, SPADE_URL)
-				.body("{\"data\":\"%s\"}".formatted(expectedData))
+				.body("data=%s".formatted(expectedData))
 				.thenReturn()
 				.withStatus(204);
 		
@@ -107,7 +107,7 @@ class TwitchApiTest{
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
 		
 		unirest.expect(POST, SPADE_URL)
-				.body("{\"data\":\"%s\"}".formatted(expectedData))
+				.body("data=%s".formatted(expectedData))
 				.thenReturn()
 				.withStatus(400);
 		
