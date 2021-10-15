@@ -4,14 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.twitchminer.api.twitch.data.PlayerEvent;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.Unirest;
-import kong.unirest.json.JSONObject;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -74,7 +72,7 @@ public class TwitchApi{
 		try{
 			var requestStr = JacksonUtils.writeAsString(events);
 			var requestBase64 = new String(Base64.getEncoder().encode(requestStr.getBytes(UTF_8)), UTF_8);
-			var data = new JSONObject(Map.of("data", requestBase64));
+			var data = "data=" + requestBase64;
 			
 			var response = Unirest.post(spadeUrl.toString())
 					.body(data)
