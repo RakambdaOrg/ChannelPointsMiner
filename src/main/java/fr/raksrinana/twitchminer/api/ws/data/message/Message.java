@@ -24,6 +24,7 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = Commercial.class, name = "commercial"),
 		@JsonSubTypes.Type(value = RaidUpdateV2.class, name = "raid_update_v2"),
 		@JsonSubTypes.Type(value = RaidGoV2.class, name = "raid_go_v2"),
+		@JsonSubTypes.Type(value = PointsSpent.class, name = "points-spent"),
 })
 @EqualsAndHashCode
 @ToString
