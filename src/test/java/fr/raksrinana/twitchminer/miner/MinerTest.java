@@ -13,13 +13,15 @@ import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.config.StreamerConfiguration;
-import fr.raksrinana.twitchminer.factory.*;
+import fr.raksrinana.twitchminer.factory.ApiFactory;
+import fr.raksrinana.twitchminer.factory.EventLoggerFactory;
+import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
+import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
@@ -457,18 +459,17 @@ class MinerTest{
 	}
 	
 	@Test
-	void claimAvailableIsForwardedAndHandlerCreatedOnce(){
-		try(var factory = mockStatic(MessageHandlerFactory.class)){
-			var handler = (MessageHandler<ClaimAvailable>) mock(MessageHandler.class);
-			factory.when(() -> MessageHandlerFactory.createClaimAvailableHandler(tested)).thenReturn(handler);
-			
-			var message = mock(ClaimAvailable.class);
-			assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
-			assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
-			
-			verify(executorService, times(2)).submit(any(Runnable.class));
-			verify(handler, times(2)).handle(topic, message);
-			factory.verify(() -> MessageHandlerFactory.createClaimAvailableHandler(tested), times(1));
-		}
+	void messageHandlersAreCalled(){
+		var handler1 = mock(MessageHandler.class);
+		var handler2 = mock(MessageHandler.class);
+		
+		var tested = new Miner(configuration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService, handler1, handler2);
+		
+		var message = mock(Message.class);
+		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
+		
+		verify(executorService).submit(any(Runnable.class));
+		verify(handler1).handle(topic, message);
+		verify(handler2).handle(topic, message);
 	}
 }

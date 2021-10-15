@@ -11,13 +11,15 @@ import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchMessageListener;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.factory.*;
+import fr.raksrinana.twitchminer.factory.ApiFactory;
+import fr.raksrinana.twitchminer.factory.EventLoggerFactory;
+import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
+import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateChannelPointsContext;
@@ -25,9 +27,7 @@ import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
@@ -46,11 +46,10 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private final ScheduledExecutorService scheduledExecutor;
 	private final ExecutorService handlerExecutor;
 	private final StreamerSettingsFactory streamerSettingsFactory;
+	private final Collection<MessageHandler> messageHandlers;
 	
 	private UpdateChannelPointsContext updateChannelPointsContext;
 	private UpdateStreamInfo updateStreamInfo;
-	
-	private MessageHandler<ClaimAvailable> claimAvailableHandler;
 	
 	@Getter
 	private TwitchLogin twitchLogin;
@@ -66,13 +65,15 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchWebSocketPool webSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
-			@NotNull ExecutorService handlerExecutor){
+			@NotNull ExecutorService handlerExecutor,
+			@NotNull MessageHandler... handlers){
 		this.configuration = configuration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
 		this.webSocketPool = webSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
+		this.messageHandlers = List.of(handlers);
 		
 		streamers = new HashSet<>();
 	}
@@ -186,16 +187,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	}
 	
 	private void handleMessage(@NotNull Topic topic, @NotNull Message message){
-		if(message instanceof ClaimAvailable claimAvailable){
-			getClaimAvailableHandler().handle(topic, claimAvailable);
-		}
-	}
-	
-	private MessageHandler<ClaimAvailable> getClaimAvailableHandler(){
-		if(Objects.isNull(claimAvailableHandler)){
-			claimAvailableHandler = MessageHandlerFactory.createClaimAvailableHandler(this);
-		}
-		return claimAvailableHandler;
+		messageHandlers.forEach(handler -> handler.handle(topic, message));
 	}
 	
 	private UpdateChannelPointsContext getUpdateChannelPointsContext(){

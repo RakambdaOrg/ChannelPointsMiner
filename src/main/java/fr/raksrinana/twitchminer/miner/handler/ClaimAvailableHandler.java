@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
-public class ClaimAvailableHandler implements MessageHandler<ClaimAvailable>{
+public class ClaimAvailableHandler extends HandlerAdapter{
 	private final IMiner miner;
 	
 	@Override
-	public void handle(@NotNull Topic topic, @NotNull ClaimAvailable message){
+	public void onClaimAvailable(@NotNull Topic topic, @NotNull ClaimAvailable message){
 		miner.getGqlApi().claimCommunityPoints(message.getData().getClaim().getChannelId(), message.getData().getClaim().getId());
 	}
 }
