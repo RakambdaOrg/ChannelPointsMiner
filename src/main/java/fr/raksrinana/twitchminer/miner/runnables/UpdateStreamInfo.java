@@ -33,7 +33,6 @@ public class UpdateStreamInfo implements Runnable{
 	
 	public void update(@NotNull Streamer streamer){
 		log.trace("Updating stream info for {}", streamer);
-		var wasStreaming = streamer.isStreaming();
 		
 		miner.getGqlApi().videoPlayerStreamInfoOverlayChannel(streamer.getUsername())
 				.map(GQLResponse::getData)

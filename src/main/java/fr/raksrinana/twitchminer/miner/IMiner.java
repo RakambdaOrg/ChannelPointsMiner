@@ -8,10 +8,14 @@ import fr.raksrinana.twitchminer.miner.data.Streamer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IMiner{
 	@NotNull
 	Collection<Streamer> getStreamers();
+	
+	@NotNull
+	Optional<Streamer> getStreamerById(@NotNull String id);
 	
 	@NotNull
 	TwitchWebSocketPool getWebSocketPool();
@@ -40,4 +44,6 @@ public interface IMiner{
 	 * @return True if being mined, false otherwise.
 	 */
 	boolean hasStreamerWithUsername(@NotNull String username);
+	
+	void updateStreamerInfos(@NotNull Streamer streamer);
 }

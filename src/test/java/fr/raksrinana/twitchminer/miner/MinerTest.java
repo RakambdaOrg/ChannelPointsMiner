@@ -19,7 +19,6 @@ import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.config.StreamerConfiguration;
 import fr.raksrinana.twitchminer.factory.ApiFactory;
-import fr.raksrinana.twitchminer.factory.EventLoggerFactory;
 import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
@@ -122,15 +121,12 @@ class MinerTest{
 	@Test
 	void setupIsDoneFromConfig() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
-				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class);
-				var eventLoggerFactory = Mockito.mockStatic(EventLoggerFactory.class)){
+				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
-			
-			eventLoggerFactory.when(() -> EventLoggerFactory.create(tested)).thenReturn(eventLogger);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
@@ -463,7 +459,8 @@ class MinerTest{
 		var handler1 = mock(MessageHandler.class);
 		var handler2 = mock(MessageHandler.class);
 		
-		var tested = new Miner(configuration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService, handler1, handler2);
+		tested.addHandler(handler1);
+		tested.addHandler(handler2);
 		
 		var message = mock(Message.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
@@ -471,5 +468,42 @@ class MinerTest{
 		verify(executorService).submit(any(Runnable.class));
 		verify(handler1).handle(topic, message);
 		verify(handler2).handle(topic, message);
+	}
+	
+	@Test
+	void getStreamerById(){
+		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
+				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
+			
+			var id1 = "ID1";
+			var id2 = "ID2";
+			
+			var streamer1 = mock(Streamer.class);
+			var streamer2 = mock(Streamer.class);
+			when(streamer1.getId()).thenReturn(id1);
+			when(streamer2.getId()).thenReturn(id2);
+			when(streamer1.getSettings()).thenReturn(streamerSettings);
+			when(streamer2.getSettings()).thenReturn(streamerSettings);
+			
+			tested.start();
+			tested.addStreamer(streamer1);
+			tested.addStreamer(streamer2);
+			
+			assertThat(tested.getStreamerById(id1)).isPresent()
+					.get().isEqualTo(streamer1);
+			assertThat(tested.getStreamerById(id2)).isPresent()
+					.get().isEqualTo(streamer2);
+		}
+	}
+	
+	@Test
+	void getStreamerByIdUnknown(){
+		assertThat(tested.getStreamerById("unknown")).isEmpty();
 	}
 }

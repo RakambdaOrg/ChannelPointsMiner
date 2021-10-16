@@ -5,6 +5,7 @@ import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.twitchminer.cli.CLIHolder;
 import fr.raksrinana.twitchminer.cli.CLIParameters;
 import fr.raksrinana.twitchminer.factory.ConfigurationFactory;
+import fr.raksrinana.twitchminer.factory.MessageHandlerFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.Miner;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
@@ -35,6 +36,9 @@ public class Main{
 				new TwitchWebSocketPool(),
 				Executors.newScheduledThreadPool(4),
 				Executors.newCachedThreadPool());
+		miner.addHandler(MessageHandlerFactory.createLogger(miner));
+		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
+		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
 		miner.start();
 	}
 	

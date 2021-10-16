@@ -13,7 +13,17 @@ class MessageHandlerFactoryTest{
 	private IMiner miner;
 	
 	@Test
+	void createLogger(){
+		assertThat(MessageHandlerFactory.createLogger(miner)).isNotNull();
+	}
+	
+	@Test
 	void createClaimAvailable(){
 		assertThat(MessageHandlerFactory.createClaimAvailableHandler(miner)).isNotNull();
+	}
+	
+	@Test
+	void createStreamStartEndHandler(){
+		assertThat(MessageHandlerFactory.createStreamStartEndHandler(miner)).isNotNull();
 	}
 }

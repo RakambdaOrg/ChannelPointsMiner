@@ -17,7 +17,6 @@ import fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.factory.ApiFactory;
-import fr.raksrinana.twitchminer.factory.EventLoggerFactory;
 import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
@@ -65,17 +64,16 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchWebSocketPool webSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
-			@NotNull ExecutorService handlerExecutor,
-			@NotNull MessageHandler... handlers){
+			@NotNull ExecutorService handlerExecutor){
 		this.configuration = configuration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
 		this.webSocketPool = webSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
-		this.messageHandlers = List.of(handlers);
 		
 		streamers = new HashSet<>();
+		messageHandlers = new LinkedList<>();
 	}
 	
 	/**
@@ -86,7 +84,6 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	public void start(){
 		log.info("Starting miner");
 		webSocketPool.addListener(this);
-		webSocketPool.addListener(EventLoggerFactory.create(this));
 		
 		login();
 		loadStreamersFromConfiguration();
@@ -150,6 +147,14 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	}
 	
 	@Override
+	@NotNull
+	public Optional<Streamer> getStreamerById(@NotNull String id){
+		return getStreamers().stream()
+				.filter(s -> Objects.equals(s.getId(), id))
+				.findFirst();
+	}
+	
+	@Override
 	public void addStreamer(@NotNull Streamer streamer){
 		if(streamers.contains(streamer)){
 			log.debug("Streamer {} is already being mined", streamer);
@@ -157,8 +162,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		}
 		log.info("Added to the mining list: {}", streamer);
 		
-		getUpdateStreamInfo().update(streamer);
-		getUpdateChannelPointsContext().update(streamer);
+		updateStreamerInfos(streamer);
 		
 		listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 		
@@ -170,6 +174,12 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			listenTopic(RAID, streamer.getId());
 		}
 		streamers.add(streamer);
+	}
+	
+	@Override
+	public void updateStreamerInfos(@NotNull Streamer streamer){
+		getUpdateStreamInfo().update(streamer);
+		getUpdateChannelPointsContext().update(streamer);
 	}
 	
 	@Override
@@ -190,6 +200,13 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		messageHandlers.forEach(handler -> handler.handle(topic, message));
 	}
 	
+	private UpdateStreamInfo getUpdateStreamInfo(){
+		if(Objects.isNull(updateStreamInfo)){
+			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
+		}
+		return updateStreamInfo;
+	}
+	
 	private UpdateChannelPointsContext getUpdateChannelPointsContext(){
 		if(Objects.isNull(updateChannelPointsContext)){
 			updateChannelPointsContext = MinerRunnableFactory.createUpdateChannelPointsContext(this);
@@ -197,11 +214,8 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		return updateChannelPointsContext;
 	}
 	
-	private UpdateStreamInfo getUpdateStreamInfo(){
-		if(Objects.isNull(updateChannelPointsContext)){
-			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
-		}
-		return updateStreamInfo;
+	public void addHandler(MessageHandler handler){
+		messageHandlers.add(handler);
 	}
 	
 	@Override
