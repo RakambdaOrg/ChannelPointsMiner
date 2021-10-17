@@ -96,7 +96,7 @@ java {
 
 jib {
     from {
-        image = "openjdk:16-slim"
+        image = "openjdk:17-slim"
         platforms {
             platform {
                 os = "linux"
@@ -109,7 +109,7 @@ jib {
         }
     }
     to {
-        image = "mrcraftcod/twitch-miner"
+        image = "mrcraftcod/twitchminer"
         auth {
             username = project.findProperty("dockerUsername").toString()
             password = project.findProperty("dockerPassword").toString()
