@@ -24,7 +24,6 @@ import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
-import fr.raksrinana.twitchminer.miner.runnables.UpdateChannelPointsContext;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -36,13 +35,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,8 +77,6 @@ class MinerTest{
 	private KrakenApi krakenApi;
 	@Mock
 	private UpdateStreamInfo updateStreamInfo;
-	@Mock
-	private UpdateChannelPointsContext updateChannelPointsContext;
 	@Mock
 	private User user;
 	@Mock
@@ -126,7 +120,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
@@ -140,8 +133,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 		}
@@ -155,7 +147,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
@@ -170,8 +161,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
@@ -187,7 +177,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
@@ -202,8 +191,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
@@ -218,7 +206,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
@@ -230,8 +217,7 @@ class MinerTest{
 			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo, never()).update(any());
-			verify(updateChannelPointsContext, never()).update(any());
+			verify(updateStreamInfo, never()).run(any());
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
@@ -249,7 +235,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -270,8 +255,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 		}
@@ -286,7 +270,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -308,8 +291,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
@@ -326,7 +308,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -348,8 +329,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
@@ -365,7 +345,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var channel = mock(Channel.class);
 			var follow = mock(Follow.class);
@@ -386,8 +365,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 		}
@@ -401,7 +379,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
@@ -416,8 +393,7 @@ class MinerTest{
 			assertThat(tested.getStreamers()).hasSize(1)
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
-			verify(updateStreamInfo).update(expectedStreamer);
-			verify(updateChannelPointsContext).update(expectedStreamer);
+			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 		}
@@ -479,7 +455,6 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateChannelPointsContext(tested)).thenReturn(updateChannelPointsContext);
 			
 			var id1 = "ID1";
 			var id2 = "ID2";
@@ -505,5 +480,17 @@ class MinerTest{
 	@Test
 	void getStreamerByIdUnknown(){
 		assertThat(tested.getStreamerById("unknown")).isEmpty();
+	}
+	
+	@Test
+	void schedule(){
+		var future = mock(ScheduledFuture.class);
+		Runnable runnable = () -> {};
+		
+		when(scheduledExecutorService.schedule(runnable, 1, TimeUnit.SECONDS)).thenReturn(future);
+		
+		assertNotNull(tested.schedule(runnable, 1, TimeUnit.SECONDS));
+		
+		verify(scheduledExecutorService).schedule(runnable, 1, TimeUnit.SECONDS);
 	}
 }

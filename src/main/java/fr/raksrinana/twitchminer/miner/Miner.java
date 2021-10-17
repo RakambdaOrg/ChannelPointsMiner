@@ -21,7 +21,6 @@ import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
-import fr.raksrinana.twitchminer.miner.runnables.UpdateChannelPointsContext;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -29,7 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
+import static fr.raksrinana.twitchminer.factory.MinerRunnableFactory.createSendMinutesWatched;
+import static fr.raksrinana.twitchminer.factory.MinerRunnableFactory.createWebSocketPing;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -47,7 +50,6 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private final StreamerSettingsFactory streamerSettingsFactory;
 	private final Collection<MessageHandler> messageHandlers;
 	
-	private UpdateChannelPointsContext updateChannelPointsContext;
 	private UpdateStreamInfo updateStreamInfo;
 	
 	@Getter
@@ -89,10 +91,9 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		loadStreamersFromConfiguration();
 		loadStreamersFromFollows();
 		
-		scheduledExecutor.scheduleWithFixedDelay(getUpdateChannelPointsContext(), 0, 30, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 10, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendMinutesWatched(this), 0, 1, MINUTES);
-		scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
+		scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
+		scheduledExecutor.scheduleWithFixedDelay(createSendMinutesWatched(this), 0, 1, MINUTES);
+		scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
 		
 		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 	}
@@ -178,8 +179,13 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	public void updateStreamerInfos(@NotNull Streamer streamer){
-		getUpdateStreamInfo().update(streamer);
-		getUpdateChannelPointsContext().update(streamer);
+		getUpdateStreamInfo().run(streamer);
+	}
+	
+	@Override
+	@NotNull
+	public ScheduledFuture<?> schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit unit){
+		return scheduledExecutor.schedule(runnable, delay, unit);
 	}
 	
 	@Override
@@ -205,13 +211,6 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
 		}
 		return updateStreamInfo;
-	}
-	
-	private UpdateChannelPointsContext getUpdateChannelPointsContext(){
-		if(Objects.isNull(updateChannelPointsContext)){
-			updateChannelPointsContext = MinerRunnableFactory.createUpdateChannelPointsContext(this);
-		}
-		return updateChannelPointsContext;
 	}
 	
 	public void addHandler(MessageHandler handler){

@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public interface IMiner{
 	@NotNull
@@ -46,4 +48,7 @@ public interface IMiner{
 	boolean hasStreamerWithUsername(@NotNull String username);
 	
 	void updateStreamerInfos(@NotNull Streamer streamer);
+	
+	@NotNull
+	ScheduledFuture<?> schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit unit);
 }

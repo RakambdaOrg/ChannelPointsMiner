@@ -13,11 +13,6 @@ class MinerRunnableFactoryTest{
 	private IMiner miner;
 	
 	@Test
-	void getUpdateChannelPointsContext(){
-		assertThat(MinerRunnableFactory.createUpdateChannelPointsContext(miner)).isNotNull();
-	}
-	
-	@Test
 	void getUpdateStreamInfo(){
 		assertThat(MinerRunnableFactory.createUpdateStreamInfo(miner)).isNotNull();
 	}

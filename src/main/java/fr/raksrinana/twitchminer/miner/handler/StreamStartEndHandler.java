@@ -7,6 +7,7 @@ import fr.raksrinana.twitchminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -20,7 +21,8 @@ public class StreamStartEndHandler extends HandlerAdapter{
 			log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
 			return;
 		}
-		miner.updateStreamerInfos(streamerOptional.get());
+		//Wait that the API updates
+		miner.schedule(() -> miner.updateStreamerInfos(streamerOptional.get()), 15, SECONDS);
 	}
 	
 	@Override
@@ -30,6 +32,7 @@ public class StreamStartEndHandler extends HandlerAdapter{
 			log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
 			return;
 		}
-		miner.updateStreamerInfos(streamerOptional.get());
+		//Wait that the API updates
+		miner.schedule(() -> miner.updateStreamerInfos(streamerOptional.get()), 15, SECONDS);
 	}
 }
