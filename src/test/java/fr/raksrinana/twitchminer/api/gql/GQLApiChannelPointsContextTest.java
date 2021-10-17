@@ -6,13 +6,13 @@ import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.tests.TestUtils;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
+import kong.unirest.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,13 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(UnirestMockExtension.class)
 class GQLApiChannelPointsContextTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String USERNAME = "username";
 	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"9988086babc615a918a1e9a722ff41d98847acac822645209ac7379eecb27152\",\"version\":1}},\"operationName\":\"ChannelPointsContext\",\"variables\":{\"channelLogin\":\"%s\"}}";
-	
-	@RegisterExtension
-	private static final UnirestMockExtension unirest = new UnirestMockExtension();
 	
 	@InjectMocks
 	private GQLApi tested;
@@ -50,7 +48,7 @@ class GQLApiChannelPointsContextTest{
 	}
 	
 	@Test
-	void nominal() throws MalformedURLException{
+	void nominal(MockClient unirest) throws MalformedURLException{
 		var communityPointsImage = CommunityPointsImage.builder()
 				.url(new URL("https://image"))
 				.url2X(new URL("https://image2x"))
@@ -188,7 +186,7 @@ class GQLApiChannelPointsContextTest{
 	}
 	
 	@Test
-	void nominalWithClaim() throws MalformedURLException{
+	void nominalWithClaim(MockClient unirest) throws MalformedURLException{
 		var communityPointsImage = CommunityPointsImage.builder()
 				.url(new URL("https://image"))
 				.url2X(new URL("https://image2x"))
@@ -329,7 +327,7 @@ class GQLApiChannelPointsContextTest{
 	}
 	
 	@Test
-	void invalidCredentials(){
+	void invalidCredentials(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
@@ -342,7 +340,7 @@ class GQLApiChannelPointsContextTest{
 	}
 	
 	@Test
-	void invalidRequest(){
+	void invalidRequest(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
@@ -355,7 +353,7 @@ class GQLApiChannelPointsContextTest{
 	}
 	
 	@Test
-	void invalidResponse(){
+	void invalidResponse(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))

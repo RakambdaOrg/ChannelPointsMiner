@@ -6,12 +6,12 @@ import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.twitchminer.api.twitch.data.PlayerEvent;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import kong.unirest.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(UnirestMockExtension.class)
 class TwitchApiTest{
 	private static final int USER_ID = 123456789;
 	private static final String BROADCAST_ID = "broadcast-id";
@@ -37,9 +38,6 @@ class TwitchApiTest{
 	private static final String SPADE_BODY = "\"spade_url\":\"%s\"".formatted(SPADE_URL);
 	private static final String SPADE_BODY_INVALID_FORMAT = "\"spade_url\":\"%s\"".formatted("https://google.com:-80/");
 	
-	@RegisterExtension
-	private static final UnirestMockExtension unirest = new UnirestMockExtension();
-	
 	private final TwitchApi tested = new TwitchApi();
 	
 	private URL streamerUrl;
@@ -52,7 +50,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void sendMinutesWatched(){
+	void sendMinutesWatched(MockClient unirest){
 		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
@@ -76,7 +74,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void sendMinutesWatchedWithGame(){
+	void sendMinutesWatchedWithGame(MockClient unirest){
 		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"game\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(BROADCAST_ID, CHANNEL_ID, GAME, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
@@ -101,7 +99,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void sendMinutesWatchedNotSuccess(){
+	void sendMinutesWatchedNotSuccess(MockClient unirest){
 		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
@@ -144,7 +142,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrl(){
+	void getSpadeUrl(MockClient unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);
@@ -158,7 +156,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlInvalidConfigUrlResponse(){
+	void getSpadeUrlInvalidConfigUrlResponse(MockClient unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(500);
@@ -167,7 +165,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlNoConfigUrl(){
+	void getSpadeUrlNoConfigUrl(MockClient unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn("")
 				.withStatus(200);
@@ -176,7 +174,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlInvalidResponse(){
+	void getSpadeUrlInvalidResponse(MockClient unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);
@@ -189,7 +187,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlInvalidFormat(){
+	void getSpadeUrlInvalidFormat(MockClient unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);
@@ -202,7 +200,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlNoUrl(){
+	void getSpadeUrlNoUrl(MockClient unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);

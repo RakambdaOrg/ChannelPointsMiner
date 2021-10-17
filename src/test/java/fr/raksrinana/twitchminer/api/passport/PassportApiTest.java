@@ -7,12 +7,12 @@ import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import fr.raksrinana.twitchminer.utils.CommonUtils;
 import kong.unirest.Cookie;
+import kong.unirest.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(UnirestMockExtension.class)
 class PassportApiTest{
 	private static final String USER_PASS_REQUEST = "{\"client_id\":\"%s\",\"password\":\"%s\",\"remember_me\":true,\"undelete_user\":false,\"username\":\"%s\"}";
 	private static final String USER_PASS_2FA_REQUEST = "{\"authy_token\":\"%s\",\"client_id\":\"%s\",\"password\":\"%s\",\"remember_me\":true,\"undelete_user\":false,\"username\":\"%s\"}";
@@ -39,9 +40,6 @@ class PassportApiTest{
 	private static final String USER_ID = "user-id";
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String TWO_FACTOR = "123456";
-	
-	@RegisterExtension
-	private static final UnirestMockExtension unirest = new UnirestMockExtension();
 	
 	@TempDir
 	private Path authFolder;
@@ -57,7 +55,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void newAuthWithout2FA() throws LoginException, IOException{
+	void newAuthWithout2FA(MockClient unirest) throws LoginException, IOException{
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -84,7 +82,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void newAuthWith2FA() throws LoginException, IOException{
+	void newAuthWith2FA(MockClient unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			
@@ -121,7 +119,7 @@ class PassportApiTest{
 			3011,
 			3012
 	})
-	void newAuthWithMissing2FAOnFirstTry(int errorCode) throws LoginException, IOException{
+	void newAuthWithMissing2FAOnFirstTry(int errorCode, MockClient unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -162,7 +160,7 @@ class PassportApiTest{
 			3022,
 			3023
 	})
-	void newAuthWithMissingTwitchGuardOnFirstTry(int errorCode) throws LoginException, IOException{
+	void newAuthWithMissingTwitchGuardOnFirstTry(int errorCode, MockClient unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -199,7 +197,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithCaptchaRequired(){
+	void failedAuthWithCaptchaRequired(MockClient unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -218,7 +216,7 @@ class PassportApiTest{
 			3001,
 			3003
 	})
-	void failedAuthWithInvalidCredentials(int errorCode){
+	void failedAuthWithInvalidCredentials(int errorCode, MockClient unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -233,7 +231,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithMissing2FA(){
+	void failedAuthWithMissing2FA(MockClient unirest){
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -258,7 +256,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithMissingTwitchGuard(){
+	void failedAuthWithMissingTwitchGuard(MockClient unirest){
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -283,7 +281,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithUnknownErrorCode(){
+	void failedAuthWithUnknownErrorCode(MockClient unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -298,7 +296,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithNoErrorCode(){
+	void failedAuthWithNoErrorCode(MockClient unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -313,7 +311,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithServerError(){
+	void failedAuthWithServerError(MockClient unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -369,6 +367,4 @@ class PassportApiTest{
 		assertThrows(IOException.class, () -> tested.login());
 		assertThat(authFile).exists();
 	}
-	
-
 }

@@ -8,13 +8,13 @@ import fr.raksrinana.twitchminer.api.gql.data.types.User;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.tests.TestUtils;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
+import kong.unirest.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import static java.time.ZoneOffset.UTC;
@@ -24,13 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(UnirestMockExtension.class)
 class GQLApiReportMenuItemTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String USERNAME = "username";
 	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c\",\"version\":1}},\"operationName\":\"ReportMenuItem\",\"variables\":{\"channelLogin\":\"%s\"}}";
-	
-	@RegisterExtension
-	private static final UnirestMockExtension unirest = new UnirestMockExtension();
 	
 	@InjectMocks
 	private GQLApi tested;
@@ -44,7 +42,7 @@ class GQLApiReportMenuItemTest{
 	}
 	
 	@Test
-	void nominalOffline(){
+	void nominalOffline(MockClient unirest){
 		var expected = GQLResponse.<ReportMenuItemData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 41,
@@ -73,7 +71,7 @@ class GQLApiReportMenuItemTest{
 	}
 	
 	@Test
-	void nominalOnline(){
+	void nominalOnline(MockClient unirest){
 		var expected = GQLResponse.<ReportMenuItemData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 41,
@@ -107,7 +105,7 @@ class GQLApiReportMenuItemTest{
 	}
 	
 	@Test
-	void invalidCredentials(){
+	void invalidCredentials(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
@@ -120,7 +118,7 @@ class GQLApiReportMenuItemTest{
 	}
 	
 	@Test
-	void invalidRequest(){
+	void invalidRequest(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
@@ -133,7 +131,7 @@ class GQLApiReportMenuItemTest{
 	}
 	
 	@Test
-	void invalidResponse(){
+	void invalidResponse(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
