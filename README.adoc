@@ -1,6 +1,7 @@
 = Twitch Miner
 
 image:https://codecov.io/gh/RakSrinaNa/TwitchMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/TwitchMiner",align="center"]
+image:https://img.shields.io/docker/pulls/mrcraftcod/twitchminer.svg[link="https://hub.docker.com/r/mrcraftcod/twitchminer",align="center"]
 
 The main objective of this miner is to acquire Twitch channel points automatically.
 Other forms of point, like prose provided by bots through IRC (Streamlabs etc), isn't in the scope of the miner.
@@ -39,7 +40,9 @@ Java 17+ is required.
 
 === Docker
 
-Example dockerfile:
+Image link:https://hub.docker.com/r/mrcraftcod/twitchminer[mrcraftcod/twitchminer] can be used.
+
+Here's an example dockerfile:
 
 [source,yml]
 ----
