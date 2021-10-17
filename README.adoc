@@ -1,7 +1,131 @@
 = Twitch Miner
 
-image:https://codecov.io/gh/RakSrinaNa/TwitchMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/TwitchMiner"]
+image:https://codecov.io/gh/RakSrinaNa/TwitchMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/TwitchMiner",align="center"]
+
+The main objective of this miner is to acquire Twitch channel points automatically.
+Other forms of point, like prose provided by bots through IRC (Streamlabs etc), isn't in the scope of the miner.
+
+* Watch streams for you, earning the baseline points as you watch.
+* Get the watch streak points by watching streams regularly.
+* Claim bonus points when they are available
+
+Limits:
+
+* Twitch makes it so that only 2 streamers can be watched at once.
+However predictions are not limited.
+
+Planned:
+
+* Participate in predictions.
+* Get the watch streak points by watching streams regularly (WIP on priorities to ensure it #24).
+
 
 This project heavily inspired by link:https://github.com/Tkd-Alex/Twitch-Channel-Points-Miner-v2[Tkd-Alex/Twitch-Channel-Points-Miner-v2], just doing it my own way.
 
 WARNING: This is a **WIP**!
+
+:toc:
+
+== How to use
+
+=== Clone
+
+Java 17+ is required.
+
+1. Clone this repository `git clone git@github.com:RakSrinaNa/TwitchMiner.git`.
+2. Get into the cloned directory `cd TwitchMiner`.
+3. Build the jar `./gradlew build`
+4. Run `java -jar build/libs/TwitchMiner-shaded.jar --settings config.json`.
+
+=== Docker
+
+Example dockerfile:
+
+[source,yml]
+----
+version: "3.9"
+
+services:
+  miner:
+    image: mrcraftcod/twitchminer
+    command: "--settings /usr/src/app/config.json"
+    volumes:
+      - ./authentication:/usr/src/app/authentication
+      - ./streamers:/usr/src/app/streamers
+      - ./config.json:/usr/src/app/config.json:ro
+----
+
+== Settings
+
+2 kind of settings are present:
+
+* The global settings that defines the global behavior of the miner as well as the default streamer settings.
+* The streamer settings that'll be applied for each streamer and override the default ones.
+
+=== Global settings
+
+An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main/src/test/resources/config/config.json[here].
+
+[cols="1,3,1"]
+|===
+|Name |Description |Default value
+
+|username
+|Your Twitch account username
+|N/A
+
+|password
+|Your Twitch account password
+|N/A
+
+|use2FA
+|If you use 2-factor authentication enable this to ask the 2FA code directly when login in
+|false
+
+|loadFollows
+|If set to true link:https://www.twitch.tv/directory/following/[streamers followed] on the account will be mined
+|false
+
+|defaultStreamerSettings
+|Default streamer settings to apply, see below
+|Default streamer settings
+
+|streamerConfigDirectory
+|Directory containing the streamer settings for each streamer
+|./streamers
+|===
+
+=== Streamer settings
+
+Streamer settings define settings that will override the default streamer settings for a particular streamer.
+
+Each streamer setting will be defined in a json file named with the username of the streamer (eg: `myusername.json`) and placed in the `streamerConfigDirectory` directory.
+
+[cols="1,3,1"]
+|===
+|Name |Description |Default value
+
+|makePredictions
+|If set to true, predictions will be made for this streamer (#16)
+|false
+
+|followRaid
+|If set to true, the miner raid will attend raids for extra points (#30)
+|false
+|===
+
+== How to mine streamers
+
+You have two options to load streamers in the mining list:
+
+* Load them from the follows list.
+But everything will be loaded from it.
+* Be more specific and define streamer settings for streamers you want to watch.
+For example adding the file `mystreamer.json` with content `{}` will mine the streamer `myusername` with the default streamer settings.
+
+== Disclaimer
+
+This project comes with no guarantee or warranty.
+You are responsible for whatever happens from using this project.
+It is possible to get soft or hard banned by using this project if you are not careful.
+This is a personal project and is in no way affiliated with Twitch.
