@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class StreamerSettingsFactoryTest{
 	private static final StreamerSettings DEFAULT = StreamerSettings.builder().build();
+	private static final String STREAMER_USERNAME = "streamer-name";
 	
 	@InjectMocks
 	private StreamerSettingsFactory tested;
@@ -33,7 +34,7 @@ class StreamerSettingsFactoryTest{
 	
 	@Test
 	void getStreamerConfiguration(){
-		assertThat(tested.createStreamerSettings()).isNotSameAs(DEFAULT)
+		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(DEFAULT);
 	}
 }

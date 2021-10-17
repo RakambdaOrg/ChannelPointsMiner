@@ -3,7 +3,6 @@ package fr.raksrinana.twitchminer.factory;
 import fr.raksrinana.twitchminer.cli.CLIHolder;
 import fr.raksrinana.twitchminer.cli.CLIParameters;
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.config.StreamerConfiguration;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import fr.raksrinana.twitchminer.tests.TestUtils;
 import org.mockito.Mock;
@@ -12,9 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -30,7 +27,7 @@ class ConfigurationFactoryTest{
 	}
 	
 	@Test
-	void getInstance() throws URISyntaxException{
+	void getInstance(){
 		var testConfig = TestUtils.getResourcePath("config/config.json");
 		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
@@ -40,10 +37,6 @@ class ConfigurationFactoryTest{
 				.use2Fa(true)
 				.loadFollows(true)
 				.defaultStreamerSettings(StreamerSettings.builder().makePredictions(true).followRaid(true).build())
-				.streamers(Set.of(
-						StreamerConfiguration.builder().username("streamer1").build(),
-						StreamerConfiguration.builder().username("streamer2").build()
-				))
 				.build();
 		
 		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){

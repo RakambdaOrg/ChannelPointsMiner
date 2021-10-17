@@ -23,8 +23,11 @@ import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -98,19 +101,24 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 	}
 	
+	@SneakyThrows
 	private void loadStreamersFromConfiguration(){
 		log.info("Loading streamers from configuration");
-		configuration.getStreamers().stream()
-				.map(streamer -> {
-					var user = gqlApi.reportMenuItem(streamer.getUsername())
+		Files.list(configuration.getStreamerConfigDirectory())
+				.map(Path::getFileName)
+				.map(Path::toString)
+				.filter(name -> name.endsWith(".json"))
+				.map(name -> name.substring(0, name.length() - ".json".length()))
+				.map(name -> {
+					var user = gqlApi.reportMenuItem(name)
 							.map(GQLResponse::getData)
 							.map(ReportMenuItemData::getUser)
 							.orElse(null);
 					if(Objects.isNull(user)){
-						log.error("Failed to get streamer " + streamer.getUsername());
+						log.error("Failed to get streamer " + name);
 						return null;
 					}
-					return new Streamer(user.getId(), streamer.getUsername(), streamerSettingsFactory.createStreamerSettings());
+					return new Streamer(user.getId(), name, streamerSettingsFactory.createStreamerSettings(name));
 				})
 				.filter(Objects::nonNull)
 				.forEach(this::addStreamer);
@@ -121,7 +129,11 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			log.info("Loading streamers from follow list");
 			krakenApi.getFollows().stream()
 					.filter(follow -> !hasStreamerWithUsername(follow.getChannel().getName()))
-					.map(follow -> new Streamer(follow.getChannel().getId(), follow.getChannel().getName(), streamerSettingsFactory.createStreamerSettings()))
+					.map(follow -> {
+						var streamerId = follow.getChannel().getId();
+						var streamerName = follow.getChannel().getName();
+						return new Streamer(streamerId, streamerName, streamerSettingsFactory.createStreamerSettings(streamerName));
+					})
 					.forEach(this::addStreamer);
 		}
 	}

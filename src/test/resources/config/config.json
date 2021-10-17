@@ -7,12 +7,5 @@
     "makePredictions": true,
     "followRaid": true
   },
-  "streamers": [
-    {
-      "username": "streamer1"
-    },
-    {
-      "username": "streamer2"
-    }
-  ]
+  "streamerConfigDirectory": "streamers"
 }
