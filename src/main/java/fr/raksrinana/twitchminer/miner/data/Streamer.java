@@ -7,6 +7,7 @@ import fr.raksrinana.twitchminer.api.gql.data.types.Game;
 import fr.raksrinana.twitchminer.api.gql.data.types.Stream;
 import fr.raksrinana.twitchminer.api.gql.data.types.User;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
+import fr.raksrinana.twitchminer.factory.TimeFactory;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -14,8 +15,10 @@ import org.jetbrains.annotations.Nullable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -33,6 +36,8 @@ public class Streamer{
 	@NotNull
 	@Getter
 	private StreamerSettings settings;
+	@Setter
+	private Instant lastUpdated = Instant.EPOCH;
 	
 	private URL channelUrl;
 	
@@ -96,5 +101,9 @@ public class Streamer{
 				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
 				.map(User::isStreaming)
 				.orElse(false);
+	}
+	
+	public boolean needUpdate(){
+		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
 	}
 }

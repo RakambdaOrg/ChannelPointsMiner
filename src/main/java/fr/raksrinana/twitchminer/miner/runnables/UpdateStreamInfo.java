@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.miner.runnables;
 
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.utils.CommonUtils;
@@ -20,10 +21,12 @@ public class UpdateStreamInfo implements Runnable{
 	public void run(){
 		log.debug("Updating stream info");
 		try{
-			for(var streamer : miner.getStreamers()){
-				update(streamer);
-				CommonUtils.randomSleep(500, 100);
-			}
+			miner.getStreamers().stream()
+					.filter(Streamer::needUpdate)
+					.forEach(streamer -> {
+						run(streamer);
+						CommonUtils.randomSleep(500, 100);
+					});
 			log.debug("Done updating stream info");
 		}
 		catch(Exception e){
@@ -31,15 +34,26 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	public void update(@NotNull Streamer streamer){
-		log.trace("Updating stream info for {}", streamer);
+	public void run(@NotNull Streamer streamer){
+		updateVideoInfo(streamer);
+		updateSpadeUrl(streamer);
+		updatePointsContext(streamer);
+		updateCampaigns(streamer);
+		streamer.setLastUpdated(TimeFactory.now());
+	}
+	
+	private void updateVideoInfo(@NotNull Streamer streamer){
+		log.trace("Updating video info for {}", streamer);
 		
 		miner.getGqlApi().videoPlayerStreamInfoOverlayChannel(streamer.getUsername())
 				.map(GQLResponse::getData)
 				.ifPresentOrElse(
 						streamer::setVideoPlayerStreamInfoOverlayChannel,
 						() -> streamer.setVideoPlayerStreamInfoOverlayChannel(null));
-		
+	}
+	
+	private void updateSpadeUrl(@NotNull Streamer streamer){
+		log.trace("Updating spade url for {}", streamer);
 		if(streamer.isStreaming()){
 			if(Objects.isNull(streamer.getSpadeUrl())){
 				Optional.ofNullable(streamer.getChannelUrl())
@@ -50,7 +64,22 @@ public class UpdateStreamInfo implements Runnable{
 		else{
 			streamer.setSpadeUrl(null);
 		}
+	}
+	
+	private void updatePointsContext(@NotNull Streamer streamer){
+		log.trace("Updating channel points context for {}", streamer);
 		
+		miner.getGqlApi().channelPointsContext(streamer.getUsername())
+				.map(GQLResponse::getData)
+				.ifPresentOrElse(
+						streamer::setChannelPointsContext,
+						() -> streamer.setChannelPointsContext(null));
+		
+		streamer.getClaimId().ifPresent(claimId -> miner.getGqlApi().claimCommunityPoints(streamer.getId(), claimId));
+	}
+	
+	private void updateCampaigns(@NotNull Streamer streamer){
+		log.trace("Updating campaigns for {}", streamer);
 		if(streamer.updateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
 			miner.getGqlApi().dropsHighlightServiceAvailableDrops(streamer.getId())
 					.map(GQLResponse::getData)

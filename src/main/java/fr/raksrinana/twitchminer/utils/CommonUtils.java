@@ -1,11 +1,13 @@
 package fr.raksrinana.twitchminer.utils;
 
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CommonUtils{
-	public static void randomSleep(long delay, long delta) throws InterruptedException{
+	@SneakyThrows
+	public static void randomSleep(long delay, long delta){
 		long actualDelay = delay - delta / 2 + ThreadLocalRandom.current().nextLong(delta);
 		if(actualDelay > 0){
 			Thread.sleep(actualDelay);

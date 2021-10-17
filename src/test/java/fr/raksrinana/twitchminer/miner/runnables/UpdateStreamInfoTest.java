@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.miner.runnables;
 
 import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPointsContextData;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.raksrinana.twitchminer.api.gql.data.types.User;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
@@ -42,9 +43,13 @@ class UpdateStreamInfoTest{
 	@Mock
 	private User user;
 	@Mock
-	private GQLResponse<VideoPlayerStreamInfoOverlayChannelData> gqlResponse;
+	private GQLResponse<VideoPlayerStreamInfoOverlayChannelData> gqlResponseVideoPlayer;
+	@Mock
+	private GQLResponse<ChannelPointsContextData> gqlResponseChannelPoints;
 	@Mock
 	private VideoPlayerStreamInfoOverlayChannelData videoPlayerStreamInfoOverlayChannelData;
+	@Mock
+	private ChannelPointsContextData channelPointsContextData;
 	
 	private URL spadeUrl;
 	private URL streamerUrl;
@@ -61,23 +66,29 @@ class UpdateStreamInfoTest{
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
 		lenient().when(streamer.getChannelUrl()).thenReturn(streamerUrl);
+		lenient().when(streamer.getClaimId()).thenReturn(Optional.empty());
+		lenient().when(streamer.needUpdate()).thenReturn(true);
 		
-		lenient().when(gqlResponse.getData()).thenReturn(videoPlayerStreamInfoOverlayChannelData);
+		lenient().when(gqlResponseVideoPlayer.getData()).thenReturn(videoPlayerStreamInfoOverlayChannelData);
+		lenient().when(gqlResponseChannelPoints.getData()).thenReturn(channelPointsContextData);
 		lenient().when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
 	}
 	
 	@Test
 	void updateWithDataNotStreaming(){
 		when(streamer.isStreaming()).thenReturn(false);
-		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponse));
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
 		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(streamer).setSpadeUrl(null);
 		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -86,14 +97,17 @@ class UpdateStreamInfoTest{
 	void updateWithNoDataNotStreaming(){
 		when(streamer.isStreaming()).thenReturn(false);
 		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.empty());
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
 		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(null);
+		verify(streamer).setChannelPointsContext(null);
 		verify(streamer).setSpadeUrl(null);
 		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -102,15 +116,18 @@ class UpdateStreamInfoTest{
 	void updateWithDataStreamingAndSpadeUrlPresent(){
 		when(streamer.isStreaming()).thenReturn(true);
 		when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
-		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponse));
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
 		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(streamer, never()).setSpadeUrl(any());
 		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -119,7 +136,8 @@ class UpdateStreamInfoTest{
 	void updateWithDataStreamingAndSpadeUrlMissing(){
 		when(streamer.isStreaming()).thenReturn(true);
 		when(streamer.getSpadeUrl()).thenReturn(null);
-		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponse));
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 		when(twitchApi.getSpadeUrl(streamerUrl)).thenReturn(Optional.of(spadeUrl));
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -129,6 +147,7 @@ class UpdateStreamInfoTest{
 		verify(twitchApi).getSpadeUrl(streamerUrl);
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(streamer).setSpadeUrl(spadeUrl);
 		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -137,16 +156,19 @@ class UpdateStreamInfoTest{
 	void updateWithDataStreamingAndSpadeUrlMissingAndNotReturned(){
 		when(streamer.isStreaming()).thenReturn(true);
 		when(streamer.getSpadeUrl()).thenReturn(null);
-		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponse));
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 		when(twitchApi.getSpadeUrl(streamerUrl)).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
 		verify(twitchApi).getSpadeUrl(streamerUrl);
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(streamer, never()).setSpadeUrl(any());
 		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -161,16 +183,19 @@ class UpdateStreamInfoTest{
 		when(streamer.updateCampaigns()).thenReturn(true);
 		when(streamer.isStreamingGame()).thenReturn(true);
 		when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
-		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponse));
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 		when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.of(response));
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(gqlApi).dropsHighlightServiceAvailableDrops(STREAMER_ID);
 		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(streamer, never()).setSpadeUrl(any());
 		verify(streamer).setDropsHighlightServiceAvailableDrops(data);
 	}
@@ -181,16 +206,19 @@ class UpdateStreamInfoTest{
 		when(streamer.updateCampaigns()).thenReturn(true);
 		when(streamer.isStreamingGame()).thenReturn(true);
 		when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
-		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponse));
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 		when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(gqlApi).dropsHighlightServiceAvailableDrops(STREAMER_ID);
 		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(streamer, never()).setSpadeUrl(any());
 		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -201,15 +229,18 @@ class UpdateStreamInfoTest{
 		when(streamer.updateCampaigns()).thenReturn(true);
 		when(streamer.isStreamingGame()).thenReturn(false);
 		when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
-		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponse));
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 		verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
 		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 		
 		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
 		verify(streamer, never()).setSpadeUrl(any());
 		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -218,13 +249,16 @@ class UpdateStreamInfoTest{
 	void updateSeveral(){
 		when(streamer.isStreaming()).thenReturn(false);
 		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.empty());
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.empty());
 		when(miner.getStreamers()).thenReturn(List.of(streamer, streamer));
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(gqlApi, times(2)).videoPlayerStreamInfoOverlayChannel(anyString());
+		verify(gqlApi, times(2)).channelPointsContext(anyString());
 		
 		verify(streamer, times(2)).setVideoPlayerStreamInfoOverlayChannel(null);
+		verify(streamer, times(2)).setChannelPointsContext(null);
 		verify(streamer, times(2)).setSpadeUrl(null);
 		verify(streamer, times(2)).setDropsHighlightServiceAvailableDrops(null);
 	}
@@ -234,5 +268,42 @@ class UpdateStreamInfoTest{
 		when(gqlApi.videoPlayerStreamInfoOverlayChannel(any())).thenThrow(new RuntimeException("For tests"));
 		
 		assertDoesNotThrow(() -> tested.run());
+	}
+	
+	@Test
+	void notUpdatingIfNotNeeded(){
+		when(streamer.needUpdate()).thenReturn(false);
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(gqlApi, never()).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi, never()).channelPointsContext(STREAMER_USERNAME);
+		verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
+		
+		verify(streamer, never()).setVideoPlayerStreamInfoOverlayChannel(any());
+		verify(streamer, never()).setChannelPointsContext(any());
+		verify(streamer, never()).setSpadeUrl(any());
+		verify(streamer, never()).setDropsHighlightServiceAvailableDrops(any());
+	}
+	
+	@Test
+	void updatingIfNotNeededByManuallyLaunched(){
+		lenient().when(streamer.needUpdate()).thenReturn(false);
+		when(streamer.isStreaming()).thenReturn(false);
+		when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+		when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
+		
+		assertDoesNotThrow(() -> tested.run(streamer));
+		
+		verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+		verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
+		verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+		verify(twitchApi, never()).getSpadeUrl(any(URL.class));
+		
+		verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+		verify(streamer).setChannelPointsContext(channelPointsContextData);
+		verify(streamer).setSpadeUrl(null);
+		verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 	}
 }
