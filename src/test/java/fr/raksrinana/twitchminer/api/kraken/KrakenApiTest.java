@@ -4,13 +4,13 @@ import fr.raksrinana.twitchminer.api.kraken.data.follows.Channel;
 import fr.raksrinana.twitchminer.api.kraken.data.follows.Follow;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
+import kong.unirest.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
@@ -21,14 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(UnirestMockExtension.class)
 class KrakenApiTest{
 	private static final String NOMINAL_RESOURCE = "api/kraken/nominal.json";
 	private static final String USER_ID = "user-id";
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String CLIENT_ID = "jzkbprff40iqj646a697cyrvl0zt2m6";
-	
-	@RegisterExtension
-	private static final UnirestMockExtension unirest = new UnirestMockExtension();
 	
 	@InjectMocks
 	private KrakenApi tested;
@@ -74,7 +72,7 @@ class KrakenApiTest{
 	}
 	
 	@Test
-	void getFollows(){
+	void getFollows(MockClient unirest){
 		int limit = 40;
 		int offset = 50;
 		
@@ -95,7 +93,7 @@ class KrakenApiTest{
 	}
 	
 	@Test
-	void getFollowsDefaultLimitAndOffset(){
+	void getFollowsDefaultLimitAndOffset(MockClient unirest){
 		unirest.expect(GET, "https://api.twitch.tv/kraken/users/%s/follows/channels".formatted(USER_ID))
 				.header("Authorization", "Bearer " + ACCESS_TOKEN)
 				.header("Accept", "application/vnd.twitchtv.v5+json")
@@ -113,7 +111,7 @@ class KrakenApiTest{
 	}
 	
 	@Test
-	void getFollowsWithSeveralPage(){
+	void getFollowsWithSeveralPage(MockClient unirest){
 		int limit = 1;
 		int offset = 0;
 		
@@ -149,7 +147,7 @@ class KrakenApiTest{
 	}
 	
 	@Test
-	void invalidResponse(){
+	void invalidResponse(MockClient unirest){
 		unirest.expect(GET, "https://api.twitch.tv/kraken/users/%s/follows/channels".formatted(USER_ID))
 				.header("Authorization", "Bearer " + ACCESS_TOKEN)
 				.header("Accept", "application/vnd.twitchtv.v5+json")

@@ -6,13 +6,13 @@ import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychanne
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.tests.TestUtils;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
+import kong.unirest.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -23,13 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(UnirestMockExtension.class)
 class GQLApiVideoPlayerStreamInfoOverlayChannelTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String USERNAME = "username";
 	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"a5f2e34d626a9f4f5c0204f910bab2194948a9502089be558bb6e779a9e1b3d2\",\"version\":1}},\"operationName\":\"VideoPlayerStreamInfoOverlayChannel\",\"variables\":{\"channel\":\"%s\"}}";
-	
-	@RegisterExtension
-	private static final UnirestMockExtension unirest = new UnirestMockExtension();
 	
 	@InjectMocks
 	private GQLApi tested;
@@ -43,7 +41,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest{
 	}
 	
 	@Test
-	void nominalOnline() throws MalformedURLException{
+	void nominalOnline(MockClient unirest) throws MalformedURLException{
 		var expected = GQLResponse.<VideoPlayerStreamInfoOverlayChannelData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 58,
@@ -92,7 +90,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest{
 	}
 	
 	@Test
-	void nominalOffline() throws MalformedURLException{
+	void nominalOffline(MockClient unirest) throws MalformedURLException{
 		var expected = GQLResponse.<VideoPlayerStreamInfoOverlayChannelData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 58,
@@ -131,7 +129,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest{
 	}
 	
 	@Test
-	void invalidCredentials(){
+	void invalidCredentials(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
@@ -144,7 +142,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest{
 	}
 	
 	@Test
-	void invalidRequest(){
+	void invalidRequest(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))
@@ -157,7 +155,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest{
 	}
 	
 	@Test
-	void invalidResponse(){
+	void invalidResponse(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(USERNAME))

@@ -8,13 +8,13 @@ import fr.raksrinana.twitchminer.api.gql.data.types.CommunityPointsClaim;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.tests.TestUtils;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
+import kong.unirest.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.Map;
 import static fr.raksrinana.twitchminer.api.gql.data.types.ClaimErrorCode.NOT_FOUND;
 import static kong.unirest.HttpMethod.POST;
@@ -23,14 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(UnirestMockExtension.class)
 class GQLApiClaimCommunityPointsTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CLAIM_ID = "claim-id";
 	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"46aaeebe02c99afdf4fc97c7c0cba964124bf6b0af229395f1f6d1feed05b3d0\",\"version\":1}},\"operationName\":\"ClaimCommunityPoints\",\"variables\":{\"input\":{\"channelID\":\"%s\",\"claimID\":\"%s\"}}}";
-	
-	@RegisterExtension
-	private static final UnirestMockExtension unirest = new UnirestMockExtension();
 	
 	@InjectMocks
 	private GQLApi tested;
@@ -44,7 +42,7 @@ class GQLApiClaimCommunityPointsTest{
 	}
 	
 	@Test
-	void nominalClaimed(){
+	void nominalClaimed(MockClient unirest){
 		var expected = GQLResponse.<ClaimCommunityPointsData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 55,
@@ -75,7 +73,7 @@ class GQLApiClaimCommunityPointsTest{
 	}
 	
 	@Test
-	void nominalNotFound(){
+	void nominalNotFound(MockClient unirest){
 		var expected = GQLResponse.<ClaimCommunityPointsData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 7,
@@ -103,7 +101,7 @@ class GQLApiClaimCommunityPointsTest{
 	}
 	
 	@Test
-	void invalidCredentials(){
+	void invalidCredentials(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(CHANNEL_ID, CLAIM_ID))
@@ -116,7 +114,7 @@ class GQLApiClaimCommunityPointsTest{
 	}
 	
 	@Test
-	void invalidRequest(){
+	void invalidRequest(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(CHANNEL_ID, CLAIM_ID))
@@ -129,7 +127,7 @@ class GQLApiClaimCommunityPointsTest{
 	}
 	
 	@Test
-	void invalidResponse(){
+	void invalidResponse(MockClient unirest){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(CHANNEL_ID, CLAIM_ID))

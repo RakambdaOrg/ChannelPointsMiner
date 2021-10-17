@@ -50,6 +50,11 @@ public class JacksonUtils{
 		return getMapper().readValue(value, type);
 	}
 	
+	@NotNull
+	public static <T> T update(InputStream is, T object) throws IOException{
+		return getMapper().readerForUpdating(object).readValue(is);
+	}
+	
 	public static void write(@NotNull OutputStream os, @NotNull Object value) throws IOException{
 		getMapper().writeValue(os, value);
 	}

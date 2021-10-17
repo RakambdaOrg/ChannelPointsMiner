@@ -3,13 +3,12 @@ package fr.raksrinana.twitchminer.tests;
 import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.extension.*;
+import java.util.Objects;
 
 @Log4j2
-public class UnirestMockExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterEachCallback{
-	@Getter
+public class UnirestMockExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver{
 	private MockClient unirest;
 	
 	@Override
@@ -42,11 +41,13 @@ public class UnirestMockExtension implements Extension, BeforeAllCallback, Befor
 		MockClient.clear();
 	}
 	
-	public void verifyAll(){
-		unirest.verifyAll();
+	@Override
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException{
+		return Objects.equals(parameterContext.getParameter().getType(), MockClient.class);
 	}
 	
-	public Expectation expect(HttpMethod post, String url){
-		return unirest.expect(post, url);
+	@Override
+	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException{
+		return unirest;
 	}
 }

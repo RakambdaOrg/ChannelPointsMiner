@@ -10,8 +10,6 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -44,8 +42,9 @@ public class Configuration{
 	@Comment(value = "Default settings for the streamers mined")
 	@Builder.Default
 	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
-	@JsonProperty("streamers")
-	@Comment("List of streamers to scrape")
+	@NotNull
+	@JsonProperty("streamerConfigDirectory")
+	@Comment(value = "Path to a folder that'll contain streamer configurations", defaultValue = "./streamers")
 	@Builder.Default
-	private Set<StreamerConfiguration> streamers = new HashSet<>();
+	private Path streamerConfigDirectory = Paths.get("streamers");
 }

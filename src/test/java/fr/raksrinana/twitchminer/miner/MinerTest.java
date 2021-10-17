@@ -17,7 +17,6 @@ import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.config.StreamerConfiguration;
 import fr.raksrinana.twitchminer.factory.ApiFactory;
 import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
@@ -25,18 +24,23 @@ import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
+import lombok.SneakyThrows;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.*;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -50,14 +54,15 @@ class MinerTest{
 	
 	private Miner tested;
 	
+	@TempDir
+	private Path tempDir;
+	
 	@Mock
 	private Configuration configuration;
 	@Mock
 	private PassportApi passportApi;
 	@Mock
 	private TwitchWebSocketPool webSocketPool;
-	@Mock
-	private StreamerConfiguration streamerConfiguration;
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
 	@Mock
@@ -92,14 +97,14 @@ class MinerTest{
 	void setUp() throws LoginException, IOException{
 		tested = new Miner(configuration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService);
 		
+		lenient().when(configuration.getStreamerConfigDirectory()).thenReturn(tempDir);
+		
 		lenient().when(passportApi.login()).thenReturn(twitchLogin);
-		lenient().when(streamerSettingsFactory.createStreamerSettings()).thenReturn(streamerSettings);
+		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.isFollowRaid()).thenReturn(false);
 		lenient().when(streamerSettings.isMakePredictions()).thenReturn(false);
 		lenient().when(twitchLogin.fetchUserId()).thenReturn(USER_ID);
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-		
-		lenient().when(streamerConfiguration.getUsername()).thenReturn(STREAMER_USERNAME);
 		
 		lenient().when(reportMenuItemResponse.getData()).thenReturn(reportMenuItemData);
 		lenient().when(reportMenuItemData.getUser()).thenReturn(user);
@@ -121,8 +126,9 @@ class MinerTest{
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+			
+			setupStreamerConfig(STREAMER_USERNAME);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -139,6 +145,11 @@ class MinerTest{
 		}
 	}
 	
+	@SneakyThrows
+	private void setupStreamerConfig(String username){
+		Files.writeString(tempDir.resolve(username + ".json"), "{}", TRUNCATE_EXISTING, CREATE);
+	}
+	
 	@Test
 	void setupIsDoneFromConfigWithPredictions() throws LoginException, IOException{
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
@@ -149,8 +160,9 @@ class MinerTest{
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+			
+			setupStreamerConfig(STREAMER_USERNAME);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -179,8 +191,9 @@ class MinerTest{
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+			
+			setupStreamerConfig(STREAMER_USERNAME);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -195,34 +208,6 @@ class MinerTest{
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
-		}
-	}
-	
-	@Test
-	void setupIsDoneFromConfigWithUnknownUser() throws LoginException, IOException{
-		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
-				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
-			
-			assertDoesNotThrow(() -> tested.start());
-			
-			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
-			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).isEmpty();
-			
-			verify(passportApi).login();
-			verify(updateStreamInfo, never()).run(any());
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
 		}
 	}
 	
@@ -243,7 +228,6 @@ class MinerTest{
 			when(channel.getName()).thenReturn(STREAMER_USERNAME);
 			
 			when(configuration.isLoadFollows()).thenReturn(true);
-			when(configuration.getStreamers()).thenReturn(Set.of());
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
 			
 			assertDoesNotThrow(() -> tested.start());
@@ -258,6 +242,35 @@ class MinerTest{
 			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+		}
+	}
+	
+	@Test
+	void setupIsDoneFromConfigWithUnknownUser() throws LoginException, IOException{
+		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
+				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
+			
+			setupStreamerConfig(STREAMER_USERNAME);
+			
+			assertDoesNotThrow(() -> tested.start());
+			
+			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
+			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
+			assertThat(tested.getStreamers()).isEmpty();
+			
+			verify(passportApi).login();
+			verify(updateStreamInfo, never()).run(any());
+			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
+			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
 		}
 	}
 	
@@ -279,8 +292,9 @@ class MinerTest{
 			
 			when(configuration.isLoadFollows()).thenReturn(true);
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
+			
+			setupStreamerConfig(STREAMER_USERNAME);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -317,8 +331,9 @@ class MinerTest{
 			
 			when(configuration.isLoadFollows()).thenReturn(true);
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
+			
+			setupStreamerConfig(STREAMER_USERNAME);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -352,9 +367,10 @@ class MinerTest{
 			when(channel.getName()).thenReturn(STREAMER_USERNAME);
 			
 			when(configuration.isLoadFollows()).thenReturn(true);
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
+			
+			setupStreamerConfig(STREAMER_USERNAME);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -365,34 +381,6 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-		}
-	}
-	
-	@Test
-	void addDuplicateStreamer(){
-		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
-				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
-			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			when(configuration.getStreamers()).thenReturn(Set.of(streamerConfiguration));
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
-			
-			tested.start();
-			
-			var duplicateStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME.toUpperCase(), streamerSettings);
-			
-			assertDoesNotThrow(() -> tested.addStreamer(duplicateStreamer));
-			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
-			
 			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
@@ -492,5 +480,34 @@ class MinerTest{
 		assertNotNull(tested.schedule(runnable, 1, TimeUnit.SECONDS));
 		
 		verify(scheduledExecutorService).schedule(runnable, 1, TimeUnit.SECONDS);
+	}
+	
+	@Test
+	void addDuplicateStreamer(){
+		try(var apiFactory = Mockito.mockStatic(ApiFactory.class);
+				var runnableFactory = Mockito.mockStatic(MinerRunnableFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+			
+			setupStreamerConfig(STREAMER_USERNAME);
+			
+			tested.start();
+			
+			var duplicateStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME.toUpperCase(), streamerSettings);
+			
+			assertDoesNotThrow(() -> tested.addStreamer(duplicateStreamer));
+			
+			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			assertThat(tested.getStreamers()).hasSize(1)
+					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
+			
+			verify(updateStreamInfo).run(expectedStreamer);
+			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+		}
 	}
 }
