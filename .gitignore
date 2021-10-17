@@ -1,9 +1,10 @@
 /.idea
 /.gradle
+/authentication
 /build
 /out
+/streamers
 /target
-/authentication
 
 *.iml
 /config.json
