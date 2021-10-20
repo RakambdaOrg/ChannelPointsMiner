@@ -1,8 +1,8 @@
 package fr.raksrinana.twitchminer.factory;
 
-import fr.raksrinana.twitchminer.miner.EventLogger;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.handler.ClaimAvailableHandler;
+import fr.raksrinana.twitchminer.miner.handler.EventLogger;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.handler.StreamStartEndHandler;
 

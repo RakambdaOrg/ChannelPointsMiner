@@ -1,12 +1,9 @@
-package fr.raksrinana.twitchminer.miner;
+package fr.raksrinana.twitchminer.miner.handler;
 
-import fr.raksrinana.twitchminer.api.ws.data.message.ClaimAvailable;
-import fr.raksrinana.twitchminer.api.ws.data.message.PointsEarned;
-import fr.raksrinana.twitchminer.api.ws.data.message.StreamDown;
-import fr.raksrinana.twitchminer.api.ws.data.message.StreamUp;
+import fr.raksrinana.twitchminer.api.ws.data.message.*;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.data.Streamer;
-import fr.raksrinana.twitchminer.miner.handler.HandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +26,12 @@ public class EventLogger extends HandlerAdapter{
 	public void onPointsEarned(@NotNull Topic topic, @NotNull PointsEarned message){
 		var pointGain = message.getData().getPointGain();
 		log.info("==> Points earned +{} ({})", pointGain.getTotalPoints(), pointGain.getReasonCode());
+	}
+	
+	@Override
+	public void onPointsSpent(@NotNull Topic topic, @NotNull PointsSpent message){
+		var balance = message.getData().getBalance();
+		log.info("==> Points spent ({})", balance.getBalance());
 	}
 	
 	@Override

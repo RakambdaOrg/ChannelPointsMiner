@@ -193,4 +193,16 @@ class StreamerTest{
 			assertThat(tested.needUpdate()).isFalse();
 		}
 	}
+	
+	@Test
+	void followRaid(){
+		when(settings.isFollowRaid()).thenReturn(true);
+		assertThat(tested.followRaids()).isTrue();
+	}
+	
+	@Test
+	void doesNotFollowRaid(){
+		when(settings.isFollowRaid()).thenReturn(false);
+		assertThat(tested.followRaids()).isFalse();
+	}
 }
