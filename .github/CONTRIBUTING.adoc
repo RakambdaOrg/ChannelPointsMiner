@@ -1,0 +1,9 @@
+= Contributing
+
+Any contributions to this library are highly welcome.
+I created this library as a learning experience, both for myself, and for future users.
+That said, when contributing to this repository, please first create an issue on Github before making a change.
+I may have thought about the issues before and can contribute thoughts, or prior research.
+Lastly, the issue serves as a way to track community requests and progress.
+
+Please note that the project has a code of conduct; please follow it in all your interactions with the project.
