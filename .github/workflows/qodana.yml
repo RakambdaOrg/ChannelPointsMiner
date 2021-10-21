@@ -1,4 +1,4 @@
-name: Qodana
+name: "Qodana"
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   qodana:
+    name: "Qodana"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,9 +22,6 @@ jobs:
         uses: JetBrains/qodana-action@v3.2.1
         with:
           linter: qodana-jvm-community
-          fail-threshold: 1
-          baseline: ".github/qodana/baseline.sarif.json"
-          baseline-include-absent: true
       - name: Save Qodana's results to artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -31,6 +29,7 @@ jobs:
           path: ${{ github.workspace }}/qodana
 
   publish-qodana:
+    name: "Qodana pages"
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     needs:
@@ -44,5 +43,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./qodana/report
+          publish_dir: qodana/report
           destination_dir: ./
