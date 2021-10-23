@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.miner.handler;
 
 import fr.raksrinana.twitchminer.api.ws.data.message.RaidUpdateV2;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.twitchminer.log.LogContext;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,8 +22,10 @@ public class FollowRaidHandler extends HandlerAdapter{
 		}
 		
 		var streamer = streamerOptional.get();
-		if(streamer.followRaids()){
-			miner.getGqlApi().joinRaid(message.getRaid().getId());
+		try(var ignored = LogContext.with(streamer)){
+			if(streamer.followRaids()){
+				miner.getGqlApi().joinRaid(message.getRaid().getId());
+			}
 		}
 	}
 }

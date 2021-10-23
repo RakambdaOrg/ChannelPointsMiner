@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.miner.runnable;
 
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
+import fr.raksrinana.twitchminer.log.LogContext;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import fr.raksrinana.twitchminer.util.CommonUtils;
@@ -35,11 +36,13 @@ public class UpdateStreamInfo implements Runnable{
 	}
 	
 	public void run(@NotNull Streamer streamer){
-		updateVideoInfo(streamer);
-		updateSpadeUrl(streamer);
-		updatePointsContext(streamer);
-		updateCampaigns(streamer);
-		streamer.setLastUpdated(TimeFactory.now());
+		try(var ignored = LogContext.with(streamer)){
+			updateVideoInfo(streamer);
+			updateSpadeUrl(streamer);
+			updatePointsContext(streamer);
+			updateCampaigns(streamer);
+			streamer.setLastUpdated(TimeFactory.now());
+		}
 	}
 	
 	private void updateVideoInfo(@NotNull Streamer streamer){

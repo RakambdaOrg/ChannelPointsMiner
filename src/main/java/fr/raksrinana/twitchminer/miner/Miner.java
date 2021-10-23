@@ -19,12 +19,14 @@ import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.factory.ApiFactory;
 import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.twitchminer.log.LogContext;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
 import fr.raksrinana.twitchminer.miner.runnable.UpdateStreamInfo;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.ThreadContext;
 import org.jetbrains.annotations.NotNull;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -169,24 +171,26 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	public void addStreamer(@NotNull Streamer streamer){
-		if(streamers.contains(streamer)){
-			log.debug("Streamer {} is already being mined", streamer);
-			return;
+		try(var ignored = LogContext.with(streamer)){
+			if(streamers.contains(streamer)){
+				log.debug("Streamer is already being mined");
+				return;
+			}
+			log.info("Adding to the mining list with settings {}", streamer.getSettings());
+			
+			updateStreamerInfos(streamer);
+			
+			listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
+			
+			if(streamer.getSettings().isMakePredictions()){
+				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId());
+				listenTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
+			}
+			if(streamer.getSettings().isFollowRaid()){
+				listenTopic(RAID, streamer.getId());
+			}
+			streamers.add(streamer);
 		}
-		log.info("Adding {} to the mining list with settings {}", streamer, streamer.getSettings());
-		
-		updateStreamerInfos(streamer);
-		
-		listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
-		
-		if(streamer.getSettings().isMakePredictions()){
-			listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId());
-			listenTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
-		}
-		if(streamer.getSettings().isFollowRaid()){
-			listenTopic(RAID, streamer.getId());
-		}
-		streamers.add(streamer);
 	}
 	
 	@Override
@@ -197,7 +201,14 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	@Override
 	@NotNull
 	public ScheduledFuture<?> schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit unit){
-		return scheduledExecutor.schedule(runnable, delay, unit);
+		var values = ThreadContext.getImmutableContext();
+		var messages = ThreadContext.getImmutableStack().asList();
+		
+		return scheduledExecutor.schedule(() -> {
+			try(var ignored = LogContext.restore(values, messages)){
+				runnable.run();
+			}
+		}, delay, unit);
 	}
 	
 	@Override
@@ -211,7 +222,14 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	public void onTwitchMessage(@NotNull Topic topic, @NotNull Message message){
-		handlerExecutor.submit(() -> handleMessage(topic, message));
+		var values = ThreadContext.getImmutableContext();
+		var messages = ThreadContext.getImmutableStack().asList();
+		
+		handlerExecutor.submit(() -> {
+			try(var ignored = LogContext.restore(values, messages)){
+				handleMessage(topic, message);
+			}
+		});
 	}
 	
 	private void handleMessage(@NotNull Topic topic, @NotNull Message message){
