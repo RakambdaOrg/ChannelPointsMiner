@@ -69,8 +69,22 @@ public class Streamer{
 	
 	public Collection<CommunityPointsMultiplier> getActiveMultipliers(){
 		return ofNullable(channelPointsContext)
-				.flatMap(ChannelPointsContextData::getMultipliers)
+				.map(ChannelPointsContextData::getCommunity)
+				.map(User::getChannel)
+				.map(Channel::getSelf)
+				.map(ChannelSelfEdge::getCommunityPoints)
+				.map(CommunityPointsProperties::getActiveMultipliers)
 				.orElse(List.of());
+	}
+	
+	@NotNull
+	public Optional<Integer> getChannelPoints(){
+		return ofNullable(channelPointsContext)
+				.map(ChannelPointsContextData::getCommunity)
+				.map(User::getChannel)
+				.map(Channel::getSelf)
+				.map(ChannelSelfEdge::getCommunityPoints)
+				.map(CommunityPointsProperties::getBalance);
 	}
 	
 	@Nullable
@@ -88,21 +102,32 @@ public class Streamer{
 	
 	public Optional<String> getClaimId(){
 		return ofNullable(channelPointsContext)
-				.flatMap(ChannelPointsContextData::getClaim)
+				.map(ChannelPointsContextData::getCommunity)
+				.map(User::getChannel)
+				.map(Channel::getSelf)
+				.map(ChannelSelfEdge::getCommunityPoints)
+				.map(CommunityPointsProperties::getAvailableClaim)
 				.map(CommunityPointsClaim::getId);
 	}
 	
-	public Optional<String> getStreamId(){
-		return ofNullable(videoPlayerStreamInfoOverlayChannel)
-				.flatMap(VideoPlayerStreamInfoOverlayChannelData::getStream)
-				.map(Stream::getId);
-	}
-	
-	public boolean isStreaming(){
+	@NotNull
+	public Optional<Game> getGame(){
 		return ofNullable(videoPlayerStreamInfoOverlayChannel)
 				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
-				.map(User::isStreaming)
-				.orElse(false);
+				.map(User::getBroadcastSettings)
+				.map(BroadcastSettings::getGame);
+	}
+	
+	@NotNull
+	public Optional<String> getStreamId(){
+		return getStream().map(Stream::getId);
+	}
+	
+	@NotNull
+	private Optional<Stream> getStream(){
+		return ofNullable(videoPlayerStreamInfoOverlayChannel)
+				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
+				.map(User::getStream);
 	}
 	
 	public boolean isStreamingGame(){
@@ -112,8 +137,7 @@ public class Streamer{
 				.orElse(false);
 	}
 	
-	public Optional<Game> getGame(){
-		return ofNullable(videoPlayerStreamInfoOverlayChannel)
-				.flatMap(VideoPlayerStreamInfoOverlayChannelData::getGame);
+	public boolean isStreaming(){
+		return getStream().isPresent();
 	}
 }

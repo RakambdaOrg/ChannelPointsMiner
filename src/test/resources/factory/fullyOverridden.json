@@ -11,6 +11,16 @@
       "score": 100,
       "score2": 200,
       "score3": 300
+    },
+    {
+      "type": "pointsAbove",
+      "score": 25,
+      "threshold": 10
+    },
+    {
+      "type": "pointsBelow",
+      "score": 75,
+      "threshold": 20
     }
   ]
 }

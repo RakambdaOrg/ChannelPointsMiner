@@ -8,10 +8,6 @@ import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
-import static java.util.Optional.ofNullable;
 
 @JsonTypeName("User")
 @Getter
@@ -56,23 +52,4 @@ public class User extends GQLType{
 	@JsonProperty("inventory")
 	@Nullable
 	private Inventory inventory;
-	
-	@NotNull
-	public Optional<CommunityPointsClaim> getClaim(){
-		return ofNullable(channel).flatMap(Channel::getClaim);
-	}
-	
-	@NotNull
-	public Optional<Game> getGame(){
-		return ofNullable(broadcastSettings).map(BroadcastSettings::getGame);
-	}
-	
-	public boolean isStreaming(){
-		return Objects.nonNull(stream);
-	}
-	
-	@NotNull
-	public Optional<Collection<CommunityPointsMultiplier>> getMultipliers(){
-		return ofNullable(channel).flatMap(Channel::getMultipliers);
-	}
 }

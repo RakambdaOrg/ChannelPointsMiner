@@ -149,8 +149,19 @@ For example if you want a streamer to always be first, you can set this priority
 |subscribed
 |Return a score if the logged-in user is subscribed to the streamer.
 Values can be defined per sub tier.
-|User is subscribed
-| * score: Score for a T1 sub * score2: Score for a T2 sub * score3: Score for a T3 sub
+|User is subscribed.
+| * score: Score for a T1 sub * score2: Score for a T2 sub * score3: Score for a T3 sub.
+
+|pointsAbove
+|Return a score if owned points are above a defined value.
+|Channel points are above `threshold`.
+| * threshold: Current points must strictly be above this value to give the score.
+
+|pointsBelow
+|Return a score if owned points are below a defined value.
+|Channel points are below `threshold`.
+| * threshold: Current points must strictly be below this value to give the score.
+
 |===
 
 == How to mine streamers

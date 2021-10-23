@@ -16,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -37,6 +36,16 @@ class StreamerTest{
 	private Game game;
 	@Mock
 	private User user;
+	@Mock
+	private Stream stream;
+	@Mock
+	private BroadcastSettings broadcastSettings;
+	@Mock
+	private Channel channel;
+	@Mock
+	private ChannelSelfEdge channelSelfEdge;
+	@Mock
+	private CommunityPointsProperties communityPointsProperties;
 	
 	@BeforeEach
 	void setUp(){
@@ -46,9 +55,26 @@ class StreamerTest{
 	
 	@Test
 	void getGame(){
-		when(videoPlayerStreamInfoOverlayChannelData.getGame()).thenReturn(Optional.of(game));
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getBroadcastSettings()).thenReturn(broadcastSettings);
+		when(broadcastSettings.getGame()).thenReturn(game);
 		
 		assertThat(tested.getGame()).isPresent().get().isEqualTo(game);
+	}
+	
+	@Test
+	void getGameNoGame(){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getBroadcastSettings()).thenReturn(broadcastSettings);
+		
+		assertThat(tested.getGame()).isEmpty();
+	}
+	
+	@Test
+	void getGameNoBroadcastSettings(){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		
+		assertThat(tested.getGame()).isEmpty();
 	}
 	
 	@Test
@@ -61,9 +87,18 @@ class StreamerTest{
 	@Test
 	void getStreamId(){
 		var streamId = "stream-id";
-		when(videoPlayerStreamInfoOverlayChannelData.getStream()).thenReturn(Optional.of(Stream.builder().id(streamId).build()));
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getStream()).thenReturn(stream);
+		when(stream.getId()).thenReturn(streamId);
 		
 		assertThat(tested.getStreamId()).isPresent().get().isEqualTo(streamId);
+	}
+	
+	@Test
+	void getStreamIdNoStream(){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		
+		assertThat(tested.getStreamId()).isEmpty();
 	}
 	
 	@Test
@@ -81,9 +116,17 @@ class StreamerTest{
 	@Test
 	void streaming(){
 		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
-		when(user.isStreaming()).thenReturn(true);
+		when(user.getStream()).thenReturn(stream);
 		
 		assertThat(tested.isStreaming()).isTrue();
+	}
+	
+	@Test
+	void notStreaming(){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getStream()).thenReturn(null);
+		
+		assertThat(tested.isStreaming()).isFalse();
 	}
 	
 	@Test
@@ -94,19 +137,28 @@ class StreamerTest{
 	}
 	
 	@Test
-	void notStreaming(){
-		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
-		when(user.isStreaming()).thenReturn(false);
-		
-		assertThat(tested.isStreaming()).isFalse();
-	}
-	
-	@Test
 	void streamingGame(){
-		when(videoPlayerStreamInfoOverlayChannelData.getGame()).thenReturn(Optional.of(game));
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getBroadcastSettings()).thenReturn(broadcastSettings);
+		when(broadcastSettings.getGame()).thenReturn(game);
 		when(game.getName()).thenReturn("GAME");
 		
 		assertThat(tested.isStreamingGame()).isTrue();
+	}
+	
+	@Test
+	void streamingGameNoGame(){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getBroadcastSettings()).thenReturn(broadcastSettings);
+		
+		assertThat(tested.isStreamingGame()).isFalse();
+	}
+	
+	@Test
+	void streamingGameNoBroadcastSettings(){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		
+		assertThat(tested.isStreamingGame()).isFalse();
 	}
 	
 	@Test
@@ -119,8 +171,10 @@ class StreamerTest{
 	@ParameterizedTest
 	@NullAndEmptySource
 	@ValueSource(strings = {"    "})
-	void notStreamingGame(String name){
-		when(videoPlayerStreamInfoOverlayChannelData.getGame()).thenReturn(Optional.of(game));
+	void notStreamingGameNoName(String name){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getBroadcastSettings()).thenReturn(broadcastSettings);
+		when(broadcastSettings.getGame()).thenReturn(game);
 		when(game.getName()).thenReturn(name);
 		
 		assertThat(tested.isStreamingGame()).isFalse();
@@ -130,7 +184,11 @@ class StreamerTest{
 	void getClaimId(){
 		var id = "clam-id";
 		var claim = mock(CommunityPointsClaim.class);
-		when(channelPointsContextData.getClaim()).thenReturn(Optional.of(claim));
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		when(channel.getSelf()).thenReturn(channelSelfEdge);
+		when(channelSelfEdge.getCommunityPoints()).thenReturn(communityPointsProperties);
+		when(communityPointsProperties.getAvailableClaim()).thenReturn(claim);
 		when(claim.getId()).thenReturn(id);
 		
 		tested.setChannelPointsContext(channelPointsContextData);
@@ -140,8 +198,30 @@ class StreamerTest{
 	}
 	
 	@Test
-	void getClaimIdEmpty(){
-		when(channelPointsContextData.getClaim()).thenReturn(Optional.empty());
+	void getClaimIdNoClaim(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		when(channel.getSelf()).thenReturn(channelSelfEdge);
+		when(channelSelfEdge.getCommunityPoints()).thenReturn(communityPointsProperties);
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getClaimId()).isEmpty();
+	}
+	
+	@Test
+	void getClaimIdNoSelf(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getClaimId()).isEmpty();
+	}
+	
+	@Test
+	void getClaimIdNoChannel(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
 		
 		tested.setChannelPointsContext(channelPointsContextData);
 		
@@ -156,9 +236,64 @@ class StreamerTest{
 	}
 	
 	@Test
+	void getChannelPoints(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		when(channel.getSelf()).thenReturn(channelSelfEdge);
+		when(channelSelfEdge.getCommunityPoints()).thenReturn(communityPointsProperties);
+		when(communityPointsProperties.getBalance()).thenReturn(50);
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getChannelPoints()).isPresent()
+				.get().isEqualTo(50);
+	}
+	
+	@Test
+	void getChannelPointsNoCommunityPoints(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		when(channel.getSelf()).thenReturn(channelSelfEdge);
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getChannelPoints()).isEmpty();
+	}
+	
+	@Test
+	void getChannelPointsNoSelf(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getChannelPoints()).isEmpty();
+	}
+	
+	@Test
+	void getChannelPointsNoChannel(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getChannelPoints()).isEmpty();
+	}
+	
+	@Test
+	void getChannelPointsNull(){
+		tested.setChannelPointsContext(null);
+		
+		assertThat(tested.getChannelPoints()).isEmpty();
+	}
+	
+	@Test
 	void getMultipliers(){
 		var multiplier = mock(CommunityPointsMultiplier.class);
-		when(channelPointsContextData.getMultipliers()).thenReturn(Optional.of(List.of(multiplier)));
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		when(channel.getSelf()).thenReturn(channelSelfEdge);
+		when(channelSelfEdge.getCommunityPoints()).thenReturn(communityPointsProperties);
+		when(communityPointsProperties.getActiveMultipliers()).thenReturn(List.of(multiplier));
 		
 		tested.setChannelPointsContext(channelPointsContextData);
 		
@@ -167,7 +302,30 @@ class StreamerTest{
 	
 	@Test
 	void getMultipliersEmpty(){
-		when(channelPointsContextData.getMultipliers()).thenReturn(Optional.empty());
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		when(channel.getSelf()).thenReturn(channelSelfEdge);
+		when(channelSelfEdge.getCommunityPoints()).thenReturn(communityPointsProperties);
+		when(communityPointsProperties.getActiveMultipliers()).thenReturn(List.of());
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getActiveMultipliers()).isEmpty();
+	}
+	
+	@Test
+	void getMultipliersNoSelf(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
+		when(user.getChannel()).thenReturn(channel);
+		
+		tested.setChannelPointsContext(channelPointsContextData);
+		
+		assertThat(tested.getActiveMultipliers()).isEmpty();
+	}
+	
+	@Test
+	void getMultipliersNoChannel(){
+		when(channelPointsContextData.getCommunity()).thenReturn(user);
 		
 		tested.setChannelPointsContext(channelPointsContextData);
 		

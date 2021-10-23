@@ -17,6 +17,8 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @JsonSubTypes(value = {
 		@Type(value = ConstantPriority.class, name = "constant"),
 		@Type(value = SubscribedPriority.class, name = "subscribed"),
+		@Type(value = PointsAbovePriority.class, name = "pointsAbove"),
+		@Type(value = PointsBelowPriority.class, name = "pointsBelow"),
 })
 @ToString
 @EqualsAndHashCode
