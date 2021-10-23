@@ -1,0 +1,30 @@
+= Loggers
+
+== console_only.xml
+
+* Log into the console only.
+* Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
+* All the other logs are logged if they have INFO level or higher.
+
+[source,log]
+----
+
+----
+
+== rolling_file.xml
+
+* Log into a file that is archived if conditions are met.
+* Logs are logged into `./logs/miner.log` and then archived to `./logs/miner.log.2021-07-26.gz`.
+* One file represents a day.
+* Only the last 10 logs will be kept.
+* Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
+* All the other logs are logged if they have INFO level or higher.
+
+[source,log]
+----
+
+----
+
+== Contribute
+
+If you have defined your own logger and feel like it may interest others too, feel free to open a PR to share it.

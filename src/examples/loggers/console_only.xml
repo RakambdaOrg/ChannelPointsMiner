@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="Default" status="warn">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout disableAnsi="false" pattern="%highlight{%date{ISO8601} %level %X{streamer_name} - %message}%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger level="warn" name="org.java_websocket" additivity="false">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <Root level="info" additivity="false">
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>
