@@ -2,7 +2,7 @@ package fr.raksrinana.twitchminer.api.twitch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.twitchminer.api.twitch.data.PlayerEvent;
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import kong.unirest.Unirest;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

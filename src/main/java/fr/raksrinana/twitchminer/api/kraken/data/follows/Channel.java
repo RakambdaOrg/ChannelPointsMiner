@@ -2,9 +2,9 @@ package fr.raksrinana.twitchminer.api.kraken.data.follows;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.ColorDeserializer;
-import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
-import fr.raksrinana.twitchminer.utils.json.URLDeserializer;
+import fr.raksrinana.twitchminer.util.json.ColorDeserializer;
+import fr.raksrinana.twitchminer.util.json.ISO8601ZonedDateTimeDeserializer;
+import fr.raksrinana.twitchminer.util.json.URLDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

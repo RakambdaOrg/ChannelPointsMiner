@@ -5,7 +5,7 @@ import fr.raksrinana.twitchminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.twitchminer.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.twitchminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
-import fr.raksrinana.twitchminer.utils.CommonUtils;
+import fr.raksrinana.twitchminer.util.CommonUtils;
 import kong.unirest.Cookie;
 import kong.unirest.MockClient;
 import org.mockito.Mockito;

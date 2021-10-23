@@ -3,7 +3,7 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.UnknownDeserializer;
+import fr.raksrinana.twitchminer.util.json.UnknownDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;

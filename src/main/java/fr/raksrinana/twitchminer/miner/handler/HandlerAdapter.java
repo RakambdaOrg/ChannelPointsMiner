@@ -2,7 +2,7 @@ package fr.raksrinana.twitchminer.miner.handler;
 
 import fr.raksrinana.twitchminer.api.ws.data.message.*;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.twitchminer.utils.ClassWalker;
+import fr.raksrinana.twitchminer.util.ClassWalker;
 import org.jetbrains.annotations.NotNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

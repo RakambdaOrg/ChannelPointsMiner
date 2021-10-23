@@ -1,4 +1,16 @@
 {
   "makePredictions": true,
-  "followRaid": true
+  "followRaid": true,
+  "priorities": [
+    {
+      "type": "constant",
+      "score": 50
+    },
+    {
+      "type": "subscribed",
+      "score": 100,
+      "score2": 200,
+      "score3": 300
+    }
+  ]
 }

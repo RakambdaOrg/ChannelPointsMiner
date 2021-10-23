@@ -4,6 +4,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -20,6 +21,8 @@ class UserTest{
 	private Channel channel;
 	@Mock
 	private CommunityPointsClaim communityPointsClaim;
+	@Mock
+	private List<CommunityPointsMultiplier> multipliers;
 	
 	@Test
 	void isStream(){
@@ -83,5 +86,30 @@ class UserTest{
 		var tested = User.builder().id("id").build();
 		
 		assertThat(tested.getClaim()).isEmpty();
+	}
+	
+	@Test
+	void getMultipliers(){
+		var tested = User.builder().id("id").channel(channel).build();
+		
+		when(channel.getMultipliers()).thenReturn(Optional.of(multipliers));
+		
+		assertThat(tested.getMultipliers()).isPresent().get().isEqualTo(multipliers);
+	}
+	
+	@Test
+	void getMultipliersEmpty(){
+		var tested = User.builder().id("id").channel(channel).build();
+		
+		when(channel.getMultipliers()).thenReturn(Optional.empty());
+		
+		assertThat(tested.getMultipliers()).isEmpty();
+	}
+	
+	@Test
+	void getMultipliersNull(){
+		var tested = User.builder().id("id").build();
+		
+		assertThat(tested.getMultipliers()).isEmpty();
 	}
 }

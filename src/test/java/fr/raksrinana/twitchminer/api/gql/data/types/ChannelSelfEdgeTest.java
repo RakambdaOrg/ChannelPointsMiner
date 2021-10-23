@@ -5,6 +5,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.List;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -13,6 +14,8 @@ class ChannelSelfEdgeTest{
 	private CommunityPointsProperties communityPointsProperties;
 	@Mock
 	private CommunityPointsClaim communityPointsClaim;
+	@Mock
+	private List<CommunityPointsMultiplier> multipliers;
 	
 	@Test
 	void getClaim(){
@@ -26,5 +29,13 @@ class ChannelSelfEdgeTest{
 	void getClaimEmpty(){
 		var tested = ChannelSelfEdge.builder().communityPoints(communityPointsProperties).build();
 		Assertions.assertThat(tested.getClaim()).isEmpty();
+	}
+	
+	@Test
+	void getMultipliers(){
+		when(communityPointsProperties.getActiveMultipliers()).thenReturn(multipliers);
+		
+		var tested = ChannelSelfEdge.builder().communityPoints(communityPointsProperties).build();
+		Assertions.assertThat(tested.getMultipliers()).isEqualTo(multipliers);
 	}
 }

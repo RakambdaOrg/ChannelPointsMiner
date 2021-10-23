@@ -1,7 +1,9 @@
 package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.miner.data.StreamerSettings;
+import fr.raksrinana.twitchminer.miner.priority.ConstantPriority;
+import fr.raksrinana.twitchminer.miner.priority.SubscribedPriority;
+import fr.raksrinana.twitchminer.miner.streamer.StreamerSettings;
 import fr.raksrinana.twitchminer.tests.TestUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
+import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -84,10 +87,22 @@ class StreamerSettingsFactoryTest{
 	void getStreamerConfigurationWithConfigFileAllRedefined(){
 		TestUtils.copyFromResources("factory/fullyOverridden.json", tempDir.resolve(STREAMER_USERNAME + ".json"));
 		
+		var expected = StreamerSettings.builder()
+				.makePredictions(true)
+				.followRaid(true)
+				.priorities(List.of(
+						ConstantPriority.builder()
+								.score(50)
+								.build(),
+						SubscribedPriority.builder()
+								.score(100)
+								.score2(200)
+								.score3(300)
+								.build()
+				))
+				.build();
+		
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
-				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
-						.makePredictions(true)
-						.followRaid(true)
-						.build());
+				.isEqualTo(expected);
 	}
 }

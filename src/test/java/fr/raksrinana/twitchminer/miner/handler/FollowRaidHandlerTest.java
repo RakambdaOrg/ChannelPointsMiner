@@ -5,7 +5,7 @@ import fr.raksrinana.twitchminer.api.ws.data.message.RaidUpdateV2;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Raid;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.miner.data.Streamer;
+import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

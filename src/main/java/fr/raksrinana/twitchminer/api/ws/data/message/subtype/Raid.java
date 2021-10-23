@@ -2,7 +2,7 @@ package fr.raksrinana.twitchminer.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.URLDeserializer;
+import fr.raksrinana.twitchminer.util.json.URLDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
