@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.api.ws.data.response;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -15,5 +16,6 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = MessageResponse.class, name = "MESSAGE"),
 })
 @ToString
+@EqualsAndHashCode
 public abstract class TwitchWebSocketResponse{
 }

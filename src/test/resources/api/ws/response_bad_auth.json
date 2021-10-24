@@ -1,0 +1,5 @@
+{
+  "type": "RESPONSE",
+  "error": "ERR_BADAUTH",
+  "nonce": "nonce"
+}

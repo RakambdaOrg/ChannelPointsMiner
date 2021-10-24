@@ -20,7 +20,7 @@ public class UpdateStreamInfo implements Runnable{
 	
 	@Override
 	public void run(){
-		log.debug("Updating stream info");
+		log.debug("Updating all stream info");
 		try{
 			miner.getStreamers().stream()
 					.filter(Streamer::needUpdate)
@@ -28,10 +28,10 @@ public class UpdateStreamInfo implements Runnable{
 						run(streamer);
 						CommonUtils.randomSleep(500, 100);
 					});
-			log.debug("Done updating stream info");
+			log.debug("Done updating all stream info");
 		}
 		catch(Exception e){
-			log.error("Failed to update stream info", e);
+			log.error("Failed to update all stream info", e);
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class UpdateStreamInfo implements Runnable{
 	}
 	
 	private void updateVideoInfo(@NotNull Streamer streamer){
-		log.trace("Updating video info for {}", streamer);
+		log.trace("Updating video info");
 		
 		miner.getGqlApi().videoPlayerStreamInfoOverlayChannel(streamer.getUsername())
 				.map(GQLResponse::getData)
@@ -56,7 +56,7 @@ public class UpdateStreamInfo implements Runnable{
 	}
 	
 	private void updateSpadeUrl(@NotNull Streamer streamer){
-		log.trace("Updating spade url for {}", streamer);
+		log.trace("Updating spade url");
 		if(streamer.isStreaming()){
 			if(Objects.isNull(streamer.getSpadeUrl())){
 				Optional.ofNullable(streamer.getChannelUrl())
@@ -70,7 +70,7 @@ public class UpdateStreamInfo implements Runnable{
 	}
 	
 	private void updatePointsContext(@NotNull Streamer streamer){
-		log.trace("Updating channel points context for {}", streamer);
+		log.trace("Updating channel points context");
 		
 		miner.getGqlApi().channelPointsContext(streamer.getUsername())
 				.map(GQLResponse::getData)
@@ -82,7 +82,7 @@ public class UpdateStreamInfo implements Runnable{
 	}
 	
 	private void updateCampaigns(@NotNull Streamer streamer){
-		log.trace("Updating campaigns for {}", streamer);
+		log.trace("Updating campaigns");
 		if(streamer.updateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
 			miner.getGqlApi().dropsHighlightServiceAvailableDrops(streamer.getId())
 					.map(GQLResponse::getData)

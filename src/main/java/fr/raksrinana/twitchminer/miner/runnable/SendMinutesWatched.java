@@ -23,7 +23,7 @@ public class SendMinutesWatched implements Runnable{
 	
 	@Override
 	public void run(){
-		log.debug("Sending minutes watched");
+		log.debug("Sending all minutes watched");
 		try{
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
@@ -39,16 +39,16 @@ public class SendMinutesWatched implements Runnable{
 				CommonUtils.randomSleep(100, 50);
 			}
 			
-			log.debug("Done sending minutes watched");
+			log.debug("Done all sending minutes watched");
 		}
 		catch(Exception e){
-			log.error("Failed to send minutes watched", e);
+			log.error("Failed to send all minutes watched", e);
 		}
 	}
 	
 	private void send(Streamer streamer){
 		try(var ignored = LogContext.with(streamer)){
-			log.debug("Sending minutes watched for {}", streamer);
+			log.debug("Sending minutes watched");
 			var streamId = streamer.getStreamId();
 			if(streamId.isEmpty()){
 				return;

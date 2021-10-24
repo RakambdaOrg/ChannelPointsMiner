@@ -12,4 +12,12 @@ class CommonUtilsTest{
 			return true;
 		});
 	}
+	
+	@RepeatedTest(5)
+	void sleepInRangeNegative(){
+		await().pollDelay(Duration.ofMillis(10)).atMost(Duration.ofMillis(30)).until(() -> {
+			CommonUtils.randomSleep(-5, 1);
+			return true;
+		});
+	}
 }

@@ -204,11 +204,13 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
-		return scheduledExecutor.schedule(() -> {
+		Runnable contextSharing = () -> {
 			try(var ignored = LogContext.restore(values, messages)){
 				runnable.run();
 			}
-		}, delay, unit);
+		};
+		
+		return scheduledExecutor.schedule(contextSharing, delay, unit);
 	}
 	
 	@Override

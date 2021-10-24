@@ -61,6 +61,7 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	private TwitchWebSocketClient createNewClient(){
 		try{
 			var client = TwitchWebSocketClientFactory.createClient();
+			log.debug("Created websocket client with uuid {}", client.getUuid());
 			client.addListener(this);
 			client.connectBlocking();
 			clients.add(client);

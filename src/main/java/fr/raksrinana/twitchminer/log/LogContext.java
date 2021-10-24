@@ -1,5 +1,6 @@
 package fr.raksrinana.twitchminer.log;
 
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.apache.logging.log4j.CloseableThreadContext;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +11,8 @@ import java.util.Objects;
 
 public class LogContext implements AutoCloseable{
 	private static final String STREAMER_NAME_KEY = "streamer_name";
+	private static final String WEBSOCKET_ID_KEY = "websocket_id";
+	private static final String WEBSOCKET_TOPIC = "websocket_topic";
 	
 	private final CloseableThreadContext.Instance ctc;
 	
@@ -18,7 +21,7 @@ public class LogContext implements AutoCloseable{
 			ctc = CloseableThreadContext.put(STREAMER_NAME_KEY, streamer.getUsername());
 		}
 		else{
-			ctc = CloseableThreadContext.push(STREAMER_NAME_KEY);
+			ctc = CloseableThreadContext.putAll(Map.of());
 		}
 	}
 	
@@ -32,19 +35,29 @@ public class LogContext implements AutoCloseable{
 	}
 	
 	@NotNull
+	public static LogContext restore(@NotNull Map<String, String> values, @NotNull List<String> messages){
+		return new LogContext(values, messages);
+	}
+	
+	@NotNull
 	public static LogContext with(@Nullable Streamer streamer){
 		return new LogContext(streamer);
 	}
 	
 	@NotNull
-	public static LogContext restore(@NotNull Map<String, String> values, @NotNull List<String> messages){
-		return new LogContext(values, messages);
+	public LogContext withSocketId(@NotNull String uuid){
+		ctc.put(WEBSOCKET_ID_KEY, uuid);
+		return this;
+	}
+	
+	@NotNull
+	public LogContext withTopic(@NotNull Topic topic){
+		ctc.put(WEBSOCKET_TOPIC, topic.getValue());
+		return this;
 	}
 	
 	@Override
 	public void close(){
-		if(Objects.nonNull(ctc)){
-			ctc.close();
-		}
+		ctc.close();
 	}
 }
