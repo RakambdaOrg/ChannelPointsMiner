@@ -173,7 +173,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			log.debug("Streamer {} is already being mined", streamer);
 			return;
 		}
-		log.info("Added to the mining list: {}", streamer);
+		log.info("Adding {} to the mining list with settings {}", streamer, streamer.getSettings());
 		
 		updateStreamerInfos(streamer);
 		
