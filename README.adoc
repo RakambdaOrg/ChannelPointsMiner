@@ -30,7 +30,7 @@ WARNING: This is a **WIP**!
 
 :toc:
 
-== How to use
+== How to use [[how_to_use]]
 
 === Clone
 
@@ -205,7 +205,7 @@ NOTE: If a stream is both defined in a JSON file and is followed, then the first
 
 == Logs [[logs]]
 
-You can define yourself how the logs looks like by supplying your own link:https://logging.apache.org/log4j/2.x/manual/configuration.html[Log4j2 configuration file].
+You can define yourself how the logs looks like by supplying your own link:https://logging.apache.org/log4j/2.x/manual/configuration.html[Log4j2 configuration file] (see <<how_to_use,how to use>> to see how to load this config file).
 
 Some examples are provided in the `src/examples/loggers` folder.
 
@@ -219,6 +219,12 @@ These keys are listed below:
 
 |streamer_name
 |The name of the streamer for which the message is linked to.
+
+|websocket_id
+|The id of the websocket that is at the origin of the message sent/received on the websocket.
+
+|websocket_topic
+|Topic name of the message received on the websocket.
 |===
 
 == Disclaimer
