@@ -26,4 +26,9 @@ class MessageHandlerFactoryTest{
 	void createStreamStartEndHandler(){
 		assertThat(MessageHandlerFactory.createStreamStartEndHandler(miner)).isNotNull();
 	}
+	
+	@Test
+	void createFollowRaidHandler(){
+		assertThat(MessageHandlerFactory.createFollowRaidHandler(miner)).isNotNull();
+	}
 }

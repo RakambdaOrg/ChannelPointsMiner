@@ -59,6 +59,10 @@ public class Streamer{
 		return true;
 	}
 	
+	public boolean followRaids(){
+		return settings.isFollowRaid();
+	}
+	
 	public Optional<String> getClaimId(){
 		return Optional.ofNullable(channelPointsContext)
 				.flatMap(ChannelPointsContextData::getClaim)

@@ -8,6 +8,8 @@ import fr.raksrinana.twitchminer.api.gql.data.claimcommunitypoints.ClaimCommunit
 import fr.raksrinana.twitchminer.api.gql.data.claimcommunitypoints.ClaimCommunityPointsOperation;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsOperation;
+import fr.raksrinana.twitchminer.api.gql.data.joinraid.JoinRaidData;
+import fr.raksrinana.twitchminer.api.gql.data.joinraid.JoinRaidOperation;
 import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.twitchminer.api.gql.data.reportmenuitem.ReportMenuItemOperation;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
@@ -51,6 +53,11 @@ public class GQLApi{
 	@NotNull
 	public Optional<GQLResponse<ClaimCommunityPointsData>> claimCommunityPoints(@NotNull String channelId, @NotNull String claimId){
 		return postRequest(new ClaimCommunityPointsOperation(channelId, claimId));
+	}
+	
+	@NotNull
+	public Optional<GQLResponse<JoinRaidData>> joinRaid(@NotNull String raidId){
+		return postRequest(new JoinRaidOperation(raidId));
 	}
 	
 	@NotNull

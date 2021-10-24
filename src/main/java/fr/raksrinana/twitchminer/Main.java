@@ -39,6 +39,7 @@ public class Main{
 		miner.addHandler(MessageHandlerFactory.createLogger(miner));
 		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
+		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
 		miner.start();
 	}
 	
