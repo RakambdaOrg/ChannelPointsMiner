@@ -9,6 +9,7 @@ import fr.raksrinana.twitchminer.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import java.util.Map;
 import java.util.Objects;
 
 @Log4j2
@@ -26,7 +27,10 @@ public class SendMinutesWatched implements Runnable{
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
+					.map(streamer -> Map.entry(streamer, streamer.getScore()))
+					.sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
 					.limit(2)
+					.map(Map.Entry::getKey)
 					.toList();
 			
 			for(var streamer : toSendMinutesWatched){
