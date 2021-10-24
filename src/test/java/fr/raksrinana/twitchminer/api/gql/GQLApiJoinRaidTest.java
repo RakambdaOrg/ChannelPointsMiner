@@ -2,8 +2,8 @@ package fr.raksrinana.twitchminer.api.gql;
 
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.joinraid.JoinRaidData;
+import fr.raksrinana.twitchminer.api.gql.data.types.JoinRaidPayload;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
-import fr.raksrinana.twitchminer.tests.TestUtils;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import kong.unirest.MockClient;
 import org.mockito.InjectMocks;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Map;
+import static fr.raksrinana.twitchminer.tests.TestUtils.getAllResourceContent;
 import static kong.unirest.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,16 +40,21 @@ class GQLApiJoinRaidTest{
 	void nominalFollowRaid(MockClient unirest){
 		var expected = GQLResponse.<JoinRaidData> builder()
 				.extensions(Map.of(
-						"durationMilliseconds", 55,
-						"operationName", "ClaimCommunityPoints",
+						"durationMilliseconds", 4,
+						"operationName", "JoinRaid",
 						"requestID", "request-id"
 				))
+				.data(JoinRaidData.builder()
+						.joinRaid(JoinRaidPayload.builder()
+								.raidId("raid-id")
+								.build())
+						.build())
 				.build();
 		
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(RAID_ID))
-				.thenReturn("") //TODO
+				.thenReturn(getAllResourceContent("api/gql/joinRaid.json"))
 				.withStatus(200);
 		
 		assertThat(tested.joinRaid(RAID_ID)).isPresent().get().isEqualTo(expected);
@@ -61,7 +67,7 @@ class GQLApiJoinRaidTest{
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(RAID_ID))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidAuth.json"))
+				.thenReturn(getAllResourceContent("api/gql/invalidAuth.json"))
 				.withStatus(401);
 		
 		assertThrows(RuntimeException.class, () -> tested.joinRaid(RAID_ID));
@@ -74,7 +80,7 @@ class GQLApiJoinRaidTest{
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(RAID_ID))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidRequest.json"))
+				.thenReturn(getAllResourceContent("api/gql/invalidRequest.json"))
 				.withStatus(200);
 		
 		assertThat(tested.joinRaid(RAID_ID)).isEmpty();

@@ -1,0 +1,13 @@
+{
+  "data": {
+    "joinRaid": {
+      "raidID": "raid-id",
+      "__typename": "JoinRaidPayload"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 4,
+    "operationName": "JoinRaid",
+    "requestID": "request-id"
+  }
+}
