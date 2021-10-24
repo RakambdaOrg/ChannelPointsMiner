@@ -5,16 +5,18 @@ image:https://img.shields.io/docker/pulls/mrcraftcod/twitchminer.svg[link="https
 image:https://img.shields.io/badge/Qodana-%20-orange[link="https://raksrinana.github.io/TwitchMiner/",window="_blank",align="center"]
 
 The main objective of this miner is to acquire Twitch channel points automatically.
-Other forms of point, like prose provided by bots through IRC (Streamlabs etc), isn't in the scope of the miner.
+Other forms of point, like prose provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
 
 * Watch streams for you, earning the baseline points as you watch.
 * Get the watch streak points by watching streams regularly.
-* Claim bonus points when they are available
+* Claim bonus points when they are available.
+* Follow raids.
 
 Limits:
 
 * Twitch makes it so that only 2 streamers can be watched at once.
-However predictions are not limited.
+However, actions that are not watching are not limited.
+This includes raids and predictions.
 
 Planned:
 
@@ -29,7 +31,6 @@ WARNING: This is a **WIP**!
 :toc:
 
 == How to use
-
 === Clone
 
 Java 17+ is required.
@@ -63,10 +64,10 @@ services:
 
 2 kind of settings are present:
 
-* The global settings that defines the global behavior of the miner as well as the default streamer settings.
-* The streamer settings that'll be applied for each streamer and override the default ones.
+* The <<global_settings,global settings>> that defines the global behavior of the miner as well as the default streamer settings.
+* The <<streamer_settings,streamer settings>> that'll be applied for each streamer and override the default ones.
 
-=== Global settings
+=== Global settings [[global_settings]]
 
 An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main/src/test/resources/config/config.json[here,window="_blank"].
 
@@ -90,20 +91,20 @@ An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main
 |If set to true link:https://www.twitch.tv/directory/following/[streamers followed,window="_blank"] on the account will be mined
 |false
 
-|defaultStreamerSettings
-|Default streamer settings to apply, see below
+|defaultStreamerSettings [[global_settings__default_streamer_settings]]
+|Default <<streamer_settings,streamer settings>> to apply to every streamer
 |Default streamer settings
 
-|streamerConfigDirectory
-|Directory containing the streamer settings for each streamer
+|streamerConfigDirectory [[global_settings__streamer_config_directory]]
+|Directory containing the <<streamer_settings,streamer settings>> for each streamer
 |./streamers
 |===
 
-=== Streamer settings
+=== Streamer settings [[streamer_settings]]
 
-Streamer settings define settings that will override the default streamer settings for a particular streamer.
+Streamer settings define settings that will override the <<global_settings__default_streamer_settings,default streamer settings>> for a particular streamer.
 
-Each streamer setting will be defined in a json file named with the username of the streamer (eg: `myusername.json`) and placed in the `streamerConfigDirectory` directory.
+Each streamer setting will be defined in a json file named with the username of the streamer (eg: `myusername.json`) and placed in the <<global_settings__streamer_config_directory,streamerConfigDirectory>> directory.
 
 [cols="1,3,1"]
 |===
@@ -116,16 +117,65 @@ Each streamer setting will be defined in a json file named with the username of 
 |followRaid
 |If set to true, the miner raid will attend raids for extra points (#30)
 |false
+
+|priorities
+|A list of conditions that if met will prioritize this streamer (see <<priorities,priorities>>)
+|none
+|===
+
+==== Priorities [[priorities]]
+
+Priorities is a way to prioritize streamers among each others to mine one over another based on some conditions.
+
+By default, with an empty priority list, the order will be "random" (actually the order in which the streamers have been added into the miner, subject to change anytime).
+
+You can then modify this order by adding priorities to the streamers you want and if the condition is met then a `score` will be added to its overall score (sum of all the priority's scores).
+The 2 streamers that have the highest overall score will be those mined.
+If there's an exe-quo they'll be picked random among them.
+
+Each priority is different and can have a set of different parameters.
+The table below will list their `type` to be used in the JSON configuration as well as the conditions of activation and parameters.
+
+[cols="1,3,1,2a"]
+|===
+|Type |Description |Condition |Parameters
+
+|constant
+|Adds a constant value to the score of the streamer.
+For example if you want a streamer to always be first, you can set this priority with a score of 99999, and it'll always have at least this amount.
+|Always
+|
+
+|subscribed
+|Return a score if the logged-in user is subscribed to the streamer.
+Values can be defined per sub tier.
+|User is subscribed.
+| * score: Score for a T1 sub * score2: Score for a T2 sub * score3: Score for a T3 sub.
+
+|pointsAbove
+|Return a score if owned points are above a defined value.
+|Channel points are above `threshold`.
+| * threshold: Current points must strictly be above this value to give the score.
+
+|pointsBelow
+|Return a score if owned points are below a defined value.
+|Channel points are below `threshold`.
+| * threshold: Current points must strictly be below this value to give the score.
+
 |===
 
 == How to mine streamers
 
 You have two options to load streamers in the mining list:
 
+* Be specific and define streamer settings for each streamer you want to watch.
+For this simply add a JSON file withing the <<global_settings__streamer_config_directory,streamer config directory>> with the name of the streamer (eg: `mystreamer.json`).
+The content of the file will override the <<global_settings__default_streamer_settings,default streamer settings>> for the keys that are redefined.
+If you want to use the <<global_settings__default_streamer_settings,default streamer settings>> simply use an empty JSON object in the file (ie: `{}`).
 * Load them from the follows list.
-But everything will be loaded from it.
-* Be more specific and define streamer settings for streamers you want to watch.
-For example adding the file `mystreamer.json` with content `{}` will mine the streamer `myusername` with the default streamer settings.
+Every follow will be loaded and default settings will be applied to them.
+
+NOTE: If a stream is both defined in a JSON file and is followed, then the first case will apply.
 
 == Disclaimer
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
-import java.util.Optional;
 
 @JsonTypeName("ChannelSelfEdge")
 @Getter
@@ -17,8 +16,4 @@ public class ChannelSelfEdge extends GQLType{
 	@JsonProperty("communityPoints")
 	@NotNull
 	private CommunityPointsProperties communityPoints;
-	
-	public Optional<CommunityPointsClaim> getClaim(){
-		return Optional.ofNullable(communityPoints.getAvailableClaim());
-	}
 }

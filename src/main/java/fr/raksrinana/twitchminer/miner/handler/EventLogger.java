@@ -3,7 +3,7 @@ package fr.raksrinana.twitchminer.miner.handler;
 import fr.raksrinana.twitchminer.api.ws.data.message.*;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.miner.data.Streamer;
+import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

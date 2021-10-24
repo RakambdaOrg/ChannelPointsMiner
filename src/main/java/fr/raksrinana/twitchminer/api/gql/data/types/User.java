@@ -3,13 +3,11 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.URLDeserializer;
+import fr.raksrinana.twitchminer.util.json.URLDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
 
 @JsonTypeName("User")
 @Getter
@@ -54,17 +52,4 @@ public class User extends GQLType{
 	@JsonProperty("inventory")
 	@Nullable
 	private Inventory inventory;
-	
-	public Optional<CommunityPointsClaim> getClaim(){
-		return Optional.ofNullable(channel).flatMap(Channel::getClaim);
-	}
-	
-	public boolean isStreaming(){
-		return Objects.nonNull(stream);
-	}
-	
-	public Optional<Game> getGame(){
-		return Optional.ofNullable(broadcastSettings)
-				.map(BroadcastSettings::getGame);
-	}
 }

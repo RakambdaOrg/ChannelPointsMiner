@@ -1,6 +1,6 @@
 package fr.raksrinana.twitchminer.tests;
 
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.extern.log4j.Log4j2;

@@ -8,7 +8,7 @@ import fr.raksrinana.twitchminer.factory.ConfigurationFactory;
 import fr.raksrinana.twitchminer.factory.MessageHandlerFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.twitchminer.miner.Miner;
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.SneakyThrows;

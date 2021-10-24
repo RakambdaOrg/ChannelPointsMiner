@@ -11,7 +11,7 @@ import fr.raksrinana.twitchminer.api.ws.data.response.PongResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.ResponseResponse;
 import fr.raksrinana.twitchminer.api.ws.data.response.TwitchWebSocketResponse;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.WebSocket;

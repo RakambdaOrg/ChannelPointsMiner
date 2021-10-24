@@ -19,9 +19,9 @@ import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.factory.ApiFactory;
 import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.twitchminer.miner.data.Streamer;
 import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
-import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
+import fr.raksrinana.twitchminer.miner.runnable.UpdateStreamInfo;
+import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -173,7 +173,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			log.debug("Streamer {} is already being mined", streamer);
 			return;
 		}
-		log.info("Added to the mining list: {}", streamer);
+		log.info("Adding {} to the mining list with settings {}", streamer, streamer.getSettings());
 		
 		updateStreamerInfos(streamer);
 		

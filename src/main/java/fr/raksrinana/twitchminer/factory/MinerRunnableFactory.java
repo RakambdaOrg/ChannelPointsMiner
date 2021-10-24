@@ -1,9 +1,9 @@
 package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.miner.runnables.SendMinutesWatched;
-import fr.raksrinana.twitchminer.miner.runnables.UpdateStreamInfo;
-import fr.raksrinana.twitchminer.miner.runnables.WebSocketPing;
+import fr.raksrinana.twitchminer.miner.runnable.SendMinutesWatched;
+import fr.raksrinana.twitchminer.miner.runnable.UpdateStreamInfo;
+import fr.raksrinana.twitchminer.miner.runnable.WebSocketPing;
 import org.jetbrains.annotations.NotNull;
 
 public class MinerRunnableFactory{

@@ -2,7 +2,7 @@ package fr.raksrinana.twitchminer.api.ws.data.message.globallastviewedcontentupd
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.ISO8601ZonedDateTimeDeserializer;
+import fr.raksrinana.twitchminer.util.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

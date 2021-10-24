@@ -3,7 +3,7 @@ package fr.raksrinana.twitchminer.api.ws.data.message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.twitchminer.utils.json.TwitchTimestampDeserializer;
+import fr.raksrinana.twitchminer.util.json.TwitchTimestampDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

@@ -5,7 +5,7 @@ import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.twitchminer.api.twitch.data.PlayerEvent;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import kong.unirest.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;

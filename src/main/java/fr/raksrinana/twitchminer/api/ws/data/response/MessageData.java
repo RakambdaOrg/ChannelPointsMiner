@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.twitchminer.api.ws.data.message.Message;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.twitchminer.utils.json.JacksonUtils;
+import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import lombok.*;
 import java.io.IOException;
 
