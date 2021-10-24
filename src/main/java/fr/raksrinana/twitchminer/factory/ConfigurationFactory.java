@@ -4,12 +4,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.twitchminer.cli.CLIHolder;
 import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.util.json.JacksonUtils;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
+import static lombok.AccessLevel.PRIVATE;
 
 @Log4j2
+@NoArgsConstructor(access = PRIVATE)
 public class ConfigurationFactory{
 	private static Configuration INSTANCE;
 	

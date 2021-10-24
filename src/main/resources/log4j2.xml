@@ -2,7 +2,7 @@
 <Configuration name="Default" status="warn">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout disableAnsi="false" pattern="%highlight{%date{HH:mm:ss,SSS}{Europe/Paris} %level [%X{guild_name}] %logger{1.} - %message}%n"/>
+            <PatternLayout disableAnsi="false" pattern="%highlight{%date{HH:mm:ss,SSS}{Europe/Paris} %level [%thread] %logger{1.} %X - %message}%n"/>
         </Console>
         <RollingFile
                 name="file"
@@ -10,7 +10,7 @@
                 filePattern="\${sys:user.home}/logs/${project.name}.log.%d{yyyy-MM-dd}.gz"
                 ignoreExceptions="false">
             <PatternLayout>
-                <Pattern>%date{ISO8601} %level [%thread] [%X] %logger{1.} - %message%n</Pattern>
+                <Pattern>%date{ISO8601} %level [%thread] %logger{1.} %X - %message%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>

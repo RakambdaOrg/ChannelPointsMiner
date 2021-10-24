@@ -30,7 +30,8 @@ WARNING: This is a **WIP**!
 
 :toc:
 
-== How to use
+== How to use [[how_to_use]]
+
 === Clone
 
 Java 17+ is required.
@@ -38,7 +39,9 @@ Java 17+ is required.
 1. Clone this repository `git clone git@github.com:RakSrinaNa/TwitchMiner.git`.
 2. Get into the cloned directory `cd TwitchMiner`.
 3. Build the jar `./gradlew build`
-4. Run `java -jar build/libs/TwitchMiner-shaded.jar --settings config.json`.
+4. Run
+* Default: `java -jar build/libs/TwitchMiner-shaded.jar --settings config.json`
+* With your own <<logs,logger>>: `java -Dlog4j.configurationFile=log4j2.xml -jar build/libs/TwitchMiner-shaded.jar --settings config.json`
 
 === Docker
 
@@ -58,6 +61,25 @@ services:
       - ./authentication:/usr/src/app/authentication
       - ./streamers:/usr/src/app/streamers
       - ./config.json:/usr/src/app/config.json:ro
+----
+
+With a custom <<logs,logger>>:
+
+[source,yml]
+----
+version: "3.9"
+
+services:
+  miner:
+    image: mrcraftcod/twitchminer
+    command: "--settings /usr/src/app/config.json"
+    env:
+      JDK_JAVA_OPTIONS: "-Dlog4j.configurationFile=/usr/src/app/log4j2.xml"
+    volumes:
+      - ./authentication:/usr/src/app/authentication
+      - ./streamers:/usr/src/app/streamers
+      - ./config.json:/usr/src/app/config.json:ro
+      - ./log4j2.xml:/usr/src/app/log4j2.xml:ro
 ----
 
 == Settings
@@ -150,7 +172,11 @@ For example if you want a streamer to always be first, you can set this priority
 |Return a score if the logged-in user is subscribed to the streamer.
 Values can be defined per sub tier.
 |User is subscribed.
-| * score: Score for a T1 sub * score2: Score for a T2 sub * score3: Score for a T3 sub.
+| * score: Score for a T1 sub.
+
+* score2: Score for a T2 sub.
+
+* score3: Score for a T3 sub.
 
 |pointsAbove
 |Return a score if owned points are above a defined value.
@@ -176,6 +202,30 @@ If you want to use the <<global_settings__default_streamer_settings,default stre
 Every follow will be loaded and default settings will be applied to them.
 
 NOTE: If a stream is both defined in a JSON file and is followed, then the first case will apply.
+
+== Logs [[logs]]
+
+You can define yourself how the logs looks like by supplying your own link:https://logging.apache.org/log4j/2.x/manual/configuration.html[Log4j2 configuration file] (see <<how_to_use,how to use>> to see how to load this config file).
+
+Some examples are provided in the `src/examples/loggers` folder.
+
+When you configure your link:https://logging.apache.org/log4j/2.x/manual/layouts.html[patterns] you'll of course have access to all the default fields possible like the date, message, etc.
+In addition to that the context will be populated with some keys depending on the available data (in the caase of the Pattern layout, see `%X`).
+These keys are listed below:
+
+[cols="1,3"]
+|===
+|Key |Description
+
+|streamer_name
+|The name of the streamer for which the message is linked to.
+
+|websocket_id
+|The id of the websocket that is at the origin of the message sent/received on the websocket.
+
+|websocket_topic
+|Topic name of the message received on the websocket.
+|===
 
 == Disclaimer
 

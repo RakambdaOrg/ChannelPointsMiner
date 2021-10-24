@@ -1,0 +1,39 @@
+= Loggers
+
+== console_only.xml [[console_only]]
+
+* Log into the console only.
+* Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
+* All the other logs are logged if they have INFO level or higher.
+
+[source,log]
+----
+2021-10-24T17:21:16,323 INFO  - Starting miner
+2021-10-24T17:21:16,349 INFO  - Logged back in from authentication file
+2021-10-24T17:21:16,351 INFO  - Loading streamers from configuration
+2021-10-24T17:21:17,024 INFO streamerA - Adding to the mining list with settings StreamerSettings(makePredictions=true, followRaid=true, priorities=[])
+2021-10-24T17:21:18,562 INFO streamerA - WebSocket opened
+2021-10-24T17:21:18,808 INFO streamerB - Adding to the mining list with settings StreamerSettings(makePredictions=true, followRaid=true, priorities=[])
+2021-10-24T17:21:27,494 INFO  - Loading streamers from follow list
+2021-10-24T17:21:28,292 INFO streamerC - Adding to the mining list with settings StreamerSettings(makePredictions=true, followRaid=true, priorities=[])
+2021-10-24T17:23:36,101 INFO streamerC - Points earned +10 (WATCH)
+2021-10-24T17:28:39,715 INFO streamerC - Points earned +10 (WATCH)
+2021-10-24T17:33:42,856 INFO streamerC - Points earned +10 (WATCH)
+2021-10-24T17:33:42,866 INFO streamerC - Claim available
+2021-10-24T17:33:43,116 INFO streamerC - Points earned +50 (CLAIM)
+----
+
+== rolling_file.xml
+
+* Log into a file that is archived if conditions are met.
+* Logs are logged into `./logs/miner.log` and then archived to `./logs/miner.log.2021-07-26.gz`.
+* One file represents a day.
+* Only the last 10 logs will be kept.
+* Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
+* All the other logs are logged if they have INFO level or higher.
+
+Format of the logs is the same as <<console_only,console_only.xml>>.
+
+== Contribute
+
+If you have defined your own logger and feel like it may interest others too, feel free to open a PR to share it.

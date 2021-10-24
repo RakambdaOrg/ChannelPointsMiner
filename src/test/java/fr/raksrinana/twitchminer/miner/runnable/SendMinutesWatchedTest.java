@@ -125,6 +125,15 @@ class SendMinutesWatchedTest{
 	}
 	
 	@Test
+	void sendingMinutesWatchedNoStreamId(){
+		when(streamer.getStreamId()).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(twitchApi, never()).sendPlayerEvents(any(), any());
+	}
+	
+	@Test
 	void sendingMinutesWatchedNoSpadeUrl(){
 		when(streamer.getSpadeUrl()).thenReturn(null);
 		

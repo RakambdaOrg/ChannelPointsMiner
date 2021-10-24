@@ -38,10 +38,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -474,13 +479,17 @@ class MinerTest{
 	@Test
 	void schedule(){
 		var future = mock(ScheduledFuture.class);
-		Runnable runnable = () -> {};
+		var called = new AtomicBoolean(false);
+		Runnable runnable = () -> called.set(true);
 		
-		when(scheduledExecutorService.schedule(runnable, 1, TimeUnit.SECONDS)).thenReturn(future);
+		when(scheduledExecutorService.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+			var arg = invocation.getArgument(0, Runnable.class);
+			arg.run();
+			return future;
+		});
 		
-		assertNotNull(tested.schedule(runnable, 1, TimeUnit.SECONDS));
-		
-		verify(scheduledExecutorService).schedule(runnable, 1, TimeUnit.SECONDS);
+		assertNotNull(tested.schedule(runnable, 1, SECONDS));
+		assertThat(called.get()).isTrue();
 	}
 	
 	@Test

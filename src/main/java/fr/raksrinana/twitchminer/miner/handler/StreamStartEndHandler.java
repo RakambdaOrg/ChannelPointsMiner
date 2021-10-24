@@ -3,6 +3,7 @@ package fr.raksrinana.twitchminer.miner.handler;
 import fr.raksrinana.twitchminer.api.ws.data.message.StreamDown;
 import fr.raksrinana.twitchminer.api.ws.data.message.StreamUp;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.twitchminer.log.LogContext;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,8 +22,12 @@ public class StreamStartEndHandler extends HandlerAdapter{
 			log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
 			return;
 		}
-		//Wait that the API updates
-		miner.schedule(() -> miner.updateStreamerInfos(streamerOptional.get()), 15, SECONDS);
+		
+		var streamer = streamerOptional.get();
+		try(var ignored = LogContext.with(streamer)){
+			//Wait that the API updates
+			miner.schedule(() -> miner.updateStreamerInfos(streamer), 15, SECONDS);
+		}
 	}
 	
 	@Override
@@ -32,7 +37,11 @@ public class StreamStartEndHandler extends HandlerAdapter{
 			log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
 			return;
 		}
-		//Wait that the API updates
-		miner.schedule(() -> miner.updateStreamerInfos(streamerOptional.get()), 15, SECONDS);
+		
+		var streamer = streamerOptional.get();
+		try(var ignored = LogContext.with(streamer)){
+			//Wait that the API updates
+			miner.schedule(() -> miner.updateStreamerInfos(streamer), 15, SECONDS);
+		}
 	}
 }

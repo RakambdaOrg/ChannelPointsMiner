@@ -1,15 +1,14 @@
 package fr.raksrinana.twitchminer.api.ws.data.message.pointsearned;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Builder
 public class Balance{
 	@JsonProperty("user_id")
 	private String userId;

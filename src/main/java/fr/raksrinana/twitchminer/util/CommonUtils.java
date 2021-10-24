@@ -1,10 +1,13 @@
 package fr.raksrinana.twitchminer.util;
 
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
+import static lombok.AccessLevel.PRIVATE;
 
+@NoArgsConstructor(access = PRIVATE)
 public class CommonUtils{
 	@SneakyThrows
 	public static void randomSleep(long delay, long delta){

@@ -2,16 +2,15 @@ package fr.raksrinana.twitchminer.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.twitchminer.api.gql.data.types.CommunityPointsMultiplier;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Builder
 public class PointGain{
 	@JsonProperty("user_id")
 	private String userId;
