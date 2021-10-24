@@ -21,3 +21,4 @@ jobs:
       if: github.event.action == 'opened'
       with:
         project: 'https://github.com/RakSrinaNa/TwitchMiner/projects/1'
+        column_name: 'Triage'
