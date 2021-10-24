@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -102,6 +103,12 @@ class StreamerSettingsFactoryTest{
 		priorities.add(PointsBelowPriority.builder()
 				.score(75)
 				.threshold(20)
+				.build());
+		
+		when(configuration.getDefaultStreamerSettings()).thenReturn(StreamerSettings.builder()
+				.priorities(List.of(ConstantPriority.builder()
+						.score(555)
+						.build()))
 				.build());
 		
 		var expected = StreamerSettings.builder()
