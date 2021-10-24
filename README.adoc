@@ -5,7 +5,7 @@ image:https://img.shields.io/docker/pulls/mrcraftcod/twitchminer.svg[link="https
 image:https://img.shields.io/badge/Qodana-%20-orange[link="https://raksrinana.github.io/TwitchMiner/",window="_blank",align="center"]
 
 The main objective of this miner is to acquire Twitch channel points automatically.
-Other forms of point, like prose provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
+Other forms of point, like those provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
 
 * Watch streams for you, earning the baseline points as you watch.
 * Get the watch streak points by watching streams regularly.
@@ -127,6 +127,8 @@ An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main
 Streamer settings define settings that will override the <<global_settings__default_streamer_settings,default streamer settings>> for a particular streamer.
 
 Each streamer setting will be defined in a json file named with the username of the streamer (eg: `myusername.json`) and placed in the <<global_settings__streamer_config_directory,streamerConfigDirectory>> directory.
+
+An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main/src/test/resources/factory/fullyOverridden.json[here,window="_blank"].
 
 [cols="1,3,1"]
 |===
