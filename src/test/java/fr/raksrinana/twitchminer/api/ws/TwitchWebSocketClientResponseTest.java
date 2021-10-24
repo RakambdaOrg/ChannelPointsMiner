@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
 class TwitchWebSocketClientResponseTest{
+	private static final int MESSAGE_TIMEOUT = 15000;
 	private TwitchWebSocketClient tested;
 	
 	@Mock
@@ -26,7 +27,7 @@ class TwitchWebSocketClientResponseTest{
 	
 	@BeforeEach
 	void setUp(){
-		var uri = URI.create("ws://localhost:" + WebsocketMockServerExtension.PORT);
+		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
 		tested = new TwitchWebSocketClient(uri);
 		tested.addListener(listener);
 	}
@@ -44,7 +45,7 @@ class TwitchWebSocketClientResponseTest{
 		
 		tested.onMessage(getAllResourceContent("api/ws/response_bad_auth.json"));
 		
-		verify(listener, timeout(5000)).onWebSocketClosed(eq(tested), anyInt(), anyString(), anyBoolean());
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketClosed(eq(tested), anyInt(), anyString(), anyBoolean());
 		assertThat(server.isReceivedClose()).isTrue();
 	}
 	
@@ -58,6 +59,6 @@ class TwitchWebSocketClientResponseTest{
 				.error("")
 				.nonce("nonce")
 				.build();
-		verify(listener, timeout(5000)).onWebSocketMessage(expected);
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 }

@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(WebsocketMockServerExtension.class)
 class TwitchWebSocketClientPongTest{
 	private static final Instant NOW = Instant.parse("2021-02-25T15:25:36Z");
+	private static final int MESSAGE_TIMEOUT = 15000;
 	
 	private TwitchWebSocketClient tested;
 	
@@ -29,7 +30,7 @@ class TwitchWebSocketClientPongTest{
 	
 	@BeforeEach
 	void setUp(){
-		var uri = URI.create("ws://localhost:" + WebsocketMockServerExtension.PORT);
+		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
 		tested = new TwitchWebSocketClient(uri);
 		tested.addListener(listener);
 	}
@@ -58,6 +59,6 @@ class TwitchWebSocketClientPongTest{
 		
 		server.send(getAllResourceContent("api/ws/pong.json"));
 		
-		verify(listener, timeout(5000)).onWebSocketMessage(any(PongResponse.class));
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(any(PongResponse.class));
 	}
 }

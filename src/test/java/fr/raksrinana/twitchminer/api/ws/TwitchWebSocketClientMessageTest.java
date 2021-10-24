@@ -33,6 +33,8 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
 class TwitchWebSocketClientMessageTest{
+	private static final int MESSAGE_TIMEOUT = 15000;
+	
 	private TwitchWebSocketClient tested;
 	
 	@Mock
@@ -40,7 +42,7 @@ class TwitchWebSocketClientMessageTest{
 	
 	@BeforeEach
 	void setUp(){
-		var uri = URI.create("ws://localhost:" + WebsocketMockServerExtension.PORT);
+		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
 		tested = new TwitchWebSocketClient(uri);
 		tested.addListener(listener);
 	}
@@ -71,7 +73,7 @@ class TwitchWebSocketClientMessageTest{
 								.build())
 						.build())
 				.build();
-		verify(listener, timeout(5000)).onWebSocketMessage(expected);
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 	
 	@Test
@@ -107,7 +109,7 @@ class TwitchWebSocketClientMessageTest{
 								.build())
 						.build())
 				.build();
-		verify(listener, timeout(5000)).onWebSocketMessage(expected);
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 	
 	@Test
@@ -134,7 +136,7 @@ class TwitchWebSocketClientMessageTest{
 								.build())
 						.build())
 				.build();
-		verify(listener, timeout(5000)).onWebSocketMessage(expected);
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 	
 	@Test
@@ -165,7 +167,7 @@ class TwitchWebSocketClientMessageTest{
 								.build())
 						.build())
 				.build();
-		verify(listener, timeout(5000)).onWebSocketMessage(expected);
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 	
 	@Test
@@ -196,11 +198,11 @@ class TwitchWebSocketClientMessageTest{
 								.build())
 						.build())
 				.build();
-		verify(listener, timeout(5000)).onWebSocketMessage(expected);
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 	
 	@Test
-	void onViewcount(WebsocketMockServer server) throws InterruptedException, MalformedURLException{
+	void onViewCount(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
 		
 		server.send(getAllResourceContent("api/ws/viewcount.json"));
@@ -217,6 +219,6 @@ class TwitchWebSocketClientMessageTest{
 								.build())
 						.build())
 				.build();
-		verify(listener, timeout(5000)).onWebSocketMessage(expected);
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 }

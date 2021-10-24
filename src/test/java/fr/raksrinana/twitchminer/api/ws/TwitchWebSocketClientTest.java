@@ -14,7 +14,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Set;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
-import static java.time.Duration.ofSeconds;
+import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
 class TwitchWebSocketClientTest{
+	private static final int MESSAGE_TIMEOUT = 15000;
 	private static final Instant NOW = Instant.parse("2021-02-25T15:25:36Z");
 	
 	private TwitchWebSocketClient tested;
@@ -34,7 +35,7 @@ class TwitchWebSocketClientTest{
 	
 	@BeforeEach
 	void setUp(){
-		var uri = URI.create("ws://localhost:" + WebsocketMockServerExtension.PORT);
+		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
 		tested = new TwitchWebSocketClient(uri);
 		tested.addListener(listener);
 	}
@@ -59,7 +60,7 @@ class TwitchWebSocketClientTest{
 		server.reset();
 		
 		tested.ping();
-		await().atMost(ofSeconds(5)).until(() -> server.getReceivedMessages().contains("{\"type\":\"PING\"}"));
+		await().atMost(ofMillis(MESSAGE_TIMEOUT)).until(() -> server.getReceivedMessages().contains("{\"type\":\"PING\"}"));
 	}
 	
 	@Test
