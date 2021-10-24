@@ -95,3 +95,27 @@ jobs:
             build/reports/jacoco
           if-no-files-found: error
           retention-days: 14
+
+  publish:
+    name: Publish on DockerHub
+    runs-on: ubuntu-latest
+    needs: tests
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2.3.5
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.APP_JAVA_VERSION }}
+          cache: 'gradle'
+      - name: Set gradle permissions
+        run: chmod +x gradlew
+      - name: Publish project
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            jib
+            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
