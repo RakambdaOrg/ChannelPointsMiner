@@ -33,8 +33,8 @@ jobs:
         with:
           arguments: assemble
 
-  test:
-    name: Test
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     needs: build
     steps:
