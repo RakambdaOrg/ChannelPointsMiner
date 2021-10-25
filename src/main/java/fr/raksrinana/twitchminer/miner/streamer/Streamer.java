@@ -76,8 +76,8 @@ public class Streamer{
 				&& getWatchedDuration().compareTo(SEVEN_MINUTES) < 0;
 	}
 	
-	public boolean updateCampaigns(){
-		return true;
+	public boolean isParticipateCampaigns(){
+		return settings.isParticipateCampaigns();
 	}
 	
 	public boolean followRaids(){

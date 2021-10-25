@@ -91,7 +91,7 @@ public class UpdateStreamInfo implements Runnable{
 	
 	private void updateCampaigns(@NotNull Streamer streamer){
 		log.trace("Updating campaigns");
-		if(streamer.updateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
+		if(streamer.isParticipateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
 			miner.getGqlApi().dropsHighlightServiceAvailableDrops(streamer.getId())
 					.map(GQLResponse::getData)
 					.ifPresentOrElse(

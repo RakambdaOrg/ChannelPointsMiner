@@ -480,4 +480,14 @@ class StreamerTest{
 		tested.resetWatchedDuration();
 		assertThat(tested.getWatchedDuration()).isEqualTo(ZERO);
 	}
+	
+	@ParameterizedTest
+	@ValueSource(booleans = {
+			true,
+			false
+	})
+	void isParticipateCampaigns(boolean state){
+		when(settings.isParticipateCampaigns()).thenReturn(state);
+		assertThat(tested.isParticipateCampaigns()).isEqualTo(state);
+	}
 }
