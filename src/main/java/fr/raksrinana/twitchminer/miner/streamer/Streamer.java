@@ -42,6 +42,7 @@ public class Streamer{
 	private StreamerSettings settings;
 	@Setter
 	private Instant lastUpdated = Instant.EPOCH;
+	@Setter
 	private Instant lastOffline = Instant.EPOCH;
 	@Getter
 	private Duration watchedDuration = Duration.ZERO;
@@ -62,8 +63,12 @@ public class Streamer{
 	@Getter
 	private URL spadeUrl;
 	
-	public void addMinutesWatched(@NotNull Duration duration){
+	public void addWatchedDuration(@NotNull Duration duration){
 		watchedDuration = watchedDuration.plus(duration);
+	}
+	
+	public void resetWatchedDuration(){
+		watchedDuration = Duration.ZERO;
 	}
 	
 	public boolean mayClaimStreak(){
@@ -81,11 +86,6 @@ public class Streamer{
 	
 	public boolean needUpdate(){
 		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
-	}
-	
-	public void setLastOffline(@NotNull Instant lastOffline){
-		this.lastOffline = lastOffline;
-		watchedDuration = Duration.ZERO;
 	}
 	
 	public int getScore(){

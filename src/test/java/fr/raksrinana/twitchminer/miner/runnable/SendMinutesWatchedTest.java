@@ -84,7 +84,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(streamer, never()).addMinutesWatched(any());
+		verify(streamer, never()).addWatchedDuration(any());
 	}
 	
 	@Test
@@ -108,12 +108,12 @@ class SendMinutesWatchedTest{
 			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer, never()).addMinutesWatched(any());
+			verify(streamer, never()).addWatchedDuration(any());
 			
 			var delta = Duration.ofSeconds(30);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer).addMinutesWatched(delta);
+			verify(streamer).addWatchedDuration(delta);
 		}
 	}
 	
@@ -139,29 +139,29 @@ class SendMinutesWatchedTest{
 			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer, never()).addMinutesWatched(any());
+			verify(streamer, never()).addWatchedDuration(any());
 			
 			var delta = Duration.ofSeconds(30);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
 			
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer).addMinutesWatched(delta);
+			verify(streamer).addWatchedDuration(delta);
 			clearInvocations(streamer);
 			
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			when(miner.getStreamers()).thenReturn(List.of());
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer, never()).addMinutesWatched(any());
+			verify(streamer, never()).addWatchedDuration(any());
 			
 			when(miner.getStreamers()).thenReturn(List.of(streamer));
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer, never()).addMinutesWatched(any());
+			verify(streamer, never()).addWatchedDuration(any());
 			
 			delta = Duration.ofSeconds(45);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
 			when(miner.getStreamers()).thenReturn(List.of(streamer));
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer).addMinutesWatched(delta);
+			verify(streamer).addWatchedDuration(delta);
 		}
 	}
 	
@@ -186,14 +186,14 @@ class SendMinutesWatchedTest{
 			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer, never()).addMinutesWatched(any());
+			verify(streamer, never()).addWatchedDuration(any());
 			
 			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(false);
 			
 			var delta = Duration.ofSeconds(30);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
 			assertDoesNotThrow(() -> tested.run());
-			verify(streamer, never()).addMinutesWatched(any());
+			verify(streamer, never()).addWatchedDuration(any());
 		}
 	}
 	
@@ -214,7 +214,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(streamer, never()).addMinutesWatched(any());
+		verify(streamer, never()).addWatchedDuration(any());
 	}
 	
 	@Test
@@ -232,7 +232,7 @@ class SendMinutesWatchedTest{
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(streamer, never()).addMinutesWatched(any());
+		verify(streamer, never()).addWatchedDuration(any());
 	}
 	
 	@Test
@@ -242,7 +242,7 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, never()).sendPlayerEvents(any(), any());
-		verify(streamer, never()).addMinutesWatched(any());
+		verify(streamer, never()).addWatchedDuration(any());
 	}
 	
 	@Test
@@ -252,7 +252,7 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, never()).sendPlayerEvents(any(), any());
-		verify(streamer, never()).addMinutesWatched(any());
+		verify(streamer, never()).addWatchedDuration(any());
 	}
 	
 	@Test
@@ -262,7 +262,7 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, never()).sendPlayerEvents(any(), any());
-		verify(streamer, never()).addMinutesWatched(any());
+		verify(streamer, never()).addWatchedDuration(any());
 	}
 	
 	@Test
@@ -283,8 +283,8 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, times(2)).sendPlayerEvents(any(), any());
-		verify(streamer, never()).addMinutesWatched(any());
-		verify(streamer2, never()).addMinutesWatched(any());
+		verify(streamer, never()).addWatchedDuration(any());
+		verify(streamer2, never()).addWatchedDuration(any());
 	}
 	
 	@Test

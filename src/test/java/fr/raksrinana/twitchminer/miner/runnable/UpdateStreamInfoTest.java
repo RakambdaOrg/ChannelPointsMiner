@@ -99,6 +99,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -123,6 +124,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setLastOffline(NOW);
+			verify(streamer).resetWatchedDuration();
 		}
 	}
 	
@@ -148,6 +150,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -174,6 +177,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -200,6 +204,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -227,6 +232,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -260,6 +266,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(data);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -289,6 +296,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -317,6 +325,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -341,6 +350,7 @@ class UpdateStreamInfoTest{
 			verify(streamer, times(2)).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer, times(2)).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -369,6 +379,7 @@ class UpdateStreamInfoTest{
 			verify(streamer, never()).setDropsHighlightServiceAvailableDrops(any());
 			verify(streamer, never()).setLastUpdated(any());
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 	
@@ -395,6 +406,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
 		}
 	}
 }

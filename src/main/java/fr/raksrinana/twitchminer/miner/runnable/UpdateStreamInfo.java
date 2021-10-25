@@ -48,6 +48,7 @@ public class UpdateStreamInfo implements Runnable{
 			streamer.setLastUpdated(now);
 			if(wasStreaming && !streamer.isStreaming()){
 				streamer.setLastOffline(now);
+				streamer.resetWatchedDuration();
 			}
 		}
 	}

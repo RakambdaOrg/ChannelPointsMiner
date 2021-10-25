@@ -83,7 +83,7 @@ public class SendMinutesWatched implements Runnable{
 		var previousUpdate = lastSend.get(streamer.getId());
 		if(Objects.nonNull(previousUpdate)){
 			var duration = Duration.between(previousUpdate, now);
-			streamer.addMinutesWatched(duration);
+			streamer.addWatchedDuration(duration);
 		}
 		lastSend.put(streamer.getId(), now);
 	}

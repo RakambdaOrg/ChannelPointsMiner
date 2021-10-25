@@ -18,6 +18,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMinutes;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
@@ -429,7 +430,7 @@ class StreamerTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			tested.setLastOffline(NOW.minus(31, MINUTES));
-			tested.addMinutesWatched(Duration.ofMinutes(minutesWatched));
+			tested.addWatchedDuration(Duration.ofMinutes(minutesWatched));
 			
 			assertThat(tested.mayClaimStreak()).isTrue();
 		}
@@ -452,9 +453,31 @@ class StreamerTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			tested.setLastOffline(NOW.minus(1, HOURS));
-			tested.addMinutesWatched(ofMinutes(7));
+			tested.addWatchedDuration(ofMinutes(7));
 			
 			assertThat(tested.mayClaimStreak()).isFalse();
 		}
+	}
+	
+	@Test
+	void addWatchedDuration(){
+		var duration = ofMinutes(15);
+		
+		tested.addWatchedDuration(duration);
+		assertThat(tested.getWatchedDuration()).isEqualTo(ofMinutes(15));
+		
+		tested.addWatchedDuration(duration);
+		assertThat(tested.getWatchedDuration()).isEqualTo(ofMinutes(30));
+	}
+	
+	@Test
+	void resetWatchedDuration(){
+		var duration = ofMinutes(15);
+		
+		tested.addWatchedDuration(duration);
+		assertThat(tested.getWatchedDuration()).isEqualTo(duration);
+		
+		tested.resetWatchedDuration();
+		assertThat(tested.getWatchedDuration()).isEqualTo(ZERO);
 	}
 }
