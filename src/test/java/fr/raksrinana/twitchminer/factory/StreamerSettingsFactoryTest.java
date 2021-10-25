@@ -104,6 +104,9 @@ class StreamerSettingsFactoryTest{
 				.score(75)
 				.threshold(20)
 				.build());
+		priorities.add(WatchStreakPriority.builder()
+				.score(80)
+				.build());
 		
 		when(configuration.getDefaultStreamerSettings()).thenReturn(StreamerSettings.builder()
 				.priorities(List.of(ConstantPriority.builder()
