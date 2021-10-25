@@ -27,21 +27,3 @@ jobs:
         with:
           name: 'qodana-report'
           path: ${{ github.workspace }}/qodana
-
-  publish-qodana:
-    name: "Qodana pages"
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    needs:
-      - qodana
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: 'qodana-report'
-          path: qodana
-      - name: Deploy to pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: qodana/report
-          destination_dir: ./
