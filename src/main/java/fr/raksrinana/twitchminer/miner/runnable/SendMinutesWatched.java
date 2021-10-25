@@ -3,6 +3,7 @@ package fr.raksrinana.twitchminer.miner.runnable;
 import fr.raksrinana.twitchminer.api.gql.data.types.Game;
 import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
+import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.log.LogContext;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
@@ -10,6 +11,10 @@ import fr.raksrinana.twitchminer.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,6 +25,7 @@ public class SendMinutesWatched implements Runnable{
 	
 	@NotNull
 	private final IMiner miner;
+	private final Map<String, Instant> lastSend = new HashMap<>();
 	
 	@Override
 	public void run(){
@@ -35,9 +41,13 @@ public class SendMinutesWatched implements Runnable{
 					.toList();
 			
 			for(var streamer : toSendMinutesWatched){
-				send(streamer);
+				if(send(streamer)){
+					updateWatchedMinutes(streamer);
+				}
 				CommonUtils.randomSleep(100, 50);
 			}
+			
+			removeLastSend(toSendMinutesWatched);
 			
 			log.debug("Done all sending minutes watched");
 		}
@@ -46,12 +56,12 @@ public class SendMinutesWatched implements Runnable{
 		}
 	}
 	
-	private void send(Streamer streamer){
+	private boolean send(Streamer streamer){
 		try(var ignored = LogContext.with(streamer)){
 			log.debug("Sending minutes watched");
 			var streamId = streamer.getStreamId();
 			if(streamId.isEmpty()){
-				return;
+				return false;
 			}
 			
 			var request = MinuteWatchedEvent.builder()
@@ -64,7 +74,23 @@ public class SendMinutesWatched implements Runnable{
 							.build())
 					.build();
 			
-			miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
+			return miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
 		}
+	}
+	
+	private void updateWatchedMinutes(@NotNull Streamer streamer){
+		var now = TimeFactory.now();
+		var previousUpdate = lastSend.get(streamer.getId());
+		if(Objects.nonNull(previousUpdate)){
+			var duration = Duration.between(previousUpdate, now);
+			streamer.addWatchedDuration(duration);
+		}
+		lastSend.put(streamer.getId(), now);
+	}
+	
+	private void removeLastSend(@NotNull List<Streamer> currentStreamers){
+		var currentIds = currentStreamers.stream().map(Streamer::getId).toList();
+		var keysToRemove = lastSend.keySet().stream().filter(id -> !currentIds.contains(id)).toList();
+		keysToRemove.forEach(lastSend::remove);
 	}
 }

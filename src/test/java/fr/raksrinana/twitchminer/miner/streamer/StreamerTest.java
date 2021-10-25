@@ -15,8 +15,12 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import static java.time.Duration.ZERO;
+import static java.time.Duration.ofMinutes;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -24,6 +28,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class StreamerTest{
 	private static final String USERNAME = "username";
+	private static final Instant NOW = Instant.parse("2021-11-25T14:10:32Z");
 	
 	private Streamer tested;
 	
@@ -408,5 +413,71 @@ class StreamerTest{
 		
 		when(settings.getPriorities()).thenReturn(List.of(p1, p2));
 		assertThat(tested.getScore()).isEqualTo(s1 + s2);
+	}
+	
+	@ParameterizedTest
+	@ValueSource(ints = {
+			0,
+			1,
+			2,
+			3,
+			4,
+			5,
+			6
+	})
+	void mayClaimStreak(int minutesWatched){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			tested.setLastOffline(NOW.minus(31, MINUTES));
+			tested.addWatchedDuration(Duration.ofMinutes(minutesWatched));
+			
+			assertThat(tested.mayClaimStreak()).isTrue();
+		}
+	}
+	
+	@Test
+	void mayNotClaimStreakIfWasOfflineTheLast30Mins(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			tested.setLastOffline(NOW.minus(29, MINUTES));
+			
+			assertThat(tested.mayClaimStreak()).isFalse();
+		}
+	}
+	
+	@Test
+	void mayNotClaimStreakIfCurrentWatchMinutesIsMoreThan7Mins(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			tested.setLastOffline(NOW.minus(1, HOURS));
+			tested.addWatchedDuration(ofMinutes(7));
+			
+			assertThat(tested.mayClaimStreak()).isFalse();
+		}
+	}
+	
+	@Test
+	void addWatchedDuration(){
+		var duration = ofMinutes(15);
+		
+		tested.addWatchedDuration(duration);
+		assertThat(tested.getWatchedDuration()).isEqualTo(ofMinutes(15));
+		
+		tested.addWatchedDuration(duration);
+		assertThat(tested.getWatchedDuration()).isEqualTo(ofMinutes(30));
+	}
+	
+	@Test
+	void resetWatchedDuration(){
+		var duration = ofMinutes(15);
+		
+		tested.addWatchedDuration(duration);
+		assertThat(tested.getWatchedDuration()).isEqualTo(duration);
+		
+		tested.resetWatchedDuration();
+		assertThat(tested.getWatchedDuration()).isEqualTo(ZERO);
 	}
 }

@@ -21,6 +21,10 @@
       "type": "pointsBelow",
       "score": 75,
       "threshold": 20
+    },
+    {
+      "type": "watchStreak",
+      "score": 80
     }
   ]
 }

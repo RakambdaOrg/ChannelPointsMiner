@@ -5,6 +5,7 @@ import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrop
 import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
+import fr.raksrinana.twitchminer.log.LogContext;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +27,8 @@ import static java.util.Optional.ofNullable;
 @ToString(onlyExplicitlyIncluded = true)
 @Log4j2
 public class Streamer{
+	private static final Duration SEVEN_MINUTES = Duration.ofMinutes(7);
+	
 	@NotNull
 	@Getter
 	@EqualsAndHashCode.Include
@@ -38,6 +42,10 @@ public class Streamer{
 	private StreamerSettings settings;
 	@Setter
 	private Instant lastUpdated = Instant.EPOCH;
+	@Setter
+	private Instant lastOffline = Instant.EPOCH;
+	@Getter
+	private Duration watchedDuration = Duration.ZERO;
 	
 	private URL channelUrl;
 	
@@ -55,6 +63,19 @@ public class Streamer{
 	@Getter
 	private URL spadeUrl;
 	
+	public void addWatchedDuration(@NotNull Duration duration){
+		watchedDuration = watchedDuration.plus(duration);
+	}
+	
+	public void resetWatchedDuration(){
+		watchedDuration = Duration.ZERO;
+	}
+	
+	public boolean mayClaimStreak(){
+		return lastOffline.plus(30, MINUTES).isBefore(TimeFactory.now())
+				&& getWatchedDuration().compareTo(SEVEN_MINUTES) < 0;
+	}
+	
 	public boolean updateCampaigns(){
 		return true;
 	}
@@ -68,9 +89,19 @@ public class Streamer{
 	}
 	
 	public int getScore(){
-		return settings.getPriorities().stream()
-				.mapToInt(p -> p.getScore(this))
-				.sum();
+		try(var ignored = LogContext.with(this)){
+			var score = settings.getPriorities().stream()
+					.mapToInt(p -> {
+						var s = p.getScore(this);
+						if(s != 0){
+							log.trace("Obtained score of {} from {}", s, p);
+						}
+						return s;
+					})
+					.sum();
+			log.debug("Calculated score of {}", score);
+			return score;
+		}
 	}
 	
 	public Collection<CommunityPointsMultiplier> getActiveMultipliers(){
