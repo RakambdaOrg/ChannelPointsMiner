@@ -59,14 +59,11 @@ jobs:
         if: always()
         with:
           arguments: jacocoTestReport
-      - name: Publish JUnit results
-        uses: dorny/test-reporter@v1
+      - uses: check-run-reporter/action@v2.7.1
         if: always()
         with:
-          name: JUnit Tests
-          path: 'build/test-results/test/*.xml'
-          reporter: java-junit
-          fail-on-error: 'false'
+          token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
+          report: 'build/test-results/test/*.xml'
       - name: Publish coverage on CodeCov
         uses: codecov/codecov-action@v2
         if: always()
