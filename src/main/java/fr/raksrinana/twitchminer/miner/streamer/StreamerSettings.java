@@ -24,6 +24,9 @@ public class StreamerSettings implements Cloneable{
 	@JsonProperty("followRaid")
 	@Builder.Default
 	private boolean followRaid = false;
+	@JsonProperty("participateCampaigns")
+	@Builder.Default
+	private boolean participateCampaigns = false;
 	@JsonProperty("priorities")
 	@Builder.Default
 	@NotNull

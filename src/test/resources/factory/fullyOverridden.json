@@ -1,6 +1,7 @@
 {
   "makePredictions": true,
   "followRaid": true,
+  "participateCampaigns": true,
   "priorities": [
     {
       "type": "constant",

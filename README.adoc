@@ -10,6 +10,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Get the watch streak points by watching streams regularly.
 * Claim bonus points when they are available.
 * Follow raids.
+* Participate and claim link::https://www.twitch.tv/drops/campaigns[campaigns]
 
 Limits:
 
@@ -137,7 +138,11 @@ An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main
 |false
 
 |followRaid
-|If set to true, the miner raid will attend raids for extra points (#30)
+|If set to true, the miner raid will attend raids for extra points
+|false
+
+|participateCampaigns
+|If set to true, progression towards campaigns will be made, and completed rewards will be claimed.
 |false
 
 |priorities

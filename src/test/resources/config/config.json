@@ -5,7 +5,8 @@
   "loadFollows": true,
   "defaultStreamerSettings": {
     "makePredictions": true,
-    "followRaid": true
+    "followRaid": true,
+    "participateCampaigns": true
   },
   "streamerConfigDirectory": "streamers"
 }
