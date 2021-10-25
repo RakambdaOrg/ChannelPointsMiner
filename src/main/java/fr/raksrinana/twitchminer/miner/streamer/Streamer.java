@@ -5,6 +5,7 @@ import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrop
 import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
+import fr.raksrinana.twitchminer.log.LogContext;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -88,9 +89,19 @@ public class Streamer{
 	}
 	
 	public int getScore(){
-		return settings.getPriorities().stream()
-				.mapToInt(p -> p.getScore(this))
-				.sum();
+		try(var ignored = LogContext.with(this)){
+			var score = settings.getPriorities().stream()
+					.mapToInt(p -> {
+						var s = p.getScore(this);
+						if(s != 0){
+							log.trace("Obtained score of {} from {}", s, p);
+						}
+						return s;
+					})
+					.sum();
+			log.debug("Calculated score of {}", score);
+			return score;
+		}
 	}
 	
 	public Collection<CommunityPointsMultiplier> getActiveMultipliers(){
