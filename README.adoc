@@ -2,7 +2,6 @@
 
 image:https://codecov.io/gh/RakSrinaNa/TwitchMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/TwitchMiner",window="_blank",align="center"]
 image:https://img.shields.io/docker/pulls/mrcraftcod/twitchminer.svg[link="https://hub.docker.com/r/mrcraftcod/twitchminer",window="_blank",align="center"]
-image:https://img.shields.io/badge/Qodana-%20-orange[link="https://raksrinana.github.io/TwitchMiner/",window="_blank",align="center"]
 
 The main objective of this miner is to acquire Twitch channel points automatically.
 Other forms of point, like those provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
