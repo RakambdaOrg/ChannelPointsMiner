@@ -118,6 +118,54 @@ class SendMinutesWatchedTest{
 	}
 	
 	@Test
+	void sendingMinutesWatchedUpdatesMinutesWatchedResetIfNotPresentOnARound(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(streamer.getGame()).thenReturn(Optional.of(game));
+			when(game.getName()).thenReturn(GAME_NAME);
+			
+			var expected = MinuteWatchedEvent.builder()
+					.properties(MinuteWatchedProperties.builder()
+							.channelId(STREAMER_ID)
+							.broadcastId(STREAM_ID)
+							.player(SITE_PLAYER)
+							.userId(USER_ID)
+							.game(GAME_NAME)
+							.build())
+					.build();
+			
+			when(miner.getStreamers()).thenReturn(List.of(streamer));
+			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
+			
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer, never()).addMinutesWatched(any());
+			
+			var delta = Duration.ofSeconds(30);
+			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
+			
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer).addMinutesWatched(delta);
+			clearInvocations(streamer);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			when(miner.getStreamers()).thenReturn(List.of());
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer, never()).addMinutesWatched(any());
+			
+			when(miner.getStreamers()).thenReturn(List.of(streamer));
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer, never()).addMinutesWatched(any());
+			
+			delta = Duration.ofSeconds(45);
+			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
+			when(miner.getStreamers()).thenReturn(List.of(streamer));
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer).addMinutesWatched(delta);
+		}
+	}
+	
+	@Test
 	void sendingMinutesWatchedDoesNotUpdateMinutesWatchedIfCallFailed(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
