@@ -37,11 +37,18 @@ public class UpdateStreamInfo implements Runnable{
 	
 	public void run(@NotNull Streamer streamer){
 		try(var ignored = LogContext.with(streamer)){
+			var wasStreaming = streamer.isStreaming();
+			
 			updateVideoInfo(streamer);
 			updateSpadeUrl(streamer);
 			updatePointsContext(streamer);
 			updateCampaigns(streamer);
-			streamer.setLastUpdated(TimeFactory.now());
+			
+			var now = TimeFactory.now();
+			streamer.setLastUpdated(now);
+			if(wasStreaming && !streamer.isStreaming()){
+				streamer.setLastOffline(now);
+			}
 		}
 	}
 	

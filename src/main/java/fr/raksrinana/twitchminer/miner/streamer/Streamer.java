@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +26,8 @@ import static java.util.Optional.ofNullable;
 @ToString(onlyExplicitlyIncluded = true)
 @Log4j2
 public class Streamer{
+	private static final Duration SEVEN_MINUTES = Duration.ofMinutes(7);
+	
 	@NotNull
 	@Getter
 	@EqualsAndHashCode.Include
@@ -38,6 +41,9 @@ public class Streamer{
 	private StreamerSettings settings;
 	@Setter
 	private Instant lastUpdated = Instant.EPOCH;
+	private Instant lastOffline = Instant.EPOCH;
+	@Getter
+	private Duration watchedDuration = Duration.ZERO;
 	
 	private URL channelUrl;
 	
@@ -55,6 +61,15 @@ public class Streamer{
 	@Getter
 	private URL spadeUrl;
 	
+	public void addMinutesWatched(@NotNull Duration duration){
+		watchedDuration = watchedDuration.plus(duration);
+	}
+	
+	public boolean mayClaimStreak(){
+		return lastOffline.plus(30, MINUTES).isBefore(TimeFactory.now())
+				&& getWatchedDuration().compareTo(SEVEN_MINUTES) < 0;
+	}
+	
 	public boolean updateCampaigns(){
 		return true;
 	}
@@ -67,8 +82,9 @@ public class Streamer{
 		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
 	}
 	
-	public boolean mayClaimStreak(){
-		return false; //TODO
+	public void setLastOffline(@NotNull Instant lastOffline){
+		this.lastOffline = lastOffline;
+		watchedDuration = Duration.ZERO;
 	}
 	
 	public int getScore(){

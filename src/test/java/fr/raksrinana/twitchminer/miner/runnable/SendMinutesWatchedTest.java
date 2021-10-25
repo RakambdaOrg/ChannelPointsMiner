@@ -5,6 +5,7 @@ import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.twitchminer.api.twitch.data.MinuteWatchedProperties;
+import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.InjectMocks;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -28,6 +31,7 @@ class SendMinutesWatchedTest{
 	private static final String SITE_PLAYER = "site";
 	private static final int USER_ID = 123456789;
 	private static final String GAME_NAME = "game-name";
+	private static final Instant NOW = Instant.parse("2021-03-25T18:12:36Z");
 	
 	@InjectMocks
 	private SendMinutesWatched tested;
@@ -76,9 +80,73 @@ class SendMinutesWatchedTest{
 						.build())
 				.build();
 		
+		when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
+		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendPlayerEvents(spadeUrl, expected);
+		verify(streamer, never()).addMinutesWatched(any());
+	}
+	
+	@Test
+	void sendingMinutesWatchedUpdatesMinutesWatched(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(streamer.getGame()).thenReturn(Optional.of(game));
+			when(game.getName()).thenReturn(GAME_NAME);
+			
+			var expected = MinuteWatchedEvent.builder()
+					.properties(MinuteWatchedProperties.builder()
+							.channelId(STREAMER_ID)
+							.broadcastId(STREAM_ID)
+							.player(SITE_PLAYER)
+							.userId(USER_ID)
+							.game(GAME_NAME)
+							.build())
+					.build();
+			
+			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
+			
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer, never()).addMinutesWatched(any());
+			
+			var delta = Duration.ofSeconds(30);
+			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer).addMinutesWatched(delta);
+		}
+	}
+	
+	@Test
+	void sendingMinutesWatchedDoesNotUpdateMinutesWatchedIfCallFailed(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(streamer.getGame()).thenReturn(Optional.of(game));
+			when(game.getName()).thenReturn(GAME_NAME);
+			
+			var expected = MinuteWatchedEvent.builder()
+					.properties(MinuteWatchedProperties.builder()
+							.channelId(STREAMER_ID)
+							.broadcastId(STREAM_ID)
+							.player(SITE_PLAYER)
+							.userId(USER_ID)
+							.game(GAME_NAME)
+							.build())
+					.build();
+			
+			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
+			
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer, never()).addMinutesWatched(any());
+			
+			when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(false);
+			
+			var delta = Duration.ofSeconds(30);
+			timeFactory.when(TimeFactory::now).thenReturn(NOW.plus(delta));
+			assertDoesNotThrow(() -> tested.run());
+			verify(streamer, never()).addMinutesWatched(any());
+		}
 	}
 	
 	@Test
@@ -94,9 +162,11 @@ class SendMinutesWatchedTest{
 						.build())
 				.build();
 		
+		when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
+		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendPlayerEvents(spadeUrl, expected);
+		verify(streamer, never()).addMinutesWatched(any());
 	}
 	
 	@Test
@@ -110,9 +180,11 @@ class SendMinutesWatchedTest{
 						.build())
 				.build();
 		
+		when(twitchApi.sendPlayerEvents(spadeUrl, expected)).thenReturn(true);
+		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(twitchApi).sendPlayerEvents(spadeUrl, expected);
+		verify(streamer, never()).addMinutesWatched(any());
 	}
 	
 	@Test
@@ -122,6 +194,7 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, never()).sendPlayerEvents(any(), any());
+		verify(streamer, never()).addMinutesWatched(any());
 	}
 	
 	@Test
@@ -131,6 +204,7 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, never()).sendPlayerEvents(any(), any());
+		verify(streamer, never()).addMinutesWatched(any());
 	}
 	
 	@Test
@@ -140,20 +214,36 @@ class SendMinutesWatchedTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, never()).sendPlayerEvents(any(), any());
+		verify(streamer, never()).addMinutesWatched(any());
 	}
 	
 	@Test
-	void sendingMinutesWatchedSeveralStreamers(){
-		when(miner.getStreamers()).thenReturn(List.of(streamer, streamer));
+	void sendingMinutesWatchedSeveralStreamers() throws MalformedURLException{
+		var streamerId2 = "streamer-id-2";
+		var spadeUrl2 = new URL("https://google.com/2");
+		
+		var streamer2 = mock(Streamer.class);
+		when(streamer2.getId()).thenReturn(streamerId2);
+		when(streamer2.getSpadeUrl()).thenReturn(spadeUrl2);
+		when(streamer2.getStreamId()).thenReturn(Optional.of(STREAM_ID));
+		when(streamer2.isStreaming()).thenReturn(true);
+		
+		when(twitchApi.sendPlayerEvents(any(), any())).thenReturn(true);
+		
+		when(miner.getStreamers()).thenReturn(List.of(streamer, streamer2));
 		
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(twitchApi, times(2)).sendPlayerEvents(any(), any());
+		verify(streamer, never()).addMinutesWatched(any());
+		verify(streamer2, never()).addMinutesWatched(any());
 	}
 	
 	@Test
 	void sendingMinutesWatchedMaxTwoStreamers(){
 		when(miner.getStreamers()).thenReturn(List.of(streamer, streamer, streamer, streamer));
+		
+		when(twitchApi.sendPlayerEvents(any(), any())).thenReturn(true);
 		
 		assertDoesNotThrow(() -> tested.run());
 		
@@ -196,6 +286,7 @@ class SendMinutesWatchedTest{
 		when(s4.getScore()).thenReturn(50);
 		
 		when(miner.getStreamers()).thenReturn(List.of(s1, s2, s3, s4));
+		when(twitchApi.sendPlayerEvents(any(), any())).thenReturn(true);
 		
 		assertDoesNotThrow(() -> tested.run());
 		
