@@ -19,6 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@Type(value = SubscribedPriority.class, name = "subscribed"),
 		@Type(value = PointsAbovePriority.class, name = "pointsAbove"),
 		@Type(value = PointsBelowPriority.class, name = "pointsBelow"),
+		@Type(value = WatchStreakPriority.class, name = "watchStreak"),
 })
 @ToString
 @EqualsAndHashCode

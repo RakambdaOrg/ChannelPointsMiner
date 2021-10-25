@@ -67,6 +67,10 @@ public class Streamer{
 		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
 	}
 	
+	public boolean mayClaimStreak(){
+		return false; //TODO
+	}
+	
 	public int getScore(){
 		return settings.getPriorities().stream()
 				.mapToInt(p -> p.getScore(this))

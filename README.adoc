@@ -21,7 +21,6 @@ This includes raids and predictions.
 Planned:
 
 * Participate in predictions.
-* Get the watch streak points by watching streams regularly (WIP on priorities to ensure it #24).
 
 
 This project heavily inspired by link:https://github.com/Tkd-Alex/Twitch-Channel-Points-Miner-v2[Tkd-Alex/Twitch-Channel-Points-Miner-v2,window="_blank"], just doing it my own way.
@@ -168,13 +167,13 @@ The table below will list their `type` to be used in the JSON configuration as w
 |Adds a constant value to the score of the streamer.
 For example if you want a streamer to always be first, you can set this priority with a score of 99999, and it'll always have at least this amount.
 |Always
-|
+|* score: Score to give
 
 |subscribed
 |Return a score if the logged-in user is subscribed to the streamer.
 Values can be defined per sub tier.
 |User is subscribed.
-| * score: Score for a T1 sub.
+|* score: Score for a T1 sub.
 
 * score2: Score for a T2 sub.
 
@@ -183,13 +182,21 @@ Values can be defined per sub tier.
 |pointsAbove
 |Return a score if owned points are above a defined value.
 |Channel points are above `threshold`.
-| * threshold: Current points must strictly be above this value to give the score.
+|* score: Score to give
+
+* threshold: Current points must strictly be above this value to give the score.
 
 |pointsBelow
 |Return a score if owned points are below a defined value.
 |Channel points are below `threshold`.
-| * threshold: Current points must strictly be below this value to give the score.
+|* score: Score to give
 
+* threshold: Current points must strictly be below this value to give the score.
+
+|watchStreak
+|Return a score if the streamer has a potential watch streak to claim.
+|A watch streak may be claimed.
+|* score: Score to give
 |===
 
 == How to mine streamers
