@@ -34,7 +34,7 @@ jobs:
           arguments: assemble
 
   tests:
-    name: Tests
+    name: Run tests
     runs-on: ubuntu-latest
     needs: build
     steps:
