@@ -1,0 +1,122 @@
+{
+  "data": {
+    "currentUser": {
+      "id": "123456789",
+      "inventory": {
+        "drops": null,
+        "dropCampaignsInProgress": [
+          {
+            "id": "campaign-1",
+            "accountLinkURL": "https://link1",
+            "startAt": "2021-10-21T16:00:00Z",
+            "endAt": "2021-11-11T02:00:00Z",
+            "imageURL": "https://image-1",
+            "name": "campaign name 1",
+            "status": "ACTIVE",
+            "self": {
+              "isAccountConnected": true,
+              "__typename": "DropCampaignSelfEdge"
+            },
+            "game": {
+              "id": "123",
+              "name": "game-1",
+              "boxArtURL": "https://bow-art-1",
+              "__typename": "Game"
+            },
+            "allow": {
+              "channels": null,
+              "__typename": "DropCampaignACL"
+            },
+            "eventBasedDrops": [],
+            "timeBasedDrops": [
+              {
+                "id": "drop-1",
+                "name": "drop name 1",
+                "startAt": "2021-10-21T16:00:00Z",
+                "endAt": "2021-10-28T16:00:00Z",
+                "preconditionDrops": null,
+                "requiredMinutesWatched": 90,
+                "benefitEdges": [
+                  {
+                    "benefit": {
+                      "id": "benefit-1",
+                      "imageAssetURL": "https://benefit-1-img",
+                      "name": "benefit 1 name",
+                      "__typename": "DropBenefit"
+                    },
+                    "entitlementLimit": 2,
+                    "claimCount": 1,
+                    "__typename": "DropBenefitEdge"
+                  }
+                ],
+                "self": {
+                  "hasPreconditionsMet": true,
+                  "currentMinutesWatched": 10,
+                  "isClaimed": false,
+                  "dropInstanceID": null,
+                  "__typename": "TimeBasedDropSelfEdge"
+                },
+                "campaign": {
+                  "id": "campaign-sub-1",
+                  "accountLinkURL": "https://link-sub",
+                  "self": {
+                    "isAccountConnected": false,
+                    "__typename": "DropCampaignSelfEdge"
+                  },
+                  "__typename": "DropCampaign"
+                },
+                "__typename": "TimeBasedDrop"
+              }
+            ],
+            "__typename": "DropCampaign"
+          }, {
+            "id": "campaign-2",
+            "accountLinkURL": "https://link-2",
+            "startAt": "2021-10-16T07:00:00Z",
+            "endAt": "2021-11-07T23:30:00Z",
+            "imageURL": "https://image2",
+            "name": "campaign name 2",
+            "status": "ACTIVE",
+            "self": {
+              "isAccountConnected": false,
+              "__typename": "DropCampaignSelfEdge"
+            },
+            "game": {
+              "id": "123",
+              "name": "game-1",
+              "boxArtURL": "https://bow-art-1",
+              "__typename": "Game"
+            },
+            "allow": {
+              "channels": [
+                {
+                  "id": "456789",
+                  "name": "channel 1",
+                  "url": "https://channel_1",
+                  "__typename": "Channel"
+                }, {
+                  "id": "987654",
+                  "name": "channel 2",
+                  "url": "https://channel_2",
+                  "__typename": "Channel"
+                }
+              ],
+              "__typename": "DropCampaignACL"
+            },
+            "eventBasedDrops": [],
+            "timeBasedDrops": [],
+            "__typename": "DropCampaign"
+          }
+        ],
+        "gameEventDrops": [],
+        "__typename": "Inventory"
+      },
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 120,
+    "operationName": "Inventory",
+    "requestID": "request-id"
+  }
+}

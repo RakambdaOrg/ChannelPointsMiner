@@ -8,6 +8,7 @@ import fr.raksrinana.twitchminer.util.json.URLDeserializer;
 import fr.raksrinana.twitchminer.util.json.UnknownDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -25,23 +26,31 @@ public class DropCampaign extends GQLType{
 	@NotNull
 	private String id;
 	@JsonProperty("name")
-	@NotNull
+	@Nullable
 	private String name;
 	@JsonProperty("game")
-	@NotNull
+	@Nullable
 	private Game game;
 	@JsonProperty("detailsURL")
 	@JsonDeserialize(using = URLDeserializer.class)
-	@NotNull
+	@Nullable
 	private URL detailsUrl;
+	@JsonProperty("startAt")
+	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
+	@Nullable
+	private ZonedDateTime startAt;
 	@JsonProperty("endAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
+	@Nullable
 	private ZonedDateTime endAt;
 	@JsonProperty("imageURL")
 	@JsonDeserialize(using = URLDeserializer.class)
-	@NotNull
+	@Nullable
 	private URL imageUrl;
+	@JsonProperty("accountLinkURL")
+	@JsonDeserialize(using = URLDeserializer.class)
+	@Nullable
+	private URL accountLinkUrl;
 	@JsonProperty("eventBasedDrops")
 	@JsonDeserialize(contentUsing = UnknownDeserializer.class)
 	@NotNull
@@ -51,4 +60,13 @@ public class DropCampaign extends GQLType{
 	@NotNull
 	@Builder.Default
 	private List<TimeBasedDrop> timeBasedDrops = new ArrayList<>();
+	@JsonProperty("status")
+	@Nullable
+	private DropCampaignStatus status;
+	@JsonProperty("self")
+	@Nullable
+	private DropCampaignSelfEdge self;
+	@JsonProperty("allow")
+	@Nullable
+	private DropCampaignACL allow;
 }

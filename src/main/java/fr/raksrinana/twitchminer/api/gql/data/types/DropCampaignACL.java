@@ -3,19 +3,20 @@ package fr.raksrinana.twitchminer.api.gql.data.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
-@JsonTypeName("DropBenefitEdge")
+@JsonTypeName("DropCampaignACL")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class DropBenefitEdge extends GQLType{
-	@JsonProperty("benefit")
-	private DropBenefit benefit;
-	@JsonProperty("entitlementLimit")
-	private int entitlementLimit;
-	@JsonProperty("claimCount")
-	private int claimCount;
+public class DropCampaignACL extends GQLType{
+	@JsonProperty("channels")
+	@NotNull
+	@Builder.Default
+	private List<Channel> channels = new ArrayList<>();
 }

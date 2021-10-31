@@ -17,6 +17,13 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class Inventory extends GQLType{
+	@JsonProperty("drops")
+	@JsonDeserialize(using = UnknownDeserializer.class)
+	private Object drops;
+	@JsonProperty("dropCampaignsInProgress")
+	@NotNull
+	@Builder.Default
+	private List<DropCampaign> dropCampaignsInProgress = new ArrayList<>();
 	@JsonProperty("gameEventDrops")
 	@JsonDeserialize(contentUsing = UnknownDeserializer.class)
 	@NotNull

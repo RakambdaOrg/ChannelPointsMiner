@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.miner.priority;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -19,7 +20,7 @@ public class PointsAbovePriority extends StreamerPriority{
 	private int threshold;
 	
 	@Override
-	public int getScore(@NotNull Streamer streamer){
+	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
 		return streamer.getChannelPoints()
 				.map(val -> val > threshold ? getScore() : 0)
 				.orElse(0);

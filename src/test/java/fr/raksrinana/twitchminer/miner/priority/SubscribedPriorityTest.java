@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.miner.priority;
 
 import fr.raksrinana.twitchminer.api.gql.data.types.CommunityPointsMultiplier;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +29,8 @@ class SubscribedPriorityTest{
 	@Mock
 	private Streamer streamer;
 	@Mock
+	private IMiner miner;
+	@Mock
 	private CommunityPointsMultiplier t1Multiplier;
 	@Mock
 	private CommunityPointsMultiplier t2Multiplier;
@@ -45,55 +48,55 @@ class SubscribedPriorityTest{
 	void getScoreNoMultipliers(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of());
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(0);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
 	}
 	
 	@Test
 	void getScoreT1(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of(t1Multiplier));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(50);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(50);
 	}
 	
 	@Test
 	void getScoreT2(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of(t2Multiplier));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(51);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(51);
 	}
 	
 	@Test
 	void getScoreT1T2(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of(t2Multiplier, t1Multiplier));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(51);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(51);
 	}
 	
 	@Test
 	void getScoreT3(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of(t3Multiplier));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(52);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(52);
 	}
 	
 	@Test
 	void getScoreT3T2(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of(t3Multiplier, t2Multiplier));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(52);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(52);
 	}
 	
 	@Test
 	void getScoreT3T1(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of(t3Multiplier, t1Multiplier));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(52);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(52);
 	}
 	
 	@Test
 	void getScoreT3T2T1(){
 		when(streamer.getActiveMultipliers()).thenReturn(List.of(t3Multiplier, t2Multiplier, t1Multiplier));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(52);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(52);
 	}
 }

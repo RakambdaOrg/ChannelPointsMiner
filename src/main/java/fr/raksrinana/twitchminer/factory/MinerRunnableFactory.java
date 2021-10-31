@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.runnable.SendMinutesWatched;
+import fr.raksrinana.twitchminer.miner.runnable.SyncInventory;
 import fr.raksrinana.twitchminer.miner.runnable.UpdateStreamInfo;
 import fr.raksrinana.twitchminer.miner.runnable.WebSocketPing;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,10 @@ public class MinerRunnableFactory{
 	@NotNull
 	public static WebSocketPing createWebSocketPing(@NotNull IMiner miner){
 		return new WebSocketPing(miner);
+	}
+	
+	@NotNull
+	public static SyncInventory createSyncInventory(@NotNull IMiner miner){
+		return new SyncInventory(miner);
 	}
 }

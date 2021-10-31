@@ -1,6 +1,10 @@
 package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.miner.IMiner;
+import fr.raksrinana.twitchminer.miner.runnable.SendMinutesWatched;
+import fr.raksrinana.twitchminer.miner.runnable.SyncInventory;
+import fr.raksrinana.twitchminer.miner.runnable.UpdateStreamInfo;
+import fr.raksrinana.twitchminer.miner.runnable.WebSocketPing;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -13,17 +17,26 @@ class MinerRunnableFactoryTest{
 	private IMiner miner;
 	
 	@Test
-	void getUpdateStreamInfo(){
-		assertThat(MinerRunnableFactory.createUpdateStreamInfo(miner)).isNotNull();
+	void createUpdateStreamInfo(){
+		assertThat(MinerRunnableFactory.createUpdateStreamInfo(miner)).isNotNull()
+				.isInstanceOf(UpdateStreamInfo.class);
 	}
 	
 	@Test
-	void getSendMinutesWatched(){
-		assertThat(MinerRunnableFactory.createSendMinutesWatched(miner)).isNotNull();
+	void createSendMinutesWatched(){
+		assertThat(MinerRunnableFactory.createSendMinutesWatched(miner)).isNotNull()
+				.isInstanceOf(SendMinutesWatched.class);
 	}
 	
 	@Test
-	void getWebSocketPing(){
-		assertThat(MinerRunnableFactory.createWebSocketPing(miner)).isNotNull();
+	void createWebSocketPing(){
+		assertThat(MinerRunnableFactory.createWebSocketPing(miner)).isNotNull()
+				.isInstanceOf(WebSocketPing.class);
+	}
+	
+	@Test
+	void createSyncInventory(){
+		assertThat(MinerRunnableFactory.createSyncInventory(miner)).isNotNull()
+				.isInstanceOf(SyncInventory.class);
 	}
 }

@@ -4,6 +4,7 @@ import fr.raksrinana.twitchminer.api.gql.data.channelpointscontext.ChannelPoints
 import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.priority.StreamerPriority;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +35,8 @@ class StreamerTest{
 	
 	@Mock
 	private StreamerSettings settings;
+	@Mock
+	private IMiner miner;
 	@Mock
 	private VideoPlayerStreamInfoOverlayChannelData videoPlayerStreamInfoOverlayChannelData;
 	@Mock
@@ -397,7 +400,7 @@ class StreamerTest{
 	@Test
 	void getScoreNoPriorities(){
 		when(settings.getPriorities()).thenReturn(List.of());
-		assertThat(tested.getScore()).isEqualTo(0);
+		assertThat(tested.getScore(miner)).isEqualTo(0);
 	}
 	
 	@Test
@@ -408,11 +411,11 @@ class StreamerTest{
 		var p1 = mock(StreamerPriority.class);
 		var p2 = mock(StreamerPriority.class);
 		
-		when(p1.getScore(tested)).thenReturn(s1);
-		when(p2.getScore(tested)).thenReturn(s2);
+		when(p1.getScore(miner, tested)).thenReturn(s1);
+		when(p2.getScore(miner, tested)).thenReturn(s2);
 		
 		when(settings.getPriorities()).thenReturn(List.of(p1, p2));
-		assertThat(tested.getScore()).isEqualTo(s1 + s2);
+		assertThat(tested.getScore(miner)).isEqualTo(s1 + s2);
 	}
 	
 	@ParameterizedTest
