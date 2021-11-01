@@ -49,6 +49,7 @@ public class Main{
 		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
+		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner));
 		miner.start();
 	}
 	

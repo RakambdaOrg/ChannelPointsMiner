@@ -1,9 +1,11 @@
-package fr.raksrinana.channelpointsminer.factory;
+package fr.raksrinana.twitchminer.factory;
 
-import fr.raksrinana.channelpointsminer.config.Configuration;
-import fr.raksrinana.channelpointsminer.priority.*;
-import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
-import fr.raksrinana.channelpointsminer.tests.TestUtils;
+import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.prediction.FromStartDelay;
+import fr.raksrinana.twitchminer.priority.*;
+import fr.raksrinana.twitchminer.streamer.PredictionSettings;
+import fr.raksrinana.twitchminer.streamer.StreamerSettings;
+import fr.raksrinana.twitchminer.tests.TestUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -123,6 +125,10 @@ class StreamerSettingsFactoryTest{
 				.participateCampaigns(true)
 				.joinIrc(true)
 				.priorities(priorities)
+				.predictions(PredictionSettings.builder()
+						.minimumPointsRequired(25)
+						.delay(FromStartDelay.builder().seconds(60).build())
+						.build())
 				.build();
 		
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)

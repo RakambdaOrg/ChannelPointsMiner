@@ -1,6 +1,7 @@
-package fr.raksrinana.channelpointsminer.factory;
+package fr.raksrinana.twitchminer.factory;
 
-import fr.raksrinana.channelpointsminer.miner.IMiner;
+import fr.raksrinana.twitchminer.handler.*;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -14,21 +15,26 @@ class MessageHandlerFactoryTest{
 	
 	@Test
 	void createLogger(){
-		assertThat(MessageHandlerFactory.createLogger(miner)).isNotNull();
+		assertThat(MessageHandlerFactory.createLogger(miner)).isNotNull().isInstanceOf(EventLoggerHandler.class);
 	}
 	
 	@Test
 	void createClaimAvailable(){
-		assertThat(MessageHandlerFactory.createClaimAvailableHandler(miner)).isNotNull();
+		assertThat(MessageHandlerFactory.createClaimAvailableHandler(miner)).isNotNull().isInstanceOf(ClaimAvailableHandler.class);
 	}
 	
 	@Test
 	void createStreamStartEndHandler(){
-		assertThat(MessageHandlerFactory.createStreamStartEndHandler(miner)).isNotNull();
+		assertThat(MessageHandlerFactory.createStreamStartEndHandler(miner)).isNotNull().isInstanceOf(StreamStartEndHandler.class);
 	}
 	
 	@Test
 	void createFollowRaidHandler(){
-		assertThat(MessageHandlerFactory.createFollowRaidHandler(miner)).isNotNull();
+		assertThat(MessageHandlerFactory.createFollowRaidHandler(miner)).isNotNull().isInstanceOf(FollowRaidHandler.class);
+	}
+	
+	@Test
+	void createPredictionsHandler(){
+		assertThat(MessageHandlerFactory.createPredictionsHandler(miner)).isNotNull().isInstanceOf(PredictionsHandler.class);
 	}
 }

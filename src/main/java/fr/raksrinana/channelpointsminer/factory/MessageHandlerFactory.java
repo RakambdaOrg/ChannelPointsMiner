@@ -8,7 +8,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class MessageHandlerFactory{
 	public static MessageHandler createLogger(IMiner miner){
-		return new EventLogger(miner);
+		return new EventLoggerHandler(miner);
 	}
 	
 	public static MessageHandler createClaimAvailableHandler(IMiner miner){
@@ -21,5 +21,9 @@ public class MessageHandlerFactory{
 	
 	public static MessageHandler createFollowRaidHandler(IMiner miner){
 		return new FollowRaidHandler(miner);
+	}
+	
+	public static MessageHandler createPredictionsHandler(IMiner miner){
+		return new PredictionsHandler(miner);
 	}
 }

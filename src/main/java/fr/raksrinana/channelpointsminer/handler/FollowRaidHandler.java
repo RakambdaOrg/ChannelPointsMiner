@@ -23,9 +23,7 @@ public class FollowRaidHandler extends HandlerAdapter{
 		
 		var streamer = streamerOptional.get();
 		try(var ignored = LogContext.with(streamer)){
-			if(streamer.followRaids()){
-				miner.getGqlApi().joinRaid(message.getRaid().getId());
-			}
+			miner.getGqlApi().joinRaid(message.getRaid().getId());
 		}
 	}
 }

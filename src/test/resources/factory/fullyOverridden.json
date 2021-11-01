@@ -32,5 +32,12 @@
       "type": "drops",
       "score": 90
     }
-  ]
+  ],
+  "predictions": {
+    "minimumPointsRequired": 25,
+    "delay": {
+      "type": "fromStart",
+      "seconds": 60
+    }
+  }
 }

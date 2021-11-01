@@ -25,7 +25,15 @@ class StreamerSettingsTest{
 		
 		var copy = new StreamerSettings(tested);
 		
-		assertThat(copy).isNotSameAs(tested)
-				.usingRecursiveComparison().isEqualTo(tested);
+		assertThat(copy).isNotSameAs(tested);
+		assertThat(copy.isMakePredictions()).isEqualTo(tested.isMakePredictions());
+		assertThat(copy.isParticipateCampaigns()).isEqualTo(tested.isParticipateCampaigns());
+		assertThat(copy.isFollowRaid()).isEqualTo(tested.isFollowRaid());
+		assertThat(copy.isJoinIrc()).isEqualTo(tested.isJoinIrc());
+		
+		assertThat(copy.getPriorities()).isNotSameAs(tested.getPriorities()).hasSize(1);
+		assertThat(copy.getPriorities().get(0)).isSameAs(priority);
+		
+		assertThat(copy.getPredictions()).isNotSameAs(tested.getPredictions()).isEqualTo(tested.getPredictions());
 	}
 }

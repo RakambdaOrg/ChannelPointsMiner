@@ -1,16 +1,16 @@
-package fr.raksrinana.channelpointsminer.handler;
+package fr.raksrinana.twitchminer.handler;
 
-import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
-import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.log.LogContext;
-import fr.raksrinana.channelpointsminer.miner.IMiner;
+import fr.raksrinana.twitchminer.api.ws.data.message.*;
+import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.twitchminer.log.LogContext;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 @RequiredArgsConstructor
-public class EventLogger extends HandlerAdapter{
+public class EventLoggerHandler extends HandlerAdapter{
 	private final IMiner miner;
 	
 	@Override
