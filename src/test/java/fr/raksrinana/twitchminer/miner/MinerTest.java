@@ -430,11 +430,23 @@ class MinerTest{
 	
 	@Test
 	void close(){
-		assertDoesNotThrow(() -> tested.close());
-		
-		verify(scheduledExecutorService).shutdown();
-		verify(executorService).shutdown();
-		verify(webSocketPool).close();
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			tested.start();
+			
+			assertDoesNotThrow(() -> tested.close());
+			
+			verify(scheduledExecutorService).shutdown();
+			verify(executorService).shutdown();
+			verify(webSocketPool).close();
+			verify(twitchIrcClient).close();
+		}
 	}
 	
 	@Test

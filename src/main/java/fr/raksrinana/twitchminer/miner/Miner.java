@@ -266,5 +266,6 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		scheduledExecutor.shutdown();
 		handlerExecutor.shutdown();
 		webSocketPool.close();
+		ircClient.close();
 	}
 }
