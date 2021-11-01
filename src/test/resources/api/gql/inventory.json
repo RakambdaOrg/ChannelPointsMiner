@@ -108,7 +108,23 @@
             "__typename": "DropCampaign"
           }
         ],
-        "gameEventDrops": [],
+        "gameEventDrops": [
+          {
+            "game": {
+              "id": "159",
+              "name": "ev-drop-game-name",
+              "__typename": "Game"
+            },
+            "id": "reward-id",
+            "imageURL": "https://reward-image",
+            "isConnected": false,
+            "lastAwardedAt": "2021-10-31T21:41:34Z",
+            "name": "ev reward name",
+            "requiredAccountLink": "https://link-ev-account",
+            "totalCount": 1,
+            "__typename": "UserDropReward"
+          }
+        ],
         "__typename": "Inventory"
       },
       "__typename": "User"

@@ -1,0 +1,14 @@
+{
+  "data": {
+    "claimDropRewards": {
+      "status": "ELIGIBLE_FOR_ALL",
+      "isUserAccountConnected": false,
+      "__typename": "ClaimDropRewardsPayload"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 18,
+    "operationName": "DropsPage_ClaimDropRewards",
+    "requestID": "request-id"
+  }
+}

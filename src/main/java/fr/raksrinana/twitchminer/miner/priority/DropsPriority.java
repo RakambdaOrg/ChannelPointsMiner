@@ -53,6 +53,9 @@ public class DropsPriority extends StreamerPriority{
 		var streamerCampaigns = dropsHighlightServiceAvailableDrops.getChannel().getViewerDropCampaigns();
 		var validCampaigns = inventory.getDropCampaignsInProgress().stream()
 				.filter(dropCampaign -> dropCampaign.getStatus() == DropCampaignStatus.ACTIVE)
+				.filter(dropCampaign -> Objects.nonNull(dropCampaign.getStartAt()))
+				.filter(dropCampaign -> Objects.nonNull(dropCampaign.getEndAt()))
+				.filter(dropCampaign -> Objects.nonNull(dropCampaign.getGame()))
 				.filter(dropCampaign -> dropCampaign.getStartAt().isBefore(now))
 				.filter(dropCampaign -> dropCampaign.getEndAt().isAfter(now))
 				.filter(dropCampaign -> streamerHasCampaign(dropCampaign, streamerCampaigns))

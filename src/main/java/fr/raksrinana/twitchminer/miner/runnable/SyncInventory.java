@@ -1,10 +1,17 @@
 package fr.raksrinana.twitchminer.miner.runnable;
 
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.inventory.InventoryData;
+import fr.raksrinana.twitchminer.api.gql.data.types.Inventory;
+import fr.raksrinana.twitchminer.api.gql.data.types.TimeBasedDrop;
+import fr.raksrinana.twitchminer.api.gql.data.types.TimeBasedDropSelfEdge;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import java.util.Collection;
+import java.util.Objects;
+import static java.util.Optional.ofNullable;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -20,10 +27,34 @@ public class SyncInventory implements Runnable{
 					.map(GQLResponse::getData)
 					.orElse(null);
 			miner.getMinerData().setInventory(inventory);
+			if(Objects.nonNull(inventory)){
+				claimDrops(inventory);
+			}
 			log.debug("Done syncing inventory");
 		}
 		catch(Exception e){
 			log.error("Failed to sync inventory", e);
 		}
+	}
+	
+	private void claimDrops(@NotNull InventoryData inventory){
+		var dropsToClaim = ofNullable(inventory.getCurrentUser().getInventory())
+				.map(Inventory::getDropCampaignsInProgress).stream().flatMap(Collection::stream)
+				.flatMap(dropCampaign -> dropCampaign.getTimeBasedDrops().stream())
+				.filter(timeBasedDrop -> timeBasedDrop.getRequiredMinutesWatched() <= ofNullable(timeBasedDrop.getSelf()).map(TimeBasedDropSelfEdge::getCurrentMinutesWatched).orElse(0))
+				.filter(timeBasedDrop -> timeBasedDrop.getBenefitEdges().stream()
+						.anyMatch(dropBenefitEdge -> dropBenefitEdge.getClaimCount() < dropBenefitEdge.getEntitlementLimit()))
+				.map(TimeBasedDrop::getSelf)
+				.filter(timeBasedDropSelfEdge -> !timeBasedDropSelfEdge.isClaimed())
+				.map(TimeBasedDropSelfEdge::getDropInstanceId)
+				.filter(Objects::nonNull)
+				.toList();
+		
+		if(dropsToClaim.isEmpty()){
+			return;
+		}
+		
+		log.info("Claiming drops {}", dropsToClaim);
+		dropsToClaim.forEach(miner.getGqlApi()::dropsPageClaimDropRewards);
 	}
 }

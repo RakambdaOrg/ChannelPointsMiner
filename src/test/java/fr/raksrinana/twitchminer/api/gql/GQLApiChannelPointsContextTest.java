@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 class GQLApiChannelPointsContextTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String USERNAME = "username";
-	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"9988086babc615a918a1e9a722ff41d98847acac822645209ac7379eecb27152\",\"version\":1}},\"operationName\":\"ChannelPointsContext\",\"variables\":{\"channelLogin\":\"%s\"}}";
+	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"9988086babc615a918a1e9a722ff41d98847acac822645209ac7379eecb27152\",\"version\":1}},\"operationName\":\"ChannelPointsContext\",\"variables\":{\"channelLogin\":\"%s\"}}";
 	
 	@InjectMocks
 	private GQLApi tested;

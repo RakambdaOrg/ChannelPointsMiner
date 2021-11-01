@@ -28,7 +28,7 @@ class GQLApiClaimCommunityPointsTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CLAIM_ID = "claim-id";
-	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"46aaeebe02c99afdf4fc97c7c0cba964124bf6b0af229395f1f6d1feed05b3d0\",\"version\":1}},\"operationName\":\"ClaimCommunityPoints\",\"variables\":{\"input\":{\"channelID\":\"%s\",\"claimID\":\"%s\"}}}";
+	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"46aaeebe02c99afdf4fc97c7c0cba964124bf6b0af229395f1f6d1feed05b3d0\",\"version\":1}},\"operationName\":\"ClaimCommunityPoints\",\"variables\":{\"input\":{\"channelID\":\"%s\",\"claimID\":\"%s\"}}}";
 	
 	@InjectMocks
 	private GQLApi tested;

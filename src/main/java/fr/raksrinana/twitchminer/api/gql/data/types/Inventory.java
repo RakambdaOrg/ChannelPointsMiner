@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.util.json.UnknownDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +20,14 @@ import java.util.List;
 public class Inventory extends GQLType{
 	@JsonProperty("drops")
 	@JsonDeserialize(using = UnknownDeserializer.class)
+	@Nullable
 	private Object drops;
 	@JsonProperty("dropCampaignsInProgress")
 	@NotNull
 	@Builder.Default
 	private List<DropCampaign> dropCampaignsInProgress = new ArrayList<>();
 	@JsonProperty("gameEventDrops")
-	@JsonDeserialize(contentUsing = UnknownDeserializer.class)
 	@NotNull
 	@Builder.Default
-	private List<Object> gameEventDrops = new ArrayList<>();
+	private List<UserDropReward> gameEventDrops = new ArrayList<>();
 }
