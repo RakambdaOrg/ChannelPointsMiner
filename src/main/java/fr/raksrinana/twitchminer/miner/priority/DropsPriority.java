@@ -68,16 +68,19 @@ public class DropsPriority extends StreamerPriority{
 	private boolean isValidDrop(@NotNull TimeBasedDrop timeBasedDrop){
 		var now = TimeFactory.nowZoned();
 		
-		if(timeBasedDrop.getStartAt().isAfter(now)){
+		if(Optional.ofNullable(timeBasedDrop.getStartAt()).map(date -> date.isAfter(now)).orElse(false)){
 			log.trace("Drop {} hasn't started", timeBasedDrop.getId());
 			return false;
 		}
-		if(timeBasedDrop.getEndAt().isBefore(now)){
+		if(Optional.ofNullable(timeBasedDrop.getEndAt()).map(date -> date.isBefore(now)).orElse(false)){
 			log.trace("Drop {} already ended", timeBasedDrop.getId());
 			return false;
 		}
 		
-		var result = timeBasedDrop.getBenefitEdges().stream().anyMatch(this::isValidBenefit);
+		var result = Optional.ofNullable(timeBasedDrop.getBenefitEdges())
+				.stream()
+				.flatMap(Collection::stream)
+				.anyMatch(this::isValidBenefit);
 		if(!result){
 			log.trace("Drop {} has no valid benefit", timeBasedDrop.getId());
 		}

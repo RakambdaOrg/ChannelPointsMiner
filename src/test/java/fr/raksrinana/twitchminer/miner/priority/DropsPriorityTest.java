@@ -228,4 +228,26 @@ class DropsPriorityTest{
 			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
 		}
 	}
+	
+	@Test
+	void validNoDropStartDate(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(timeBasedDrop.getStartAt()).thenReturn(null);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+		}
+	}
+	
+	@Test
+	void validNoDropEndDate(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(timeBasedDrop.getEndAt()).thenReturn(null);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+		}
+	}
 }

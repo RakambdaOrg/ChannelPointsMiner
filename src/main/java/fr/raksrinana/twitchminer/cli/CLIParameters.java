@@ -10,7 +10,6 @@ import picocli.CommandLine.Option;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@SuppressWarnings("FieldMayBeFinal")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
