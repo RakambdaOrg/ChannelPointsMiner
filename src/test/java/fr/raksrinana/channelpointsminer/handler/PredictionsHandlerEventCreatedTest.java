@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PredictionsHandlerTest{
+class PredictionsHandlerEventCreatedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String EVENT_ID = "event-id";
 	private static final int MINIMUM_REQUIRED = 50;

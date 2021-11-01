@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.handler;
 
 import fr.raksrinana.twitchminer.api.ws.data.message.EventCreated;
+import fr.raksrinana.twitchminer.api.ws.data.message.EventUpdated;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -58,12 +60,30 @@ public class PredictionsHandler extends HandlerAdapter{
 		}
 	}
 	
+	@Override
+	public void onEventUpdated(@NotNull Topic topic, @NotNull EventUpdated message){
+		var event = message.getData().getEvent();
+		try(var ignored = LogContext.empty().withEventId(event.getId())){
+			var prediction = predictions.get(event.getId());
+			if(Objects.isNull(prediction)){
+				log.debug("Event update on unknown prediction");
+				return;
+			}
+			
+			var eventDate = message.getData().getTimestamp();
+			if(eventDate.isBefore(prediction.getLastUpdate())){
+				log.debug("Event update from the past");
+				return;
+			}
+			
+			prediction.setLastUpdate(eventDate);
+			prediction.setEvent(event);
+		}
+	}
+	
 	private boolean hasEnoughPoints(@NotNull Streamer streamer){
 		var requiredPoints = streamer.getSettings().getPredictions().getMinimumPointsRequired();
-		if(requiredPoints <= 0){
-			return true;
-		}
-		return streamer.getChannelPoints().orElse(0) >= requiredPoints;
+		return streamer.getChannelPoints().map(points -> points >= requiredPoints).orElse(false);
 	}
 	
 	@NotNull
@@ -71,6 +91,7 @@ public class PredictionsHandler extends HandlerAdapter{
 		return Prediction.builder()
 				.streamerId(streamer.getId())
 				.event(event)
+				.lastUpdate(event.getCreatedAt())
 				.build();
 	}
 	
