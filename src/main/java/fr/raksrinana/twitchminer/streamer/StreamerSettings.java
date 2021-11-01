@@ -40,6 +40,7 @@ public class StreamerSettings{
 		makePredictions = origin.makePredictions;
 		followRaid = origin.followRaid;
 		participateCampaigns = origin.participateCampaigns;
+		joinIrc = origin.joinIrc;
 		priorities.addAll(origin.priorities);
 	}
 }
