@@ -28,7 +28,7 @@ public class TwitchIrcClient implements AutoCloseable{
 		client.addChannel(ircChannelName);
 	}
 	
-	private Client getIrcClient(){
+	private synchronized Client getIrcClient(){
 		if(Objects.isNull(ircClient)){
 			log.info("Creating new Twitch IRC client");
 			
