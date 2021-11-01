@@ -78,6 +78,15 @@ public class Streamer{
 				&& getWatchedDuration().compareTo(SEVEN_MINUTES) < 0;
 	}
 	
+	@NotNull
+	public List<Tag> getTags(){
+		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
+				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
+				.map(User::getStream)
+				.map(Stream::getTags)
+				.orElse(List.of());
+	}
+	
 	public boolean isParticipateCampaigns(){
 		return settings.isParticipateCampaigns();
 	}
