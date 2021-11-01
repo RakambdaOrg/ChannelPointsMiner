@@ -1,9 +1,8 @@
 package fr.raksrinana.twitchminer.miner.priority;
 
 import fr.raksrinana.twitchminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
-import fr.raksrinana.twitchminer.api.gql.data.types.Channel;
-import fr.raksrinana.twitchminer.api.gql.data.types.DropCampaign;
-import fr.raksrinana.twitchminer.api.gql.data.types.Tag;
+import fr.raksrinana.twitchminer.api.gql.data.types.*;
+import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.Mock;
@@ -11,15 +10,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.ZonedDateTime;
 import java.util.List;
+import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DropsPriorityTest{
 	private static final int SCORE = 50;
 	private static final String DROPS_TAG_ID = "c2542d6d-cd10-4532-919b-3d19f30a768b";
+	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
+	private static final int DROP_CLAIM_LIMIT = 2;
 	
 	private final DropsPriority tested = DropsPriority.builder().score(SCORE).build();
 	
@@ -35,56 +37,195 @@ class DropsPriorityTest{
 	private DropCampaign dropCampaign;
 	@Mock
 	private Tag tag;
+	@Mock
+	private TimeBasedDrop timeBasedDrop;
+	@Mock
+	private DropBenefitEdge dropBenefitEdge;
 	
 	@BeforeEach
 	void setUp(){
 		lenient().when(streamer.isParticipateCampaigns()).thenReturn(true);
 		lenient().when(streamer.isStreamingGame()).thenReturn(true);
 		lenient().when(streamer.getTags()).thenReturn(List.of(tag));
+		
+		lenient().when(tag.getId()).thenReturn(DROPS_TAG_ID);
+		
 		lenient().when(streamer.getDropsHighlightServiceAvailableDrops()).thenReturn(dropsHighlightServiceAvailableDropsData);
 		lenient().when(dropsHighlightServiceAvailableDropsData.getChannel()).thenReturn(channel);
 		lenient().when(channel.getViewerDropCampaigns()).thenReturn(List.of(dropCampaign));
-		lenient().when(tag.getId()).thenReturn(DROPS_TAG_ID);
+		
+		lenient().when(dropCampaign.getStartAt()).thenReturn(NOW.minusHours(1));
+		lenient().when(dropCampaign.getEndAt()).thenReturn(NOW.plusHours(1));
+		lenient().when(dropCampaign.getTimeBasedDrops()).thenReturn(List.of(timeBasedDrop));
+		
+		lenient().when(timeBasedDrop.getStartAt()).thenReturn(NOW.minusMinutes(30));
+		lenient().when(timeBasedDrop.getEndAt()).thenReturn(NOW.plusMinutes(30));
+		lenient().when(timeBasedDrop.getBenefitEdges()).thenReturn(List.of(dropBenefitEdge));
+		
+		lenient().when(dropBenefitEdge.getEntitlementLimit()).thenReturn(DROP_CLAIM_LIMIT);
+		lenient().when(dropBenefitEdge.getClaimCount()).thenReturn(1);
 	}
 	
 	@Test
-	void streamerNotParticipatingCampaigns(){
-		when(streamer.isParticipateCampaigns()).thenReturn(false);
-		
-		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+	void notParticipatingCampaigns(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(streamer.isParticipateCampaigns()).thenReturn(false);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
 	}
 	
 	@Test
-	void streamerNotStreamingGame(){
-		when(streamer.isStreamingGame()).thenReturn(false);
-		
-		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+	void notStreamingGame(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(streamer.isStreamingGame()).thenReturn(false);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
 	}
 	
 	@Test
-	void streamerWithoutDropsTag(){
-		when(streamer.getTags()).thenReturn(List.of());
-		
-		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+	void withoutDropsTag(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(streamer.getTags()).thenReturn(List.of());
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
 	}
 	
 	@Test
-	void streamerNoDropsHighlights(){
-		when(streamer.getDropsHighlightServiceAvailableDrops()).thenReturn(null);
-		
-		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+	void noDropsHighlights(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(streamer.getDropsHighlightServiceAvailableDrops()).thenReturn(null);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
 	}
 	
 	@Test
-	void streamerNoDrops(){
-		when(channel.getViewerDropCampaigns()).thenReturn(List.of());
-		
-		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+	void noDropCampaigns(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(channel.getViewerDropCampaigns()).thenReturn(List.of());
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
 	}
 	
 	@Test
-	void streamerHasDrops(){
-		
-		assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+	void tooEarly(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(dropCampaign.getStartAt()).thenReturn(NOW.plusSeconds(1));
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void tooLate(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(dropCampaign.getEndAt()).thenReturn(NOW.minusSeconds(1));
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void noDrops(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(dropCampaign.getTimeBasedDrops()).thenReturn(List.of());
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void dropTooEarly(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(timeBasedDrop.getStartAt()).thenReturn(NOW.plusSeconds(1));
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void dropTooLate(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(timeBasedDrop.getEndAt()).thenReturn(NOW.minusSeconds(1));
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void noBenefit(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(timeBasedDrop.getBenefitEdges()).thenReturn(List.of());
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void claimLimitReached(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(dropBenefitEdge.getClaimCount()).thenReturn(DROP_CLAIM_LIMIT);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void valid(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+		}
+	}
+	
+	@Test
+	void validNoCampaignStartDate(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(dropCampaign.getStartAt()).thenReturn(null);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+		}
+	}
+	
+	@Test
+	void validNoCampaignEndDate(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(dropCampaign.getEndAt()).thenReturn(null);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+		}
 	}
 }
