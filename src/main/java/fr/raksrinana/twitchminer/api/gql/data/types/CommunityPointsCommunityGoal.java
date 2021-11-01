@@ -47,7 +47,7 @@ public class CommunityPointsCommunityGoal extends GQLType{
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	private ZonedDateTime startedAt;
 	@JsonProperty("status")
-	private Status status;
+	private CommunityPointsCommunityGoalStatus status;
 	@JsonProperty("title")
 	private String title;
 }
