@@ -1,14 +1,15 @@
-package fr.raksrinana.channelpointsminer;
+package fr.raksrinana.twitchminer;
 
-import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
-import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.channelpointsminer.cli.CLIHolder;
-import fr.raksrinana.channelpointsminer.cli.CLIParameters;
-import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
-import fr.raksrinana.channelpointsminer.factory.MessageHandlerFactory;
-import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.miner.Miner;
-import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
+import fr.raksrinana.twitchminer.api.passport.PassportApi;
+import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
+import fr.raksrinana.twitchminer.cli.CLIHolder;
+import fr.raksrinana.twitchminer.cli.CLIParameters;
+import fr.raksrinana.twitchminer.factory.BetPlacerFactory;
+import fr.raksrinana.twitchminer.factory.ConfigurationFactory;
+import fr.raksrinana.twitchminer.factory.MessageHandlerFactory;
+import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.twitchminer.miner.Miner;
+import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.SneakyThrows;
@@ -49,7 +50,7 @@ public class Main{
 		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner));
+		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
 		miner.start();
 	}
 	

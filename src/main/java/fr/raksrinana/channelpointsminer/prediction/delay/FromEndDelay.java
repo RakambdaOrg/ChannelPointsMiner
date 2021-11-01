@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.prediction;
+package fr.raksrinana.twitchminer.prediction.delay;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.time.ZonedDateTime;
 
-@JsonTypeName("percentage")
+@JsonTypeName("fromEnd")
 @Getter
 @EqualsAndHashCode
 @ToString
@@ -15,12 +15,14 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Log4j2
-public class PercentageDelay implements DelayCalculator{
-	private float percent;
+public class FromEndDelay implements DelayCalculator{
+	private int seconds;
 	
 	@Override
 	@NotNull
 	public ZonedDateTime calculate(@NotNull Event event){
-		return event.getCreatedAt().plusSeconds((long) (percent * event.getPredictionWindowSeconds()));
+		return event.getCreatedAt()
+				.plusSeconds(event.getPredictionWindowSeconds())
+				.minusSeconds(seconds);
 	}
 }

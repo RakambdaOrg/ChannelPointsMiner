@@ -5,11 +5,15 @@ import fr.raksrinana.twitchminer.api.ws.data.message.eventcreated.EventCreatedDa
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
+import fr.raksrinana.twitchminer.handler.data.Prediction;
 import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.prediction.DelayCalculator;
+import fr.raksrinana.twitchminer.prediction.bet.BetPlacer;
+import fr.raksrinana.twitchminer.prediction.delay.DelayCalculator;
 import fr.raksrinana.twitchminer.streamer.PredictionSettings;
 import fr.raksrinana.twitchminer.streamer.Streamer;
 import fr.raksrinana.twitchminer.streamer.StreamerSettings;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,10 +22,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import static fr.raksrinana.twitchminer.api.ws.data.message.subtype.EventStatus.ACTIVE;
 import static fr.raksrinana.twitchminer.api.ws.data.message.subtype.EventStatus.LOCKED;
 import static java.time.ZoneOffset.UTC;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
@@ -41,6 +47,8 @@ class PredictionsHandlerEventCreatedTest{
 	@Mock
 	private IMiner miner;
 	@Mock
+	private BetPlacer betPlacer;
+	@Mock
 	private EventCreated eventCreated;
 	@Mock
 	private EventCreatedData eventCreatedData;
@@ -56,6 +64,9 @@ class PredictionsHandlerEventCreatedTest{
 	private PredictionSettings predictionSettings;
 	@Mock
 	private DelayCalculator delayCalculator;
+	
+	@Captor
+	private ArgumentCaptor<Prediction> predictionCaptor;
 	
 	@BeforeEach
 	void setUp(){
@@ -76,7 +87,7 @@ class PredictionsHandlerEventCreatedTest{
 		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.getPredictions()).thenReturn(predictionSettings);
 		lenient().when(predictionSettings.getMinimumPointsRequired()).thenReturn(MINIMUM_REQUIRED);
-		lenient().when(predictionSettings.getDelay()).thenReturn(delayCalculator);
+		lenient().when(predictionSettings.getDelayCalculator()).thenReturn(delayCalculator);
 		
 		lenient().when(delayCalculator.calculate(event)).thenReturn(SCHEDULE_DATE);
 	}
@@ -123,9 +134,24 @@ class PredictionsHandlerEventCreatedTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
 			
+			when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+				var runnable = invocation.getArgument(0, Runnable.class);
+				runnable.run();
+				return mock(ScheduledFuture.class);
+			});
+			
 			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
+			verify(betPlacer).placeBet(predictionCaptor.capture());
+			
+			var prediction = predictionCaptor.getValue();
+			assertThat(prediction).isEqualTo(Prediction.builder()
+					.event(event)
+					.streamer(streamer)
+					.scheduled(true)
+					.lastUpdate(EVENT_DATE)
+					.build());
 		}
 	}
 	

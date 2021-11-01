@@ -6,11 +6,15 @@ import fr.raksrinana.twitchminer.api.ws.data.message.eventcreated.EventCreatedDa
 import fr.raksrinana.twitchminer.api.ws.data.message.eventupdated.EventUpdatedData;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.twitchminer.handler.data.Prediction;
 import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.prediction.DelayCalculator;
+import fr.raksrinana.twitchminer.prediction.bet.BetPlacer;
+import fr.raksrinana.twitchminer.prediction.delay.DelayCalculator;
 import fr.raksrinana.twitchminer.streamer.PredictionSettings;
 import fr.raksrinana.twitchminer.streamer.Streamer;
 import fr.raksrinana.twitchminer.streamer.StreamerSettings;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,11 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 import static fr.raksrinana.twitchminer.api.ws.data.message.subtype.EventStatus.ACTIVE;
 import static java.time.ZoneOffset.UTC;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerEventUpdatedTest{
@@ -41,6 +46,8 @@ class PredictionsHandlerEventUpdatedTest{
 	
 	@Mock
 	private IMiner miner;
+	@Mock
+	private BetPlacer betPlacer;
 	@Mock
 	private EventCreated eventCreated;
 	@Mock
@@ -63,6 +70,11 @@ class PredictionsHandlerEventUpdatedTest{
 	private PredictionSettings predictionSettings;
 	@Mock
 	private DelayCalculator delayCalculator;
+	
+	@Captor
+	private ArgumentCaptor<Prediction> predictionCaptor;
+	
+	private Prediction capturedPrediction;
 	
 	@BeforeEach
 	void setUp(){
@@ -89,16 +101,22 @@ class PredictionsHandlerEventUpdatedTest{
 		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.getPredictions()).thenReturn(predictionSettings);
 		lenient().when(predictionSettings.getMinimumPointsRequired()).thenReturn(MINIMUM_REQUIRED);
-		lenient().when(predictionSettings.getDelay()).thenReturn(delayCalculator);
+		lenient().when(predictionSettings.getDelayCalculator()).thenReturn(delayCalculator);
 		
 		lenient().when(delayCalculator.calculate(event)).thenReturn(SCHEDULE_DATE);
+		
+		lenient().when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+			var runnable = invocation.getArgument(0, Runnable.class);
+			runnable.run();
+			return mock(ScheduledFuture.class);
+		});
 	}
 	
 	@Test
 	void unknownEvent(){
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
-		//Should verify nothing is done
+		//Should verify nothing is done, but how?
 	}
 	
 	@Test
@@ -109,11 +127,19 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
-		//Should verify nothing is done
+		assertThat(capturedPrediction).isEqualTo(Prediction.builder()
+				.event(event)
+				.streamer(streamer)
+				.scheduled(true)
+				.lastUpdate(EVENT_DATE)
+				.build());
 	}
 	
 	void createEvent(){
 		tested.handle(topic, eventCreated);
+		
+		verify(betPlacer).placeBet(predictionCaptor.capture());
+		capturedPrediction = predictionCaptor.getValue();
 	}
 	
 	@Test
@@ -122,7 +148,12 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
-		//Should verify prediction event & date are updated
+		assertThat(capturedPrediction).isEqualTo(Prediction.builder()
+				.event(event2)
+				.streamer(streamer)
+				.scheduled(true)
+				.lastUpdate(EVENT_UPDATE_DATE)
+				.build());
 	}
 	
 	@Test
@@ -130,8 +161,15 @@ class PredictionsHandlerEventUpdatedTest{
 		createEvent();
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
+		
+		when(eventUpdatedData.getTimestamp()).thenReturn(EVENT_DATE);
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
-		//Should verify prediction event & date are updated only once
+		assertThat(capturedPrediction).isEqualTo(Prediction.builder()
+				.event(event2)
+				.streamer(streamer)
+				.scheduled(true)
+				.lastUpdate(EVENT_UPDATE_DATE)
+				.build());
 	}
 }

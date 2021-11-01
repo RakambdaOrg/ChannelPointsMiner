@@ -2,6 +2,7 @@ package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.handler.*;
 import fr.raksrinana.twitchminer.miner.IMiner;
+import fr.raksrinana.twitchminer.prediction.bet.BetPlacer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MessageHandlerFactoryTest{
 	@Mock
 	private IMiner miner;
+	@Mock
+	private BetPlacer betPlacer;
 	
 	@Test
 	void createLogger(){
@@ -35,6 +38,6 @@ class MessageHandlerFactoryTest{
 	
 	@Test
 	void createPredictionsHandler(){
-		assertThat(MessageHandlerFactory.createPredictionsHandler(miner)).isNotNull().isInstanceOf(PredictionsHandler.class);
+		assertThat(MessageHandlerFactory.createPredictionsHandler(miner, betPlacer)).isNotNull().isInstanceOf(PredictionsHandler.class);
 	}
 }

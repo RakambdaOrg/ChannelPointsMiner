@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.prediction;
+package fr.raksrinana.twitchminer.prediction.delay;
 
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
 import org.mockito.Mock;

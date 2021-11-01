@@ -168,6 +168,14 @@ If this threshold is not reached, no bet is placed.
 |delay
 |How to calculate when to place the bet (see <<prediction_delay,prediction delay>>).
 |fromEnd(10)
+
+|outcomePicker
+|How to choose what outcome (side / color) to place the bet on (see <<outcome_picker,outcome pickers>>).
+|mostUsers
+
+|amount
+|How to calculate the amount to the bet (see <<amount_calculator,amount calculators>>).
+|percentage(percentage: 20, max: 50000)
 |===
 
 ==== Priorities [[priorities]]
@@ -234,23 +242,21 @@ Prediction delays allow you to define when a bet should be placed.
 
 NOTE: All delays will be within an imposed time window: `[created date + 5s ; created date + prediction window - 5s]`.
 
+WARNING: Delay are calculated from when the prediction is created, if a moderator closes the bet early (which happens on some channels where a long timer is set) and the bet hasn't already been placed, then it'll be too late.
+
 The table below will list their `type` to be used in the JSON configuration as well as how the delay is computed and parameters.
 
-[cols="1,3a,1,2a"]
+[cols="1,3,1,2a"]
 |===
 |Type |Description |Computation |Parameters
 
 |fromEnd
 |Place the bet a certain amount of time before the end of the original prediction.
-
-WARNING: This is calculated when the prediction is created, if a moderator closes the bet early (which happens on some channels where a long timer is set) and the bet hasn't already been placed, then it'll be too late.
 |Prediction end date - `seconds` seconds.
 |* seconds: Number of seconds before the end to place the bet.
 
 |fromStart
 |Place the bet a certain amount of time after the beginning of the original prediction.
-
-WARNING: This is calculated when the prediction is created, if a moderator closes the bet early (which happens on some channels where a long timer is set) and the bet hasn't already been placed, then it'll be too late.
 |Prediction start date + `seconds` seconds.
 |* seconds: Number of seconds after the start to place the bet.
 
@@ -258,6 +264,48 @@ WARNING: This is calculated when the prediction is created, if a moderator close
 |Place the bet after `percent`% of the original timer elapsed.
 |Prediction stat date + `precent` * time window.
 |* percent: The percentage of the timer, as a decimal value, between 0 and 1.
+|===
+
+==== Outcome pickers [[outcome_picker]]
+
+Outcome pickers allow you to define what outcome (side / color) will be chosen to place the bet on.
+
+The table below will list their `type` to be used in the JSON configuration as well as how the side is computed and parameters.
+
+[cols="1,3,1,2a"]
+|===
+|Type |Description |Computation |Parameters
+
+|mustUsers
+|Choose the outcome with the most users.
+|Outcome with the greater amount of total users is picked.
+|
+|===
+
+==== Amount calculators [[amount_calculator]]
+
+Amount calculators allow you to define how the amount to place is calculated.
+
+WARNING: The minimum amount that can be placed is `10`.
+
+The table below will list their `type` to be used in the JSON configuration as well as how the amount is computed and parameters.
+
+[cols="1,3,1,2a"]
+|===
+|Type |Description |Computation |Parameters
+
+|constant
+|Always bet the same amount.
+|Place `amount` points.
+|* amount: Amount to place.
+
+|percentage
+|Place a percentage of your points (with a limit).
+|Place `percentage`% of your current points.
+If this values goes over `max` then `max` points will be placed instead.
+|* percentage: Percentage of your owned points to place, as a decimal value, between 0 and 1.
+
+* max: Maximum number of points.
 |===
 
 == How to mine streamers

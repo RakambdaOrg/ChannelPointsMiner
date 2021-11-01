@@ -9,6 +9,7 @@ import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.handler.data.Prediction;
 import fr.raksrinana.twitchminer.log.LogContext;
 import fr.raksrinana.twitchminer.miner.IMiner;
+import fr.raksrinana.twitchminer.prediction.bet.BetPlacer;
 import fr.raksrinana.twitchminer.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +26,7 @@ public class PredictionsHandler extends HandlerAdapter{
 	private static final int OFFSET = 5;
 	
 	private final IMiner miner;
+	private final BetPlacer betPlacer;
 	
 	private final Map<String, Prediction> predictions = new ConcurrentHashMap<>();
 	
@@ -89,14 +91,14 @@ public class PredictionsHandler extends HandlerAdapter{
 	@NotNull
 	private Prediction createPrediction(@NotNull Streamer streamer, @NotNull Event event){
 		return Prediction.builder()
-				.streamerId(streamer.getId())
+				.streamer(streamer)
 				.event(event)
 				.lastUpdate(event.getCreatedAt())
 				.build();
 	}
 	
 	private void schedulePrediction(@NotNull Streamer streamer, @NotNull Prediction prediction){
-		var delayCalculator = streamer.getSettings().getPredictions().getDelay();
+		var delayCalculator = streamer.getSettings().getPredictions().getDelayCalculator();
 		var event = prediction.getEvent();
 		
 		var placeAt = delayCalculator.calculate(event);
@@ -120,6 +122,6 @@ public class PredictionsHandler extends HandlerAdapter{
 				Math.max(OFFSET, now.until(placeAt, ChronoUnit.SECONDS)));
 		
 		log.info("Will place bet after {} seconds", secondsDelay);
-		miner.schedule(() -> {}, secondsDelay, TimeUnit.SECONDS); //TODO
+		miner.schedule(() -> betPlacer.placeBet(prediction), secondsDelay, TimeUnit.SECONDS);
 	}
 }

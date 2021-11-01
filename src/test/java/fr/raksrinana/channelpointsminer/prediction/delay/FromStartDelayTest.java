@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.prediction;
+package fr.raksrinana.twitchminer.prediction.delay;
 
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
 import org.mockito.Mock;
@@ -11,12 +11,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PercentageDelayTest{
+class FromStartDelayTest{
 	private static final ZonedDateTime EVENT_DATE = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
-	private static final int WINDOW_SECONDS = 100;
-	private static final float PERCENTAGE = .3F;
+	private static final int SECONDS = 30;
 	
-	private final PercentageDelay tesed = PercentageDelay.builder().percent(PERCENTAGE).build();
+	private final FromStartDelay tesed = FromStartDelay.builder().seconds(SECONDS).build();
 	
 	@Mock
 	private Event event;
@@ -24,8 +23,7 @@ class PercentageDelayTest{
 	@Test
 	void calculate(){
 		when(event.getCreatedAt()).thenReturn(EVENT_DATE);
-		when(event.getPredictionWindowSeconds()).thenReturn(WINDOW_SECONDS);
 		
-		assertThat(tesed.calculate(event)).isEqualTo(EVENT_DATE.plusSeconds(30));
+		assertThat(tesed.calculate(event)).isEqualTo(EVENT_DATE.plusSeconds(SECONDS));
 	}
 }

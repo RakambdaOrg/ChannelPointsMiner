@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.handler.data;
 
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.twitchminer.streamer.Streamer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import java.time.ZonedDateTime;
@@ -9,9 +10,11 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
+@EqualsAndHashCode
+@ToString
 public class Prediction{
 	@NotNull
-	private String streamerId;
+	private Streamer streamer;
 	@Setter
 	@NotNull
 	private Event event;

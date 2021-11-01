@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.prediction;
+package fr.raksrinana.twitchminer.prediction.delay;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
