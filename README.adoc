@@ -11,6 +11,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Claim bonus points when they are available.
 * Follow raids.
 * Participate and claim link::https://www.twitch.tv/drops/campaigns[campaigns].
+* Join IRC chat
 
 Limits:
 
@@ -143,6 +144,10 @@ An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main
 
 |participateCampaigns
 |If set to true, progression towards campaigns will be made, and completed rewards will be claimed.
+|false
+
+|joinIrc
+|If set to true IRC channel of the streamer will be joined.
 |false
 
 |priorities

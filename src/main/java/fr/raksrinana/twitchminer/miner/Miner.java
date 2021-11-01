@@ -19,10 +19,12 @@ import fr.raksrinana.twitchminer.config.Configuration;
 import fr.raksrinana.twitchminer.factory.ApiFactory;
 import fr.raksrinana.twitchminer.factory.MinerRunnableFactory;
 import fr.raksrinana.twitchminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.twitchminer.handler.MessageHandler;
+import fr.raksrinana.twitchminer.irc.TwitchIrcClient;
+import fr.raksrinana.twitchminer.irc.TwitchIrcFactory;
 import fr.raksrinana.twitchminer.log.LogContext;
-import fr.raksrinana.twitchminer.miner.handler.MessageHandler;
-import fr.raksrinana.twitchminer.miner.runnable.UpdateStreamInfo;
-import fr.raksrinana.twitchminer.miner.streamer.Streamer;
+import fr.raksrinana.twitchminer.runnable.UpdateStreamInfo;
+import fr.raksrinana.twitchminer.streamer.Streamer;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -66,6 +68,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private HelixApi helixApi;
 	@Getter
 	private TwitchApi twitchApi;
+	private TwitchIrcClient ircClient;
 	
 	public Miner(@NotNull Configuration configuration,
 			@NotNull PassportApi passportApi,
@@ -155,6 +158,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			helixApi = ApiFactory.createHelixApi(twitchLogin);
 			krakenApi = ApiFactory.createKrakenApi(twitchLogin);
 			twitchApi = ApiFactory.createTwitchApi();
+			ircClient = TwitchIrcFactory.create(twitchLogin);
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");
@@ -192,6 +196,11 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			if(streamer.getSettings().isFollowRaid()){
 				listenTopic(RAID, streamer.getId());
 			}
+			
+			if(streamer.getSettings().isJoinIrc()){
+				ircClient.join(streamer.getUsername());
+			}
+			
 			streamers.add(streamer);
 		}
 	}

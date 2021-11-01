@@ -4,7 +4,7 @@ import fr.raksrinana.twitchminer.api.gql.GQLApi;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.api.twitch.TwitchApi;
 import fr.raksrinana.twitchminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.twitchminer.miner.streamer.Streamer;
+import fr.raksrinana.twitchminer.streamer.Streamer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;

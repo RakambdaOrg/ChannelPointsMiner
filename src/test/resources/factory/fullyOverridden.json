@@ -2,6 +2,7 @@
   "makePredictions": true,
   "followRaid": true,
   "participateCampaigns": true,
+  "joinIrc": true,
   "priorities": [
     {
       "type": "constant",
@@ -26,6 +27,10 @@
     {
       "type": "watchStreak",
       "score": 80
+    },
+    {
+      "type": "drops",
+      "score": 90
     }
   ]
 }

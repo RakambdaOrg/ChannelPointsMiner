@@ -1,7 +1,7 @@
 package fr.raksrinana.twitchminer.factory;
 
+import fr.raksrinana.twitchminer.handler.*;
 import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.miner.handler.*;
 import lombok.NoArgsConstructor;
 import static lombok.AccessLevel.PRIVATE;
 

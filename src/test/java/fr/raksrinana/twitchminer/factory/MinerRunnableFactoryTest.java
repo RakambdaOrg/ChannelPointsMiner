@@ -1,10 +1,10 @@
 package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.miner.runnable.SendMinutesWatched;
-import fr.raksrinana.twitchminer.miner.runnable.SyncInventory;
-import fr.raksrinana.twitchminer.miner.runnable.UpdateStreamInfo;
-import fr.raksrinana.twitchminer.miner.runnable.WebSocketPing;
+import fr.raksrinana.twitchminer.runnable.SendMinutesWatched;
+import fr.raksrinana.twitchminer.runnable.SyncInventory;
+import fr.raksrinana.twitchminer.runnable.UpdateStreamInfo;
+import fr.raksrinana.twitchminer.runnable.WebSocketPing;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;

@@ -15,7 +15,7 @@ class CommonUtilsTest{
 	
 	@RepeatedTest(5)
 	void sleepInRangeNegative(){
-		await().pollDelay(Duration.ofMillis(10)).atMost(Duration.ofMillis(30)).until(() -> {
+		await().pollDelay(Duration.ofMillis(10)).atMost(Duration.ofMillis(50)).until(() -> {
 			CommonUtils.randomSleep(-5, 1);
 			return true;
 		});

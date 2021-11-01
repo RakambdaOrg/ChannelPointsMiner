@@ -1,7 +1,7 @@
 package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.miner.streamer.StreamerSettings;
+import fr.raksrinana.twitchminer.streamer.StreamerSettings;
 import fr.raksrinana.twitchminer.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
