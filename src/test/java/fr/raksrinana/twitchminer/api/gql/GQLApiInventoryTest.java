@@ -79,6 +79,11 @@ class GQLApiInventoryTest{
 																		.startAt(ZonedDateTime.of(2021, 10, 21, 16, 0, 0, 0, UTC))
 																		.endAt(ZonedDateTime.of(2021, 10, 28, 16, 0, 0, 0, UTC))
 																		.requiredMinutesWatched(90)
+																		.preconditionDrops(List.of(
+																				TimeBasedDrop.builder()
+																						.id("required-drop-id")
+																						.build()
+																		))
 																		.benefitEdges(List.of(
 																				DropBenefitEdge.builder()
 																						.benefit(DropBenefit.builder()

@@ -34,7 +34,12 @@
                 "name": "drop name 1",
                 "startAt": "2021-10-21T16:00:00Z",
                 "endAt": "2021-10-28T16:00:00Z",
-                "preconditionDrops": null,
+                "preconditionDrops": [
+                  {
+                    "id": "required-drop-id",
+                    "__typename": "TimeBasedDrop"
+                  }
+                ],
                 "requiredMinutesWatched": 90,
                 "benefitEdges": [
                   {
