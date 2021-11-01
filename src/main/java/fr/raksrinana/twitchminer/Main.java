@@ -24,6 +24,15 @@ import static kong.unirest.HeaderNames.USER_AGENT;
 public class Main{
 	@SneakyThrows
 	public static void main(String[] args){
+		// #############################
+		// Fix for JDK 17 : https://bugs.openjdk.java.net/browse/JDK-8274349?focusedCommentId=14450437&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-14450437
+		int cores = Runtime.getRuntime().availableProcessors();
+		if(cores <= 1){
+			log.warn("Available Cores \"" + cores + "\", setting Parallelism Flag");
+			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
+		}
+		// #############################
+		
 		CLIHolder.setInstance(parseCLIParameters(args));
 		preSetup();
 		

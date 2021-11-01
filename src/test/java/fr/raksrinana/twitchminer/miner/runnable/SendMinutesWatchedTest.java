@@ -310,7 +310,7 @@ class SendMinutesWatchedTest{
 		var s1 = mock(Streamer.class);
 		when(s1.getSpadeUrl()).thenReturn(new URL("https://spade1"));
 		when(s1.isStreaming()).thenReturn(true);
-		when(s1.getScore()).thenReturn(10);
+		when(s1.getScore(miner)).thenReturn(10);
 		
 		var spade2 = new URL("https://spade2");
 		var s2 = mock(Streamer.class);
@@ -318,12 +318,12 @@ class SendMinutesWatchedTest{
 		when(s2.getSpadeUrl()).thenReturn(spade2);
 		when(s2.getStreamId()).thenReturn(Optional.of("sid2"));
 		when(s2.isStreaming()).thenReturn(true);
-		when(s2.getScore()).thenReturn(100);
+		when(s2.getScore(miner)).thenReturn(100);
 		
 		var s3 = mock(Streamer.class);
 		when(s3.getSpadeUrl()).thenReturn(new URL("https://spade3"));
 		when(s3.isStreaming()).thenReturn(true);
-		when(s3.getScore()).thenReturn(20);
+		when(s3.getScore(miner)).thenReturn(20);
 		
 		var spade4 = new URL("https://spade4");
 		var s4 = mock(Streamer.class);
@@ -331,7 +331,7 @@ class SendMinutesWatchedTest{
 		when(s4.getSpadeUrl()).thenReturn(spade4);
 		when(s4.getStreamId()).thenReturn(Optional.of("sid4"));
 		when(s4.isStreaming()).thenReturn(true);
-		when(s4.getScore()).thenReturn(50);
+		when(s4.getScore(miner)).thenReturn(50);
 		
 		when(miner.getStreamers()).thenReturn(List.of(s1, s2, s3, s4));
 		when(twitchApi.sendPlayerEvents(any(), any())).thenReturn(true);

@@ -31,6 +31,9 @@ public interface IMiner{
 	@Nullable
 	TwitchApi getTwitchApi();
 	
+	@NotNull
+	MinerData getMinerData();
+	
 	/**
 	 * Add a streamer to the list being mined.
 	 *

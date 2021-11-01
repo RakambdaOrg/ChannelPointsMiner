@@ -16,4 +16,6 @@ public class DropBenefitEdge extends GQLType{
 	private DropBenefit benefit;
 	@JsonProperty("entitlementLimit")
 	private int entitlementLimit;
+	@JsonProperty("claimCount")
+	private int claimCount;
 }

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class GQLApiVideoPlayerStreamInfoOverlayChannelTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String USERNAME = "username";
-	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"a5f2e34d626a9f4f5c0204f910bab2194948a9502089be558bb6e779a9e1b3d2\",\"version\":1}},\"operationName\":\"VideoPlayerStreamInfoOverlayChannel\",\"variables\":{\"channel\":\"%s\"}}";
+	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"a5f2e34d626a9f4f5c0204f910bab2194948a9502089be558bb6e779a9e1b3d2\",\"version\":1}},\"operationName\":\"VideoPlayerStreamInfoOverlayChannel\",\"variables\":{\"channel\":\"%s\"}}";
 	
 	@InjectMocks
 	private GQLApi tested;

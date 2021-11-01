@@ -6,6 +6,7 @@ import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.twitchminer.factory.TimeFactory;
 import fr.raksrinana.twitchminer.log.LogContext;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +58,7 @@ public class Streamer{
 	private VideoPlayerStreamInfoOverlayChannelData videoPlayerStreamInfoOverlayChannel;
 	@Nullable
 	@Setter
+	@Getter
 	private DropsHighlightServiceAvailableDropsData dropsHighlightServiceAvailableDrops;
 	@Nullable
 	@Setter
@@ -76,8 +78,17 @@ public class Streamer{
 				&& getWatchedDuration().compareTo(SEVEN_MINUTES) < 0;
 	}
 	
-	public boolean updateCampaigns(){
-		return true;
+	@NotNull
+	public List<Tag> getTags(){
+		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
+				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
+				.map(User::getStream)
+				.map(Stream::getTags)
+				.orElse(List.of());
+	}
+	
+	public boolean isParticipateCampaigns(){
+		return settings.isParticipateCampaigns();
 	}
 	
 	public boolean followRaids(){
@@ -88,11 +99,11 @@ public class Streamer{
 		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
 	}
 	
-	public int getScore(){
+	public int getScore(@NotNull IMiner miner){
 		try(var ignored = LogContext.with(this)){
 			var score = settings.getPriorities().stream()
 					.mapToInt(p -> {
-						var s = p.getScore(this);
+						var s = p.getScore(miner, this);
 						if(s != 0){
 							log.trace("Obtained score of {} from {}", s, p);
 						}

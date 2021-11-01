@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,6 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@Type(value = PointsAbovePriority.class, name = "pointsAbove"),
 		@Type(value = PointsBelowPriority.class, name = "pointsBelow"),
 		@Type(value = WatchStreakPriority.class, name = "watchStreak"),
+		@Type(value = DropsPriority.class, name = "drops"),
 })
 @ToString
 @EqualsAndHashCode
@@ -28,5 +30,5 @@ public abstract class StreamerPriority{
 	@JsonProperty("score")
 	private int score;
 	
-	public abstract int getScore(@NotNull Streamer streamer);
+	public abstract int getScore(@NotNull IMiner miner, @NotNull Streamer streamer);
 }

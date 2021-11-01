@@ -13,7 +13,7 @@ import static kong.unirest.HeaderNames.ACCEPT;
 import static kong.unirest.HeaderNames.AUTHORIZATION;
 
 /**
- * @deprecated Will be shut down on February 28 2022, see https://blog.twitch.tv/en/2021/07/15/legacy-twitch-api-v5-shutdown-details-and-timeline
+ * @deprecated Will be shut down on February, 28 2022, see https://blog.twitch.tv/en/2021/07/15/legacy-twitch-api-v5-shutdown-details-and-timeline
  */
 @Log4j2
 @RequiredArgsConstructor

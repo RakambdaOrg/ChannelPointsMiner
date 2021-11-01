@@ -36,7 +36,11 @@ class ConfigurationFactoryTest{
 				.password("password")
 				.use2Fa(true)
 				.loadFollows(true)
-				.defaultStreamerSettings(StreamerSettings.builder().makePredictions(true).followRaid(true).build())
+				.defaultStreamerSettings(StreamerSettings.builder()
+						.makePredictions(true)
+						.followRaid(true)
+						.participateCampaigns(true)
+						.build())
 				.build();
 		
 		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){

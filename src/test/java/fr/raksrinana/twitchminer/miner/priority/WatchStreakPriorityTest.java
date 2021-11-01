@@ -1,5 +1,6 @@
 package fr.raksrinana.twitchminer.miner.priority;
 
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,16 +17,18 @@ class WatchStreakPriorityTest{
 	
 	@Mock
 	private Streamer streamer;
+	@Mock
+	private IMiner miner;
 	
 	@Test
 	void getScoreMayClaim(){
 		when(streamer.mayClaimStreak()).thenReturn(true);
-		assertThat(tested.getScore(streamer)).isEqualTo(SCORE);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
 	}
 	
 	@Test
 	void getScoreMayNotClaim(){
 		when(streamer.mayClaimStreak()).thenReturn(false);
-		assertThat(tested.getScore(streamer)).isEqualTo(0);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
 	}
 }

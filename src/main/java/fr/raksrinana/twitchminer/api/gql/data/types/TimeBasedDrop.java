@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.util.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,20 +23,30 @@ public class TimeBasedDrop extends GQLType{
 	@NotNull
 	private String id;
 	@JsonProperty("name")
-	@NotNull
+	@Nullable
 	private String name;
 	@JsonProperty("startAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
+	@Nullable
 	private ZonedDateTime startAt;
 	@JsonProperty("endAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
+	@Nullable
 	private ZonedDateTime endAt;
+	@JsonProperty("preconditionDrops")
+	@Nullable
+	@Builder.Default
+	private List<TimeBasedDrop> preconditionDrops = new ArrayList<>();
 	@JsonProperty("benefitEdges")
-	@NotNull
+	@Nullable
 	@Builder.Default
 	private List<DropBenefitEdge> benefitEdges = new ArrayList<>();
 	@JsonProperty("requiredMinutesWatched")
 	private int requiredMinutesWatched;
+	@JsonProperty("self")
+	@Nullable
+	private TimeBasedDropSelfEdge self;
+	@JsonProperty("campaign")
+	@Nullable
+	private DropCampaign campaign;
 }

@@ -10,6 +10,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Get the watch streak points by watching streams regularly.
 * Claim bonus points when they are available.
 * Follow raids.
+* Participate and claim link::https://www.twitch.tv/drops/campaigns[campaigns].
 
 Limits:
 
@@ -133,15 +134,19 @@ An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main
 |Name |Description |Default value
 
 |makePredictions
-|If set to true, predictions will be made for this streamer (#16)
+|If set to true, predictions will be made for this streamer (#16).
 |false
 
 |followRaid
-|If set to true, the miner raid will attend raids for extra points (#30)
+|If set to true, the miner raid will attend raids for extra points.
+|false
+
+|participateCampaigns
+|If set to true, progression towards campaigns will be made, and completed rewards will be claimed.
 |false
 
 |priorities
-|A list of conditions that if met will prioritize this streamer (see <<priorities,priorities>>)
+|A list of conditions that if met will prioritize this streamer (see <<priorities,priorities>>).
 |none
 |===
 
@@ -166,7 +171,7 @@ The table below will list their `type` to be used in the JSON configuration as w
 |Adds a constant value to the score of the streamer.
 For example if you want a streamer to always be first, you can set this priority with a score of 99999, and it'll always have at least this amount.
 |Always
-|* score: Score to give
+|* score: Score to give.
 
 |subscribed
 |Return a score if the logged-in user is subscribed to the streamer.
@@ -181,21 +186,26 @@ Values can be defined per sub tier.
 |pointsAbove
 |Return a score if owned points are above a defined value.
 |Channel points are above `threshold`.
-|* score: Score to give
+|* score: Score to give.
 
 * threshold: Current points must strictly be above this value to give the score.
 
 |pointsBelow
 |Return a score if owned points are below a defined value.
 |Channel points are below `threshold`.
-|* score: Score to give
+|* score: Score to give.
 
 * threshold: Current points must strictly be below this value to give the score.
 
 |watchStreak
 |Return a score if the streamer has a potential watch streak to claim.
 |A watch streak may be claimed.
-|* score: Score to give
+|* score: Score to give.
+
+|drops
+|Return a score if a drop campaign may be progressed by watching this stream.
+|Drops can be progressed.
+|* score : Score to give.
 |===
 
 == How to mine streamers

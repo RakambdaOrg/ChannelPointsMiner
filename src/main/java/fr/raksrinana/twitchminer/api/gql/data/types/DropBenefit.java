@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.twitchminer.util.json.URLDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 
 @JsonTypeName("DropBenefit")
@@ -23,7 +24,7 @@ public class DropBenefit extends GQLType{
 	@NotNull
 	private String name;
 	@JsonProperty("game")
-	@NotNull
+	@Nullable
 	private Game game;
 	@JsonProperty("imageAssetURL")
 	@JsonDeserialize(using = URLDeserializer.class)

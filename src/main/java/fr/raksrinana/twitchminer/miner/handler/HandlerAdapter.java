@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+@SuppressWarnings("unused")
 public abstract class HandlerAdapter implements MessageHandler{
 	private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 	private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();

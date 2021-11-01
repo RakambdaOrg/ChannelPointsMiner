@@ -1,5 +1,6 @@
 package fr.raksrinana.twitchminer.miner.priority;
 
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,32 +22,34 @@ class PointsBelowPriorityTest{
 	
 	@Mock
 	private Streamer streamer;
+	@Mock
+	private IMiner miner;
 	
 	@Test
 	void getScoreAboveThreshold(){
 		when(streamer.getChannelPoints()).thenReturn(Optional.of(THRESHOLD + 1));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(0);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
 	}
 	
 	@Test
 	void getScoreBelowThreshold(){
 		when(streamer.getChannelPoints()).thenReturn(Optional.of(THRESHOLD - 1));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(SCORE);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
 	}
 	
 	@Test
 	void getScoreEqualThreshold(){
 		when(streamer.getChannelPoints()).thenReturn(Optional.of(THRESHOLD));
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(0);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
 	}
 	
 	@Test
 	void getScoreNoPointsData(){
 		when(streamer.getChannelPoints()).thenReturn(Optional.empty());
 		
-		assertThat(tested.getScore(streamer)).isEqualTo(0);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
 	}
 }

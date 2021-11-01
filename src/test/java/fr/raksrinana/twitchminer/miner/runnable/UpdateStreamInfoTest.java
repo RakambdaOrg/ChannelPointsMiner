@@ -246,7 +246,7 @@ class UpdateStreamInfoTest{
 			when(response.getData()).thenReturn(data);
 			
 			when(streamer.isStreaming()).thenReturn(true);
-			when(streamer.updateCampaigns()).thenReturn(true);
+			when(streamer.isParticipateCampaigns()).thenReturn(true);
 			when(streamer.isStreamingGame()).thenReturn(true);
 			when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
@@ -276,7 +276,7 @@ class UpdateStreamInfoTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(streamer.isStreaming()).thenReturn(true);
-			when(streamer.updateCampaigns()).thenReturn(true);
+			when(streamer.isParticipateCampaigns()).thenReturn(true);
 			when(streamer.isStreamingGame()).thenReturn(true);
 			when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
@@ -306,7 +306,7 @@ class UpdateStreamInfoTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(streamer.isStreaming()).thenReturn(true);
-			when(streamer.updateCampaigns()).thenReturn(true);
+			when(streamer.isParticipateCampaigns()).thenReturn(true);
 			when(streamer.isStreamingGame()).thenReturn(false);
 			when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));

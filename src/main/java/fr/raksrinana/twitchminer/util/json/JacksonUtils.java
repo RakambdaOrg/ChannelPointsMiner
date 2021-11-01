@@ -1,5 +1,6 @@
 package fr.raksrinana.twitchminer.util.json;
 
+import com.fasterxml.jackson.annotation.JsonSetter.Value;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -8,10 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.Nulls.AS_EMPTY;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.*;
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_TRAILING_COMMA;
@@ -43,6 +46,7 @@ public class JacksonUtils{
 					.visibility(SETTER, NONE)
 					.visibility(CREATOR, NONE)
 					.serializationInclusion(NON_NULL)
+					.withConfigOverride(List.class, o -> o.setSetterInfo(Value.forValueNulls(AS_EMPTY)))
 					.build();
 		}
 		return mapper;

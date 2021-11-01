@@ -34,7 +34,7 @@ public class SendMinutesWatched implements Runnable{
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
-					.map(streamer -> Map.entry(streamer, streamer.getScore()))
+					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
 					.sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
 					.limit(2)
 					.map(Map.Entry::getKey)

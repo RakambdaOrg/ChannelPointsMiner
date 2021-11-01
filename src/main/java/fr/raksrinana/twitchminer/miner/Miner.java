@@ -36,8 +36,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import static fr.raksrinana.twitchminer.api.ws.data.request.topic.TopicName.*;
-import static fr.raksrinana.twitchminer.factory.MinerRunnableFactory.createSendMinutesWatched;
-import static fr.raksrinana.twitchminer.factory.MinerRunnableFactory.createWebSocketPing;
+import static fr.raksrinana.twitchminer.factory.MinerRunnableFactory.*;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -54,6 +53,8 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private final ExecutorService handlerExecutor;
 	private final StreamerSettingsFactory streamerSettingsFactory;
 	private final Collection<MessageHandler> messageHandlers;
+	@Getter
+	private final MinerData minerData;
 	
 	private UpdateStreamInfo updateStreamInfo;
 	
@@ -81,6 +82,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		
 		streamers = new HashSet<>();
 		messageHandlers = new LinkedList<>();
+		minerData = new MinerData();
 	}
 	
 	/**
@@ -99,6 +101,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
 		scheduledExecutor.scheduleWithFixedDelay(createSendMinutesWatched(this), 0, 1, MINUTES);
 		scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
+		scheduledExecutor.scheduleAtFixedRate(createSyncInventory(this), 1, 15, MINUTES);
 		
 		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 	}

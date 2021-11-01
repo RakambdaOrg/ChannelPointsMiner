@@ -17,20 +17,26 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class StreamerSettings implements Cloneable{
+public class StreamerSettings{
 	@JsonProperty("makePredictions")
 	@Builder.Default
 	private boolean makePredictions = false;
 	@JsonProperty("followRaid")
 	@Builder.Default
 	private boolean followRaid = false;
+	@JsonProperty("participateCampaigns")
+	@Builder.Default
+	private boolean participateCampaigns = false;
 	@JsonProperty("priorities")
 	@Builder.Default
 	@NotNull
 	private List<StreamerPriority> priorities = new ArrayList<>();
 	
-	@Override
-	public StreamerSettings clone() throws CloneNotSupportedException{
-		return (StreamerSettings) super.clone();
+	public StreamerSettings(@NotNull StreamerSettings origin){
+		this();
+		makePredictions = origin.makePredictions;
+		followRaid = origin.followRaid;
+		participateCampaigns = origin.participateCampaigns;
+		priorities.addAll(origin.priorities);
 	}
 }

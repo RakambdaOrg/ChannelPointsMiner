@@ -3,6 +3,7 @@ package fr.raksrinana.twitchminer.miner.priority;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.twitchminer.api.gql.data.types.CommunityPointsMultiplier;
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -23,7 +24,7 @@ public class SubscribedPriority extends StreamerPriority{
 	private int score3;
 	
 	@Override
-	public int getScore(@NotNull Streamer streamer){
+	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
 		var reasons = streamer.getActiveMultipliers().stream()
 				.map(CommunityPointsMultiplier::getReasonCode).toList();
 		if(reasons.contains(SUB_T3)){

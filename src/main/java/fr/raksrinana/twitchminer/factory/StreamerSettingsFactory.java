@@ -24,25 +24,20 @@ public class StreamerSettingsFactory{
 	
 	@NotNull
 	public StreamerSettings createStreamerSettings(@NotNull String username){
-		try{
-			var defaultSettings = getDefaultSettings().clone();
-			
-			var streamerPathOptional = getStreamerPath(username);
-			if(streamerPathOptional.isEmpty()){
-				return defaultSettings;
-			}
-			var streamerPath = streamerPathOptional.get();
-			
-			try(var is = Files.newInputStream(streamerPath)){
-				return JacksonUtils.update(is, defaultSettings);
-			}
-			catch(IOException e){
-				log.error("Failed to read streamer settings from {}, using defaults", streamerPath, e);
-				return defaultSettings;
-			}
+		var defaultSettings = new StreamerSettings(getDefaultSettings());
+		
+		var streamerPathOptional = getStreamerPath(username);
+		if(streamerPathOptional.isEmpty()){
+			return defaultSettings;
 		}
-		catch(CloneNotSupportedException e){
-			throw new RuntimeException("Failed to read streamer settings", e);
+		var streamerPath = streamerPathOptional.get();
+		
+		try(var is = Files.newInputStream(streamerPath)){
+			return JacksonUtils.update(is, defaultSettings);
+		}
+		catch(IOException e){
+			log.error("Failed to read streamer settings from {}, using defaults", streamerPath, e);
+			return defaultSettings;
 		}
 	}
 	

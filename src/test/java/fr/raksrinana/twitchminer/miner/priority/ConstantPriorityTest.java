@@ -1,5 +1,6 @@
 package fr.raksrinana.twitchminer.miner.priority;
 
+import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,9 +16,11 @@ class ConstantPriorityTest{
 	
 	@Mock
 	private Streamer streamer;
+	@Mock
+	private IMiner miner;
 	
 	@Test
 	void getScore(){
-		assertThat(tested.getScore(streamer)).isEqualTo(SCORE);
+		assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
 	}
 }
