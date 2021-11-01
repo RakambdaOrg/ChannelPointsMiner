@@ -10,7 +10,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Get the watch streak points by watching streams regularly.
 * Claim bonus points when they are available.
 * Follow raids.
-* Participate and claim link::https://www.twitch.tv/drops/campaigns[campaigns].
+* Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
 * Join IRC chat
 
 Limits:
