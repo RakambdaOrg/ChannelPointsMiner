@@ -276,9 +276,28 @@ The table below will list their `type` to be used in the JSON configuration as w
 |===
 |Type |Description |Computation |Parameters
 
-|mustUsers
+|mostUsers
 |Choose the outcome with the most users.
-|Outcome with the greater amount of total users is picked.
+|Outcome with the higher user count is picked.
+|
+
+|leastUsers
+|Choose the outcome with the least users.
+|Outcome with the lower user count is picked.
+|
+
+|mostPoints
+|Choose the outcome with the most points.
+|Outcome with the higher total points is picked.
+
+This is the same as "the outcome with lower odds".
+|
+
+|leastPoints
+|Choose the outcome with the least points.
+|Outcome with the lower total points is picked.
+
+This is the same as "the outcome with higher odds".
 |
 |===
 

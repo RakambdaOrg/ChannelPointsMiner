@@ -16,8 +16,8 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MostUsersOutcomePickerTest{
-	private final MostUsersOutcomePicker tested = MostUsersOutcomePicker.builder().build();
+class LeastPointsOutcomePickerTest{
+	private final LeastPointsOutcomePicker tested = LeastPointsOutcomePicker.builder().build();
 	
 	@Mock
 	private Prediction prediction;
@@ -36,8 +36,8 @@ class MostUsersOutcomePickerTest{
 	
 	@Test
 	void chose() throws BetPlacementException{
-		when(blueOutcome.getTotalUsers()).thenReturn(19);
-		when(pinkOutcome.getTotalUsers()).thenReturn(20);
+		when(blueOutcome.getTotalPoints()).thenReturn(20L);
+		when(pinkOutcome.getTotalPoints()).thenReturn(19L);
 		
 		assertThat(tested.chooseOutcome(prediction)).isEqualTo(pinkOutcome);
 	}
