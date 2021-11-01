@@ -9,6 +9,12 @@
         <Logger level="warn" name="org.java_websocket" additivity="false">
             <AppenderRef ref="console"/>
         </Logger>
+        <Logger level="warn" name="org.kitteh.irc" additivity="false">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <Logger level="warn" name="io.netty" additivity="false">
+            <AppenderRef ref="console"/>
+        </Logger>
         <Root level="info" additivity="false">
             <AppenderRef ref="console"/>
         </Root>

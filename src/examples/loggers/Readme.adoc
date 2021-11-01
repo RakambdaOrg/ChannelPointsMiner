@@ -4,6 +4,8 @@
 
 * Log into the console only.
 * Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
+* Logs from `org.kitteh.irc` will only be logged if the level is WARN or higher.
+* Logs from `io.netty` will only be logged if the level is WARN or higher.
 * All the other logs are logged if they have INFO level or higher.
 
 [source,log]
@@ -30,6 +32,8 @@
 * One file represents a day.
 * Only the last 10 logs will be kept.
 * Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
+* Logs from `org.kitteh.irc` will only be logged if the level is WARN or higher.
+* Logs from `io.netty` will only be logged if the level is WARN or higher.
 * All the other logs are logged if they have INFO level or higher.
 
 Format of the logs is the same as <<console_only,console_only.xml>>.
