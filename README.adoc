@@ -263,7 +263,7 @@ The table below will list their `type` to be used in the JSON configuration as w
 |percentage
 |Place the bet after `percent`% of the original timer elapsed.
 |Prediction stat date + `precent` * time window.
-|* percent: The percentage of the timer, as a decimal value, between 0 and 1.
+|* percent: The percentage of the timer, as a decimal value, between `0` and `1`.
 |===
 
 ==== Outcome pickers [[outcome_picker]]
@@ -299,6 +299,18 @@ This is the same as "the outcome with lower odds".
 
 This is the same as "the outcome with higher odds".
 |
+
+|smart
+|Choose the outcome with the most users.
+However, if the two outcomes have a user count similar, choose the outcome with the least points (higher odds).
+|If the difference of the user percentages is less than `percentageGap`% then choose the outcome with lower points, otherwise the one with most users.
+| * percentageGap: The percent gap of the user count, as decimal, between `0` and `1`.
+
+(i.e. Setting this to `0.1`, will mean that the condition switches states when the difference between sides is `10%`, so `45%` of the users on one side and `55%` on the other)
+
+Setting this to 0 will have the same effect as `leastPoints`.
+
+Setting this to 1 will have the same effect as `mostUsers`.
 |===
 
 ==== Amount calculators [[amount_calculator]]
@@ -322,7 +334,7 @@ The table below will list their `type` to be used in the JSON configuration as w
 |Place a percentage of your points (with a limit).
 |Place `percentage`% of your current points.
 If this values goes over `max` then `max` points will be placed instead.
-|* percentage: Percentage of your owned points to place, as a decimal value, between 0 and 1.
+|* percentage: Percentage of your owned points to place, as a decimal value, between `0` and `1`.
 
 * max: Maximum number of points.
 |===
