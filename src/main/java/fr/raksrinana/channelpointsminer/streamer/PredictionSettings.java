@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode
 @ToString
 public class PredictionSettings{
-	@JsonProperty("delay")
+	@JsonProperty("delayCalculator")
 	@NotNull
 	@Builder.Default
 	private DelayCalculator delayCalculator = FromEndDelay.builder().seconds(10).build();
@@ -31,7 +31,7 @@ public class PredictionSettings{
 	@NotNull
 	@Builder.Default
 	private OutcomePicker outcomePicker = MostUsersOutcomePicker.builder().build();
-	@JsonProperty("amount")
+	@JsonProperty("amountCalculator")
 	@NotNull
 	@Builder.Default
 	private AmountCalculator amountCalculator = PercentageAmount.builder().percentage(.2F).max(50_000).build();

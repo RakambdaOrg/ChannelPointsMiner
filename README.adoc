@@ -165,7 +165,7 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 If this threshold is not reached, no bet is placed.
 |0
 
-|delay
+|delayCalculator
 |How to calculate when to place the bet (see <<prediction_delay,prediction delay>>).
 |fromEnd(10)
 
@@ -173,7 +173,7 @@ If this threshold is not reached, no bet is placed.
 |How to choose what outcome (side / color) to place the bet on (see <<outcome_picker,outcome pickers>>).
 |mostUsers
 
-|amount
+|amountCalculator
 |How to calculate the amount to the bet (see <<amount_calculator,amount calculators>>).
 |percentage(percentage: 20, max: 50000)
 |===

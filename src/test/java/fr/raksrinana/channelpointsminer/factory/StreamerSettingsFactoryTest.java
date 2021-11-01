@@ -1,6 +1,7 @@
 package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.config.Configuration;
+import fr.raksrinana.twitchminer.prediction.bet.amount.ConstantAmount;
 import fr.raksrinana.twitchminer.prediction.delay.FromStartDelay;
 import fr.raksrinana.twitchminer.priority.*;
 import fr.raksrinana.twitchminer.streamer.PredictionSettings;
@@ -128,6 +129,7 @@ class StreamerSettingsFactoryTest{
 				.predictions(PredictionSettings.builder()
 						.minimumPointsRequired(25)
 						.delayCalculator(FromStartDelay.builder().seconds(60).build())
+						.amountCalculator(ConstantAmount.builder().amount(20).build())
 						.build())
 				.build();
 		

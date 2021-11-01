@@ -25,7 +25,7 @@ public class MessageHandlerFactory{
 		return new FollowRaidHandler(miner);
 	}
 	
-	public static MessageHandler createPredictionsHandler(@NotNull IMiner miner, BetPlacer betPlacer){
+	public static MessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer){
 		return new PredictionsHandler(miner, betPlacer);
 	}
 }

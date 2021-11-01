@@ -35,9 +35,13 @@
   ],
   "predictions": {
     "minimumPointsRequired": 25,
-    "delay": {
+    "delayCalculator": {
       "type": "fromStart",
       "seconds": 60
+    },
+    "amountCalculator": {
+      "type": "constant",
+      "amount": 20
     }
   }
 }
