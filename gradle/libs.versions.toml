@@ -14,6 +14,7 @@ assertj-version = "3.21.0"
 mockito-version = "4.0.0"
 awaitility-version = "4.1.1"
 json-unit-version = "2.28.0"
+kitteh-irc-version = "8.0.0"
 
 shadow-version = "7.1.0"
 names-version = "0.39.0"
@@ -35,6 +36,8 @@ httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version
 lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
 websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version" }
+kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitteh-irc-version" }
+
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
 junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-version" }

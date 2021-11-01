@@ -1,8 +1,8 @@
 package fr.raksrinana.twitchminer.factory;
 
 import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.miner.priority.*;
-import fr.raksrinana.twitchminer.miner.streamer.StreamerSettings;
+import fr.raksrinana.twitchminer.priority.*;
+import fr.raksrinana.twitchminer.streamer.StreamerSettings;
 import fr.raksrinana.twitchminer.tests.TestUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -107,6 +107,9 @@ class StreamerSettingsFactoryTest{
 		priorities.add(WatchStreakPriority.builder()
 				.score(80)
 				.build());
+		priorities.add(DropsPriority.builder()
+				.score(90)
+				.build());
 		
 		when(configuration.getDefaultStreamerSettings()).thenReturn(StreamerSettings.builder()
 				.priorities(List.of(ConstantPriority.builder()
@@ -118,6 +121,7 @@ class StreamerSettingsFactoryTest{
 				.makePredictions(true)
 				.followRaid(true)
 				.participateCampaigns(true)
+				.joinIrc(true)
 				.priorities(priorities)
 				.build();
 		

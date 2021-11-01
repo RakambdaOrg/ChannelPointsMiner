@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.httpclient)
     implementation(libs.lang3)
     implementation(libs.websocket)
+    implementation(libs.kittehIrc)
 
     compileOnly(libs.jetbrainsAnnotations)
 

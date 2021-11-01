@@ -1,7 +1,7 @@
 package fr.raksrinana.twitchminer.log;
 
 import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.twitchminer.miner.streamer.Streamer;
+import fr.raksrinana.twitchminer.streamer.Streamer;
 import org.apache.logging.log4j.CloseableThreadContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
