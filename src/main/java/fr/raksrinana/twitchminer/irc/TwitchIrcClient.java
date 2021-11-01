@@ -28,6 +28,18 @@ public class TwitchIrcClient implements AutoCloseable{
 		client.addChannel(ircChannelName);
 	}
 	
+	public void leave(@NotNull String channel){
+		if(Objects.isNull(ircClient)){
+			log.debug("Didn't leave irc channel #{channel} as no connection has been made");
+			return;
+		}
+		
+		var ircChannelName = "#%s".formatted(channel);
+		
+		log.info("Leaving IRC channel {}", ircChannelName);
+		ircClient.removeChannel(ircChannelName);
+	}
+	
 	private synchronized Client getIrcClient(){
 		if(Objects.isNull(ircClient)){
 			log.info("Creating new Twitch IRC client");
@@ -42,18 +54,6 @@ public class TwitchIrcClient implements AutoCloseable{
 		}
 		
 		return ircClient;
-	}
-	
-	public void leave(@NotNull String channel){
-		if(Objects.isNull(ircClient)){
-			log.debug("Didn't leave irc channel #{channel} as no connection has been made");
-			return;
-		}
-		
-		var ircChannelName = "#%s".formatted(channel);
-		
-		log.info("Leaving IRC channel {}", ircChannelName);
-		ircClient.removeChannel(ircChannelName);
 	}
 	
 	public void close(){

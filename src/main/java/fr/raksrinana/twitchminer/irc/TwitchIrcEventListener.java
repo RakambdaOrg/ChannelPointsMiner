@@ -3,8 +3,7 @@ package fr.raksrinana.twitchminer.irc;
 import lombok.extern.log4j.Log4j2;
 import net.engio.mbassy.listener.Handler;
 import org.jetbrains.annotations.NotNull;
-import org.kitteh.irc.client.library.event.channel.ChannelJoinEvent;
-import org.kitteh.irc.client.library.event.channel.ChannelPartEvent;
+import org.kitteh.irc.client.library.event.channel.RequestedChannelJoinCompleteEvent;
 import org.kitteh.irc.client.library.event.client.ClientNegotiationCompleteEvent;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
 
@@ -27,12 +26,7 @@ public class TwitchIrcEventListener{
 	}
 	
 	@Handler
-	public void onChannelJoinEvent(@NotNull ChannelJoinEvent event){
+	public void onChannelJoinEvent(@NotNull RequestedChannelJoinCompleteEvent event){
 		log.info("Joined IRC channel {}", event.getChannel().getName());
-	}
-	
-	@Handler
-	public void onChannelPartEvent(@NotNull ChannelPartEvent event){
-		log.info("Left IRC channel {}", event.getChannel().getName());
 	}
 }
