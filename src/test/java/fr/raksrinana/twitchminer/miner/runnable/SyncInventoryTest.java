@@ -6,6 +6,7 @@ import fr.raksrinana.twitchminer.api.gql.data.inventory.InventoryData;
 import fr.raksrinana.twitchminer.api.gql.data.types.*;
 import fr.raksrinana.twitchminer.miner.IMiner;
 import fr.raksrinana.twitchminer.miner.MinerData;
+import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,17 +45,23 @@ class SyncInventoryTest{
 	private TimeBasedDrop timeBasedDrop;
 	@Mock
 	private TimeBasedDropSelfEdge timeBasedDropSelfEdge;
+	@Mock
+	private Streamer streamer;
 	
 	@BeforeEach
 	void setUp(){
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
+		lenient().when(miner.getStreamers()).thenReturn(List.of(streamer));
 		lenient().when(miner.getMinerData()).thenReturn(minerData);
+		
 		lenient().when(response.getData()).thenReturn(inventoryData);
 		lenient().when(inventoryData.getCurrentUser()).thenReturn(user);
 		lenient().when(user.getInventory()).thenReturn(inventory);
 		lenient().when(inventory.getDropCampaignsInProgress()).thenReturn(List.of(dropCampaign));
 		lenient().when(dropCampaign.getTimeBasedDrops()).thenReturn(List.of(timeBasedDrop));
 		lenient().when(timeBasedDrop.getSelf()).thenReturn(timeBasedDropSelfEdge);
+		
+		lenient().when(streamer.isParticipateCampaigns()).thenReturn(true);
 		
 		lenient().when(timeBasedDropSelfEdge.isClaimed()).thenReturn(false);
 		lenient().when(timeBasedDropSelfEdge.getDropInstanceId()).thenReturn(DROP_ID);
@@ -148,6 +155,26 @@ class SyncInventoryTest{
 	@Test
 	void updateInventoryWithException(){
 		when(gqlApi.inventory()).thenThrow(new RuntimeException("For tests"));
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(minerData, never()).setInventory(any());
+		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+	}
+	
+	@Test
+	void updateInventoryNoStreamers(){
+		when(miner.getStreamers()).thenReturn(List.of());
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(minerData, never()).setInventory(any());
+		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+	}
+	
+	@Test
+	void updateInventoryNoStreamersInCampaigns(){
+		when(streamer.isParticipateCampaigns()).thenReturn(false);
 		
 		assertDoesNotThrow(() -> tested.run());
 		

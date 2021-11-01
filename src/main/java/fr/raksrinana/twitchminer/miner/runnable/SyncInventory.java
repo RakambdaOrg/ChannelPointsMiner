@@ -6,6 +6,7 @@ import fr.raksrinana.twitchminer.api.gql.data.types.Inventory;
 import fr.raksrinana.twitchminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.twitchminer.api.gql.data.types.TimeBasedDropSelfEdge;
 import fr.raksrinana.twitchminer.miner.IMiner;
+import fr.raksrinana.twitchminer.miner.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,10 @@ public class SyncInventory implements Runnable{
 	
 	@Override
 	public void run(){
+		if(!needUpdate()){
+			log.trace("Skipped inventory syncing");
+			return;
+		}
 		log.debug("Syncing inventory");
 		try{
 			var inventory = miner.getGqlApi().inventory()
@@ -35,6 +40,10 @@ public class SyncInventory implements Runnable{
 		catch(Exception e){
 			log.error("Failed to sync inventory", e);
 		}
+	}
+	
+	private boolean needUpdate(){
+		return miner.getStreamers().stream().anyMatch(Streamer::isParticipateCampaigns);
 	}
 	
 	private void claimDrops(@NotNull InventoryData inventory){
