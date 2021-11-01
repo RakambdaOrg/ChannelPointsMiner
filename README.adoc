@@ -10,7 +10,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Get the watch streak points by watching streams regularly.
 * Claim bonus points when they are available.
 * Follow raids.
-* Participate and claim link::https://www.twitch.tv/drops/campaigns[campaigns]
+* Participate and claim link::https://www.twitch.tv/drops/campaigns[campaigns].
 
 Limits:
 
@@ -134,11 +134,11 @@ An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main
 |Name |Description |Default value
 
 |makePredictions
-|If set to true, predictions will be made for this streamer (#16)
+|If set to true, predictions will be made for this streamer (#16).
 |false
 
 |followRaid
-|If set to true, the miner raid will attend raids for extra points
+|If set to true, the miner raid will attend raids for extra points.
 |false
 
 |participateCampaigns
@@ -146,7 +146,7 @@ An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main
 |false
 
 |priorities
-|A list of conditions that if met will prioritize this streamer (see <<priorities,priorities>>)
+|A list of conditions that if met will prioritize this streamer (see <<priorities,priorities>>).
 |none
 |===
 
