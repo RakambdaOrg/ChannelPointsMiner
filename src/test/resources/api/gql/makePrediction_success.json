@@ -1,0 +1,13 @@
+{
+  "data": {
+    "makePrediction": {
+      "error": null,
+      "__typename": "MakePredictionPayload"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 127,
+    "operationName": "MakePrediction",
+    "requestID": "request-id"
+  }
+}

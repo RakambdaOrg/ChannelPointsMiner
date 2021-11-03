@@ -2,6 +2,9 @@ package fr.raksrinana.twitchminer.api.gql;
 
 import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
 import fr.raksrinana.twitchminer.api.gql.data.makeprediction.MakePredictionData;
+import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionError;
+import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionErrorCode;
+import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionPayload;
 import fr.raksrinana.twitchminer.api.passport.TwitchLogin;
 import fr.raksrinana.twitchminer.tests.UnirestMockExtension;
 import kong.unirest.MockClient;
@@ -40,21 +43,50 @@ class GQLApiMakePredictionTest{
 	}
 	
 	@Test
-	void nominalFollowRaid(MockClient unirest){
+	void nominalMakePrediction(MockClient unirest){
 		var expected = GQLResponse.<MakePredictionData> builder()
 				.extensions(Map.of(
-						"durationMilliseconds", 4,
-						"operationName", "JoinRaid",
+						"durationMilliseconds", 127,
+						"operationName", "MakePrediction",
 						"requestID", "request-id"
 				))
 				.data(MakePredictionData.builder()
+						.makePrediction(MakePredictionPayload.builder().build())
 						.build())
 				.build();
 		
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.body(VALID_QUERY.formatted(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID))
-				.thenReturn(getAllResourceContent("api/gql/makePrediction.json"))
+				.thenReturn(getAllResourceContent("api/gql/makePrediction_success.json"))
+				.withStatus(200);
+		
+		assertThat(tested.makePrediction(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID)).isPresent().get().isEqualTo(expected);
+		
+		unirest.verifyAll();
+	}
+	
+	@Test
+	void errorMakePrediction(MockClient unirest){
+		var expected = GQLResponse.<MakePredictionData> builder()
+				.extensions(Map.of(
+						"durationMilliseconds", 37,
+						"operationName", "MakePrediction",
+						"requestID", "request-id"
+				))
+				.data(MakePredictionData.builder()
+						.makePrediction(MakePredictionPayload.builder()
+								.error(MakePredictionError.builder()
+										.code(MakePredictionErrorCode.NOT_ENOUGH_POINTS)
+										.build())
+								.build())
+						.build())
+				.build();
+		
+		unirest.expect(POST, "https://gql.twitch.tv/gql")
+				.header("Authorization", "OAuth " + ACCESS_TOKEN)
+				.body(VALID_QUERY.formatted(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID))
+				.thenReturn(getAllResourceContent("api/gql/makePrediction_notEnoughPoints.json"))
 				.withStatus(200);
 		
 		assertThat(tested.makePrediction(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID)).isPresent().get().isEqualTo(expected);

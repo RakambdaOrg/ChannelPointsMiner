@@ -1,5 +1,9 @@
 package fr.raksrinana.twitchminer.prediction.bet;
 
+import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.makeprediction.MakePredictionData;
+import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionError;
+import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionPayload;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.twitchminer.factory.TransactionIdFactory;
 import fr.raksrinana.twitchminer.handler.data.Prediction;
@@ -37,8 +41,19 @@ public class BetPlacer{
 			
 			log.info("Placing bet of {} points on {} ({})", amount, outcome.getColor(), outcome.getTitle());
 			var result = miner.getGqlApi().makePrediction(event.getId(), outcome.getId(), amount, TransactionIdFactory.create());
+			if(result.isEmpty()){
+				log.error("Failed to place bet");
+				return;
+			}
 			
-			//TODO handle result
+			result.map(GQLResponse::getData)
+					.map(MakePredictionData::getMakePrediction)
+					.map(MakePredictionPayload::getError)
+					.map(MakePredictionError::getCode)
+					.ifPresentOrElse(
+							code -> log.error("Failled to place bet: {}", code),
+							() -> log.info("Bet placed successfully")
+					);
 		}
 		catch(BetPlacementException e){
 			log.error("Failed to place bet", e);

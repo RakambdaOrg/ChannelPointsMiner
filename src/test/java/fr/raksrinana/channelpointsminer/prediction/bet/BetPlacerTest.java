@@ -1,6 +1,9 @@
 package fr.raksrinana.twitchminer.prediction.bet;
 
 import fr.raksrinana.twitchminer.api.gql.GQLApi;
+import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
+import fr.raksrinana.twitchminer.api.gql.data.makeprediction.MakePredictionData;
+import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionPayload;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Outcome;
@@ -18,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
@@ -51,6 +55,12 @@ class BetPlacerTest{
 	private AmountCalculator amountCalculator;
 	@Mock
 	private Outcome outcome;
+	@Mock
+	private GQLResponse<MakePredictionData> gqlResponse;
+	@Mock
+	private MakePredictionData makePredictionData;
+	@Mock
+	private MakePredictionPayload makePrediction;
 	
 	@BeforeEach
 	void setUp() throws BetPlacementException{
@@ -70,6 +80,10 @@ class BetPlacerTest{
 		
 		lenient().when(outcomePicker.chooseOutcome(prediction)).thenReturn(outcome);
 		lenient().when(amountCalculator.calculateAmount(prediction, outcome)).thenReturn(AMOUNT);
+		
+		lenient().when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
+		lenient().when(gqlResponse.getData()).thenReturn(makePredictionData);
+		lenient().when(makePredictionData.getMakePrediction()).thenReturn(makePrediction);
 	}
 	
 	@Test
