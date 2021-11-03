@@ -12,8 +12,6 @@ jobs:
   publish:
     name: Publish on DockerHub
     runs-on: ubuntu-latest
-    needs: tests
-    if: github.event.pull_request.merged
     steps:
       - name: Checkout source
         uses: actions/checkout@v2.3.5
