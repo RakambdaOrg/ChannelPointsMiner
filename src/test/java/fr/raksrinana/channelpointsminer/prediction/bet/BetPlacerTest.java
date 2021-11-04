@@ -9,6 +9,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.factory.TransactionIdFactory;
 import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
 import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
@@ -93,6 +94,7 @@ class BetPlacerTest{
 		assertDoesNotThrow(() -> tested.placeBet(prediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
+		verify(prediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
@@ -102,6 +104,7 @@ class BetPlacerTest{
 		assertDoesNotThrow(() -> tested.placeBet(prediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
+		verify(prediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
@@ -111,6 +114,7 @@ class BetPlacerTest{
 		assertDoesNotThrow(() -> tested.placeBet(prediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
+		verify(prediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
@@ -120,6 +124,7 @@ class BetPlacerTest{
 		assertDoesNotThrow(() -> tested.placeBet(prediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
+		verify(prediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
@@ -130,6 +135,7 @@ class BetPlacerTest{
 			assertDoesNotThrow(() -> tested.placeBet(prediction));
 			
 			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
+			verify(prediction, never()).setState(any());
 		}
 	}
 }

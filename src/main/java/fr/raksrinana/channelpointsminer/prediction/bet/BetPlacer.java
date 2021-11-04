@@ -7,6 +7,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionPayload
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.factory.TransactionIdFactory;
 import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class BetPlacer{
 		try(var ignored = LogContext.empty().withEventId(event.getId())){
 			if(event.getStatus() != EventStatus.ACTIVE){
 				log.warn("Cannot place bet anymore, current status is {}", event.getStatus());
+				prediction.setState(PredictionState.BET_ERROR);
 				return;
 			}
 			
@@ -36,6 +38,7 @@ public class BetPlacer{
 			var amount = amountCalculator.calculateAmount(prediction, outcome);
 			if(amount <= 10){
 				log.warn("Cannot place a bet with less than {} points (was {})", MINIMUM_BET_AMOUNT, amount);
+				prediction.setState(PredictionState.BET_ERROR);
 				return;
 			}
 			
@@ -43,6 +46,7 @@ public class BetPlacer{
 			var result = miner.getGqlApi().makePrediction(event.getId(), outcome.getId(), amount, TransactionIdFactory.create());
 			if(result.isEmpty()){
 				log.error("Failed to place bet");
+				prediction.setState(PredictionState.BET_ERROR);
 				return;
 			}
 			
@@ -50,13 +54,14 @@ public class BetPlacer{
 					.map(MakePredictionData::getMakePrediction)
 					.map(MakePredictionPayload::getError)
 					.map(MakePredictionError::getCode)
-					.ifPresentOrElse(
-							code -> log.error("Failled to place bet: {}", code),
-							() -> log.info("Bet placed successfully")
-					);
+					.ifPresent(code -> {
+						log.error("Failed to place bet: {}", code);
+						prediction.setState(PredictionState.BET_ERROR);
+					});
 		}
 		catch(fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException e){
 			log.error("Failed to place bet", e);
+			prediction.setState(PredictionState.BET_ERROR);
 		}
 	}
 }

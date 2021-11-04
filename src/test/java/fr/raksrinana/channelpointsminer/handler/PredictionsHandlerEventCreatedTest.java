@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
@@ -149,7 +150,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(prediction).isEqualTo(Prediction.builder()
 					.event(event)
 					.streamer(streamer)
-					.scheduled(true)
+					.state(PredictionState.SCHEDULED)
 					.lastUpdate(EVENT_DATE)
 					.build());
 		}

@@ -22,5 +22,6 @@ public class Prediction{
 	@NotNull
 	private ZonedDateTime lastUpdate;
 	@Setter
-	private boolean scheduled = false;
+	@Builder.Default
+	private PredictionState state = PredictionState.CREATED;
 }

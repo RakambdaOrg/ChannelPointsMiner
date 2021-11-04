@@ -2,11 +2,14 @@ package fr.raksrinana.channelpointsminer.handler;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.message.EventCreated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionResult;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
@@ -17,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -52,12 +56,12 @@ public class PredictionsHandler extends HandlerAdapter{
 			}
 			
 			var prediction = predictions.computeIfAbsent(event.getId(), key -> createPrediction(streamer, event));
-			if(prediction.isScheduled()){
+			if(prediction.getState() != PredictionState.CREATED){
 				log.debug("Prediction has already been placed");
 				return;
 			}
 			
-			prediction.setScheduled(true);
+			prediction.setState(PredictionState.SCHEDULING);
 			schedulePrediction(streamer, prediction);
 		}
 	}
@@ -81,6 +85,24 @@ public class PredictionsHandler extends HandlerAdapter{
 			prediction.setLastUpdate(eventDate);
 			prediction.setEvent(event);
 		}
+	}
+	
+	@Override
+	public void onPredictionMade(@NotNull Topic topic, @NotNull PredictionMade message){
+		var eventId = message.getData().getPrediction().getEventId();
+		try(var ignored = LogContext.empty().withEventId(eventId)){
+			log.info("Bet placed successfully");
+			Optional.ofNullable(predictions.get(eventId))
+					.ifPresentOrElse(
+							prediction -> prediction.setState(PredictionState.PLACED),
+							() -> log.warn("Bet was placed on an unknown prediction. Was it made manually?")
+					);
+		}
+	}
+	
+	@Override
+	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){
+		super.onPredictionResult(topic, message); //TODO
 	}
 	
 	private boolean hasEnoughPoints(@NotNull Streamer streamer){
@@ -123,5 +145,6 @@ public class PredictionsHandler extends HandlerAdapter{
 		
 		log.info("Will place bet after {} seconds", secondsDelay);
 		miner.schedule(() -> betPlacer.placeBet(prediction), secondsDelay, TimeUnit.SECONDS);
+		prediction.setState(PredictionState.SCHEDULED);
 	}
 }
