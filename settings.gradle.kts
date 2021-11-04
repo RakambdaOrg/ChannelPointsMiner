@@ -1,3 +1,3 @@
-rootProject.name = "TwitchMiner"
+rootProject.name = "ChannelPointsMiner"
 
 enableFeaturePreview("VERSION_CATALOGS")

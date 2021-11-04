@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "fr.raksrinana"
-description = "Twitch miner"
+description = "Channel points miner"
 
 dependencies {
     implementation(libs.slf4j)
@@ -110,7 +110,7 @@ jib {
         }
     }
     to {
-        image = "mrcraftcod/twitchminer"
+        image = "mrcraftcod/channel-points-miner"
         auth {
             username = project.findProperty("dockerUsername").toString()
             password = project.findProperty("dockerPassword").toString()

@@ -1,4 +1,4 @@
-open module fr.raksrinana.twitchminer {
+open module fr.raksrinana.channelpointsminer {
 	requires org.apache.commons.lang3;
 	requires unirest.java;
 	requires unirest.objectmapper.jackson;

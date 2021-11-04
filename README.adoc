@@ -1,7 +1,7 @@
-= Twitch Miner
+= Channel Points Miner
 
-image:https://codecov.io/gh/RakSrinaNa/TwitchMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/TwitchMiner",window="_blank",align="center"]
-image:https://img.shields.io/docker/pulls/mrcraftcod/twitchminer.svg[link="https://hub.docker.com/r/mrcraftcod/twitchminer",window="_blank",align="center"]
+image:https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner",window="_blank",align="center"]
+image:https://img.shields.io/docker/pulls/mrcraftcod/channel-points-miner.svg[link="https://hub.docker.com/r/mrcraftcod/channel-points-miner",window="_blank",align="center"]
 
 The main objective of this miner is to acquire Twitch channel points automatically.
 Other forms of point, like those provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
@@ -36,16 +36,16 @@ WARNING: This is a **WIP**!
 
 Java 17+ is required.
 
-1. Clone this repository `git clone git@github.com:RakSrinaNa/TwitchMiner.git`.
-2. Get into the cloned directory `cd TwitchMiner`.
+1. Clone this repository `git clone git@github.com:RakSrinaNa/ChannelPointsMiner.git`.
+2. Get into the cloned directory `cd ChannelPointsMiner`.
 3. Build the jar `./gradlew build`
 4. Run
-* Default: `java -jar build/libs/TwitchMiner-shaded.jar --settings config.json`
-* With your own <<logs,logger>>: `java -Dlog4j.configurationFile=log4j2.xml -jar build/libs/TwitchMiner-shaded.jar --settings config.json`
+* Default: `java -jar build/libs/ChannelPointsMiner-shaded.jar --settings config.json`
+* With your own <<logs,logger>>: `java -Dlog4j.configurationFile=log4j2.xml -jar build/libs/ChannelPointsMiner-shaded.jar --settings config.json`
 
 === Docker
 
-Image link:https://hub.docker.com/r/mrcraftcod/twitchminer[mrcraftcod/twitchminer,window="_blank"] can be used.
+Image link:https://hub.docker.com/r/mrcraftcod/channel-points-miner[mrcraftcod/channel-points-miner,window="_blank"] can be used.
 
 Here's an example dockerfile:
 
@@ -55,7 +55,7 @@ version: "3.9"
 
 services:
   miner:
-    image: mrcraftcod/twitchminer
+    image: mrcraftcod/channel-points-miner:latest
     command: "--settings /usr/src/app/config.json"
     volumes:
       - ./authentication:/usr/src/app/authentication
@@ -71,7 +71,7 @@ version: "3.9"
 
 services:
   miner:
-    image: mrcraftcod/twitchminer
+    image: mrcraftcod/channel-points-miner:latest
     command: "--settings /usr/src/app/config.json"
     env:
       JDK_JAVA_OPTIONS: "-Dlog4j.configurationFile=/usr/src/app/log4j2.xml"
@@ -91,7 +91,7 @@ services:
 
 === Global settings [[global_settings]]
 
-An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main/src/test/resources/config/config.json[here,window="_blank"].
+An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config/config.json[here,window="_blank"].
 
 [cols="1,3,1"]
 |===
@@ -128,7 +128,7 @@ Streamer settings define settings that will override the <<global_settings__defa
 
 Each streamer setting will be defined in a json file named with the username of the streamer (eg: `myusername.json`) and placed in the <<global_settings__streamer_config_directory,streamerConfigDirectory>> directory.
 
-An example can be found link:https://github.com/RakSrinaNa/TwitchMiner/blob/main/src/test/resources/factory/fullyOverridden.json[here,window="_blank"].
+An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/factory/fullyOverridden.json[here,window="_blank"].
 
 [cols="1,3,1"]
 |===
