@@ -1,9 +1,8 @@
-package fr.raksrinana.channelpointsminer.api.ws.data.message.predictionmade;
+package fr.raksrinana.channelpointsminer.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.channelpointsminer.util.json.ISO8601ZonedDateTimeDeserializer;
-import fr.raksrinana.channelpointsminer.util.json.UnknownDeserializer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,8 +41,8 @@ public class Prediction{
 	@NotNull
 	private String userId;
 	@JsonProperty("result")
-	@JsonDeserialize(using = UnknownDeserializer.class)
-	private Object result;
+	@Nullable
+	private PredictionResultPayload result;
 	@JsonProperty("user_display_name")
 	@Nullable
 	private String userDisplayName;
