@@ -1,7 +1,7 @@
-package fr.raksrinana.twitchminer.factory;
+package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.prediction.bet.BetPlacer;
+import fr.raksrinana.channelpointsminer.miner.IMiner;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.factory;
+package fr.raksrinana.channelpointsminer.factory;
 
 import org.junit.jupiter.api.RepeatedTest;
 import static org.assertj.core.api.Assertions.assertThat;

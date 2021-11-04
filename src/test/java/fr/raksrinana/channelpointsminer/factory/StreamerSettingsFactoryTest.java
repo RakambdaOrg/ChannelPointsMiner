@@ -1,12 +1,12 @@
-package fr.raksrinana.twitchminer.factory;
+package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.twitchminer.config.Configuration;
-import fr.raksrinana.twitchminer.prediction.bet.amount.ConstantAmount;
-import fr.raksrinana.twitchminer.prediction.delay.FromStartDelay;
-import fr.raksrinana.twitchminer.priority.*;
-import fr.raksrinana.twitchminer.streamer.PredictionSettings;
-import fr.raksrinana.twitchminer.streamer.StreamerSettings;
-import fr.raksrinana.twitchminer.tests.TestUtils;
+import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.ConstantAmount;
+import fr.raksrinana.channelpointsminer.prediction.delay.FromStartDelay;
+import fr.raksrinana.channelpointsminer.priority.*;
+import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
+import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
+import fr.raksrinana.channelpointsminer.tests.TestUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

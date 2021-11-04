@@ -1,7 +1,7 @@
-package fr.raksrinana.twitchminer.api.gql.data.makeprediction;
+package fr.raksrinana.channelpointsminer.api.gql.data.makeprediction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionPayload;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionPayload;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 

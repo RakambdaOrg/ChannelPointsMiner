@@ -1,9 +1,9 @@
-package fr.raksrinana.twitchminer.prediction.bet.outcome;
+package fr.raksrinana.channelpointsminer.prediction.bet.outcome;
 
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Outcome;
-import fr.raksrinana.twitchminer.handler.data.Prediction;
-import fr.raksrinana.twitchminer.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,7 +1,7 @@
-package fr.raksrinana.twitchminer.handler.data;
+package fr.raksrinana.channelpointsminer.handler.data;
 
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
-import fr.raksrinana.twitchminer.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import java.time.ZonedDateTime;

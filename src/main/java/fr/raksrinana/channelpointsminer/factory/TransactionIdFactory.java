@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.factory;
+package fr.raksrinana.channelpointsminer.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

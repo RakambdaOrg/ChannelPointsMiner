@@ -1,14 +1,14 @@
-package fr.raksrinana.twitchminer.streamer;
+package fr.raksrinana.channelpointsminer.streamer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.raksrinana.twitchminer.prediction.bet.amount.AmountCalculator;
-import fr.raksrinana.twitchminer.prediction.bet.amount.PercentageAmount;
-import fr.raksrinana.twitchminer.prediction.bet.outcome.MostUsersOutcomePicker;
-import fr.raksrinana.twitchminer.prediction.bet.outcome.OutcomePicker;
-import fr.raksrinana.twitchminer.prediction.delay.DelayCalculator;
-import fr.raksrinana.twitchminer.prediction.delay.FromEndDelay;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.PercentageAmount;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.MostUsersOutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
+import fr.raksrinana.channelpointsminer.prediction.delay.FromEndDelay;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 

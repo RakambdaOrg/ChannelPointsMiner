@@ -1,7 +1,7 @@
-package fr.raksrinana.twitchminer.prediction.bet.amount;
+package fr.raksrinana.channelpointsminer.prediction.bet.amount;
 
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Outcome;
-import fr.raksrinana.twitchminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.handler.data.Prediction;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;

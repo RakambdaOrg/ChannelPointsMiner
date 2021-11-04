@@ -1,7 +1,7 @@
-package fr.raksrinana.twitchminer.prediction.delay;
+package fr.raksrinana.channelpointsminer.prediction.delay;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

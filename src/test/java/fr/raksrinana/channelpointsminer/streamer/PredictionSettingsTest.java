@@ -1,8 +1,8 @@
-package fr.raksrinana.twitchminer.streamer;
+package fr.raksrinana.channelpointsminer.streamer;
 
-import fr.raksrinana.twitchminer.prediction.bet.amount.AmountCalculator;
-import fr.raksrinana.twitchminer.prediction.bet.outcome.OutcomePicker;
-import fr.raksrinana.twitchminer.prediction.delay.DelayCalculator;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;

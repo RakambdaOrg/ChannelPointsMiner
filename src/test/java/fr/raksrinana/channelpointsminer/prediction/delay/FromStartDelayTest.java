@@ -1,6 +1,6 @@
-package fr.raksrinana.twitchminer.prediction.delay;
+package fr.raksrinana.channelpointsminer.prediction.delay;
 
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;

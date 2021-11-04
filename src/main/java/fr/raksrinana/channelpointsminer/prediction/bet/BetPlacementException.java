@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.prediction.bet;
+package fr.raksrinana.channelpointsminer.prediction.bet;
 
 import org.jetbrains.annotations.NotNull;
 

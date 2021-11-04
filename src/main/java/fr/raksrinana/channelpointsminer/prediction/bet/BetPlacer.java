@@ -1,14 +1,14 @@
-package fr.raksrinana.twitchminer.prediction.bet;
+package fr.raksrinana.channelpointsminer.prediction.bet;
 
-import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
-import fr.raksrinana.twitchminer.api.gql.data.makeprediction.MakePredictionData;
-import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionError;
-import fr.raksrinana.twitchminer.api.gql.data.types.MakePredictionPayload;
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.EventStatus;
-import fr.raksrinana.twitchminer.factory.TransactionIdFactory;
-import fr.raksrinana.twitchminer.handler.data.Prediction;
-import fr.raksrinana.twitchminer.log.LogContext;
-import fr.raksrinana.twitchminer.miner.IMiner;
+import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.api.gql.data.makeprediction.MakePredictionData;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionError;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionPayload;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
+import fr.raksrinana.channelpointsminer.factory.TransactionIdFactory;
+import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +55,7 @@ public class BetPlacer{
 							() -> log.info("Bet placed successfully")
 					);
 		}
-		catch(BetPlacementException e){
+		catch(fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException e){
 			log.error("Failed to place bet", e);
 		}
 	}

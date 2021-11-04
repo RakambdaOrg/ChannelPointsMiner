@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.api.gql.data.makeprediction;
+package fr.raksrinana.channelpointsminer.api.gql.data.makeprediction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

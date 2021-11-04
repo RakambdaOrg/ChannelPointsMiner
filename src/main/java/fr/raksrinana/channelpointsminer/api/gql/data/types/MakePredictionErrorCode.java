@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.api.gql.data.types;
+package fr.raksrinana.channelpointsminer.api.gql.data.types;
 
 public enum MakePredictionErrorCode{
 	NOT_ENOUGH_POINTS,

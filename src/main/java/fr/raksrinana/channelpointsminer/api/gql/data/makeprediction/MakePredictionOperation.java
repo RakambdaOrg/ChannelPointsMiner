@@ -1,8 +1,8 @@
-package fr.raksrinana.twitchminer.api.gql.data.makeprediction;
+package fr.raksrinana.channelpointsminer.api.gql.data.makeprediction;
 
-import fr.raksrinana.twitchminer.api.gql.data.GQLOperation;
-import fr.raksrinana.twitchminer.api.gql.data.GQLResponse;
-import fr.raksrinana.twitchminer.api.gql.data.PersistedQueryExtension;
+import fr.raksrinana.channelpointsminer.api.gql.data.GQLOperation;
+import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.api.gql.data.PersistedQueryExtension;
 import kong.unirest.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,8 +1,11 @@
-package fr.raksrinana.twitchminer.factory;
+package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.twitchminer.handler.*;
-import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.prediction.bet.BetPlacer;
+import fr.raksrinana.channelpointsminer.handler.ClaimAvailableHandler;
+import fr.raksrinana.channelpointsminer.handler.FollowRaidHandler;
+import fr.raksrinana.channelpointsminer.handler.MessageHandler;
+import fr.raksrinana.channelpointsminer.handler.StreamStartEndHandler;
+import fr.raksrinana.channelpointsminer.miner.IMiner;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -10,7 +13,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class MessageHandlerFactory{
 	public static MessageHandler createLogger(@NotNull IMiner miner){
-		return new EventLoggerHandler(miner);
+		return new fr.raksrinana.channelpointsminer.handler.EventLoggerHandler(miner);
 	}
 	
 	public static MessageHandler createClaimAvailableHandler(@NotNull IMiner miner){
@@ -26,6 +29,6 @@ public class MessageHandlerFactory{
 	}
 	
 	public static MessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer){
-		return new PredictionsHandler(miner, betPlacer);
+		return new fr.raksrinana.channelpointsminer.handler.PredictionsHandler(miner, betPlacer);
 	}
 }

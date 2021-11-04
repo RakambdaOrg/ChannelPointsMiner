@@ -1,9 +1,9 @@
-package fr.raksrinana.twitchminer.prediction.bet.amount;
+package fr.raksrinana.channelpointsminer.prediction.bet.amount;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import fr.raksrinana.twitchminer.api.ws.data.message.subtype.Outcome;
-import fr.raksrinana.twitchminer.handler.data.Prediction;
-import fr.raksrinana.twitchminer.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

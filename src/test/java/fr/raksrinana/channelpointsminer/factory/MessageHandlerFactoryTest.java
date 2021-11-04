@@ -1,8 +1,8 @@
-package fr.raksrinana.twitchminer.factory;
+package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.twitchminer.handler.*;
-import fr.raksrinana.twitchminer.miner.IMiner;
-import fr.raksrinana.twitchminer.prediction.bet.BetPlacer;
+import fr.raksrinana.channelpointsminer.handler.*;
+import fr.raksrinana.channelpointsminer.miner.IMiner;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;

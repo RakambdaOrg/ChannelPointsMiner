@@ -1,4 +1,4 @@
-package fr.raksrinana.twitchminer.api.gql.data.types;
+package fr.raksrinana.channelpointsminer.api.gql.data.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;

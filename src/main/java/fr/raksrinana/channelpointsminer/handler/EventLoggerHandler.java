@@ -1,9 +1,9 @@
-package fr.raksrinana.twitchminer.handler;
+package fr.raksrinana.channelpointsminer.handler;
 
-import fr.raksrinana.twitchminer.api.ws.data.message.*;
-import fr.raksrinana.twitchminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.twitchminer.log.LogContext;
-import fr.raksrinana.twitchminer.miner.IMiner;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
+import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
