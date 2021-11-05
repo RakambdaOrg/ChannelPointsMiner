@@ -6,6 +6,8 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionResult;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
@@ -110,7 +112,22 @@ public class PredictionsHandler extends HandlerAdapter{
 	
 	@Override
 	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){
-		super.onPredictionResult(topic, message); //TODO
+		var predictionData = message.getData().getPrediction();
+		var eventId = predictionData.getEventId();
+		try(var ignored = LogContext.empty().withEventId(eventId)){
+			var result = Optional.ofNullable(predictionData.getResult());
+			var pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
+			var resultType = result.map(PredictionResultPayload::getType).orElse(PredictionResultType.UNKNOWN);
+			
+			Optional.ofNullable(placedPredictions.get(eventId))
+					.map(prediction -> pointsWon - prediction.getAmount())
+					.ifPresentOrElse(
+							gain -> log.info("Prediction result {}: {}", resultType, gain),
+							() -> log.info("Prediction result {}: unknown gain", resultType)
+					);
+			
+			placedPredictions.remove(eventId);
+		}
 	}
 	
 	private boolean hasEnoughPoints(@NotNull Streamer streamer){
