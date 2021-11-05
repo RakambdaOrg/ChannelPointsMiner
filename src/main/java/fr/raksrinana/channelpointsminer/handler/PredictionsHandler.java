@@ -8,6 +8,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
+import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.Prediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.log.LogContext;
@@ -33,6 +34,7 @@ public class PredictionsHandler extends HandlerAdapter{
 	private final BetPlacer betPlacer;
 	
 	private final Map<String, Prediction> predictions = new ConcurrentHashMap<>();
+	private final Map<String, PlacedPrediction> placedPredictions = new ConcurrentHashMap<>();
 	
 	@Override
 	public void onEventCreated(@NotNull Topic topic, @NotNull EventCreated message){
@@ -89,14 +91,20 @@ public class PredictionsHandler extends HandlerAdapter{
 	
 	@Override
 	public void onPredictionMade(@NotNull Topic topic, @NotNull PredictionMade message){
-		var eventId = message.getData().getPrediction().getEventId();
+		var predictionData = message.getData().getPrediction();
+		var eventId = predictionData.getEventId();
 		try(var ignored = LogContext.empty().withEventId(eventId)){
-			log.info("Bet placed successfully");
-			Optional.ofNullable(predictions.get(eventId))
-					.ifPresentOrElse(
-							prediction -> prediction.setState(PredictionState.PLACED),
-							() -> log.warn("Bet was placed on an unknown prediction. Was it made manually?")
-					);
+			var prediction = Optional.ofNullable(predictions.get(eventId))
+					.map(p -> {
+						p.setState(PredictionState.PLACED);
+						return p;
+					});
+			
+			placedPredictions.put(eventId, PlacedPrediction.builder()
+					.eventId(eventId)
+					.prediction(prediction.orElse(null))
+					.amount(predictionData.getPoints())
+					.build());
 		}
 	}
 	
