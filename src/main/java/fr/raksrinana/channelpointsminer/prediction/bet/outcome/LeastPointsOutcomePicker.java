@@ -16,7 +16,7 @@ import java.util.Comparator;
 @Builder
 @AllArgsConstructor
 @Log4j2
-public class LeastPointsOutcomePicker implements fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker{
+public class LeastPointsOutcomePicker implements OutcomePicker{
 	@Override
 	@NotNull
 	public Outcome chooseOutcome(@NotNull Prediction prediction) throws BetPlacementException{

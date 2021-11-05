@@ -9,9 +9,9 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 
 @JsonTypeInfo(use = NAME, property = "type")
 @JsonSubTypes(value = {
-		@JsonSubTypes.Type(value = fr.raksrinana.channelpointsminer.prediction.delay.FromEndDelay.class, name = "fromEnd"),
-		@JsonSubTypes.Type(value = fr.raksrinana.channelpointsminer.prediction.delay.FromStartDelay.class, name = "fromStart"),
-		@JsonSubTypes.Type(value = fr.raksrinana.channelpointsminer.prediction.delay.PercentageDelay.class, name = "percentage"),
+		@JsonSubTypes.Type(value = FromEndDelay.class, name = "fromEnd"),
+		@JsonSubTypes.Type(value = FromStartDelay.class, name = "fromStart"),
+		@JsonSubTypes.Type(value = PercentageDelay.class, name = "percentage"),
 })
 public interface DelayCalculator{
 	@NotNull
