@@ -95,7 +95,6 @@ class PredictionsHandlerEventCreatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
 		
-		verify(miner, never()).getStreamerById(any());
 		verify(miner, never()).schedule(any(), anyLong(), any());
 	}
 	

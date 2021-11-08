@@ -3,6 +3,8 @@ package fr.raksrinana.channelpointsminer.prediction.bet;
 import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.makeprediction.MakePredictionData;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionError;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionErrorCode;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionPayload;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
@@ -136,6 +138,36 @@ class BetPlacerTest{
 			
 			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
 			verify(prediction, never()).setState(any());
+		}
+	}
+	
+	@Test
+	void placeNoData(){
+		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
+			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+			
+			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID)).thenReturn(Optional.empty());
+			
+			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			
+			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
+			verify(prediction).setState(PredictionState.BET_ERROR);
+		}
+	}
+	
+	@Test
+	void placeError(){
+		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
+			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+			
+			when(makePrediction.getError()).thenReturn(MakePredictionError.builder()
+					.code(MakePredictionErrorCode.NOT_ENOUGH_POINTS)
+					.build());
+			
+			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			
+			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
+			verify(prediction).setState(PredictionState.BET_ERROR);
 		}
 	}
 }

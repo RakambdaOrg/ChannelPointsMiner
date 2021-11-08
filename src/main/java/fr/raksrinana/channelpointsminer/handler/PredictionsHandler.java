@@ -52,14 +52,14 @@ public class PredictionsHandler extends HandlerAdapter{
 	
 	@Override
 	public void onEventCreated(@NotNull Topic topic, @NotNull EventCreated message){
+		var streamerOptional = miner.getStreamerById(topic.getTarget());
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.empty().withEventId(event.getId())){
+		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(event.getId())){
 			if(event.getStatus() != EventStatus.ACTIVE){
 				log.debug("Event is not active");
 				return;
 			}
 			
-			var streamerOptional = miner.getStreamerById(topic.getTarget());
 			if(streamerOptional.isEmpty()){
 				log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
 				return;
@@ -84,8 +84,9 @@ public class PredictionsHandler extends HandlerAdapter{
 	
 	@Override
 	public void onEventUpdated(@NotNull Topic topic, @NotNull EventUpdated message){
+		var streamerOptional = miner.getStreamerById(topic.getTarget());
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.empty().withEventId(event.getId())){
+		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(event.getId())){
 			var prediction = predictions.get(event.getId());
 			if(Objects.isNull(prediction)){
 				log.debug("Event update on unknown prediction");
@@ -106,8 +107,9 @@ public class PredictionsHandler extends HandlerAdapter{
 	@Override
 	public void onPredictionMade(@NotNull Topic topic, @NotNull PredictionMade message){
 		var predictionData = message.getData().getPrediction();
+		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
 		var eventId = predictionData.getEventId();
-		try(var ignored = LogContext.empty().withEventId(eventId)){
+		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
 			var prediction = Optional.ofNullable(predictions.get(eventId))
 					.map(p -> {
 						p.setState(PredictionState.PLACED);
@@ -125,8 +127,9 @@ public class PredictionsHandler extends HandlerAdapter{
 	@Override
 	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){
 		var predictionData = message.getData().getPrediction();
+		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
 		var eventId = predictionData.getEventId();
-		try(var ignored = LogContext.empty().withEventId(eventId)){
+		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
 			var result = Optional.ofNullable(predictionData.getResult());
 			var pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
 			var resultType = result.map(PredictionResultPayload::getType).orElse(PredictionResultType.UNKNOWN);
