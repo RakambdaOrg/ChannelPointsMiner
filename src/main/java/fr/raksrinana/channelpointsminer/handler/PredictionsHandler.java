@@ -17,15 +17,19 @@ import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
+import org.jetbrains.annotations.VisibleForTesting;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import static lombok.AccessLevel.PROTECTED;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -35,7 +39,15 @@ public class PredictionsHandler extends HandlerAdapter{
 	private final IMiner miner;
 	private final BetPlacer betPlacer;
 	
+	@Getter(value = PROTECTED, onMethod_ = {
+			@TestOnly,
+			@VisibleForTesting
+	})
 	private final Map<String, Prediction> predictions = new ConcurrentHashMap<>();
+	@Getter(value = PROTECTED, onMethod_ = {
+			@TestOnly,
+			@VisibleForTesting
+	})
 	private final Map<String, PlacedPrediction> placedPredictions = new ConcurrentHashMap<>();
 	
 	@Override

@@ -13,8 +13,6 @@ import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
 import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -66,9 +65,6 @@ class PredictionsHandlerEventCreatedTest{
 	@Mock
 	private DelayCalculator delayCalculator;
 	
-	@Captor
-	private ArgumentCaptor<Prediction> predictionCaptor;
-	
 	@BeforeEach
 	void setUp(){
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
@@ -108,6 +104,7 @@ class PredictionsHandlerEventCreatedTest{
 		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+		assertThat(tested.getPredictions()).isEmpty();
 		
 		verify(miner, never()).schedule(any(), anyLong(), any());
 	}
@@ -117,6 +114,7 @@ class PredictionsHandlerEventCreatedTest{
 		when(streamer.getChannelPoints()).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+		assertThat(tested.getPredictions()).isEmpty();
 		
 		verify(miner, never()).schedule(any(), anyLong(), any());
 	}
@@ -126,6 +124,7 @@ class PredictionsHandlerEventCreatedTest{
 		when(streamer.getChannelPoints()).thenReturn(Optional.of(MINIMUM_REQUIRED - 1));
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+		assertThat(tested.getPredictions()).isEmpty();
 		
 		verify(miner, never()).schedule(any(), anyLong(), any());
 	}
@@ -141,18 +140,18 @@ class PredictionsHandlerEventCreatedTest{
 				return mock(ScheduledFuture.class);
 			});
 			
-			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
-			
-			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
-			verify(betPlacer).placeBet(predictionCaptor.capture());
-			
-			var prediction = predictionCaptor.getValue();
-			assertThat(prediction).isEqualTo(Prediction.builder()
+			var expectedPrediction = Prediction.builder()
 					.event(event)
 					.streamer(streamer)
 					.state(PredictionState.SCHEDULED)
 					.lastUpdate(EVENT_DATE)
-					.build());
+					.build();
+			
+			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
+			
+			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
+			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}
 	
@@ -164,6 +163,7 @@ class PredictionsHandlerEventCreatedTest{
 			lenient().when(delayCalculator.calculate(event)).thenReturn(EVENT_DATE);
 			
 			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(5L), eq(TimeUnit.SECONDS));
 		}
@@ -177,6 +177,7 @@ class PredictionsHandlerEventCreatedTest{
 			lenient().when(delayCalculator.calculate(event)).thenReturn(EVENT_DATE.plusSeconds(WINDOW_SECONDS));
 			
 			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(WINDOW_SECONDS - 60L - 5L), eq(TimeUnit.SECONDS));
 		}
@@ -189,6 +190,7 @@ class PredictionsHandlerEventCreatedTest{
 			
 			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
 			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+			assertThat(tested.getPredictions()).hasSize(1);
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
 		}

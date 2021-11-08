@@ -14,8 +14,6 @@ import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
 import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import static fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus.ACTIVE;
@@ -39,7 +38,6 @@ class PredictionsHandlerEventUpdatedTest{
 	private static final int WINDOW_SECONDS = 300;
 	private static final ZonedDateTime EVENT_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 0, 0, UTC);
 	private static final ZonedDateTime EVENT_UPDATE_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 30, 0, UTC);
-	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
 	private static final ZonedDateTime SCHEDULE_DATE = ZonedDateTime.of(2021, 10, 10, 12, 1, 0, 0, UTC);
 	
 	@InjectMocks
@@ -71,11 +69,6 @@ class PredictionsHandlerEventUpdatedTest{
 	private PredictionSettings predictionSettings;
 	@Mock
 	private DelayCalculator delayCalculator;
-	
-	@Captor
-	private ArgumentCaptor<Prediction> predictionCaptor;
-	
-	private Prediction capturedPrediction;
 	
 	@BeforeEach
 	void setUp(){
@@ -116,31 +109,7 @@ class PredictionsHandlerEventUpdatedTest{
 	@Test
 	void unknownEvent(){
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
-		
-		//Should verify nothing is done, but how?
-	}
-	
-	@Test
-	void unknownChannelPoints(){
-		createEvent();
-		
-		when(eventUpdatedData.getTimestamp()).thenReturn(EVENT_DATE.minusSeconds(30));
-		
-		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
-		
-		assertThat(capturedPrediction).isEqualTo(Prediction.builder()
-				.event(event)
-				.streamer(streamer)
-				.state(PredictionState.SCHEDULED)
-				.lastUpdate(EVENT_DATE)
-				.build());
-	}
-	
-	void createEvent(){
-		tested.handle(topic, eventCreated);
-		
-		verify(betPlacer).placeBet(predictionCaptor.capture());
-		capturedPrediction = predictionCaptor.getValue();
+		assertThat(tested.getPredictions()).isEmpty();
 	}
 	
 	@Test
@@ -149,28 +118,34 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
-		assertThat(capturedPrediction).isEqualTo(Prediction.builder()
+		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, Prediction.builder()
 				.event(event2)
 				.streamer(streamer)
 				.state(PredictionState.SCHEDULED)
 				.lastUpdate(EVENT_UPDATE_DATE)
-				.build());
+				.build()));
+	}
+	
+	private void createEvent(){
+		tested.getPredictions().put(EVENT_ID, createDefaultPrediction());
+	}
+	
+	private Prediction createDefaultPrediction(){
+		return Prediction.builder()
+				.event(event)
+				.streamer(streamer)
+				.state(PredictionState.SCHEDULED)
+				.lastUpdate(EVENT_DATE)
+				.build();
 	}
 	
 	@Test
-	void isUpdatedOnlyOnce(){
+	void eventIsNotTheLatest(){
 		createEvent();
 		
-		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
+		when(eventUpdatedData.getTimestamp()).thenReturn(EVENT_DATE.minusSeconds(30));
 		
-		when(eventUpdatedData.getTimestamp()).thenReturn(EVENT_DATE);
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
-		
-		assertThat(capturedPrediction).isEqualTo(Prediction.builder()
-				.event(event2)
-				.streamer(streamer)
-				.state(PredictionState.SCHEDULED)
-				.lastUpdate(EVENT_UPDATE_DATE)
-				.build());
+		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, createDefaultPrediction()));
 	}
 }
