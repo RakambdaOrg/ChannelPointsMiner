@@ -42,6 +42,9 @@
     "amountCalculator": {
       "type": "constant",
       "amount": 20
+    },
+    "outcomePicker": {
+      "type": "leastPoints"
     }
   }
 }

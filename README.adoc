@@ -171,7 +171,7 @@ If this threshold is not reached, no bet is placed.
 
 |outcomePicker
 |How to choose what outcome (side / color) to place the bet on (see <<outcome_picker,outcome pickers>>).
-|mostUsers
+|smart(0.2)
 
 |amountCalculator
 |How to calculate the amount to the bet (see <<amount_calculator,amount calculators>>).

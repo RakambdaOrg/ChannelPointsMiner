@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
 import fr.raksrinana.channelpointsminer.prediction.bet.amount.PercentageAmount;
-import fr.raksrinana.channelpointsminer.prediction.bet.outcome.MostUsersOutcomePicker;
 import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.SmartOutcomePicker;
 import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
 import fr.raksrinana.channelpointsminer.prediction.delay.FromEndDelay;
 import lombok.*;
@@ -30,7 +30,7 @@ public class PredictionSettings{
 	@JsonProperty("outcomePicker")
 	@NotNull
 	@Builder.Default
-	private OutcomePicker outcomePicker = MostUsersOutcomePicker.builder().build();
+	private OutcomePicker outcomePicker = SmartOutcomePicker.builder().percentageGap(.2f).build();
 	@JsonProperty("amountCalculator")
 	@NotNull
 	@Builder.Default
