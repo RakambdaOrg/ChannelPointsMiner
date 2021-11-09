@@ -110,6 +110,9 @@ public class PredictionsHandler extends HandlerAdapter{
 		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
 		var eventId = predictionData.getEventId();
 		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
+			var placedPoints = predictionData.getPoints();
+			log.info("Prediction made, placed {} points", placedPoints);
+			
 			var prediction = Optional.ofNullable(predictions.get(eventId))
 					.map(p -> {
 						p.setState(PredictionState.PLACED);
@@ -119,7 +122,7 @@ public class PredictionsHandler extends HandlerAdapter{
 			placedPredictions.put(eventId, PlacedPrediction.builder()
 					.eventId(eventId)
 					.prediction(prediction.orElse(null))
-					.amount(predictionData.getPoints())
+					.amount(placedPoints)
 					.build());
 		}
 	}
