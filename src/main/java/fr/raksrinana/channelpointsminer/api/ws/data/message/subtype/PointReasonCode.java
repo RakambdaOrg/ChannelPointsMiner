@@ -5,5 +5,6 @@ public enum PointReasonCode{
 	WATCH,
 	RAID,
 	WATCH_STREAK,
-	PREDICTION
+	PREDICTION,
+	REFUND
 }
