@@ -79,11 +79,15 @@ class PredictionsHandlerPredictionResultTest{
 	
 	@Test
 	void removedPredictionPlaced(){
+		var prediction = mock(fr.raksrinana.channelpointsminer.handler.data.Prediction.class);
 		var predictionPlaced = mock(PlacedPrediction.class);
 		when(predictionPlaced.getAmount()).thenReturn(AMOUNT);
+		
+		tested.getPredictions().put(EVENT_ID, prediction);
 		tested.getPlacedPredictions().put(EVENT_ID, predictionPlaced);
 		
 		assertDoesNotThrow(() -> tested.handle(topic, predictionResult));
 		assertThat(tested.getPlacedPredictions()).isEmpty();
+		assertThat(tested.getPredictions()).isEmpty();
 	}
 }

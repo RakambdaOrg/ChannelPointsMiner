@@ -149,6 +149,7 @@ public class PredictionsHandler extends HandlerAdapter{
 							() -> log.info("Prediction result {}: unknown gain", resultType)
 					);
 			
+			predictions.remove(eventId);
 			placedPredictions.remove(eventId);
 		}
 	}
