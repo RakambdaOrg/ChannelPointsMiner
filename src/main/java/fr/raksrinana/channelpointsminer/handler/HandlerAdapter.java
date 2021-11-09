@@ -50,6 +50,8 @@ public abstract class HandlerAdapter implements MessageHandler{
 	
 	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){}
 	
+	public void onPredictionUpdated(@NotNull Topic topic, @NotNull PredictionUpdated message){}
+	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull Message message){
 		for(var clazz : ClassWalker.range(message.getClass(), Message.class)){

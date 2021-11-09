@@ -1,9 +1,6 @@
 package fr.raksrinana.channelpointsminer.handler;
 
-import fr.raksrinana.channelpointsminer.api.ws.data.message.EventCreated;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionResult;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
@@ -106,7 +103,15 @@ public class PredictionsHandler extends HandlerAdapter{
 	
 	@Override
 	public void onPredictionMade(@NotNull Topic topic, @NotNull PredictionMade message){
-		var predictionData = message.getData().getPrediction();
+		predictionPlaced(message.getData().getPrediction());
+	}
+	
+	@Override
+	public void onPredictionUpdated(@NotNull Topic topic, @NotNull PredictionUpdated message){
+		predictionPlaced(message.getData().getPrediction());
+	}
+	
+	private void predictionPlaced(@NotNull fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction predictionData){
 		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
 		var eventId = predictionData.getEventId();
 		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
