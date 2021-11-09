@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
+import fr.raksrinana.channelpointsminer.factory.BetPlacerFactory;
 import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
 import fr.raksrinana.channelpointsminer.factory.MessageHandlerFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
@@ -49,6 +50,7 @@ public class Main{
 		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
+		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
 		miner.start();
 	}
 	

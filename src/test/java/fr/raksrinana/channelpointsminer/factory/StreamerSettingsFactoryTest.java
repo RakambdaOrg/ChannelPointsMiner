@@ -1,7 +1,11 @@
 package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.ConstantAmount;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.LeastPointsOutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.delay.FromStartDelay;
 import fr.raksrinana.channelpointsminer.priority.*;
+import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.tests.TestUtils;
 import org.mockito.InjectMocks;
@@ -123,6 +127,12 @@ class StreamerSettingsFactoryTest{
 				.participateCampaigns(true)
 				.joinIrc(true)
 				.priorities(priorities)
+				.predictions(PredictionSettings.builder()
+						.minimumPointsRequired(25)
+						.delayCalculator(FromStartDelay.builder().seconds(60).build())
+						.amountCalculator(ConstantAmount.builder().amount(20).build())
+						.outcomePicker(LeastPointsOutcomePicker.builder().build())
+						.build())
 				.build();
 		
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)

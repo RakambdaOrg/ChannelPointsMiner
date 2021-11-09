@@ -30,6 +30,10 @@ public class StreamerSettings{
 	@JsonProperty("joinIrc")
 	@Builder.Default
 	private boolean joinIrc = false;
+	@JsonProperty("predictions")
+	@NotNull
+	@Builder.Default
+	private PredictionSettings predictions = new PredictionSettings();
 	@JsonProperty("priorities")
 	@Builder.Default
 	@NotNull
@@ -41,6 +45,7 @@ public class StreamerSettings{
 		followRaid = origin.followRaid;
 		participateCampaigns = origin.participateCampaigns;
 		joinIrc = origin.joinIrc;
+		predictions = new PredictionSettings(origin.predictions);
 		priorities.addAll(origin.priorities);
 	}
 }

@@ -1,0 +1,16 @@
+{
+  "data": {
+    "makePrediction": {
+      "error": {
+        "code": "NOT_ENOUGH_POINTS",
+        "__typename": "MakePredictionError"
+      },
+      "__typename": "MakePredictionPayload"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 37,
+    "operationName": "MakePrediction",
+    "requestID": "request-id"
+  }
+}

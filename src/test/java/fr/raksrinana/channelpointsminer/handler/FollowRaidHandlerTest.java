@@ -48,7 +48,6 @@ class FollowRaidHandlerTest{
 	@Test
 	void claim(){
 		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
-		when(streamer.followRaids()).thenReturn(true);
 		
 		when(raidUpdateV2.getRaid()).thenReturn(raid);
 		when(raid.getId()).thenReturn(RAID_ID);
@@ -61,16 +60,6 @@ class FollowRaidHandlerTest{
 	@Test
 	void claimUnknownStreamer(){
 		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
-		
-		assertDoesNotThrow(() -> tested.handle(topic, raidUpdateV2));
-		
-		verify(gqlApi, never()).joinRaid(any());
-	}
-	
-	@Test
-	void claimStreamerDoesNotFollowRaids(){
-		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
-		when(streamer.followRaids()).thenReturn(false);
 		
 		assertDoesNotThrow(() -> tested.handle(topic, raidUpdateV2));
 		

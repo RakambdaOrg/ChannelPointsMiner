@@ -49,6 +49,8 @@ import lombok.Getter;
 		@JsonSubTypes.Type(value = TimeBasedDropSelfEdge.class, name = "TimeBasedDropSelfEdge"),
 		@JsonSubTypes.Type(value = ClaimDropRewardsPayload.class, name = "ClaimDropRewardsPayload"),
 		@JsonSubTypes.Type(value = UserDropReward.class, name = "UserDropReward"),
+		@JsonSubTypes.Type(value = MakePredictionPayload.class, name = "MakePredictionPayload"),
+		@JsonSubTypes.Type(value = MakePredictionError.class, name = "MakePredictionError"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

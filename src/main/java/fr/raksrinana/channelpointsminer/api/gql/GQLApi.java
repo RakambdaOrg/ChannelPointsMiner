@@ -14,6 +14,8 @@ import fr.raksrinana.channelpointsminer.api.gql.data.inventory.InventoryData;
 import fr.raksrinana.channelpointsminer.api.gql.data.inventory.InventoryOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.joinraid.JoinRaidData;
 import fr.raksrinana.channelpointsminer.api.gql.data.joinraid.JoinRaidOperation;
+import fr.raksrinana.channelpointsminer.api.gql.data.makeprediction.MakePredictionData;
+import fr.raksrinana.channelpointsminer.api.gql.data.makeprediction.MakePredictionOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
@@ -72,6 +74,10 @@ public class GQLApi{
 	@NotNull
 	public Optional<GQLResponse<DropsPageClaimDropRewardsData>> dropsPageClaimDropRewards(@NotNull String dropInstanceId){
 		return postRequest(new DropsPageClaimDropRewardsOperation(dropInstanceId));
+	}
+	
+	public Optional<GQLResponse<MakePredictionData>> makePrediction(@NotNull String eventId, @NotNull String outcomeId, int amount, @NotNull String transactionId){
+		return postRequest(new MakePredictionOperation(eventId, outcomeId, amount, transactionId));
 	}
 	
 	@NotNull

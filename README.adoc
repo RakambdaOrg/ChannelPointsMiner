@@ -12,17 +12,13 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Follow raids.
 * Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
 * Join IRC chat
+* Participate in predictions.
 
 Limits:
 
 * Twitch makes it so that only 2 streamers can be watched at once.
 However, actions that are not watching are not limited.
 This includes raids and predictions.
-
-Planned:
-
-* Participate in predictions.
-
 
 This project heavily inspired by link:https://github.com/Tkd-Alex/Twitch-Channel-Points-Miner-v2[Tkd-Alex/Twitch-Channel-Points-Miner-v2,window="_blank"], just doing it my own way.
 
@@ -135,7 +131,7 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 |Name |Description |Default value
 
 |makePredictions
-|If set to true, predictions will be made for this streamer (#16).
+|If set to true, predictions will be made for this streamer.
 |false
 
 |followRaid
@@ -150,9 +146,36 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 |If set to true IRC channel of the streamer will be joined.
 |false
 
+|predictions
+|Settings related to predictions (see <<prediction_settings,prediction settings>>.
+|Default <<prediction_settings,predictions settings>.
+
 |priorities
 |A list of conditions that if met will prioritize this streamer (see <<priorities,priorities>>).
 |none
+|===
+
+==== Prediction settings [[prediction_settings]]
+
+[cols="1,3,1"]
+|===
+|Name |Description |Default value
+|minimumPointsRequired
+|Minimum amount of points to have to place a bet.
+If this threshold is not reached, no bet is placed.
+|0
+
+|delayCalculator
+|How to calculate when to place the bet (see <<prediction_delay,prediction delay>>).
+|fromEnd(10)
+
+|outcomePicker
+|How to choose what outcome (side / color) to place the bet on (see <<outcome_picker,outcome pickers>>).
+|smart(0.2)
+
+|amountCalculator
+|How to calculate the amount to the bet (see <<amount_calculator,amount calculators>>).
+|percentage(percentage: 20, max: 50000)
 |===
 
 ==== Priorities [[priorities]]
@@ -213,6 +236,109 @@ Values can be defined per sub tier.
 |* score : Score to give.
 |===
 
+==== Prediction delays [[prediction_delay]]
+
+Prediction delays allow you to define when a bet should be placed.
+
+NOTE: All delays will be within an imposed time window: `[created date + 5s ; created date + prediction window - 5s]`.
+
+WARNING: Delay are calculated from when the prediction is created, if a moderator closes the bet early (which happens on some channels where a long timer is set) and the bet hasn't already been placed, then it'll be too late.
+
+The table below will list their `type` to be used in the JSON configuration as well as how the delay is computed and parameters.
+
+[cols="1,3,1,2a"]
+|===
+|Type |Description |Computation |Parameters
+
+|fromEnd
+|Place the bet a certain amount of time before the end of the original prediction.
+|Prediction end date - `seconds` seconds.
+|* seconds: Number of seconds before the end to place the bet.
+
+|fromStart
+|Place the bet a certain amount of time after the beginning of the original prediction.
+|Prediction start date + `seconds` seconds.
+|* seconds: Number of seconds after the start to place the bet.
+
+|percentage
+|Place the bet after `percent`% of the original timer elapsed.
+|Prediction stat date + `precent` * time window.
+|* percent: The percentage of the timer, as a decimal value, between `0` and `1`.
+|===
+
+==== Outcome pickers [[outcome_picker]]
+
+Outcome pickers allow you to define what outcome (side / color) will be chosen to place the bet on.
+
+The table below will list their `type` to be used in the JSON configuration as well as how the side is computed and parameters.
+
+[cols="1,3,1,2a"]
+|===
+|Type |Description |Computation |Parameters
+
+|mostUsers
+|Choose the outcome with the most users.
+|Outcome with the higher user count is picked.
+|
+
+|leastUsers
+|Choose the outcome with the least users.
+|Outcome with the lower user count is picked.
+|
+
+|mostPoints
+|Choose the outcome with the most points.
+|Outcome with the higher total points is picked.
+
+This is the same as "the outcome with lower odds".
+|
+
+|leastPoints
+|Choose the outcome with the least points.
+|Outcome with the lower total points is picked.
+
+This is the same as "the outcome with higher odds".
+|
+
+|smart
+|Choose the outcome with the most users.
+However, if the two outcomes have a user count similar, choose the outcome with the least points (higher odds).
+|If the difference of the user percentages is less than `percentageGap`% then choose the outcome with lower points, otherwise the one with most users.
+| * percentageGap: The percent gap of the user count, as decimal, between `0` and `1`.
+
+(i.e. Setting this to `0.1`, will mean that the condition switches states when the difference between sides is `10%`, so `45%` of the users on one side and `55%` on the other)
+
+Setting this to 0 will have the same effect as `leastPoints`.
+
+Setting this to 1 will have the same effect as `mostUsers`.
+|===
+
+==== Amount calculators [[amount_calculator]]
+
+Amount calculators allow you to define how the amount to place is calculated.
+
+WARNING: The minimum amount that can be placed is `10`.
+
+The table below will list their `type` to be used in the JSON configuration as well as how the amount is computed and parameters.
+
+[cols="1,3,1,2a"]
+|===
+|Type |Description |Computation |Parameters
+
+|constant
+|Always bet the same amount.
+|Place `amount` points.
+|* amount: Amount to place.
+
+|percentage
+|Place a percentage of your points (with a limit).
+|Place `percentage`% of your current points.
+If this values goes over `max` then `max` points will be placed instead.
+|* percentage: Percentage of your owned points to place, as a decimal value, between `0` and `1`.
+
+* max: Maximum number of points.
+|===
+
 == How to mine streamers
 
 You have two options to load streamers in the mining list:
@@ -248,6 +374,9 @@ These keys are listed below:
 
 |websocket_topic
 |Topic name of the message received on the websocket.
+
+|event_id
+|Event id of a prediction.
 |===
 
 == Disclaimer

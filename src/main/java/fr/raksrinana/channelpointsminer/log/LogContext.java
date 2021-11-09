@@ -13,6 +13,7 @@ public class LogContext implements AutoCloseable{
 	private static final String STREAMER_NAME_KEY = "streamer_name";
 	private static final String WEBSOCKET_ID_KEY = "websocket_id";
 	private static final String WEBSOCKET_TOPIC = "websocket_topic";
+	private static final String EVENT_ID = "event_id";
 	
 	private final CloseableThreadContext.Instance ctc;
 	
@@ -53,6 +54,12 @@ public class LogContext implements AutoCloseable{
 	@NotNull
 	public LogContext withTopic(@NotNull Topic topic){
 		ctc.put(WEBSOCKET_TOPIC, topic.getValue());
+		return this;
+	}
+	
+	@NotNull
+	public LogContext withEventId(@NotNull String eventId){
+		ctc.put(EVENT_ID, eventId);
 		return this;
 	}
 	

@@ -20,7 +20,7 @@ import fr.raksrinana.channelpointsminer.config.Configuration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.handler.EventLogger;
+import fr.raksrinana.channelpointsminer.handler.EventLoggerHandler;
 import fr.raksrinana.channelpointsminer.handler.MessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
@@ -98,7 +98,7 @@ class MinerTest{
 	@Mock
 	private Topic topic;
 	@Mock
-	private EventLogger eventLogger;
+	private EventLoggerHandler eventLoggerHandler;
 	@Mock
 	private TwitchIrcClient twitchIrcClient;
 	

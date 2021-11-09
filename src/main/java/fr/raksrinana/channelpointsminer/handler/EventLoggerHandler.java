@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 @RequiredArgsConstructor
-public class EventLogger extends HandlerAdapter{
+public class EventLoggerHandler extends HandlerAdapter{
 	private final IMiner miner;
 	
 	@Override
