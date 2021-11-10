@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import static fr.raksrinana.channelpointsminer.util.CommonUtils.getUserInput;
@@ -40,7 +41,7 @@ public class PassportApi{
 		this.password = password;
 		this.ask2FA = ask2FA;
 		
-		userAuthenticationFile = authenticationFolder.resolve(username + ".json");
+		userAuthenticationFile = authenticationFolder.resolve(username.toLowerCase(Locale.ROOT) + ".json");
 	}
 	
 	/**
