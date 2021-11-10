@@ -315,6 +315,11 @@ This is the same as "the outcome with lower odds".
 This is the same as "the outcome with higher odds".
 |
 
+|biggestPredictor
+|Choose the outcome with the biggest predictor.
+|Outcome with the person that placed the biggest prediction overall.
+|
+
 |smart
 |Choose the outcome with the most users.
 However, if the two outcomes have a user count similar, choose the outcome with the least points (higher odds).
