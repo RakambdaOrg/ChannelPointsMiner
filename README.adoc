@@ -191,6 +191,10 @@ If this threshold is not reached, no bet is placed.
 |amountCalculator
 |How to calculate the amount to the bet (see <<amount_calculator,amount calculators>>).
 |percentage(percentage: 20, max: 50000)
+
+|actions
+|A list of <<prediction_actions,prediction actions>> to perform before a bet is placed
+|<empty>
 |===
 
 ==== Priorities [[priorities]]
@@ -357,6 +361,23 @@ If this values goes over `max` then `max` points will be placed instead.
 |* percentage: Percentage of your owned points to place, as a decimal value, between `0` and `1`.
 
 * max: Maximum number of points.
+|===
+
+==== Prediction actions [[prediction_actions]]
+
+Prediction actions are a way to perform actions / verifications before a bet is placed.
+
+The table below will list their `type` to be used in the JSON configuration as well as what is performed.
+
+[cols="1,3,1,2a"]
+|===
+|Type |Description |Computation |Parameters
+
+|stealth
+|Ensure that the amount placed is lower than the top predictor.
+|If no top predictor is found, cancel the bet.
+Otherwise, if the amount placed by the top predictor is lower or equal to our prediction then set ours to his amount - 1.
+|
 |===
 
 == How to mine streamers
