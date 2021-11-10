@@ -359,7 +359,7 @@ If this values goes over `max` then `max` points will be placed instead.
 You have two options to load streamers in the mining list:
 
 * Be specific and define streamer settings for each streamer you want to watch.
-For this simply add a JSON file withing the <<global_settings__streamer_config_directory,streamer config directory>> with the name of the streamer (eg: `mystreamer.json`).
+For this simply add a JSON file withing one of the <<global_settings__streamer_config_directories,streamer config directory>> with the name of the streamer (eg: `mystreamer.json`).
 The content of the file will override the <<global_settings__default_streamer_settings,default streamer settings>> for the keys that are redefined.
 If you want to use the <<global_settings__default_streamer_settings,default streamer settings>> simply use an empty JSON object in the file (ie: `{}`).
 * Load them from the follows list.
