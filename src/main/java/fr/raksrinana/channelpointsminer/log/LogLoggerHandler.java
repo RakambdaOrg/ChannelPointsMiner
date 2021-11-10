@@ -1,8 +1,8 @@
-package fr.raksrinana.channelpointsminer.handler;
+package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.handler.HandlerAdapter;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 @RequiredArgsConstructor
-public class EventLoggerHandler extends HandlerAdapter{
+public class LogLoggerHandler extends HandlerAdapter{
 	private final IMiner miner;
 	
 	@Override
