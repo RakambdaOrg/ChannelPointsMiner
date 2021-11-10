@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.factory;
 import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.StreamerDirectory;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.tests.TestUtils;
 import org.mockito.Mock;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.nio.file.Paths;
+import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -41,6 +43,10 @@ class ConfigurationFactoryTest{
 						.followRaid(true)
 						.participateCampaigns(true)
 						.build())
+				.streamerConfigDirectories(List.of(StreamerDirectory.builder()
+						.path(Paths.get("streamers"))
+						.recursive(false)
+						.build()))
 				.build();
 		
 		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){

@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -44,14 +45,24 @@ public class StreamerSettingsFactory{
 	@NotNull
 	private Optional<Path> getStreamerPath(@NotNull String username){
 		var expectedFilename = username.toLowerCase() + ".json";
-		try{
-			return Files.list(configuration.getStreamerConfigDirectory())
-					.filter(path -> Objects.equals(path.getFileName().toString().toLowerCase(), expectedFilename))
-					.findFirst();
-		}
-		catch(IOException e){
-			log.error("Failed to list available streamer configurations", e);
-			return Optional.empty();
-		}
+		return getStreamerConfigs()
+				.filter(path -> Objects.equals(path.getFileName().toString().toLowerCase(), expectedFilename))
+				.findFirst();
+	}
+	
+	@NotNull
+	public Stream<Path> getStreamerConfigs(){
+		return configuration.getStreamerConfigDirectories().stream()
+				.flatMap(streamerDirectory -> {
+					try{
+						var maxDepth = streamerDirectory.isRecursive() ? Integer.MAX_VALUE : 1;
+						return Files.walk(streamerDirectory.getPath(), maxDepth);
+					}
+					catch(IOException e){
+						log.error("Failed to search streamer settings for {}", streamerDirectory, e);
+						return Stream.empty();
+					}
+				})
+				.filter(path -> path.getFileName().toString().endsWith(".json"));
 	}
 }

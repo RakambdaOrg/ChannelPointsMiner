@@ -30,7 +30,6 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
 import org.jetbrains.annotations.NotNull;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -112,10 +111,9 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	@SneakyThrows
 	private void loadStreamersFromConfiguration(){
 		log.info("Loading streamers from configuration");
-		Files.list(configuration.getStreamerConfigDirectory())
+		streamerSettingsFactory.getStreamerConfigs()
 				.map(Path::getFileName)
 				.map(Path::toString)
-				.filter(name -> name.endsWith(".json"))
 				.map(name -> name.substring(0, name.length() - ".json".length()))
 				.map(name -> {
 					var user = gqlApi.reportMenuItem(name)
