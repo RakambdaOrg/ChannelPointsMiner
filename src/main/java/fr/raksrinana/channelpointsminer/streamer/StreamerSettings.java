@@ -30,6 +30,9 @@ public class StreamerSettings{
 	@JsonProperty("joinIrc")
 	@Builder.Default
 	private boolean joinIrc = false;
+	@JsonProperty("index")
+	@Builder.Default
+	private int index = Integer.MAX_VALUE;
 	@JsonProperty("predictions")
 	@NotNull
 	@Builder.Default

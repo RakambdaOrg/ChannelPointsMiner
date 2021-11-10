@@ -163,11 +163,16 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 
 |predictions
 |Settings related to predictions (see <<prediction_settings,prediction settings>>.
-|Default <<prediction_settings,predictions settings>.
+|Default <<prediction_settings,predictions settings>>.
 
 |priorities
 |A list of conditions that if met will prioritize this streamer (see <<priorities,priorities>>).
-|none
+|empty
+
+|index
+|The streamer index.
+This value is used when streamers have the same score from the <<priorities,priorities>>, the one with the lowest index will be picked first.
+|max value (last to be picked)
 |===
 
 ==== Prediction settings [[prediction_settings]]
@@ -201,11 +206,9 @@ If this threshold is not reached, no bet is placed.
 
 Priorities is a way to prioritize streamers among each others to mine one over another based on some conditions.
 
-By default, with an empty priority list, the order will be "random" (actually the order in which the streamers have been added into the miner, subject to change anytime).
-
-You can then modify this order by adding priorities to the streamers you want and if the condition is met then a `score` will be added to its overall score (sum of all the priority's scores).
+You can then modify the position of a streamer by adding priorities to the streamers you want and if the condition is met then a `score` will be added to its overall score (sum of all the priority's scores).
 The 2 streamers that have the highest overall score will be those mined.
-If there's an exe-quo they'll be picked random among them.
+If there's an exe-quo they'll be picked by their `index`, and if equal too it'll be random.
 
 Each priority is different and can have a set of different parameters.
 The table below will list their `type` to be used in the JSON configuration as well as the conditions of activation and parameters.
