@@ -45,6 +45,11 @@
     },
     "outcomePicker": {
       "type": "leastPoints"
-    }
+    },
+    "actions": [
+      {
+        "type": "stealth"
+      }
+    ]
   }
 }

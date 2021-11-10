@@ -42,6 +42,12 @@ public class BetPlacer{
 				return;
 			}
 			
+			var placement = Placement.builder()
+					.prediction(prediction)
+					.outcome(outcome)
+					.amount(amount)
+					.build();
+			
 			log.info("Placing bet of {} points on {} ({})", amount, outcome.getColor(), outcome.getTitle());
 			var result = miner.getGqlApi().makePrediction(event.getId(), outcome.getId(), amount, TransactionIdFactory.create());
 			if(result.isEmpty()){
