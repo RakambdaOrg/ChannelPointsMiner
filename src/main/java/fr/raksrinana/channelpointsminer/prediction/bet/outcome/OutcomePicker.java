@@ -15,6 +15,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@JsonSubTypes.Type(value = MostPointsOutcomePicker.class, name = "mostPoints"),
 		@JsonSubTypes.Type(value = LeastPointsOutcomePicker.class, name = "leastPoints"),
 		@JsonSubTypes.Type(value = SmartOutcomePicker.class, name = "smart"),
+		@JsonSubTypes.Type(value = BiggestPredictorOutcomePicker.class, name = "biggestPredictor"),
 })
 public interface OutcomePicker{
 	@NotNull
