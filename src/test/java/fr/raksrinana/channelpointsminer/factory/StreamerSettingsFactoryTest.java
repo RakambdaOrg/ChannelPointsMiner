@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.config.Configuration;
 import fr.raksrinana.channelpointsminer.config.StreamerDirectory;
+import fr.raksrinana.channelpointsminer.prediction.bet.action.StealthPredictionAction;
 import fr.raksrinana.channelpointsminer.prediction.bet.amount.ConstantAmount;
 import fr.raksrinana.channelpointsminer.prediction.bet.outcome.LeastPointsOutcomePicker;
 import fr.raksrinana.channelpointsminer.prediction.delay.FromStartDelay;
@@ -215,6 +216,7 @@ class StreamerSettingsFactoryTest{
 						.delayCalculator(FromStartDelay.builder().seconds(60).build())
 						.amountCalculator(ConstantAmount.builder().amount(20).build())
 						.outcomePicker(LeastPointsOutcomePicker.builder().build())
+						.actions(List.of(StealthPredictionAction.builder().build()))
 						.build())
 				.build();
 		
