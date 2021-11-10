@@ -48,8 +48,14 @@ public class BetPlacer{
 					.amount(amount)
 					.build();
 			
+			var actions = prediction.getStreamer().getSettings().getPredictions().getActions();
+			for(var action : actions){
+				action.perform(placement);
+			}
+			
 			log.info("Placing bet of {} points on {} ({})", amount, outcome.getColor(), outcome.getTitle());
-			var result = miner.getGqlApi().makePrediction(event.getId(), outcome.getId(), amount, TransactionIdFactory.create());
+			var transactionId = TransactionIdFactory.create();
+			var result = miner.getGqlApi().makePrediction(placement.getPrediction().getEvent().getId(), placement.getOutcome().getId(), placement.getAmount(), transactionId);
 			if(result.isEmpty()){
 				log.error("Failed to place bet");
 				prediction.setState(PredictionState.BET_ERROR);
@@ -65,7 +71,7 @@ public class BetPlacer{
 						prediction.setState(PredictionState.BET_ERROR);
 					});
 		}
-		catch(fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException e){
+		catch(BetPlacementException e){
 			log.error("Failed to place bet", e);
 			prediction.setState(PredictionState.BET_ERROR);
 		}

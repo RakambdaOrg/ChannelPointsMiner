@@ -13,6 +13,7 @@ import fr.raksrinana.channelpointsminer.factory.TransactionIdFactory;
 import fr.raksrinana.channelpointsminer.handler.data.Prediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
+import fr.raksrinana.channelpointsminer.prediction.bet.action.PredictionAction;
 import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
 import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
 import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
@@ -24,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
@@ -64,6 +66,8 @@ class BetPlacerTest{
 	private MakePredictionData makePredictionData;
 	@Mock
 	private MakePredictionPayload makePrediction;
+	@Mock
+	private PredictionAction predictionAction;
 	
 	@BeforeEach
 	void setUp() throws BetPlacementException{
@@ -75,6 +79,7 @@ class BetPlacerTest{
 		lenient().when(streamerSettings.getPredictions()).thenReturn(predictionSettings);
 		lenient().when(predictionSettings.getOutcomePicker()).thenReturn(outcomePicker);
 		lenient().when(predictionSettings.getAmountCalculator()).thenReturn(amountCalculator);
+		lenient().when(predictionSettings.getActions()).thenReturn(List.of());
 		
 		lenient().when(event.getId()).thenReturn(EVENT_ID);
 		lenient().when(event.getStatus()).thenReturn(EventStatus.ACTIVE);
@@ -138,6 +143,52 @@ class BetPlacerTest{
 			
 			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
 			verify(prediction, never()).setState(any());
+		}
+	}
+	
+	@Test
+	void nominalWithActionModification() throws BetPlacementException{
+		var newAmount = AMOUNT + 10;
+		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
+			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+			
+			when(predictionSettings.getActions()).thenReturn(List.of(predictionAction));
+			doAnswer(invocation -> {
+				var placement = invocation.getArgument(0, Placement.class);
+				placement.setAmount(newAmount);
+				return null;
+			}).when(predictionAction).perform(any());
+			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, newAmount, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
+			
+			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			
+			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, newAmount, TRANSACTION_ID);
+			verify(prediction, never()).setState(any());
+			verify(predictionAction).perform(Placement.builder()
+					.prediction(prediction)
+					.outcome(outcome)
+					.amount(newAmount)
+					.build());
+		}
+	}
+	
+	@Test
+	void nominalWithActionThrowing() throws BetPlacementException{
+		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
+			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+			
+			when(predictionSettings.getActions()).thenReturn(List.of(predictionAction));
+			doThrow(new BetPlacementException("For tests")).when(predictionAction).perform(any());
+			
+			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			
+			verify(gqlApi, never()).makePrediction(anyString(), anyString(), anyInt(), anyString());
+			verify(prediction).setState(PredictionState.BET_ERROR);
+			verify(predictionAction).perform(Placement.builder()
+					.prediction(prediction)
+					.outcome(outcome)
+					.amount(AMOUNT)
+					.build());
 		}
 	}
 	
