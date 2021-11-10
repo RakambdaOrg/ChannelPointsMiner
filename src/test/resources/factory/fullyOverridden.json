@@ -3,6 +3,7 @@
   "followRaid": true,
   "participateCampaigns": true,
   "joinIrc": true,
+  "index": 5,
   "priorities": [
     {
       "type": "constant",

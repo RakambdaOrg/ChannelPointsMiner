@@ -210,6 +210,7 @@ class StreamerSettingsFactoryTest{
 				.followRaid(true)
 				.participateCampaigns(true)
 				.joinIrc(true)
+				.index(5)
 				.priorities(priorities)
 				.predictions(PredictionSettings.builder()
 						.minimumPointsRequired(25)

@@ -519,4 +519,12 @@ class StreamerTest{
 		
 		assertThat(tested.getTags()).isEmpty();
 	}
+	
+	@Test
+	void getIndex(){
+		var index = 6;
+		when(settings.getIndex()).thenReturn(index);
+		
+		assertThat(tested.getIndex()).isEqualTo(index);
+	}
 }

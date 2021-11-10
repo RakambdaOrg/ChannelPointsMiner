@@ -78,6 +78,10 @@ public class Streamer{
 				&& getWatchedDuration().compareTo(SEVEN_MINUTES) < 0;
 	}
 	
+	public int getIndex(){
+		return settings.getIndex();
+	}
+	
 	@NotNull
 	public List<Tag> getTags(){
 		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
