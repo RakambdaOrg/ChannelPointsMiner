@@ -87,7 +87,24 @@ services:
 
 === Global settings [[global_settings]]
 
-An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config/config.json[here,window="_blank"].
+The settings consist of on object with a list of <<account_settings,account settings>> under the `accounts` field.
+Something like:
+
+[source,json]
+----
+{
+  "accounts": [{
+    "accountSetting1": "value",
+    "accountSetting2": "value"
+  }]
+}
+----
+
+A full example can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config/config.json[src/test/resources/config/config.json,window="_blank"].
+
+==== Account settings [[account_settings]]
+
+Account settings define all the settings for a Twitch account that will be used to mine points.
 
 [cols="1,3,1"]
 |===

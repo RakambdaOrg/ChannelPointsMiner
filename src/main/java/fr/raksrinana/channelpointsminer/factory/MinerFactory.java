@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinerFactory{
 	@NotNull
-	public static Miner create(@NotNull Configuration config){
+	public static Miner create(@NotNull AccountConfiguration config){
 		var miner = new Miner(
 				config,
 				ApiFactory.createPassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),

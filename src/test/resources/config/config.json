@@ -1,18 +1,22 @@
 {
-  "username": "username",
-  "password": "password",
-  "use2FA": true,
-  "loadFollows": true,
-  "defaultStreamerSettings": {
-    "makePredictions": true,
-    "followRaid": true,
-    "participateCampaigns": true
-  },
-  "streamerConfigDirectories": [
+  "accounts": [
     {
-      "path": "streamers",
-      "recursive": false
+      "username": "username",
+      "password": "password",
+      "use2FA": true,
+      "loadFollows": true,
+      "defaultStreamerSettings": {
+        "makePredictions": true,
+        "followRaid": true,
+        "participateCampaigns": true
+      },
+      "streamerConfigDirectories": [
+        {
+          "path": "streamers",
+          "recursive": false
+        }
+      ],
+      "discordWebhook": "https://discord-webhook"
     }
-  ],
-  "discordWebhook": "https://discord-webhook"
+  ]
 }

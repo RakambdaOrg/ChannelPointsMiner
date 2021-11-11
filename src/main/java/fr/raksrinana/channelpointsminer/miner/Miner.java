@@ -15,7 +15,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
@@ -46,7 +46,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Log4j2
 public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
-	private final Configuration configuration;
+	private final AccountConfiguration accountConfiguration;
 	private final PassportApi passportApi;
 	
 	@Getter
@@ -76,13 +76,13 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private TwitchApi twitchApi;
 	private TwitchIrcClient ircClient;
 	
-	public Miner(@NotNull Configuration configuration,
+	public Miner(@NotNull AccountConfiguration accountConfiguration,
 			@NotNull PassportApi passportApi,
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchWebSocketPool webSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
 			@NotNull ExecutorService handlerExecutor){
-		this.configuration = configuration;
+		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
 		this.webSocketPool = webSocketPool;
@@ -138,7 +138,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	}
 	
 	private void loadStreamersFromFollows(){
-		if(configuration.isLoadFollows()){
+		if(accountConfiguration.isLoadFollows()){
 			log.info("Loading streamers from follow list");
 			krakenApi.getFollows().stream()
 					.filter(follow -> !hasStreamerWithUsername(follow.getChannel().getName()))

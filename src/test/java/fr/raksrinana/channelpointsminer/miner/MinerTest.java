@@ -16,7 +16,7 @@ import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
@@ -67,7 +67,7 @@ class MinerTest{
 	private Path tempDir;
 	
 	@Mock
-	private Configuration configuration;
+	private AccountConfiguration accountConfiguration;
 	@Mock
 	private PassportApi passportApi;
 	@Mock
@@ -106,7 +106,7 @@ class MinerTest{
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
-		tested = new Miner(configuration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService);
+		tested = new Miner(accountConfiguration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService);
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		
@@ -286,7 +286,7 @@ class MinerTest{
 			when(channel.getId()).thenReturn(STREAMER_ID);
 			when(channel.getName()).thenReturn(STREAMER_USERNAME);
 			
-			when(configuration.isLoadFollows()).thenReturn(true);
+			when(accountConfiguration.isLoadFollows()).thenReturn(true);
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
 			
 			assertDoesNotThrow(() -> tested.start());
@@ -355,7 +355,7 @@ class MinerTest{
 			when(channel.getId()).thenReturn(STREAMER_ID);
 			when(channel.getName()).thenReturn(STREAMER_USERNAME);
 			
-			when(configuration.isLoadFollows()).thenReturn(true);
+			when(accountConfiguration.isLoadFollows()).thenReturn(true);
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
 			
@@ -397,7 +397,7 @@ class MinerTest{
 			when(channel.getId()).thenReturn(STREAMER_ID);
 			when(channel.getName()).thenReturn(STREAMER_USERNAME);
 			
-			when(configuration.isLoadFollows()).thenReturn(true);
+			when(accountConfiguration.isLoadFollows()).thenReturn(true);
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
 			
@@ -496,7 +496,7 @@ class MinerTest{
 			when(follow.getChannel()).thenReturn(channel);
 			when(channel.getName()).thenReturn(STREAMER_USERNAME);
 			
-			when(configuration.isLoadFollows()).thenReturn(true);
+			when(accountConfiguration.isLoadFollows()).thenReturn(true);
 			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
 			when(krakenApi.getFollows()).thenReturn(List.of(follow));
 			

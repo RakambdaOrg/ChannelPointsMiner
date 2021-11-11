@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.config.Configuration;
 import fr.raksrinana.channelpointsminer.config.StreamerDirectory;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -36,20 +37,22 @@ class ConfigurationFactoryTest{
 		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
 		var expected = Configuration.builder()
-				.username("username")
-				.password("password")
-				.use2Fa(true)
-				.loadFollows(true)
-				.defaultStreamerSettings(StreamerSettings.builder()
-						.makePredictions(true)
-						.followRaid(true)
-						.participateCampaigns(true)
-						.build())
-				.streamerConfigDirectories(List.of(StreamerDirectory.builder()
-						.path(Paths.get("streamers"))
-						.recursive(false)
+				.accounts(List.of(AccountConfiguration.builder()
+						.username("username")
+						.password("password")
+						.use2Fa(true)
+						.loadFollows(true)
+						.defaultStreamerSettings(StreamerSettings.builder()
+								.makePredictions(true)
+								.followRaid(true)
+								.participateCampaigns(true)
+								.build())
+						.streamerConfigDirectories(List.of(StreamerDirectory.builder()
+								.path(Paths.get("streamers"))
+								.recursive(false)
+								.build()))
+						.discordWebhook(new URL("https://discord-webhook"))
 						.build()))
-				.discordWebhook(new URL("https://discord-webhook"))
 				.build();
 		
 		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){
