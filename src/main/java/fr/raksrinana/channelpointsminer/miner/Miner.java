@@ -25,11 +25,14 @@ import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
+import org.jetbrains.annotations.VisibleForTesting;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -53,6 +56,10 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private final ScheduledExecutorService scheduledExecutor;
 	private final ExecutorService handlerExecutor;
 	private final StreamerSettingsFactory streamerSettingsFactory;
+	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
+			@TestOnly,
+			@VisibleForTesting
+	})
 	private final Collection<MessageHandler> messageHandlers;
 	@Getter
 	private final MinerData minerData;
@@ -264,6 +271,8 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		scheduledExecutor.shutdown();
 		handlerExecutor.shutdown();
 		webSocketPool.close();
-		ircClient.close();
+		if(!Objects.isNull(ircClient)){
+			ircClient.close();
+		}
 	}
 }

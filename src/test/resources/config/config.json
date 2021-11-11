@@ -13,5 +13,6 @@
       "path": "streamers",
       "recursive": false
     }
-  ]
+  ],
+  "discordWebhook": "https://discord-webhook"
 }

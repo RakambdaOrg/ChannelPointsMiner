@@ -1,0 +1,5 @@
+{
+  "global": false,
+  "message": "Rate limited",
+  "retryAfter": 100
+}

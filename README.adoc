@@ -95,11 +95,11 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 
 |username
 |Your Twitch account username.
-|N/A
+|
 
 |password
 |Your Twitch account password.
-|N/A
+|
 
 |use2FA
 |If you use 2-factor authentication enable this to ask the 2FA code directly when login in.
@@ -116,6 +116,10 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 |streamerConfigDirectories [[global_settings__streamer_config_directories]]
 |A list of <<streamer_directories,streamer directories>> containing <<streamer_settings,streamer settings>>.
 |<empty>
+
+|discordWebhook
+|Discord webhook url to publish events to.
+|
 |===
 
 === Streamer directories [[streamer_directories]]

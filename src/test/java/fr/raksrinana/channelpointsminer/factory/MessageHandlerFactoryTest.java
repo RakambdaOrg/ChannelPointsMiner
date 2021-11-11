@@ -1,9 +1,11 @@
 package fr.raksrinana.channelpointsminer.factory;
 
+import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.handler.ClaimAvailableHandler;
 import fr.raksrinana.channelpointsminer.handler.FollowRaidHandler;
 import fr.raksrinana.channelpointsminer.handler.PredictionsHandler;
 import fr.raksrinana.channelpointsminer.handler.StreamStartEndHandler;
+import fr.raksrinana.channelpointsminer.log.DiscordLoggerHandler;
 import fr.raksrinana.channelpointsminer.log.LogLoggerHandler;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
@@ -19,10 +21,17 @@ class MessageHandlerFactoryTest{
 	private IMiner miner;
 	@Mock
 	private BetPlacer betPlacer;
+	@Mock
+	private DiscordApi discordApi;
 	
 	@Test
 	void createLogger(){
 		assertThat(MessageHandlerFactory.createLogger(miner)).isNotNull().isInstanceOf(LogLoggerHandler.class);
+	}
+	
+	@Test
+	void createDiscordLogger(){
+		assertThat(MessageHandlerFactory.createDiscordLogger(miner, discordApi)).isNotNull().isInstanceOf(DiscordLoggerHandler.class);
 	}
 	
 	@Test
