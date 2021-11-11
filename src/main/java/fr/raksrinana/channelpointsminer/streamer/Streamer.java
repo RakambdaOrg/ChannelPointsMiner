@@ -192,4 +192,11 @@ public class Streamer{
 	public boolean isStreaming(){
 		return getStream().isPresent();
 	}
+	
+	@NotNull
+	public Optional<URL> getProfileImage(){
+		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
+				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
+				.map(User::getProfileImageUrl);
+	}
 }

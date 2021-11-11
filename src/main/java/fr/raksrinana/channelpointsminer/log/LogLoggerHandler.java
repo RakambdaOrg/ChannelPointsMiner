@@ -32,8 +32,11 @@ public class LogLoggerHandler extends HandlerAdapter{
 	
 	@Override
 	public void onPointsSpent(@NotNull Topic topic, @NotNull PointsSpent message){
-		var balance = message.getData().getBalance();
-		log.info("Points spent ({})", balance.getBalance());
+		var streamer = miner.getStreamerById(message.getData().getBalance().getChannelId());
+		try(var ignored = LogContext.with(streamer.orElse(null))){
+			var balance = message.getData().getBalance();
+			log.info("Points spent ({})", balance.getBalance());
+		}
 	}
 	
 	@Override
