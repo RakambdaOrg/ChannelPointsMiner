@@ -527,4 +527,29 @@ class StreamerTest{
 		
 		assertThat(tested.getIndex()).isEqualTo(index);
 	}
+	
+	@Test
+	void getProfileImage() throws MalformedURLException{
+		var profileImage = new URL("https://profileImage");
+		
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getProfileImageUrl()).thenReturn(profileImage);
+		
+		assertThat(tested.getProfileImage()).isPresent().get().isEqualTo(profileImage);
+	}
+	
+	@Test
+	void getProfileImageNoImage(){
+		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
+		when(user.getProfileImageUrl()).thenReturn(null);
+		
+		assertThat(tested.getProfileImage()).isEmpty();
+	}
+	
+	@Test
+	void getProfileImageNoData(){
+		tested.setVideoPlayerStreamInfoOverlayChannel(null);
+		
+		assertThat(tested.getProfileImage()).isEmpty();
+	}
 }
