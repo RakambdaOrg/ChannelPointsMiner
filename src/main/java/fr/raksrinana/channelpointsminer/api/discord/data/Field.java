@@ -27,7 +27,8 @@ public class Field{
 	@JsonSerialize(using = ValueSerializer.class)
 	private String value;
 	@JsonProperty("inline")
-	private boolean inline;
+	@Builder.Default
+	private boolean inline = true;
 	
 	private static class ValueSerializer extends StdSerializer<String>{
 		public ValueSerializer(){
