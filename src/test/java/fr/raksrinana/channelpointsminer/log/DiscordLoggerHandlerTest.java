@@ -145,7 +145,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(65280)
+						.color(16711680)
 						.description("Stream stopped")
 						.build()))
 				.build());
@@ -160,7 +160,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(16711680)
+						.color(65280)
 						.description("Stream started")
 						.build()))
 				.build());
@@ -252,7 +252,7 @@ class DiscordLoggerHandlerTest{
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
-						.color(16711680)
+						.color(65280)
 						.description("Stream started")
 						.build()))
 				.build());

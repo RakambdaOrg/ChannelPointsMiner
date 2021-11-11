@@ -92,7 +92,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(65280) //Green
+					.color(16711680) //Red
 					.description("Stream stopped")
 					.build();
 			discordApi.sendMessage(Webhook.builder()
@@ -106,7 +106,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(16711680) //Red
+					.color(65280) //Green
 					.description("Stream started")
 					.build();
 			discordApi.sendMessage(Webhook.builder()
