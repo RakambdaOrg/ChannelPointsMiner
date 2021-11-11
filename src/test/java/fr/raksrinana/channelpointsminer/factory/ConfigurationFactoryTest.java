@@ -12,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +31,7 @@ class ConfigurationFactoryTest{
 	}
 	
 	@Test
-	void getInstance(){
+	void getInstance() throws MalformedURLException{
 		var testConfig = TestUtils.getResourcePath("config/config.json");
 		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
@@ -47,6 +49,7 @@ class ConfigurationFactoryTest{
 						.path(Paths.get("streamers"))
 						.recursive(false)
 						.build()))
+				.discordWebhook(new URL("https://discord-webhook"))
 				.build();
 		
 		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){
