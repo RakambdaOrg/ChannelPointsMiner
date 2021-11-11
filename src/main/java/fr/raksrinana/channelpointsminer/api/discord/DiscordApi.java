@@ -36,7 +36,7 @@ public class DiscordApi{
 				.body(webhook)
 				.asObject(DiscordResponse.class);
 		
-		if(response.getStatus() == 204){
+		if(response.isSuccess()){
 			return;
 		}
 		

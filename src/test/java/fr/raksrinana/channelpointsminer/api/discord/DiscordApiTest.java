@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @ExtendWith(UnirestMockExtension.class)
 class DiscordApiTest{
 	private static final String URL = "https://webhook";
+	private static final String PAYLOAD = "{\"content\":\"Test message\",\"username\":\"ChannelPointsMiner\"}";
+	
 	private DiscordApi tested;
 	
 	@BeforeEach
@@ -36,7 +38,7 @@ class DiscordApiTest{
 		
 		unirest.expect(HttpMethod.POST, URL)
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
-				.body(TestUtils.getAllResourceContent("api/discord/message.json"))
+				.body(PAYLOAD)
 				.thenReturn()
 				.withStatus(204);
 		
@@ -54,7 +56,7 @@ class DiscordApiTest{
 		
 		unirest.expect(HttpMethod.POST, URL)
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
-				.body(TestUtils.getAllResourceContent("api/discord/message.json"))
+				.body(PAYLOAD)
 				.thenReturn(TestUtils.getAllResourceContent("api/discord/retryAfter.json"))
 				.withStatus(429);
 		
@@ -72,7 +74,7 @@ class DiscordApiTest{
 		
 		unirest.expect(HttpMethod.POST, URL)
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
-				.body(TestUtils.getAllResourceContent("api/discord/message.json"))
+				.body(PAYLOAD)
 				.thenReturn()
 				.withStatus(500);
 		
