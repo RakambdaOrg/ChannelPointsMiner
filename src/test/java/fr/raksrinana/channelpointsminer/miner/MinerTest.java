@@ -20,10 +20,10 @@ import fr.raksrinana.channelpointsminer.config.Configuration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.handler.EventLoggerHandler;
 import fr.raksrinana.channelpointsminer.handler.MessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
+import fr.raksrinana.channelpointsminer.log.LogLoggerHandler;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -37,6 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -44,6 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.*;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -98,7 +100,7 @@ class MinerTest{
 	@Mock
 	private Topic topic;
 	@Mock
-	private EventLoggerHandler eventLoggerHandler;
+	private LogLoggerHandler logLoggerHandler;
 	@Mock
 	private TwitchIrcClient twitchIrcClient;
 	
@@ -106,7 +108,7 @@ class MinerTest{
 	void setUp() throws LoginException, IOException{
 		tested = new Miner(configuration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService);
 		
-		lenient().when(configuration.getStreamerConfigDirectory()).thenReturn(tempDir);
+		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		
 		lenient().when(passportApi.login()).thenReturn(twitchLogin);
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
@@ -159,8 +161,12 @@ class MinerTest{
 	}
 	
 	@SneakyThrows
-	private void setupStreamerConfig(String username){
-		Files.writeString(tempDir.resolve(username + ".json"), "{}", TRUNCATE_EXISTING, CREATE);
+	private void setupStreamerConfig(String... usernames){
+		var paths = new ArrayList<Path>();
+		for(var username : usernames){
+			paths.add(Files.writeString(tempDir.resolve(username + ".json"), "{}", TRUNCATE_EXISTING, CREATE));
+		}
+		when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(paths.stream());
 	}
 	
 	@Test

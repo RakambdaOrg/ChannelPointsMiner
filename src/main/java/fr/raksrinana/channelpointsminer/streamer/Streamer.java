@@ -78,6 +78,10 @@ public class Streamer{
 				&& getWatchedDuration().compareTo(SEVEN_MINUTES) < 0;
 	}
 	
+	public int getIndex(){
+		return settings.getIndex();
+	}
+	
 	@NotNull
 	public List<Tag> getTags(){
 		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
@@ -187,5 +191,12 @@ public class Streamer{
 	
 	public boolean isStreaming(){
 		return getStream().isPresent();
+	}
+	
+	@NotNull
+	public Optional<URL> getProfileImage(){
+		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
+				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
+				.map(User::getProfileImageUrl);
 	}
 }

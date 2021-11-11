@@ -1,8 +1,8 @@
-package fr.raksrinana.channelpointsminer.handler;
+package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.handler.HandlerAdapter;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 @RequiredArgsConstructor
-public class EventLoggerHandler extends HandlerAdapter{
+public class LogLoggerHandler extends HandlerAdapter{
 	private final IMiner miner;
 	
 	@Override
@@ -32,8 +32,11 @@ public class EventLoggerHandler extends HandlerAdapter{
 	
 	@Override
 	public void onPointsSpent(@NotNull Topic topic, @NotNull PointsSpent message){
-		var balance = message.getData().getBalance();
-		log.info("Points spent ({})", balance.getBalance());
+		var streamer = miner.getStreamerById(message.getData().getBalance().getChannelId());
+		try(var ignored = LogContext.with(streamer.orElse(null))){
+			var balance = message.getData().getBalance();
+			log.info("Points spent ({})", balance.getBalance());
+		}
 	}
 	
 	@Override

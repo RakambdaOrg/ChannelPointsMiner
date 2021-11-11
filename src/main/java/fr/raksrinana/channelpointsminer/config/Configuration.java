@@ -1,15 +1,21 @@
 package fr.raksrinana.channelpointsminer.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
+import fr.raksrinana.channelpointsminer.util.json.URLDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -43,8 +49,12 @@ public class Configuration{
 	@Builder.Default
 	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
 	@NotNull
-	@JsonProperty("streamerConfigDirectory")
-	@Comment(value = "Path to a folder that'll contain streamer configurations", defaultValue = "./streamers")
+	@JsonProperty("streamerConfigDirectories")
+	@Comment(value = "List of paths to a folder that'll contain streamer configurations", defaultValue = "<empty>")
 	@Builder.Default
-	private Path streamerConfigDirectory = Paths.get("streamers");
+	private List<StreamerDirectory> streamerConfigDirectories = new ArrayList<>();
+	@JsonProperty("discordWebhook")
+	@JsonDeserialize(using = URLDeserializer.class)
+	@Nullable
+	private URL discordWebhook;
 }

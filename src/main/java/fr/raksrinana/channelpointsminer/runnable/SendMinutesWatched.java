@@ -35,7 +35,7 @@ public class SendMinutesWatched implements Runnable{
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
 					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
-					.sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
+					.sorted(this::compare)
 					.limit(2)
 					.map(Map.Entry::getKey)
 					.toList();
@@ -54,6 +54,14 @@ public class SendMinutesWatched implements Runnable{
 		catch(Exception e){
 			log.error("Failed to send all minutes watched", e);
 		}
+	}
+	
+	private int compare(@NotNull Map.Entry<Streamer, Integer> e1, @NotNull Map.Entry<Streamer, Integer> e2){
+		var compareScore = Integer.compare(e2.getValue(), e1.getValue());
+		if(compareScore != 0){
+			return compareScore;
+		}
+		return Integer.compare(e1.getKey().getIndex(), e2.getKey().getIndex());
 	}
 	
 	private boolean send(Streamer streamer){

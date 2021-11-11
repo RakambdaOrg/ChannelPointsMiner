@@ -3,6 +3,7 @@
   "followRaid": true,
   "participateCampaigns": true,
   "joinIrc": true,
+  "index": 5,
   "priorities": [
     {
       "type": "constant",
@@ -45,6 +46,11 @@
     },
     "outcomePicker": {
       "type": "leastPoints"
-    }
+    },
+    "actions": [
+      {
+        "type": "stealth"
+      }
+    ]
   }
 }

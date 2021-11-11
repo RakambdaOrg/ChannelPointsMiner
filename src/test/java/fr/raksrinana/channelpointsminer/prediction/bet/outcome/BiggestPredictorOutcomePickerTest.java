@@ -1,0 +1,61 @@
+package fr.raksrinana.channelpointsminer.prediction.bet.outcome;
+
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Predictor;
+import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class BiggestPredictorOutcomePickerTest{
+	private final BiggestPredictorOutcomePicker tested = BiggestPredictorOutcomePicker.builder().build();
+	
+	@Mock
+	private Prediction prediction;
+	@Mock
+	private Event event;
+	@Mock
+	private Outcome blueOutcome;
+	@Mock
+	private Outcome pinkOutcome;
+	
+	@BeforeEach
+	void setUp(){
+		lenient().when(prediction.getEvent()).thenReturn(event);
+		lenient().when(event.getOutcomes()).thenReturn(List.of(blueOutcome, pinkOutcome));
+	}
+	
+	@Test
+	void chose() throws BetPlacementException{
+		var predictor10 = mock(Predictor.class);
+		var predictor11 = mock(Predictor.class);
+		var predictor20 = mock(Predictor.class);
+		var predictor21 = mock(Predictor.class);
+		
+		when(predictor10.getPoints()).thenReturn(20);
+		when(predictor11.getPoints()).thenReturn(30);
+		when(predictor20.getPoints()).thenReturn(25);
+		when(predictor21.getPoints()).thenReturn(35);
+		
+		when(blueOutcome.getTopPredictors()).thenReturn(List.of(predictor10, predictor11));
+		when(pinkOutcome.getTopPredictors()).thenReturn(List.of(predictor20, predictor21));
+		
+		assertThat(tested.chooseOutcome(prediction)).isEqualTo(pinkOutcome);
+	}
+	
+	@Test
+	void missingOutcome(){
+		when(event.getOutcomes()).thenReturn(List.of());
+		
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(prediction));
+	}
+}

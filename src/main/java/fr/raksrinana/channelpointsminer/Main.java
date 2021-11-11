@@ -1,14 +1,9 @@
 package fr.raksrinana.channelpointsminer;
 
-import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
-import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
-import fr.raksrinana.channelpointsminer.factory.BetPlacerFactory;
 import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
-import fr.raksrinana.channelpointsminer.factory.MessageHandlerFactory;
-import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.miner.Miner;
+import fr.raksrinana.channelpointsminer.factory.MinerFactory;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
 import kong.unirest.*;
 import kong.unirest.jackson.JacksonObjectMapper;
@@ -18,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.Executors;
 import static kong.unirest.HeaderNames.USER_AGENT;
 
 @Log4j2
@@ -39,19 +33,7 @@ public class Main{
 		
 		var config = ConfigurationFactory.getInstance();
 		
-		var miner = new Miner(
-				config,
-				new PassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
-				new StreamerSettingsFactory(config),
-				new TwitchWebSocketPool(),
-				Executors.newScheduledThreadPool(4),
-				Executors.newCachedThreadPool());
-		miner.addHandler(MessageHandlerFactory.createLogger(miner));
-		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
-		miner.start();
+		MinerFactory.create(config).start();
 	}
 	
 	@NotNull

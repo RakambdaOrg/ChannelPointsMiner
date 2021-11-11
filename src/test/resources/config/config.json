@@ -8,5 +8,11 @@
     "followRaid": true,
     "participateCampaigns": true
   },
-  "streamerConfigDirectory": "streamers"
+  "streamerConfigDirectories": [
+    {
+      "path": "streamers",
+      "recursive": false
+    }
+  ],
+  "discordWebhook": "https://discord-webhook"
 }
