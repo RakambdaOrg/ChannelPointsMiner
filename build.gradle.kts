@@ -54,6 +54,10 @@ tasks {
         options.isDeprecation = true
     }
 
+    compileTestJava {
+        options.encoding = "UTF-8"
+    }
+
     jar {
         manifest {
             attributes["Multi-Release"] = "true"
@@ -120,6 +124,6 @@ jib {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
 }
-lombok{
+lombok {
     version.set("edge-SNAPSHOT")
 }

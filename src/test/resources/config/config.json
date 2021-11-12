@@ -16,7 +16,10 @@
           "recursive": false
         }
       ],
-      "discordWebhook": "https://discord-webhook"
+      "discord": {
+        "webhookUrl": "https://discord-webhook",
+        "embeds": true
+      }
     }
   ]
 }

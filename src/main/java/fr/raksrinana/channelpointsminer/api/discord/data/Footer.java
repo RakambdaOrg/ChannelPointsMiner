@@ -15,6 +15,7 @@ import java.net.URL;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Footer{
 	@JsonProperty("text")
 	private String text;

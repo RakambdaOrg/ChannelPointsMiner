@@ -31,7 +31,7 @@ class MessageHandlerFactoryTest{
 	
 	@Test
 	void createDiscordLogger(){
-		assertThat(MessageHandlerFactory.createDiscordLogger(miner, discordApi)).isNotNull().isInstanceOf(DiscordLoggerHandler.class);
+		assertThat(MessageHandlerFactory.createDiscordLogger(miner, discordApi, true)).isNotNull().isInstanceOf(DiscordLoggerHandler.class);
 	}
 	
 	@Test

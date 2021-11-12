@@ -27,9 +27,9 @@ public class MinerFactory{
 		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
 		
-		if(Objects.nonNull(config.getDiscordWebhook())){
-			var discordApi = ApiFactory.createdDiscordApi(config.getDiscordWebhook());
-			miner.addHandler(MessageHandlerFactory.createDiscordLogger(miner, discordApi));
+		if(Objects.nonNull(config.getDiscord().getUrl())){
+			var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
+			miner.addHandler(MessageHandlerFactory.createDiscordLogger(miner, discordApi, config.getDiscord().isEmbeds()));
 		}
 		
 		return miner;

@@ -134,8 +134,8 @@ Account settings define all the settings for a Twitch account that will be used 
 |A list of <<streamer_directories,streamer directories>> containing <<streamer_settings,streamer settings>>.
 |<empty>
 
-|discordWebhook
-|Discord webhook url to publish events to.
+|discord
+|<<discord_settings,Discord settings>>.
 |
 |===
 
@@ -151,6 +151,24 @@ Account settings define all the settings for a Twitch account that will be used 
 
 |recursive
 |If set to true, the folder will be scanned recursively.
+|false
+|===
+
+=== Discord settings [[discord_settings]]]
+
+Discord settings define settings to be used with Discord webhooks.
+Leave it empty if you don't want the feature.
+
+[cols="1,3,1"]
+|===
+|Name |Description |Default value
+
+|webhookUrl
+|Discord webhook url to publish events to.
+|
+
+|embeds
+|If true embeds will be sent in the chat.
 |false
 |===
 

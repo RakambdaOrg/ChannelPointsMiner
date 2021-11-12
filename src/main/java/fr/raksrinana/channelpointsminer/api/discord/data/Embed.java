@@ -18,6 +18,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Embed{
 	@JsonProperty("author")
 	private Author author;

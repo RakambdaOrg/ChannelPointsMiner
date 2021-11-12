@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.factory;
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
+import fr.raksrinana.channelpointsminer.config.DiscordConfiguration;
 import fr.raksrinana.channelpointsminer.handler.ClaimAvailableHandler;
 import fr.raksrinana.channelpointsminer.handler.FollowRaidHandler;
 import fr.raksrinana.channelpointsminer.handler.PredictionsHandler;
@@ -34,6 +35,8 @@ class MinerFactoryTest{
 	private PassportApi passportApi;
 	@Mock
 	private DiscordApi discordApi;
+	@Mock
+	private DiscordConfiguration discordConfiguration;
 	
 	@BeforeEach
 	void setUp(){
@@ -41,6 +44,7 @@ class MinerFactoryTest{
 		lenient().when(accountConfiguration.getPassword()).thenReturn(PASSWORD);
 		lenient().when(accountConfiguration.getAuthenticationFolder()).thenReturn(AUTH_FOLDER);
 		lenient().when(accountConfiguration.isUse2Fa()).thenReturn(USE_2FA);
+		lenient().when(accountConfiguration.getDiscord()).thenReturn(discordConfiguration);
 	}
 	
 	@Test
@@ -70,7 +74,7 @@ class MinerFactoryTest{
 			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, PASSWORD, AUTH_FOLDER, USE_2FA)).thenReturn(passportApi);
 			apiFactory.when(() -> ApiFactory.createdDiscordApi(discordWebhook)).thenReturn(discordApi);
 			
-			when(accountConfiguration.getDiscordWebhook()).thenReturn(discordWebhook);
+			when(discordConfiguration.getUrl()).thenReturn(discordWebhook);
 			
 			var miner = MinerFactory.create(accountConfiguration);
 			
