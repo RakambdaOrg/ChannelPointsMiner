@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.config.StreamerDirectory;
 import fr.raksrinana.channelpointsminer.prediction.bet.action.StealthPredictionAction;
 import fr.raksrinana.channelpointsminer.prediction.bet.amount.ConstantAmount;
@@ -38,7 +38,7 @@ class StreamerSettingsFactoryTest{
 	private StreamerSettingsFactory tested;
 	
 	@Mock
-	private Configuration configuration;
+	private AccountConfiguration accountConfiguration;
 	
 	@BeforeEach
 	void setUp(){
@@ -47,8 +47,8 @@ class StreamerSettingsFactoryTest{
 				.recursive(false)
 				.build();
 		
-		when(configuration.getDefaultStreamerSettings()).thenReturn(DEFAULT);
-		lenient().when(configuration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory));
+		when(accountConfiguration.getDefaultStreamerSettings()).thenReturn(DEFAULT);
+		lenient().when(accountConfiguration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory));
 	}
 	
 	@Test
@@ -62,7 +62,7 @@ class StreamerSettingsFactoryTest{
 				.path(tempDir.resolve("unknown-dir"))
 				.recursive(false)
 				.build();
-		when(configuration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory));
+		when(accountConfiguration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory));
 		
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(DEFAULT);
@@ -108,7 +108,7 @@ class StreamerSettingsFactoryTest{
 				.build();
 		TestUtils.copyFromResources("factory/partiallyOverridden.json", dir2.resolve(STREAMER_USERNAME + ".json"));
 		
-		when(configuration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory1, streamerDirectory2));
+		when(accountConfiguration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory1, streamerDirectory2));
 		
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
@@ -133,7 +133,7 @@ class StreamerSettingsFactoryTest{
 				.build();
 		TestUtils.copyFromResources("factory/partiallyOverridden.json", dir2.resolve(STREAMER_USERNAME + ".json"));
 		
-		when(configuration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory1, streamerDirectory2));
+		when(accountConfiguration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory1, streamerDirectory2));
 		
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
@@ -153,7 +153,7 @@ class StreamerSettingsFactoryTest{
 				.build();
 		TestUtils.copyFromResources("factory/partiallyOverridden.json", dir.resolve(STREAMER_USERNAME + ".json"));
 		
-		when(configuration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory));
+		when(accountConfiguration.getStreamerConfigDirectories()).thenReturn(List.of(streamerDirectory));
 		
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
@@ -199,7 +199,7 @@ class StreamerSettingsFactoryTest{
 				.score(90)
 				.build());
 		
-		when(configuration.getDefaultStreamerSettings()).thenReturn(StreamerSettings.builder()
+		when(accountConfiguration.getDefaultStreamerSettings()).thenReturn(StreamerSettings.builder()
 				.priorities(List.of(ConstantPriority.builder()
 						.score(555)
 						.build()))

@@ -32,9 +32,10 @@ public class Main{
 		CLIHolder.setInstance(parseCLIParameters(args));
 		preSetup();
 		
-		var config = ConfigurationFactory.getInstance();
-		
-		MinerFactory.create(config).start();
+		var accountConfigurations = ConfigurationFactory.getInstance();
+		for(var accountConfiguration : accountConfigurations.getAccounts()){
+			MinerFactory.create(accountConfiguration).start();
+		}
 	}
 	
 	@NotNull
