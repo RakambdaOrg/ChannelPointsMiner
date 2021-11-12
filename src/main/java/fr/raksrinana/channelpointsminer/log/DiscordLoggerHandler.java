@@ -15,12 +15,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.awt.Color;
 import java.util.List;
 import java.util.Optional;
 
 @Log4j2
 @RequiredArgsConstructor
 public class DiscordLoggerHandler extends HandlerAdapter{
+	private static final int COLOR_INFO = Color.CYAN.getRGB();
+	private static final int COLOR_PREDICTION = Color.PINK.getRGB();
+	private static final int COLOR_POINTS_WON = Color.GREEN.getRGB();
+	private static final int COLOR_POINTS_LOST = Color.RED.getRGB();
+	
 	private final IMiner miner;
 	private final DiscordApi discordApi;
 	
@@ -29,7 +35,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(message.getData().getClaim().getChannelId()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(4892823) //Cyan
+					.color(COLOR_INFO)
 					.description("Claim available")
 					.build();
 			discordApi.sendMessage(Webhook.builder()
@@ -43,7 +49,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(8959) //Dark blue
+					.color(COLOR_PREDICTION)
 					.description("Prediction created")
 					.field(Field.builder().name("Title").value(message.getData().getEvent().getTitle()).build())
 					.build();
@@ -60,7 +66,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		try(var ignored = LogContext.with(streamer)){
 			var pointGain = pointsEarnedData.getPointGain();
 			var embed = createEmbedForStreamer(streamer)
-					.color(11796224) //Green/Yellow
+					.color(COLOR_POINTS_WON)
 					.description("Points earned")
 					.field(Field.builder().name("Earned").value(Integer.toString(pointGain.getTotalPoints())).build())
 					.field(Field.builder().name("Reason").value(pointGain.getReasonCode().toString()).build())
@@ -77,7 +83,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(balance.getChannelId()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(16750848) //Orange
+					.color(COLOR_POINTS_LOST)
 					.description("Points spent")
 					.field(Field.builder().name("New balance").value(Integer.toString(balance.getBalance())).build())
 					.build();
@@ -92,7 +98,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(16711680) //Red
+					.color(COLOR_INFO)
 					.description("Stream stopped")
 					.build();
 			discordApi.sendMessage(Webhook.builder()
@@ -106,7 +112,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(65280) //Green
+					.color(COLOR_INFO)
 					.description("Stream started")
 					.build();
 			discordApi.sendMessage(Webhook.builder()
@@ -121,7 +127,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(prediction.getChannelId()).orElse(null);
 		try(var ignored = LogContext.with(streamer)){
 			var embed = createEmbedForStreamer(streamer)
-					.color(65420) //Turquoise-ish
+					.color(COLOR_PREDICTION)
 					.description("Bet placed")
 					.field(Field.builder().name("Points placed").value(Integer.toString(prediction.getPoints())).build())
 					.build();
@@ -138,7 +144,7 @@ public class DiscordLoggerHandler extends HandlerAdapter{
 		try(var ignored = LogContext.with(streamer)){
 			var result = Optional.ofNullable(prediction.getResult());
 			var embed = createEmbedForStreamer(streamer)
-					.color(13631743) //Purple
+					.color(COLOR_PREDICTION)
 					.description("Prediction result")
 					.field(Field.builder()
 							.name("Type")

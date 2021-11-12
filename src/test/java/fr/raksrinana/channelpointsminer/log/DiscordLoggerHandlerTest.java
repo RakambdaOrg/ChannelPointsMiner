@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import static java.awt.Color.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,7 +83,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(4892823)
+						.color(CYAN.getRGB())
 						.description("Claim available")
 						.build()))
 				.build());
@@ -105,7 +106,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(11796224)
+						.color(GREEN.getRGB())
 						.description("Points earned")
 						.field(Field.builder().name("Earned").value("25").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
@@ -129,7 +130,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(16750848)
+						.color(RED.getRGB())
 						.description("Points spent")
 						.field(Field.builder().name("New balance").value("25").build())
 						.build()))
@@ -145,7 +146,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(16711680)
+						.color(CYAN.getRGB())
 						.description("Stream stopped")
 						.build()))
 				.build());
@@ -160,7 +161,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(65280)
+						.color(CYAN.getRGB())
 						.description("Stream started")
 						.build()))
 				.build());
@@ -182,7 +183,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(8959)
+						.color(PINK.getRGB())
 						.description("Prediction created")
 						.field(Field.builder().name("Title").value(title).build())
 						.build()))
@@ -205,7 +206,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(65420)
+						.color(PINK.getRGB())
 						.description("Bet placed")
 						.field(Field.builder().name("Points placed").value("25").build())
 						.build()))
@@ -231,7 +232,7 @@ class DiscordLoggerHandlerTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
-						.color(13631743)
+						.color(PINK.getRGB())
 						.description("Prediction result")
 						.field(Field.builder().name("Type").value("WIN").build())
 						.field(Field.builder()
@@ -252,7 +253,7 @@ class DiscordLoggerHandlerTest{
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
-						.color(65280)
+						.color(CYAN.getRGB())
 						.description("Stream started")
 						.build()))
 				.build());
