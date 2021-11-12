@@ -16,6 +16,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Webhook{
 	@JsonProperty("username")
 	private String username;

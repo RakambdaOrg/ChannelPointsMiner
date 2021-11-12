@@ -19,8 +19,8 @@ public class MessageHandlerFactory{
 		return new LogLoggerHandler(miner);
 	}
 	
-	public static MessageHandler createDiscordLogger(@NotNull IMiner miner, @NotNull DiscordApi discordApi){
-		return new DiscordLoggerHandler(miner, discordApi);
+	public static MessageHandler createDiscordLogger(@NotNull IMiner miner, @NotNull DiscordApi discordApi, boolean useEmbeds){
+		return new DiscordLoggerHandler(miner, discordApi, useEmbeds);
 	}
 	
 	public static MessageHandler createClaimAvailableHandler(@NotNull IMiner miner){

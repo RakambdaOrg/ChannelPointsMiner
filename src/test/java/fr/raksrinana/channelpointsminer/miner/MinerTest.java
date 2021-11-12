@@ -460,7 +460,7 @@ class MinerTest{
 		var message = mock(Message.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
-		verify(executorService).submit(any(Runnable.class));
+		verify(executorService, never()).submit(any(Runnable.class));
 	}
 	
 	@Test
@@ -474,7 +474,7 @@ class MinerTest{
 		var message = mock(Message.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
-		verify(executorService).submit(any(Runnable.class));
+		verify(executorService, times(2)).submit(any(Runnable.class));
 		verify(handler1).handle(topic, message);
 		verify(handler2).handle(topic, message);
 	}

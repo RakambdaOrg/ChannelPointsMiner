@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.DiscordConfiguration;
 import fr.raksrinana.channelpointsminer.config.StreamerDirectory;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.tests.TestUtils;
@@ -51,7 +52,10 @@ class ConfigurationFactoryTest{
 								.path(Paths.get("streamers"))
 								.recursive(false)
 								.build()))
-						.discordWebhook(new URL("https://discord-webhook"))
+						.discord(DiscordConfiguration.builder()
+								.url(new URL("https://discord-webhook"))
+								.embeds(true)
+								.build())
 						.build()))
 				.build();
 		

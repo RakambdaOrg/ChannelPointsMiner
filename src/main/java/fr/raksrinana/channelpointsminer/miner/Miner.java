@@ -244,15 +244,11 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
-		handlerExecutor.submit(() -> {
+		messageHandlers.forEach(handler -> handlerExecutor.submit(() -> {
 			try(var ignored = LogContext.restore(values, messages)){
-				handleMessage(topic, message);
+				handler.handle(topic, message);
 			}
-		});
-	}
-	
-	private void handleMessage(@NotNull Topic topic, @NotNull Message message){
-		messageHandlers.forEach(handler -> handler.handle(topic, message));
+		}));
 	}
 	
 	private UpdateStreamInfo getUpdateStreamInfo(){

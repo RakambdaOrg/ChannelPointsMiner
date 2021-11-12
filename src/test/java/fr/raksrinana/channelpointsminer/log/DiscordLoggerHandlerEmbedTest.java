@@ -17,7 +17,6 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,11 +30,10 @@ import static java.awt.Color.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DiscordLoggerHandlerTest{
+class DiscordLoggerHandlerEmbedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
 	
-	@InjectMocks
 	private DiscordLoggerHandler tested;
 	
 	@Mock
@@ -51,6 +49,8 @@ class DiscordLoggerHandlerTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
+		tested = new DiscordLoggerHandler(miner, discordApi, true);
+		
 		var streamerProfileUrl = new URL("https://streamer-image");
 		var channelUrl = new URL("https://streamer");
 		
@@ -235,10 +235,7 @@ class DiscordLoggerHandlerTest{
 						.color(PINK.getRGB())
 						.description("Prediction result")
 						.field(Field.builder().name("Type").value("WIN").build())
-						.field(Field.builder()
-								.name("Points gained")
-								.value("56")
-								.build())
+						.field(Field.builder().name("Points gained").value("+56").build())
 						.build()))
 				.build());
 	}
