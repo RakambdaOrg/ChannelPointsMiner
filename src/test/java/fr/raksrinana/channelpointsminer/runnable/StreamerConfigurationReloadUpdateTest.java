@@ -17,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StreamerConfigurationReloadInitialWithFollowsTest{
+class StreamerConfigurationReloadUpdateTest{
+	private static final String EXISTING_STREAMER_ID = "exits-streamer-id";
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-username";
 	
@@ -28,6 +29,8 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
 	@Mock
+	private StreamerSettings existingStreamerSettings;
+	@Mock
 	private GQLApi gqlApi;
 	
 	@Mock
@@ -35,22 +38,27 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	@Mock
 	private StreamerSettings streamerSettings;
 	
+	private Streamer existingStreamer;
+	
 	@BeforeEach
 	void setUp(){
 		tested = new StreamerConfigurationReload(miner, streamerSettingsFactory, true);
+		existingStreamer = spy(new Streamer(EXISTING_STREAMER_ID, STREAMER_USERNAME, existingStreamerSettings));
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
 		
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
-		lenient().when(miner.getStreamers()).thenReturn(List.of());
+		lenient().when(miner.getStreamers()).thenReturn(List.of(existingStreamer));
+		
+		lenient().when(existingStreamer.getId()).thenReturn(EXISTING_STREAMER_ID);
+		
+		lenient().when(user.getId()).thenReturn(STREAMER_ID);
+		lenient().when(user.getLogin()).thenReturn(STREAMER_USERNAME);
 	}
 	
 	@Test
-	void loadFromFollows(){
-		when(user.getId()).thenReturn(STREAMER_ID);
-		when(user.getLogin()).thenReturn(STREAMER_USERNAME);
-		
+	void addNew(){
 		when(gqlApi.allChannelFollows()).thenReturn(List.of(user));
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -61,12 +69,24 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	}
 	
 	@Test
-	void loadFromFollowsEmpty(){
+	void updateExisting(){
+		when(user.getId()).thenReturn(EXISTING_STREAMER_ID);
+		when(gqlApi.allChannelFollows()).thenReturn(List.of(user));
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(existingStreamer).setSettings(streamerSettings);
+		verify(miner).updateStreamer(existingStreamer);
+		verify(gqlApi, never()).reportMenuItem(anyString());
+	}
+	
+	@Test
+	void removeOld(){
 		when(gqlApi.allChannelFollows()).thenReturn(List.of());
 		
 		assertDoesNotThrow(() -> tested.run());
 		
-		verify(miner, never()).addStreamer(any());
+		verify(miner).removeStreamer(existingStreamer);
 		verify(gqlApi, never()).reportMenuItem(anyString());
 	}
 }

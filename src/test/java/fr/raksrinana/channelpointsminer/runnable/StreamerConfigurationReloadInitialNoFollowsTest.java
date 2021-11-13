@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -56,6 +57,7 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
 		
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
+		lenient().when(miner.getStreamers()).thenReturn(List.of());
 		
 		lenient().when(reportMenuItemResponse.getData()).thenReturn(reportMenuItemData);
 		lenient().when(reportMenuItemData.getUser()).thenReturn(user);
