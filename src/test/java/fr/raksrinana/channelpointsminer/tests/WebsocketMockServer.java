@@ -15,7 +15,7 @@ import static org.awaitility.Awaitility.await;
 
 @Log4j2
 public class WebsocketMockServer extends WebSocketServer{
-	private static final int MESSAGE_TIMEOUT = 30;
+	private static final int MESSAGE_TIMEOUT = 15;
 	
 	@Getter
 	private final ArrayList<String> receivedMessages;

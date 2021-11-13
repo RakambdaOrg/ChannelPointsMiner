@@ -26,7 +26,7 @@ public class WebsocketMockServerExtension implements Extension, BeforeAllCallbac
 	
 	@Override
 	public void afterAll(ExtensionContext context) throws InterruptedException{
-		server.stop(1000);
+		server.stop(10000);
 	}
 	
 	@Override
