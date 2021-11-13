@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
 import static fr.raksrinana.channelpointsminer.tests.TestUtils.getAllResourceContent;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-@Disabled("Doesn't pass on CI")
+@EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
 class TwitchWebSocketClientResponseTest{
 	private static final int MESSAGE_TIMEOUT = 15000;
 	private TwitchWebSocketClient tested;

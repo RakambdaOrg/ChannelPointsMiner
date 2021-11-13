@@ -17,7 +17,7 @@ public class MinerFactory{
 				config,
 				ApiFactory.createPassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
 				new StreamerSettingsFactory(config),
-				new TwitchWebSocketPool(),
+				new TwitchWebSocketPool(50),
 				Executors.newScheduledThreadPool(4),
 				Executors.newCachedThreadPool());
 		

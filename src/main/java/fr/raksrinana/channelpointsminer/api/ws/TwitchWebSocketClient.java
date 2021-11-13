@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.ListenTopicRequest;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.PingRequest;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.TwitchWebSocketRequest;
+import fr.raksrinana.channelpointsminer.api.ws.data.request.UnlistenTopicRequest;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
@@ -109,14 +110,6 @@ public class TwitchWebSocketClient extends WebSocketClient{
 		send(new PingRequest());
 	}
 	
-	public void listenTopic(@NotNull Topics topics){
-		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			if(this.topics.add(topics)){
-				send(new ListenTopicRequest(topics));
-			}
-		}
-	}
-	
 	private void send(@NotNull TwitchWebSocketRequest request){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var data = JacksonUtils.writeAsString(request);
@@ -138,8 +131,25 @@ public class TwitchWebSocketClient extends WebSocketClient{
 				.anyMatch(t -> Objects.equals(t, topic));
 	}
 	
+	public void listenTopic(@NotNull Topics topics){
+		try(var ignored = LogContext.empty().withSocketId(uuid)){
+			if(this.topics.add(topics)){
+				send(new ListenTopicRequest(topics));
+			}
+		}
+	}
+	
 	public void removeTopic(@NotNull Topic topic){
-		//TODO
+		try(var ignored = LogContext.empty().withSocketId(uuid)){
+			var topics = this.topics.stream()
+					.filter(t -> t.getTopics().contains(topic))
+					.toList();
+			
+			topics.forEach(t -> {
+				send(new UnlistenTopicRequest(t));
+				this.topics.remove(t);
+			});
+		}
 	}
 	
 	public int getTopicCount(){

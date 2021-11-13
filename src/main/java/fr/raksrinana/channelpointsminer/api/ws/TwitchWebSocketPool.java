@@ -19,13 +19,14 @@ import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
 public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListener{
-	private static final int MAX_TOPIC_PER_CLIENT = 50;
 	private static final int SOCKET_TIMEOUT_MINUTES = 5;
 	
 	private final Collection<TwitchWebSocketClient> clients;
 	private final List<TwitchMessageListener> listeners;
+	private final int maxTopicPerClient;
 	
-	public TwitchWebSocketPool(){
+	public TwitchWebSocketPool(int maxTopicPerClient){
+		this.maxTopicPerClient = maxTopicPerClient;
 		clients = new ArrayList<>();
 		listeners = new ArrayList<>();
 	}
@@ -60,12 +61,12 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 				.forEach(client -> client.removeTopic(topic));
 	}
 	
-	@NotNull
-	private TwitchWebSocketClient getAvailableClient(){
-		return clients.stream()
-				.filter(client -> client.getTopicCount() < MAX_TOPIC_PER_CLIENT)
-				.findAny()
-				.orElseGet(this::createNewClient);
+	@Override
+	public void onWebSocketClosed(@NotNull TwitchWebSocketClient client, int code, @Nullable String reason, boolean remote){
+		clients.remove(client);
+		if(code != NORMAL){
+			client.getTopics().forEach(this::listenTopic);
+		}
 	}
 	
 	@NotNull
@@ -97,13 +98,12 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 		}
 	}
 	
-	@Override
-	public void onWebSocketClosed(@NotNull TwitchWebSocketClient client, int code, @Nullable String reason, boolean remote){
-		clients.remove(client);
-		if(code != NORMAL){
-			var allTopics = client.getTopics().stream().collect(new Topics.TopicsCollector());
-			listenTopic(allTopics);
-		}
+	@NotNull
+	private TwitchWebSocketClient getAvailableClient(){
+		return clients.stream()
+				.filter(client -> client.getTopicCount() < maxTopicPerClient)
+				.findAny()
+				.orElseGet(this::createNewClient);
 	}
 	
 	public int getClientCount(){

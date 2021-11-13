@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import static org.awaitility.Awaitility.await;
 
 @Log4j2
 public class WebsocketMockServer extends WebSocketServer{
@@ -63,5 +65,13 @@ public class WebsocketMockServer extends WebSocketServer{
 	
 	public void send(String message){
 		broadcast(message);
+	}
+	
+	public void awaitMessage(){
+		await().atMost(15, TimeUnit.SECONDS).until(() -> !getReceivedMessages().isEmpty());
+	}
+	
+	public void awaitNothing(){
+		await().atMost(10, TimeUnit.SECONDS).failFast(() -> getReceivedMessages().isEmpty());
 	}
 }
