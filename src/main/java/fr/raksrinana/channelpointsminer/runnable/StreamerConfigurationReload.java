@@ -86,6 +86,7 @@ public class StreamerConfigurationReload implements Runnable{
 		
 		log.debug("Loading streamers from follow list");
 		return miner.getGqlApi().allChannelFollows().stream()
+				.filter(user -> !excludedIds.contains(user.getId()))
 				.map(user -> {
 					var streamerId = user.getId();
 					var streamerName = user.getLogin();
