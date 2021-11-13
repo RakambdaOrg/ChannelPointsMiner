@@ -155,7 +155,7 @@ Account settings define all the settings for a Twitch account that will be used 
 New streamer configurations will be added, already existing ones will be updated, and removed one will be removed.
 
 A zero or negative value will disable this feature.
-We recommend to setting this value to something not too low as this is a rather intensive treatment (15 minutes minimum seems fair).
+We recommend setting this value to something not too low as this is a rather intensive treatment (15 minutes minimum seems fair).
 
 NOTE: Only <<streamer_settings,streamer settings>> are reloaded, not the <<global_settings,global settings>>.
 |0
