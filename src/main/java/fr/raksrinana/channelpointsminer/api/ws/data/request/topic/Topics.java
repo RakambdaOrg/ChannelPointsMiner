@@ -1,13 +1,11 @@
 package fr.raksrinana.channelpointsminer.api.ws.data.request.topic;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -15,8 +13,7 @@ import java.util.Set;
 @EqualsAndHashCode
 public class Topics{
 	@JsonProperty("topics")
-	@Builder.Default
-	private Set<Topic> topics = new HashSet<>();
+	private Set<Topic> topics;
 	@JsonProperty("auth_token")
 	@ToString.Exclude
 	private String authToken;
