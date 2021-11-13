@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.tests;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.WebSocket;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
@@ -63,6 +64,10 @@ public class WebsocketMockServer extends WebSocketServer{
 		receivedMessages.clear();
 		answers.clear();
 		receivedClose = false;
+	}
+	
+	public void removeClients(){
+		getConnections().forEach(c -> c.close(CloseFrame.NORMAL));
 	}
 	
 	public void send(String message){

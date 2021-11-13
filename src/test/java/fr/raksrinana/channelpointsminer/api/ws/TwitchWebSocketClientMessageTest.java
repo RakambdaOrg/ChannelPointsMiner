@@ -43,24 +43,14 @@ class TwitchWebSocketClientMessageTest{
 	@Mock
 	private TwitchWebSocketListener listener;
 	
-	@BeforeEach
-	void setUp(){
-		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
-		tested = new TwitchWebSocketClient(uri);
-		tested.addListener(listener);
-	}
-	
 	@AfterEach
-	void tearDown() throws InterruptedException{
-		if(tested.isOpen()){
-			tested.closeBlocking();
-		}
+	void tearDown(WebsocketMockServer server){
+		tested.close();
+		server.removeClients();
 	}
 	
 	@Test
-	void onCommercial(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onCommercial(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/commercial.json"));
 		
 		var expected = MessageResponse.builder()
@@ -80,9 +70,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onPointsEarned(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onPointsEarned(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/pointsEarned.json"));
 		
 		var expected = MessageResponse.builder()
@@ -116,9 +104,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onPointsSpent(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onPointsSpent(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/pointsSpent.json"));
 		
 		var expected = MessageResponse.builder()
@@ -143,9 +129,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onRaidGoV2(WebsocketMockServer server) throws InterruptedException, MalformedURLException{
-		tested.connectBlocking();
-		
+	void onRaidGoV2(WebsocketMockServer server) throws MalformedURLException{
 		server.send(getAllResourceContent("api/ws/raidGoV2.json"));
 		
 		var expected = MessageResponse.builder()
@@ -174,9 +158,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onRaidUpdateV2(WebsocketMockServer server) throws InterruptedException, MalformedURLException{
-		tested.connectBlocking();
-		
+	void onRaidUpdateV2(WebsocketMockServer server) throws MalformedURLException{
 		server.send(getAllResourceContent("api/ws/raidUpdateV2.json"));
 		
 		var expected = MessageResponse.builder()
@@ -205,9 +187,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onViewCount(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onViewCount(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/viewCount.json"));
 		
 		var expected = MessageResponse.builder()
@@ -226,9 +206,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onPredictionMade(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onPredictionMade(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/predictionMade.json"));
 		
 		var expected = MessageResponse.builder()
@@ -258,9 +236,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onPredictionUpdated(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onPredictionUpdated(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/predictionUpdated.json"));
 		
 		var expected = MessageResponse.builder()
@@ -290,9 +266,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onPredictionResult(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onPredictionResult(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/predictionResult.json"));
 		
 		var expected = MessageResponse.builder()
@@ -324,5 +298,15 @@ class TwitchWebSocketClientMessageTest{
 						.build())
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@BeforeEach
+	void setUp(WebsocketMockServer server) throws InterruptedException{
+		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
+		tested = new TwitchWebSocketClient(uri);
+		tested.addListener(listener);
+		tested.connectBlocking();
+		server.awaitMessage();
+		server.reset();
 	}
 }

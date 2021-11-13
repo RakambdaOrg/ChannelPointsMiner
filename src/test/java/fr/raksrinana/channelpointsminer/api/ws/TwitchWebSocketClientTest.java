@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
+		// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
 class TwitchWebSocketClientTest{
 	private static final Instant NOW = Instant.parse("2021-10-15T15:30:14.014Z");
 	
@@ -39,10 +39,9 @@ class TwitchWebSocketClientTest{
 	}
 	
 	@AfterEach
-	void tearDown() throws InterruptedException{
-		if(tested.isOpen()){
-			tested.closeBlocking();
-		}
+	void tearDown(WebsocketMockServer server){
+		tested.close();
+		server.removeClients();
 	}
 	
 	@Test

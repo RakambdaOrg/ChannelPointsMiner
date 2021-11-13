@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
+		// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
 class TwitchWebSocketClientResponseTest{
 	private static final int MESSAGE_TIMEOUT = 15000;
 	private TwitchWebSocketClient tested;
@@ -34,15 +34,15 @@ class TwitchWebSocketClientResponseTest{
 	}
 	
 	@AfterEach
-	void tearDown() throws InterruptedException{
-		if(tested.isOpen()){
-			tested.closeBlocking();
-		}
+	void tearDown(WebsocketMockServer server){
+		tested.close();
+		server.removeClients();
 	}
 	
 	@Test
 	void onResponseBadAuthClosesConnection(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
+		server.awaitMessage();
 		
 		tested.onMessage(getAllResourceContent("api/ws/response_bad_auth.json"));
 		
@@ -53,6 +53,7 @@ class TwitchWebSocketClientResponseTest{
 	@Test
 	void onResponse(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
+		server.awaitMessage();
 		
 		server.send(getAllResourceContent("api/ws/response_ok.json"));
 		

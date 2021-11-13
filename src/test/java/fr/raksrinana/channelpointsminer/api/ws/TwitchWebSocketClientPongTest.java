@@ -12,16 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
 import java.time.Instant;
-import java.util.concurrent.TimeUnit;
 import static fr.raksrinana.channelpointsminer.tests.TestUtils.getAllResourceContent;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
+		// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
 class TwitchWebSocketClientPongTest{
 	private static final Instant NOW = Instant.parse("2021-02-25T15:25:36Z");
 	private static final int MESSAGE_TIMEOUT = 15000;
@@ -39,10 +37,9 @@ class TwitchWebSocketClientPongTest{
 	}
 	
 	@AfterEach
-	void tearDown() throws InterruptedException{
-		if(tested.isOpen()){
-			tested.closeBlocking();
-		}
+	void tearDown(WebsocketMockServer server){
+		tested.close();
+		server.removeClients();
 	}
 	
 	@Test
@@ -59,7 +56,7 @@ class TwitchWebSocketClientPongTest{
 	@Test
 	void onPong(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
-		await().atMost(10, TimeUnit.SECONDS).until(() -> !server.getReceivedMessages().isEmpty());
+		server.awaitMessage();
 		
 		server.send(getAllResourceContent("api/ws/pong.json"));
 		
