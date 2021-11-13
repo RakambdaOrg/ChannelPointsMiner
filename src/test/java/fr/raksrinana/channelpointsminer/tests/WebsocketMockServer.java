@@ -15,6 +15,8 @@ import static org.awaitility.Awaitility.await;
 
 @Log4j2
 public class WebsocketMockServer extends WebSocketServer{
+	private static final int MESSAGE_TIMEOUT = 30;
+	
 	@Getter
 	private final ArrayList<String> receivedMessages;
 	private final Map<String, String> answers;
@@ -68,10 +70,10 @@ public class WebsocketMockServer extends WebSocketServer{
 	}
 	
 	public void awaitMessage(){
-		await().atMost(15, TimeUnit.SECONDS).until(() -> !getReceivedMessages().isEmpty());
+		await().atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> !getReceivedMessages().isEmpty());
 	}
 	
 	public void awaitNothing(){
-		await().atMost(10, TimeUnit.SECONDS).failFast(() -> getReceivedMessages().isEmpty());
+		await().atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).failFast(() -> getReceivedMessages().isEmpty());
 	}
 }
