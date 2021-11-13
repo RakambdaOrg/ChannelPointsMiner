@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.api.ws;
 
+import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.TwitchWebSocketResponse;
@@ -41,12 +42,22 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	}
 	
 	public void listenTopic(@NotNull Topics topics){
-		var isListened = topics.getTopics().stream().anyMatch(t -> clients.stream().anyMatch(c -> c.isTopicListened(t)));
+		var isListened = topics.getTopics().stream().anyMatch(this::isTopicListened);
 		if(isListened){
 			log.debug("Topic {} is already being listened", topics);
 			return;
 		}
 		getAvailableClient().listenTopic(topics);
+	}
+	
+	private boolean isTopicListened(@NotNull Topic topic){
+		return clients.stream().anyMatch(client -> client.isTopicListened(topic));
+	}
+	
+	public void removeTopic(@NotNull Topic topic){
+		clients.stream()
+				.filter(client -> client.isTopicListened(topic))
+				.forEach(client -> client.removeTopic(topic));
 	}
 	
 	@NotNull

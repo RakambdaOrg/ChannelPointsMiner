@@ -1,10 +1,8 @@
 package fr.raksrinana.channelpointsminer.factory;
 
+import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
-import fr.raksrinana.channelpointsminer.runnable.SendMinutesWatched;
-import fr.raksrinana.channelpointsminer.runnable.SyncInventory;
-import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
-import fr.raksrinana.channelpointsminer.runnable.WebSocketPing;
+import fr.raksrinana.channelpointsminer.runnable.*;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -15,6 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MinerRunnableFactoryTest{
 	@Mock
 	private IMiner miner;
+	@Mock
+	private StreamerSettingsFactory streamerSettingsFactory;
+	@Mock
+	private KrakenApi krakenApi;
 	
 	@Test
 	void createUpdateStreamInfo(){
@@ -38,5 +40,11 @@ class MinerRunnableFactoryTest{
 	void createSyncInventory(){
 		assertThat(MinerRunnableFactory.createSyncInventory(miner)).isNotNull()
 				.isInstanceOf(SyncInventory.class);
+	}
+	
+	@Test
+	void createStreamerConfigurationReload(){
+		assertThat(MinerRunnableFactory.createStreamerConfigurationReload(miner, streamerSettingsFactory, krakenApi, false)).isNotNull()
+				.isInstanceOf(StreamerConfigurationReload.class);
 	}
 }

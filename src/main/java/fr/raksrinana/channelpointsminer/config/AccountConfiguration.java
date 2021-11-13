@@ -41,12 +41,12 @@ public class AccountConfiguration{
 	@Builder.Default
 	private boolean loadFollows = false;
 	@JsonProperty("defaultStreamerSettings")
-	@Comment(value = "Default settings for the streamers mined")
+	@Comment(value = "Default settings for the streamers mined.")
 	@Builder.Default
 	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
 	@NotNull
 	@JsonProperty("streamerConfigDirectories")
-	@Comment(value = "List of paths to a folder that'll contain streamer configurations", defaultValue = "<empty>")
+	@Comment(value = "List of paths to a folder that'll contain streamer configurations.", defaultValue = "<empty>")
 	@Builder.Default
 	private List<StreamerDirectory> streamerConfigDirectories = new ArrayList<>();
 	@NotNull
@@ -54,4 +54,8 @@ public class AccountConfiguration{
 	@Comment(value = "Discord settings")
 	@Builder.Default
 	private DiscordConfiguration discord = new DiscordConfiguration();
+	@JsonProperty("reloadEvery")
+	@Comment(value = "Reload streamer settings every x minutes.", defaultValue = "0")
+	@Builder.Default
+	private int reloadEvery = 0;
 }

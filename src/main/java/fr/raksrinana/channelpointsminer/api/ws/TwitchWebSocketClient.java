@@ -138,6 +138,10 @@ public class TwitchWebSocketClient extends WebSocketClient{
 				.anyMatch(t -> Objects.equals(t, topic));
 	}
 	
+	public void removeTopic(@NotNull Topic topic){
+		//TODO
+	}
+	
 	public int getTopicCount(){
 		return topics.stream().mapToInt(Topics::getTopicCount).sum();
 	}

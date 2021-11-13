@@ -19,7 +19,8 @@
       "discord": {
         "webhookUrl": "https://discord-webhook",
         "embeds": true
-      }
+      },
+      "reloadEvery": 15
     }
   ]
 }

@@ -256,4 +256,30 @@ class TwitchWebSocketPoolTest{
 			verify(client).close(eq(ABNORMAL_CLOSE), anyString());
 		}
 	}
+	
+	@Test
+	void removeTopic(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			
+			when(client.isTopicListened(topic)).thenReturn(true);
+			tested.listenTopic(topics);
+			
+			tested.removeTopic(topic);
+			verify(client).removeTopic(topic);
+		}
+	}
+	
+	@Test
+	void removeUnknownTopic(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			
+			when(client.isTopicListened(topic)).thenReturn(false);
+			tested.listenTopic(topics);
+			
+			tested.removeTopic(topic);
+			verify(client, never()).removeTopic(topic);
+		}
+	}
 }
