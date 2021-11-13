@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Log4j2
 public class WebsocketMockServerExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterAllCallback, ParameterResolver{
-	public static final int PORT = 18547;
+	public static final int PORT = 8080;
 	
 	private final WebsocketMockServer server;
 	
