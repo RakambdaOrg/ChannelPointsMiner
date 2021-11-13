@@ -43,6 +43,16 @@ class TwitchWebSocketClientMessageTest{
 	@Mock
 	private TwitchWebSocketListener listener;
 	
+	@BeforeEach
+	void setUp(WebsocketMockServer server) throws InterruptedException{
+		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
+		tested = new TwitchWebSocketClient(uri);
+		tested.addListener(listener);
+		tested.connectBlocking();
+		server.awaitMessage();
+		server.reset();
+	}
+	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
 		tested.close();
@@ -298,15 +308,5 @@ class TwitchWebSocketClientMessageTest{
 						.build())
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
-	}
-	
-	@BeforeEach
-	void setUp(WebsocketMockServer server) throws InterruptedException{
-		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
-		tested = new TwitchWebSocketClient(uri);
-		tested.addListener(listener);
-		tested.connectBlocking();
-		server.awaitMessage();
-		server.reset();
 	}
 }

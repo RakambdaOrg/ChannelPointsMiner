@@ -32,8 +32,8 @@ class TwitchWebSocketClientTest{
 	private TwitchWebSocketListener listener;
 	
 	@BeforeEach
-	void setUp(){
-		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
+	void setUp(WebsocketMockServer server){
+		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
 		tested = new TwitchWebSocketClient(uri);
 		tested.addListener(listener);
 	}

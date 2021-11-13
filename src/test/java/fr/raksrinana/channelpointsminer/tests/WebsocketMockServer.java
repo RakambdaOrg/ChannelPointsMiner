@@ -19,6 +19,8 @@ public class WebsocketMockServer extends WebSocketServer{
 	private static final int MESSAGE_TIMEOUT = 15;
 	
 	@Getter
+	private final int port;
+	@Getter
 	private final ArrayList<String> receivedMessages;
 	private final Map<String, String> answers;
 	@Getter
@@ -26,6 +28,8 @@ public class WebsocketMockServer extends WebSocketServer{
 	
 	public WebsocketMockServer(int port){
 		super(new InetSocketAddress(port));
+		this.port = port;
+		
 		receivedMessages = new ArrayList<>();
 		answers = new HashMap<>();
 		receivedClose = false;
@@ -75,10 +79,10 @@ public class WebsocketMockServer extends WebSocketServer{
 	}
 	
 	public void awaitMessage(){
-		await().atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> !getReceivedMessages().isEmpty());
+		await("Message await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> !getReceivedMessages().isEmpty());
 	}
 	
 	public void awaitNothing(){
-		await().atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).failFast(() -> getReceivedMessages().isEmpty());
+		await("Nothing await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).failFast(() -> getReceivedMessages().isEmpty());
 	}
 }
