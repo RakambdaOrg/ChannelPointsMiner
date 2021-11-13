@@ -22,7 +22,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-		// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
 class TwitchWebSocketClientTest{
 	private static final Instant NOW = Instant.parse("2021-10-15T15:30:14.014Z");
 	

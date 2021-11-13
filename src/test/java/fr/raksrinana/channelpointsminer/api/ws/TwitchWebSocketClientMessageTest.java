@@ -34,7 +34,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-		// @EnabledIfEnvironmentVariable(named = "EXECUTE_DISABLED_CI", matches = ".*", disabledReason = "Doesn't pass on CI")
 class TwitchWebSocketClientMessageTest{
 	private static final int MESSAGE_TIMEOUT = 15000;
 	
