@@ -1,10 +1,7 @@
 package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.miner.IMiner;
-import fr.raksrinana.channelpointsminer.runnable.SendMinutesWatched;
-import fr.raksrinana.channelpointsminer.runnable.SyncInventory;
-import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
-import fr.raksrinana.channelpointsminer.runnable.WebSocketPing;
+import fr.raksrinana.channelpointsminer.runnable.*;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -29,5 +26,10 @@ public class MinerRunnableFactory{
 	@NotNull
 	public static SyncInventory createSyncInventory(@NotNull IMiner miner){
 		return new SyncInventory(miner);
+	}
+	
+	@NotNull
+	public static StreamerConfigurationReload createStreamerConfigurationReload(@NotNull IMiner miner, @NotNull StreamerSettingsFactory streamerSettingsFactory, boolean loadFollows){
+		return new StreamerConfigurationReload(miner, streamerSettingsFactory, loadFollows);
 	}
 }

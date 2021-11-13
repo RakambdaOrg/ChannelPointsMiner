@@ -41,14 +41,9 @@ public interface IMiner{
 	 */
 	void addStreamer(@NotNull Streamer streamer);
 	
-	/**
-	 * Check if a streamer is being mined.
-	 *
-	 * @param username Streamer's username.
-	 *
-	 * @return True if being mined, false otherwise.
-	 */
-	boolean hasStreamerWithUsername(@NotNull String username);
+	void updateStreamer(@NotNull Streamer streamer);
+	
+	boolean removeStreamer(@NotNull Streamer streamer);
 	
 	void updateStreamerInfos(@NotNull Streamer streamer);
 	

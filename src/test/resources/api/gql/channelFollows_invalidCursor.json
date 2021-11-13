@@ -1,0 +1,21 @@
+{
+  "data": {
+    "user": {
+      "id": "123456789",
+      "follows": {
+        "edges": [],
+        "pageInfo": {
+          "hasNextPage": true,
+          "__typename": "PageInfo"
+        },
+        "__typename": "FollowConnection"
+      },
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 102,
+    "operationName": "ChannelFollows",
+    "requestID": "request-id"
+  }
+}

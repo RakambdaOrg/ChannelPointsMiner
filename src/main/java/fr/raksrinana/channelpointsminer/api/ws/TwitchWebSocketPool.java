@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.api.ws;
 
+import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.TwitchWebSocketResponse;
@@ -18,13 +19,14 @@ import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
 public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListener{
-	private static final int MAX_TOPIC_PER_CLIENT = 50;
 	private static final int SOCKET_TIMEOUT_MINUTES = 5;
 	
 	private final Collection<TwitchWebSocketClient> clients;
 	private final List<TwitchMessageListener> listeners;
+	private final int maxTopicPerClient;
 	
-	public TwitchWebSocketPool(){
+	public TwitchWebSocketPool(int maxTopicPerClient){
+		this.maxTopicPerClient = maxTopicPerClient;
 		clients = new ArrayList<>();
 		listeners = new ArrayList<>();
 	}
@@ -41,7 +43,7 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 	}
 	
 	public void listenTopic(@NotNull Topics topics){
-		var isListened = topics.getTopics().stream().anyMatch(t -> clients.stream().anyMatch(c -> c.isTopicListened(t)));
+		var isListened = topics.getTopics().stream().anyMatch(this::isTopicListened);
 		if(isListened){
 			log.debug("Topic {} is already being listened", topics);
 			return;
@@ -49,12 +51,22 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 		getAvailableClient().listenTopic(topics);
 	}
 	
-	@NotNull
-	private TwitchWebSocketClient getAvailableClient(){
-		return clients.stream()
-				.filter(client -> client.getTopicCount() < MAX_TOPIC_PER_CLIENT)
-				.findAny()
-				.orElseGet(this::createNewClient);
+	private boolean isTopicListened(@NotNull Topic topic){
+		return clients.stream().anyMatch(client -> client.isTopicListened(topic));
+	}
+	
+	public void removeTopic(@NotNull Topic topic){
+		clients.stream()
+				.filter(client -> client.isTopicListened(topic))
+				.forEach(client -> client.removeTopic(topic));
+	}
+	
+	@Override
+	public void onWebSocketClosed(@NotNull TwitchWebSocketClient client, int code, @Nullable String reason, boolean remote){
+		clients.remove(client);
+		if(code != NORMAL){
+			client.getTopics().forEach(this::listenTopic);
+		}
 	}
 	
 	@NotNull
@@ -86,13 +98,12 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 		}
 	}
 	
-	@Override
-	public void onWebSocketClosed(@NotNull TwitchWebSocketClient client, int code, @Nullable String reason, boolean remote){
-		clients.remove(client);
-		if(code != NORMAL){
-			var allTopics = client.getTopics().stream().collect(new Topics.TopicsCollector());
-			listenTopic(allTopics);
-		}
+	@NotNull
+	private TwitchWebSocketClient getAvailableClient(){
+		return clients.stream()
+				.filter(client -> client.getTopicCount() < maxTopicPerClient)
+				.findAny()
+				.orElseGet(this::createNewClient);
 	}
 	
 	public int getClientCount(){

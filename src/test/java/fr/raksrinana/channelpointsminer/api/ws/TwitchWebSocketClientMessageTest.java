@@ -4,8 +4,10 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PointGain;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Raid;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionmade.PredictionMadeData;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionresult.PredictionResultData;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionupdated.PredictionUpdatedData;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageData;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
@@ -15,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
@@ -33,7 +34,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-@Disabled("Doesn't pass on CI")
 class TwitchWebSocketClientMessageTest{
 	private static final int MESSAGE_TIMEOUT = 15000;
 	
@@ -43,23 +43,23 @@ class TwitchWebSocketClientMessageTest{
 	private TwitchWebSocketListener listener;
 	
 	@BeforeEach
-	void setUp(){
-		var uri = URI.create("ws://127.0.0.1:" + WebsocketMockServerExtension.PORT);
+	void setUp(WebsocketMockServer server) throws InterruptedException{
+		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
 		tested = new TwitchWebSocketClient(uri);
 		tested.addListener(listener);
+		tested.connectBlocking();
+		server.awaitMessage();
+		server.reset();
 	}
 	
 	@AfterEach
-	void tearDown() throws InterruptedException{
-		if(tested.isOpen()){
-			tested.closeBlocking();
-		}
+	void tearDown(WebsocketMockServer server){
+		tested.close();
+		server.removeClients();
 	}
 	
 	@Test
-	void onCommercial(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onCommercial(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/commercial.json"));
 		
 		var expected = MessageResponse.builder()
@@ -79,9 +79,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onPointsEarned(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onPointsEarned(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/pointsEarned.json"));
 		
 		var expected = MessageResponse.builder()
@@ -115,9 +113,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onPointsSpent(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
+	void onPointsSpent(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/pointsSpent.json"));
 		
 		var expected = MessageResponse.builder()
@@ -142,9 +138,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onRaidGoV2(WebsocketMockServer server) throws InterruptedException, MalformedURLException{
-		tested.connectBlocking();
-		
+	void onRaidGoV2(WebsocketMockServer server) throws MalformedURLException{
 		server.send(getAllResourceContent("api/ws/raidGoV2.json"));
 		
 		var expected = MessageResponse.builder()
@@ -173,9 +167,7 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onRaidUpdateV2(WebsocketMockServer server) throws InterruptedException, MalformedURLException{
-		tested.connectBlocking();
-		
+	void onRaidUpdateV2(WebsocketMockServer server) throws MalformedURLException{
 		server.send(getAllResourceContent("api/ws/raidUpdateV2.json"));
 		
 		var expected = MessageResponse.builder()
@@ -204,10 +196,8 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onViewCount(WebsocketMockServer server) throws InterruptedException{
-		tested.connectBlocking();
-		
-		server.send(getAllResourceContent("api/ws/viewcount.json"));
+	void onViewCount(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/viewCount.json"));
 		
 		var expected = MessageResponse.builder()
 				.data(MessageData.builder()
@@ -218,6 +208,101 @@ class TwitchWebSocketClientMessageTest{
 						.message(ViewCount.builder()
 								.serverTime(Instant.parse("2021-10-24T08:12:29.894667000Z"))
 								.viewers(150)
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onPredictionMade(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/predictionMade.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(PREDICTIONS_USER_V1)
+								.target("123456789")
+								.build())
+						.message(PredictionMade.builder()
+								.data(PredictionMadeData.builder()
+										.timestamp(ZonedDateTime.of(2021, 11, 4, 18, 34, 55, 653758115, UTC))
+										.prediction(Prediction.builder()
+												.id("prediction-id")
+												.eventId("event-id")
+												.outcomeId("outcome-id")
+												.channelId("987654321")
+												.points(20)
+												.predictedAt(ZonedDateTime.of(2021, 11, 4, 18, 34, 55, 594583209, UTC))
+												.updatedAt(ZonedDateTime.of(2021, 11, 4, 18, 34, 55, 594583209, UTC))
+												.userId("123456789")
+												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onPredictionUpdated(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/predictionUpdated.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(PREDICTIONS_USER_V1)
+								.target("123456789")
+								.build())
+						.message(PredictionUpdated.builder()
+								.data(PredictionUpdatedData.builder()
+										.timestamp(ZonedDateTime.of(2021, 11, 9, 21, 54, 2, 423996258, UTC))
+										.prediction(Prediction.builder()
+												.id("prediction-id")
+												.eventId("event-id")
+												.outcomeId("outcome-id")
+												.channelId("987654321")
+												.points(200)
+												.predictedAt(ZonedDateTime.of(2021, 11, 9, 21, 52, 36, 516144367, UTC))
+												.updatedAt(ZonedDateTime.of(2021, 11, 9, 21, 54, 2, 357265450, UTC))
+												.userId("123456789")
+												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onPredictionResult(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/predictionResult.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(PREDICTIONS_USER_V1)
+								.target("123456789")
+								.build())
+						.message(PredictionResult.builder()
+								.data(PredictionResultData.builder()
+										.timestamp(ZonedDateTime.of(2021, 11, 4, 18, 48, 18, 104721127, UTC))
+										.prediction(Prediction.builder()
+												.id("prediction-id")
+												.eventId("event-id")
+												.outcomeId("outcome-id")
+												.channelId("987654321")
+												.points(1000)
+												.predictedAt(ZonedDateTime.of(2021, 11, 4, 18, 45, 42, 619835769, UTC))
+												.updatedAt(ZonedDateTime.of(2021, 11, 4, 18, 48, 18, 98606115, UTC))
+												.userId("123456789")
+												.result(PredictionResultPayload.builder()
+														.type(PredictionResultType.WIN)
+														.pointsWon(1500)
+														.isAcknowledged(false)
+														.build())
+												.build())
+										.build())
 								.build())
 						.build())
 				.build();

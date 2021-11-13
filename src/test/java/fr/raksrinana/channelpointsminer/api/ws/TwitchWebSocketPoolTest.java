@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 class TwitchWebSocketPoolTest{
 	private static final Instant NOW = Instant.parse("2021-10-10T10:10:10Z");
 	
-	private final TwitchWebSocketPool tested = new TwitchWebSocketPool();
+	private final TwitchWebSocketPool tested = new TwitchWebSocketPool(50);
 	
 	@Mock
 	private Topics topics;
@@ -169,7 +169,7 @@ class TwitchWebSocketPoolTest{
 			var client2 = mock(TwitchWebSocketClient.class);
 			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client).thenReturn(client2);
 			
-			var topics = Topics.builder().topics(Set.of(topic)).build();
+			var topics = new Topics(topic);
 			
 			when(client.getTopics()).thenReturn(Set.of(topics));
 			
@@ -254,6 +254,32 @@ class TwitchWebSocketPoolTest{
 			assertDoesNotThrow(tested::ping);
 			
 			verify(client).close(eq(ABNORMAL_CLOSE), anyString());
+		}
+	}
+	
+	@Test
+	void removeTopic(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			
+			when(client.isTopicListened(topic)).thenReturn(true);
+			tested.listenTopic(topics);
+			
+			tested.removeTopic(topic);
+			verify(client).removeTopic(topic);
+		}
+	}
+	
+	@Test
+	void removeUnknownTopic(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			
+			when(client.isTopicListened(topic)).thenReturn(false);
+			tested.listenTopic(topics);
+			
+			tested.removeTopic(topic);
+			verify(client, never()).removeTopic(topic);
 		}
 	}
 }

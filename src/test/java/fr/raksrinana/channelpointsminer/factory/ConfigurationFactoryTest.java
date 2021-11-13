@@ -56,6 +56,7 @@ class ConfigurationFactoryTest{
 								.url(new URL("https://discord-webhook"))
 								.embeds(true)
 								.build())
+						.reloadEvery(15)
 						.build()))
 				.build();
 		
