@@ -1,0 +1,46 @@
+{
+  "data": {
+    "user": {
+      "id": "123456789",
+      "follows": {
+        "edges": [
+          {
+            "cursor": "cursor-id",
+            "node": {
+              "id": "987654321",
+              "bannerImageURL": null,
+              "displayName": "display-name",
+              "login": "login",
+              "profileImageURL": "https://profile-image",
+              "self": {
+                "canFollow": true,
+                "follower": {
+                  "disableNotifications": true,
+                  "followedAt": "2021-09-19T16:14:15Z",
+                  "__typename": "FollowerEdge"
+                },
+                "__typename": "UserSelfConnection",
+                "friendship": null
+              },
+              "__typename": "User",
+              "activity": null,
+              "availability": null
+            },
+            "__typename": "FollowEdge"
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "__typename": "FollowConnection"
+      },
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 102,
+    "operationName": "ChannelFollows",
+    "requestID": "request-id"
+  }
+}

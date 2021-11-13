@@ -4,9 +4,6 @@ import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
-import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
-import fr.raksrinana.channelpointsminer.api.kraken.data.follows.Channel;
-import fr.raksrinana.channelpointsminer.api.kraken.data.follows.Follow;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -16,8 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -30,15 +25,10 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	
 	private StreamerConfigurationReload tested;
 	
-	@TempDir
-	private Path tempDir;
-	
 	@Mock
 	private IMiner miner;
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
-	@Mock
-	private KrakenApi krakenApi;
 	@Mock
 	private GQLApi gqlApi;
 	
@@ -53,7 +43,7 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	
 	@BeforeEach
 	void setUp(){
-		tested = new StreamerConfigurationReload(miner, streamerSettingsFactory, krakenApi, true);
+		tested = new StreamerConfigurationReload(miner, streamerSettingsFactory, true);
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
@@ -67,13 +57,11 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	
 	@Test
 	void loadFromFollows(){
-		var channel = mock(Channel.class);
-		var follow = mock(Follow.class);
-		when(follow.getChannel()).thenReturn(channel);
-		when(channel.getId()).thenReturn(STREAMER_ID);
-		when(channel.getName()).thenReturn(STREAMER_USERNAME);
+		var user = mock(User.class);
+		when(user.getId()).thenReturn(STREAMER_ID);
+		when(user.getLogin()).thenReturn(STREAMER_USERNAME);
 		
-		when(krakenApi.getFollows()).thenReturn(List.of(follow));
+		when(gqlApi.allChannelFollows()).thenReturn(List.of(user));
 		
 		assertDoesNotThrow(() -> tested.run());
 		
@@ -84,7 +72,7 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	
 	@Test
 	void loadFromFollowsEmpty(){
-		when(krakenApi.getFollows()).thenReturn(List.of());
+		when(gqlApi.allChannelFollows()).thenReturn(List.of());
 		
 		assertDoesNotThrow(() -> tested.run());
 		

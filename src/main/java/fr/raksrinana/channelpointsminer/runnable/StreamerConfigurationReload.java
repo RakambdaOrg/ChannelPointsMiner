@@ -2,7 +2,6 @@ package fr.raksrinana.channelpointsminer.runnable;
 
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
-import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -19,8 +18,6 @@ public class StreamerConfigurationReload implements Runnable{
 	private final IMiner miner;
 	@NotNull
 	private final StreamerSettingsFactory streamerSettingsFactory;
-	@NotNull
-	private final KrakenApi krakenApi;
 	private final boolean loadFollows;
 	
 	@Override
@@ -88,11 +85,10 @@ public class StreamerConfigurationReload implements Runnable{
 		}
 		
 		log.debug("Loading streamers from follow list");
-		return krakenApi.getFollows().stream()
-				.filter(follow -> !excludedIds.contains(follow.getChannel().getId()))
-				.map(follow -> {
-					var streamerId = follow.getChannel().getId();
-					var streamerName = follow.getChannel().getName();
+		return miner.getGqlApi().allChannelFollows().stream()
+				.map(user -> {
+					var streamerId = user.getId();
+					var streamerName = user.getLogin();
 					return new Streamer(streamerId, streamerName, streamerSettingsFactory.createStreamerSettings(streamerName));
 				})
 				.toList();

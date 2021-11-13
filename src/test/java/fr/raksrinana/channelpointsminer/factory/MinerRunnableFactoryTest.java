@@ -1,6 +1,5 @@
 package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.runnable.*;
 import org.mockito.Mock;
@@ -15,8 +14,6 @@ class MinerRunnableFactoryTest{
 	private IMiner miner;
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
-	@Mock
-	private KrakenApi krakenApi;
 	
 	@Test
 	void createUpdateStreamInfo(){
@@ -44,7 +41,7 @@ class MinerRunnableFactoryTest{
 	
 	@Test
 	void createStreamerConfigurationReload(){
-		assertThat(MinerRunnableFactory.createStreamerConfigurationReload(miner, streamerSettingsFactory, krakenApi, false)).isNotNull()
+		assertThat(MinerRunnableFactory.createStreamerConfigurationReload(miner, streamerSettingsFactory, false)).isNotNull()
 				.isInstanceOf(StreamerConfigurationReload.class);
 	}
 }

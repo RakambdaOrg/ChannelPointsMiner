@@ -1,6 +1,5 @@
 package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.runnable.*;
 import lombok.NoArgsConstructor;
@@ -30,7 +29,7 @@ public class MinerRunnableFactory{
 	}
 	
 	@NotNull
-	public static StreamerConfigurationReload createStreamerConfigurationReload(@NotNull IMiner miner, @NotNull StreamerSettingsFactory streamerSettingsFactory, @NotNull KrakenApi krakenApi, boolean loadFollows){
-		return new StreamerConfigurationReload(miner, streamerSettingsFactory, krakenApi, loadFollows);
+	public static StreamerConfigurationReload createStreamerConfigurationReload(@NotNull IMiner miner, @NotNull StreamerSettingsFactory streamerSettingsFactory, boolean loadFollows){
+		return new StreamerConfigurationReload(miner, streamerSettingsFactory, loadFollows);
 	}
 }

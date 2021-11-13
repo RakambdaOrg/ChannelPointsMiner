@@ -4,7 +4,6 @@ import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
-import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -16,13 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Stream;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
@@ -41,8 +37,6 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
 	@Mock
-	private KrakenApi krakenApi;
-	@Mock
 	private GQLApi gqlApi;
 	
 	@Mock
@@ -56,7 +50,7 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 	
 	@BeforeEach
 	void setUp(){
-		tested = new StreamerConfigurationReload(miner, streamerSettingsFactory, krakenApi, false);
+		tested = new StreamerConfigurationReload(miner, streamerSettingsFactory, false);
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
@@ -79,14 +73,14 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 		
 		verify(miner).addStreamer(expectedStreamer);
-		verify(krakenApi, never()).getFollows();
+		verify(gqlApi, never()).allChannelFollows();
 	}
 	
 	@SneakyThrows
 	private void setupStreamerConfig(String... usernames){
 		var paths = new ArrayList<Path>();
 		for(var username : usernames){
-			paths.add(Files.writeString(tempDir.resolve(username + ".json"), "{}", TRUNCATE_EXISTING, CREATE));
+			paths.add(tempDir.resolve(username + ".json"));
 		}
 		when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(paths.stream());
 	}
@@ -100,6 +94,6 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(miner, never()).addStreamer(any());
-		verify(krakenApi, never()).getFollows();
+		verify(gqlApi, never()).allChannelFollows();
 	}
 }

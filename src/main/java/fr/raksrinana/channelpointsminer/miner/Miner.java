@@ -1,8 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner;
 
 import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
-import fr.raksrinana.channelpointsminer.api.helix.HelixApi;
-import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
 import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.CaptchaSolveRequired;
@@ -63,8 +61,6 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	private TwitchLogin twitchLogin;
 	@Getter
 	private GQLApi gqlApi;
-	private KrakenApi krakenApi;
-	private HelixApi helixApi;
 	@Getter
 	private TwitchApi twitchApi;
 	private TwitchIrcClient ircClient;
@@ -103,7 +99,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
 		scheduledExecutor.scheduleAtFixedRate(createSyncInventory(this), 1, 15, MINUTES);
 		
-		var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, krakenApi, accountConfiguration.isLoadFollows());
+		var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, accountConfiguration.isLoadFollows());
 		if(accountConfiguration.getReloadEvery() > 0){
 			scheduledExecutor.scheduleWithFixedDelay(streamerConfigurationReload, 0, accountConfiguration.getReloadEvery(), MINUTES);
 		}
@@ -123,8 +119,6 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		try{
 			twitchLogin = passportApi.login();
 			gqlApi = ApiFactory.createGqlApi(twitchLogin);
-			helixApi = ApiFactory.createHelixApi(twitchLogin);
-			krakenApi = ApiFactory.createKrakenApi(twitchLogin);
 			twitchApi = ApiFactory.createTwitchApi();
 			ircClient = TwitchIrcFactory.create(twitchLogin);
 		}

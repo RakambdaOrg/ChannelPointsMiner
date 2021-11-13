@@ -2,6 +2,8 @@ package fr.raksrinana.channelpointsminer.api.gql;
 
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.api.gql.data.channelfollows.ChannelFollowsData;
+import fr.raksrinana.channelpointsminer.api.gql.data.channelfollows.ChannelFollowsOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.channelpointscontext.ChannelPointsContextData;
 import fr.raksrinana.channelpointsminer.api.gql.data.channelpointscontext.ChannelPointsContextOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.claimcommunitypoints.ClaimCommunityPointsData;
@@ -18,6 +20,10 @@ import fr.raksrinana.channelpointsminer.api.gql.data.makeprediction.MakePredicti
 import fr.raksrinana.channelpointsminer.api.gql.data.makeprediction.MakePredictionOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemOperation;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.FollowConnection;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.FollowEdge;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.PageInfo;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.channelpointsminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelOperation;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
@@ -26,6 +32,10 @@ import kong.unirest.Unirest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import static kong.unirest.HeaderNames.AUTHORIZATION;
 
@@ -33,6 +43,7 @@ import static kong.unirest.HeaderNames.AUTHORIZATION;
 @RequiredArgsConstructor
 public class GQLApi{
 	private static final String ENDPOINT = "https://gql.twitch.tv/gql";
+	private static final String ORDER_DESC = "DESC";
 	
 	private final TwitchLogin twitchLogin;
 	
@@ -76,8 +87,44 @@ public class GQLApi{
 		return postRequest(new DropsPageClaimDropRewardsOperation(dropInstanceId));
 	}
 	
+	@NotNull
 	public Optional<GQLResponse<MakePredictionData>> makePrediction(@NotNull String eventId, @NotNull String outcomeId, int amount, @NotNull String transactionId){
 		return postRequest(new MakePredictionOperation(eventId, outcomeId, amount, transactionId));
+	}
+	
+	@NotNull
+	public List<User> allChannelFollows(){
+		var follows = new ArrayList<User>();
+		
+		boolean hasNext;
+		String cursor = null;
+		do{
+			var response = channelFollows(100, ORDER_DESC, cursor);
+			var followConnection = response.map(GQLResponse::getData).map(ChannelFollowsData::getUser).map(User::getFollows);
+			
+			followConnection.stream()
+					.map(FollowConnection::getEdges)
+					.flatMap(Collection::stream)
+					.map(FollowEdge::getNode)
+					.forEach(follows::add);
+			
+			hasNext = followConnection.map(FollowConnection::getPageInfo).map(PageInfo::isHasNextPage).orElse(false);
+			if(hasNext){
+				cursor = followConnection.map(FollowConnection::getEdges)
+						.filter(followEdges -> !followEdges.isEmpty())
+						.map(edge -> edge.get(edge.size() - 1))
+						.map(FollowEdge::getCursor)
+						.orElseThrow(() -> new IllegalStateException("Follows has next page but couldn't find cursor"));
+			}
+		}
+		while(hasNext);
+		
+		return follows;
+	}
+	
+	@NotNull
+	public Optional<GQLResponse<ChannelFollowsData>> channelFollows(int limit, @NotNull String order, @Nullable String cursor){
+		return postRequest(new ChannelFollowsOperation(limit, order, cursor));
 	}
 	
 	@NotNull

@@ -51,6 +51,10 @@ import lombok.Getter;
 		@JsonSubTypes.Type(value = UserDropReward.class, name = "UserDropReward"),
 		@JsonSubTypes.Type(value = MakePredictionPayload.class, name = "MakePredictionPayload"),
 		@JsonSubTypes.Type(value = MakePredictionError.class, name = "MakePredictionError"),
+		@JsonSubTypes.Type(value = FollowConnection.class, name = "FollowConnection"),
+		@JsonSubTypes.Type(value = PageInfo.class, name = "PageInfo"),
+		@JsonSubTypes.Type(value = FollowEdge.class, name = "FollowEdge"),
+		@JsonSubTypes.Type(value = FollowerEdge.class, name = "FollowerEdge"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

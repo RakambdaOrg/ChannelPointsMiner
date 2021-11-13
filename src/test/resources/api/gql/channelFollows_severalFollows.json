@@ -1,0 +1,70 @@
+{
+  "data": {
+    "user": {
+      "id": "123456789",
+      "follows": {
+        "edges": [
+          {
+            "cursor": "cursor-id-1",
+            "node": {
+              "id": "987654321",
+              "bannerImageURL": null,
+              "displayName": "display-name",
+              "login": "login",
+              "profileImageURL": "https://profile-image",
+              "self": {
+                "canFollow": true,
+                "follower": {
+                  "disableNotifications": true,
+                  "followedAt": "2021-09-19T16:14:15Z",
+                  "__typename": "FollowerEdge"
+                },
+                "__typename": "UserSelfConnection",
+                "friendship": null
+              },
+              "__typename": "User",
+              "activity": null,
+              "availability": null
+            },
+            "__typename": "FollowEdge"
+          },
+          {
+            "cursor": "cursor-id-2",
+            "node": {
+              "id": "987654322",
+              "bannerImageURL": null,
+              "displayName": "display-name-2",
+              "login": "login-2",
+              "profileImageURL": "https://profile-image-2",
+              "self": {
+                "canFollow": true,
+                "follower": {
+                  "disableNotifications": true,
+                  "followedAt": "2021-09-19T16:14:16Z",
+                  "__typename": "FollowerEdge"
+                },
+                "__typename": "UserSelfConnection",
+                "friendship": null
+              },
+              "__typename": "User",
+              "activity": null,
+              "availability": null
+            },
+            "__typename": "FollowEdge"
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": true,
+          "__typename": "PageInfo"
+        },
+        "__typename": "FollowConnection"
+      },
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 102,
+    "operationName": "ChannelFollows",
+    "requestID": "request-id"
+  }
+}
