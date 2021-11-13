@@ -17,6 +17,7 @@ import java.net.URL;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Author{
 	@JsonProperty("name")
 	@NotNull

@@ -15,6 +15,7 @@ import java.net.URL;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Image{
 	@JsonProperty("url")
 	@JsonSerialize(using = URLSerializer.class)

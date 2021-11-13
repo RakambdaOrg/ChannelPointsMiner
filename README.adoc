@@ -1,4 +1,7 @@
 = Channel Points Miner
+:toc:
+:toclevels: 4
+:toc: preamble
 
 image:https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner",window="_blank",align="center"]
 image:https://img.shields.io/docker/pulls/mrcraftcod/channel-points-miner.svg[link="https://hub.docker.com/r/mrcraftcod/channel-points-miner",window="_blank",align="center"]
@@ -21,10 +24,6 @@ However, actions that are not watching are not limited.
 This includes raids and predictions.
 
 This project heavily inspired by link:https://github.com/Tkd-Alex/Twitch-Channel-Points-Miner-v2[Tkd-Alex/Twitch-Channel-Points-Miner-v2,window="_blank"], just doing it my own way.
-
-WARNING: This is a **WIP**!
-
-:toc:
 
 == How to use [[how_to_use]]
 
@@ -78,6 +77,19 @@ services:
       - ./log4j2.xml:/usr/src/app/log4j2.xml:ro
 ----
 
+== How to mine streamers
+
+You have two options to load streamers in the mining list:
+
+* Be specific and define streamer settings for each streamer you want to watch.
+For this simply add a JSON file withing one of the <<global_settings__streamer_config_directories,streamer config directory>> with the name of the streamer (eg: `mystreamer.json`).
+The content of the file will override the <<global_settings__default_streamer_settings,default streamer settings>> for the keys that are redefined.
+If you want to use the <<global_settings__default_streamer_settings,default streamer settings>> simply use an empty JSON object in the file (ie: `{}`).
+* Load them from the follows list.
+Every follow will be loaded and default settings will be applied to them.
+
+NOTE: If a stream is both defined in a JSON file and is followed, then the first case will apply.
+
 == Settings
 
 2 kind of settings are present:
@@ -87,7 +99,24 @@ services:
 
 === Global settings [[global_settings]]
 
-An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config/config.json[here,window="_blank"].
+The settings consist of on object with a list of <<account_settings,account settings>> under the `accounts` field.
+Something like:
+
+[source,json]
+----
+{
+  "accounts": [{
+    "accountSetting1": "value",
+    "accountSetting2": "value"
+  }]
+}
+----
+
+A full example can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config/config.json[src/test/resources/config/config.json,window="_blank"].
+
+=== Account settings [[account_settings]]
+
+Account settings define all the settings for a Twitch account that will be used to mine points.
 
 [cols="1,3,1"]
 |===
@@ -117,9 +146,19 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 |A list of <<streamer_directories,streamer directories>> containing <<streamer_settings,streamer settings>>.
 |<empty>
 
-|discordWebhook
-|Discord webhook url to publish events to.
+|discord
+|<<discord_settings,Discord settings>>.
 |
+
+|reloadEvery
+|Reload <<streamer_settings,streamer settings>> every `reloadEvery` minutes.
+New streamer configurations will be added, already existing ones will be updated, and removed one will be removed.
+
+A zero or negative value will disable this feature.
+We recommend to setting this value to something not too low as this is a rather intensive treatment (15 minutes minimum seems fair).
+
+NOTE: Only <<streamer_settings,streamer settings>> are reloaded, not the <<global_settings,global settings>>.
+|0
 |===
 
 === Streamer directories [[streamer_directories]]
@@ -134,6 +173,24 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 
 |recursive
 |If set to true, the folder will be scanned recursively.
+|false
+|===
+
+=== Discord settings [[discord_settings]]
+
+Discord settings define settings to be used with Discord webhooks.
+Leave it empty if you don't want the feature.
+
+[cols="1,3,1"]
+|===
+|Name |Description |Default value
+
+|webhookUrl
+|Discord webhook url to publish events to.
+|
+
+|embeds
+|If true embeds will be sent in the chat.
 |false
 |===
 
@@ -386,19 +443,6 @@ The table below will list their `type` to be used in the JSON configuration as w
 Otherwise, if the amount placed by the top predictor is lower or equal to our prediction then set ours to his amount - 1.
 |
 |===
-
-== How to mine streamers
-
-You have two options to load streamers in the mining list:
-
-* Be specific and define streamer settings for each streamer you want to watch.
-For this simply add a JSON file withing one of the <<global_settings__streamer_config_directories,streamer config directory>> with the name of the streamer (eg: `mystreamer.json`).
-The content of the file will override the <<global_settings__default_streamer_settings,default streamer settings>> for the keys that are redefined.
-If you want to use the <<global_settings__default_streamer_settings,default streamer settings>> simply use an empty JSON object in the file (ie: `{}`).
-* Load them from the follows list.
-Every follow will be loaded and default settings will be applied to them.
-
-NOTE: If a stream is both defined in a JSON file and is followed, then the first case will apply.
 
 == Logs [[logs]]
 

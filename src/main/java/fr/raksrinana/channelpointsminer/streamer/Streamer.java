@@ -40,6 +40,7 @@ public class Streamer{
 	private final String username;
 	@NotNull
 	@Getter
+	@Setter
 	private StreamerSettings settings;
 	@Setter
 	private Instant lastUpdated = Instant.EPOCH;

@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,12 +12,12 @@ import java.util.concurrent.Executors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinerFactory{
 	@NotNull
-	public static Miner create(@NotNull Configuration config){
+	public static Miner create(@NotNull AccountConfiguration config){
 		var miner = new Miner(
 				config,
 				ApiFactory.createPassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
 				new StreamerSettingsFactory(config),
-				new TwitchWebSocketPool(),
+				new TwitchWebSocketPool(50),
 				Executors.newScheduledThreadPool(4),
 				Executors.newCachedThreadPool());
 		
@@ -27,9 +27,9 @@ public class MinerFactory{
 		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
 		
-		if(Objects.nonNull(config.getDiscordWebhook())){
-			var discordApi = ApiFactory.createdDiscordApi(config.getDiscordWebhook());
-			miner.addHandler(MessageHandlerFactory.createDiscordLogger(miner, discordApi));
+		if(Objects.nonNull(config.getDiscord().getUrl())){
+			var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
+			miner.addHandler(MessageHandlerFactory.createDiscordLogger(miner, discordApi, config.getDiscord().isEmbeds()));
 		}
 		
 		return miner;

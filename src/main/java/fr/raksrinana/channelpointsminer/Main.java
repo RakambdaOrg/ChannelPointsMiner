@@ -4,8 +4,9 @@ import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerFactory;
+import fr.raksrinana.channelpointsminer.log.UnirestLogger;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
-import kong.unirest.*;
+import kong.unirest.Unirest;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -31,9 +32,10 @@ public class Main{
 		CLIHolder.setInstance(parseCLIParameters(args));
 		preSetup();
 		
-		var config = ConfigurationFactory.getInstance();
-		
-		MinerFactory.create(config).start();
+		var accountConfigurations = ConfigurationFactory.getInstance();
+		for(var accountConfiguration : accountConfigurations.getAccounts()){
+			MinerFactory.create(accountConfiguration).start();
+		}
 	}
 	
 	@NotNull
@@ -59,22 +61,6 @@ public class Main{
 				.enableCookieManagement(true)
 				.setObjectMapper(new JacksonObjectMapper(JacksonUtils.getMapper()))
 				.setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0")
-				.interceptor(new Interceptor(){
-					@Override
-					public void onRequest(HttpRequest<?> request, Config config){
-						log.trace("Sending request to {}", request.getUrl());
-					}
-					
-					@Override
-					public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config){
-						if(!response.isSuccess()){
-							log.error("Failed to request {} got statusCode `{}` and parsing error: {}", request.getUrl(), response.getStatus(), response.getParsingError());
-							response.getParsingError().ifPresent(ex -> log.error("Failed to parse body: {}", ex.getOriginalBody()));
-						}
-						else{
-							log.trace("Received successful response for {} with statusCode `{}`", request.getUrl(), response.getStatus());
-						}
-					}
-				});
+				.interceptor(new UnirestLogger());
 	}
 }

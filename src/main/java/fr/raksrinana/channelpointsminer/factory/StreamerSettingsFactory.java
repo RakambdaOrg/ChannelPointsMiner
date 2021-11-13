@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +16,11 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Log4j2
 public class StreamerSettingsFactory{
-	private final Configuration configuration;
+	private final AccountConfiguration accountConfiguration;
 	
 	@NotNull
 	public StreamerSettings getDefaultSettings(){
-		return configuration.getDefaultStreamerSettings();
+		return accountConfiguration.getDefaultStreamerSettings();
 	}
 	
 	@NotNull
@@ -52,7 +52,7 @@ public class StreamerSettingsFactory{
 	
 	@NotNull
 	public Stream<Path> getStreamerConfigs(){
-		return configuration.getStreamerConfigDirectories().stream()
+		return accountConfiguration.getStreamerConfigDirectories().stream()
 				.flatMap(streamerDirectory -> {
 					try{
 						var maxDepth = streamerDirectory.isRecursive() ? Integer.MAX_VALUE : 1;

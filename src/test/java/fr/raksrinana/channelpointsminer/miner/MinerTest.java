@@ -1,12 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner;
 
 import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
-import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
-import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
-import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
-import fr.raksrinana.channelpointsminer.api.kraken.KrakenApi;
-import fr.raksrinana.channelpointsminer.api.kraken.data.follows.Channel;
-import fr.raksrinana.channelpointsminer.api.kraken.data.follows.Follow;
 import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.CaptchaSolveRequired;
@@ -16,39 +10,30 @@ import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.handler.MessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
-import fr.raksrinana.channelpointsminer.log.LogLoggerHandler;
+import fr.raksrinana.channelpointsminer.runnable.StreamerConfigurationReload;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
-import lombok.SneakyThrows;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.*;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,11 +48,8 @@ class MinerTest{
 	
 	private Miner tested;
 	
-	@TempDir
-	private Path tempDir;
-	
 	@Mock
-	private Configuration configuration;
+	private AccountConfiguration accountConfiguration;
 	@Mock
 	private PassportApi passportApi;
 	@Mock
@@ -88,39 +70,27 @@ class MinerTest{
 	@Mock
 	private GQLApi gqlApi;
 	@Mock
-	private KrakenApi krakenApi;
-	@Mock
 	private UpdateStreamInfo updateStreamInfo;
-	@Mock
-	private User user;
-	@Mock
-	private ReportMenuItemData reportMenuItemData;
-	@Mock
-	private GQLResponse<ReportMenuItemData> reportMenuItemResponse;
 	@Mock
 	private Topic topic;
 	@Mock
-	private LogLoggerHandler logLoggerHandler;
-	@Mock
 	private TwitchIrcClient twitchIrcClient;
+	@Mock
+	private StreamerConfigurationReload streamerConfigurationReload;
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
-		tested = new Miner(configuration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService);
+		tested = new Miner(accountConfiguration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService);
 		
-		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
+		lenient().when(accountConfiguration.getReloadEvery()).thenReturn(0);
+		lenient().when(accountConfiguration.isLoadFollows()).thenReturn(false);
 		
 		lenient().when(passportApi.login()).thenReturn(twitchLogin);
-		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.isFollowRaid()).thenReturn(false);
 		lenient().when(streamerSettings.isMakePredictions()).thenReturn(false);
 		lenient().when(streamerSettings.isJoinIrc()).thenReturn(false);
 		lenient().when(twitchLogin.fetchUserId()).thenReturn(USER_ID);
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-		
-		lenient().when(reportMenuItemResponse.getData()).thenReturn(reportMenuItemData);
-		lenient().when(reportMenuItemData.getUser()).thenReturn(user);
-		lenient().when(user.getId()).thenReturn(STREAMER_ID);
 		
 		lenient().when(executorService.submit(any(Runnable.class))).thenAnswer(invocation -> {
 			var runnable = invocation.getArgument(0, Runnable.class);
@@ -130,7 +100,7 @@ class MinerTest{
 	}
 	
 	@Test
-	void setupIsDoneFromConfig() throws LoginException, IOException{
+	void setupIsDoneWithNoConfigReload() throws LoginException, IOException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
@@ -139,186 +109,7 @@ class MinerTest{
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
-			
-			setupStreamerConfig(STREAMER_USERNAME);
-			
-			assertDoesNotThrow(() -> tested.start());
-			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
-			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
-			
-			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(twitchIrcClient, never()).join(any());
-		}
-	}
-	
-	@SneakyThrows
-	private void setupStreamerConfig(String... usernames){
-		var paths = new ArrayList<Path>();
-		for(var username : usernames){
-			paths.add(Files.writeString(tempDir.resolve(username + ".json"), "{}", TRUNCATE_EXISTING, CREATE));
-		}
-		when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(paths.stream());
-	}
-	
-	@Test
-	void setupIsDoneFromConfigWithJoinIrc() throws LoginException, IOException{
-		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class);
-				var ircFactory = mockStatic(TwitchIrcFactory.class)){
-			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
-			
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			when(streamerSettings.isJoinIrc()).thenReturn(true);
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
-			
-			setupStreamerConfig(STREAMER_USERNAME);
-			
-			assertDoesNotThrow(() -> tested.start());
-			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
-			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
-			
-			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(twitchIrcClient).join(STREAMER_USERNAME);
-		}
-	}
-	
-	@Test
-	void setupIsDoneFromConfigWithPredictions() throws LoginException, IOException{
-		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class);
-				var ircFactory = mockStatic(TwitchIrcFactory.class)){
-			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
-			
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			when(streamerSettings.isMakePredictions()).thenReturn(true);
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
-			
-			setupStreamerConfig(STREAMER_USERNAME);
-			
-			assertDoesNotThrow(() -> tested.start());
-			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
-			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
-			
-			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(twitchIrcClient, never()).join(any());
-		}
-	}
-	
-	@Test
-	void setupIsDoneFromConfigWithRaid() throws LoginException, IOException{
-		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class);
-				var ircFactory = mockStatic(TwitchIrcFactory.class)){
-			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
-			
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			when(streamerSettings.isFollowRaid()).thenReturn(true);
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
-			
-			setupStreamerConfig(STREAMER_USERNAME);
-			
-			assertDoesNotThrow(() -> tested.start());
-			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
-			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
-			
-			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
-			verify(twitchIrcClient, never()).join(any());
-		}
-	}
-	
-	@Test
-	void setupIsDoneFromFollows() throws LoginException, IOException{
-		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class);
-				var ircFactory = mockStatic(TwitchIrcFactory.class)){
-			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
-			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
-			
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			var channel = mock(Channel.class);
-			var follow = mock(Follow.class);
-			when(follow.getChannel()).thenReturn(channel);
-			when(channel.getId()).thenReturn(STREAMER_ID);
-			when(channel.getName()).thenReturn(STREAMER_USERNAME);
-			
-			when(configuration.isLoadFollows()).thenReturn(true);
-			when(krakenApi.getFollows()).thenReturn(List.of(follow));
-			
-			assertDoesNotThrow(() -> tested.start());
-			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
-			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
-			
-			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(twitchIrcClient, never()).join(any());
-		}
-	}
-	
-	@Test
-	void setupIsDoneFromConfigWithUnknownUser() throws LoginException, IOException{
-		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class);
-				var ircFactory = mockStatic(TwitchIrcFactory.class)){
-			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
-			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
-			
-			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
-			
-			setupStreamerConfig(STREAMER_USERNAME);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -327,96 +118,64 @@ class MinerTest{
 			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo, never()).run(any());
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(scheduledExecutorService).schedule(eq(streamerConfigurationReload), anyLong(), any());
 		}
 	}
 	
 	@Test
-	void setupIsDoneFromFollowsWithPredictions() throws LoginException, IOException{
+	void setupIsDoneWithConfigReload() throws LoginException, IOException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, true)).thenReturn(streamerConfigurationReload);
 			
-			var channel = mock(Channel.class);
-			var follow = mock(Follow.class);
-			when(follow.getChannel()).thenReturn(channel);
-			when(channel.getId()).thenReturn(STREAMER_ID);
-			when(channel.getName()).thenReturn(STREAMER_USERNAME);
-			
-			when(configuration.isLoadFollows()).thenReturn(true);
-			when(streamerSettings.isMakePredictions()).thenReturn(true);
-			when(krakenApi.getFollows()).thenReturn(List.of(follow));
-			
-			setupStreamerConfig(STREAMER_USERNAME);
+			lenient().when(accountConfiguration.getReloadEvery()).thenReturn(15);
+			lenient().when(accountConfiguration.isLoadFollows()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
 			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
+			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(scheduledExecutorService).scheduleWithFixedDelay(eq(streamerConfigurationReload), anyLong(), eq(15L), eq(MINUTES));
 		}
 	}
 	
 	@Test
-	void setupIsDoneFromFollowsWithRaid() throws LoginException, IOException{
+	void setupIsDoneWithConfigReloadAndFollows() throws LoginException, IOException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
 			
-			var channel = mock(Channel.class);
-			var follow = mock(Follow.class);
-			when(follow.getChannel()).thenReturn(channel);
-			when(channel.getId()).thenReturn(STREAMER_ID);
-			when(channel.getName()).thenReturn(STREAMER_USERNAME);
-			
-			when(configuration.isLoadFollows()).thenReturn(true);
-			when(streamerSettings.isFollowRaid()).thenReturn(true);
-			when(krakenApi.getFollows()).thenReturn(List.of(follow));
-			
-			setupStreamerConfig(STREAMER_USERNAME);
+			lenient().when(accountConfiguration.getReloadEvery()).thenReturn(15);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
 			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
+			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(scheduledExecutorService).scheduleWithFixedDelay(eq(streamerConfigurationReload), anyLong(), eq(15L), eq(MINUTES));
 		}
 	}
 	
@@ -437,11 +196,9 @@ class MinerTest{
 	@Test
 	void close(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			tested.start();
@@ -460,7 +217,7 @@ class MinerTest{
 		var message = mock(Message.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
-		verify(executorService).submit(any(Runnable.class));
+		verify(executorService, never()).submit(any(Runnable.class));
 	}
 	
 	@Test
@@ -474,45 +231,116 @@ class MinerTest{
 		var message = mock(Message.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
-		verify(executorService).submit(any(Runnable.class));
+		verify(executorService, times(2)).submit(any(Runnable.class));
 		verify(handler1).handle(topic, message);
 		verify(handler2).handle(topic, message);
 	}
 	
 	@Test
-	void duplicateStreamerIsAddedOnce() throws LoginException, IOException{
+	void addStreamerWithJoinIrc(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
-			var channel = mock(Channel.class);
-			var follow = mock(Follow.class);
-			when(follow.getChannel()).thenReturn(channel);
-			when(channel.getName()).thenReturn(STREAMER_USERNAME);
+			when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
-			when(configuration.isLoadFollows()).thenReturn(true);
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
-			when(krakenApi.getFollows()).thenReturn(List.of(follow));
+			tested.start();
 			
-			setupStreamerConfig(STREAMER_USERNAME);
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			assertDoesNotThrow(() -> tested.addStreamer(streamer));
 			
-			assertDoesNotThrow(() -> tested.start());
-			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getTwitchApi()).isEqualTo(twitchApi);
-			assertThat(tested.getGqlApi()).isEqualTo(gqlApi);
 			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
+					.first().usingRecursiveComparison().isEqualTo(streamer);
 			
-			verify(passportApi).login();
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(updateStreamInfo).run(streamer);
+			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(twitchIrcClient).join(STREAMER_USERNAME);
+		}
+	}
+	
+	@Test
+	void addStreamerWithPredictions(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			when(streamerSettings.isMakePredictions()).thenReturn(true);
+			
+			tested.start();
+			
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			assertDoesNotThrow(() -> tested.addStreamer(streamer));
+			
+			assertThat(tested.getStreamers()).hasSize(1)
+					.first().usingRecursiveComparison().isEqualTo(streamer);
+			
+			verify(updateStreamInfo).run(streamer);
+			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
+			verify(twitchIrcClient, never()).join(any());
+		}
+	}
+	
+	@Test
+	void addStreamerWithRaid(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			when(streamerSettings.isFollowRaid()).thenReturn(true);
+			
+			tested.start();
+			
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			assertDoesNotThrow(() -> tested.addStreamer(streamer));
+			
+			assertThat(tested.getStreamers()).hasSize(1)
+					.first().usingRecursiveComparison().isEqualTo(streamer);
+			
+			verify(updateStreamInfo).run(streamer);
+			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
+			verify(twitchIrcClient, never()).join(any());
+		}
+	}
+	
+	@Test
+	void addDuplicateStreamer(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			tested.start();
+			
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			assertDoesNotThrow(() -> tested.addStreamer(streamer));
+			assertDoesNotThrow(() -> tested.addStreamer(streamer));
+			
+			assertThat(tested.getStreamers()).hasSize(1)
+					.first().usingRecursiveComparison().isEqualTo(streamer);
+			
+			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
 		}
@@ -546,7 +374,6 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createKrakenApi(twitchLogin)).thenReturn(krakenApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -573,7 +400,7 @@ class MinerTest{
 	}
 	
 	@Test
-	void addDuplicateStreamer(){
+	void removeStreamer(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
@@ -583,23 +410,84 @@ class MinerTest{
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+			tested.start();
 			
-			setupStreamerConfig(STREAMER_USERNAME);
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			tested.removeStreamer(streamer);
+			
+			verify(webSocketPool).removeTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
+			verify(twitchIrcClient).leave(STREAMER_USERNAME);
+		}
+	}
+	
+	@Test
+	void updateUnknownStreamer(){
+		var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+		assertDoesNotThrow(() -> tested.updateStreamer(streamer));
+		
+		verify(webSocketPool, never()).listenTopic(any());
+		verify(webSocketPool, never()).removeTopic(any());
+		verify(twitchIrcClient, never()).join(any());
+		verify(twitchIrcClient, never()).leave(any());
+	}
+	
+	@Test
+	void updateStreamerAllActivated(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
 			tested.start();
 			
-			var duplicateStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME.toUpperCase(), streamerSettings);
+			when(streamerSettings.isMakePredictions()).thenReturn(true);
+			when(streamerSettings.isFollowRaid()).thenReturn(true);
+			when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
-			assertDoesNotThrow(() -> tested.addStreamer(duplicateStreamer));
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			tested.getStreamers().add(streamer);
 			
-			var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			assertThat(tested.getStreamers()).hasSize(1)
-					.first().usingRecursiveComparison().isEqualTo(expectedStreamer);
+			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
-			verify(updateStreamInfo).run(expectedStreamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
+			verify(twitchIrcClient).join(STREAMER_USERNAME);
+		}
+	}
+	
+	@Test
+	void updateStreamerNothingActivated(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			tested.start();
+			
+			when(streamerSettings.isMakePredictions()).thenReturn(false);
+			when(streamerSettings.isFollowRaid()).thenReturn(false);
+			when(streamerSettings.isJoinIrc()).thenReturn(false);
+			
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			tested.getStreamers().add(streamer);
+			
+			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
+			
+			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
+			verify(twitchIrcClient).leave(STREAMER_USERNAME);
 		}
 	}
 }

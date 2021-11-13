@@ -18,6 +18,7 @@ import static java.lang.Math.min;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
 public class Field{
 	public static final int MAX_VALUE_SIZE = 1024;
 	

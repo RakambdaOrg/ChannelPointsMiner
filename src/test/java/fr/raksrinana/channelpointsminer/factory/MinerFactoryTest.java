@@ -2,7 +2,8 @@ package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
-import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
+import fr.raksrinana.channelpointsminer.config.DiscordConfiguration;
 import fr.raksrinana.channelpointsminer.handler.ClaimAvailableHandler;
 import fr.raksrinana.channelpointsminer.handler.FollowRaidHandler;
 import fr.raksrinana.channelpointsminer.handler.PredictionsHandler;
@@ -29,18 +30,21 @@ class MinerFactoryTest{
 	private static final Path AUTH_FOLDER = Paths.get("/path").resolve("to").resolve("auth");
 	
 	@Mock
-	private Configuration configuration;
+	private AccountConfiguration accountConfiguration;
 	@Mock
 	private PassportApi passportApi;
 	@Mock
 	private DiscordApi discordApi;
+	@Mock
+	private DiscordConfiguration discordConfiguration;
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(configuration.getUsername()).thenReturn(USERNAME);
-		lenient().when(configuration.getPassword()).thenReturn(PASSWORD);
-		lenient().when(configuration.getAuthenticationFolder()).thenReturn(AUTH_FOLDER);
-		lenient().when(configuration.isUse2Fa()).thenReturn(USE_2FA);
+		lenient().when(accountConfiguration.getUsername()).thenReturn(USERNAME);
+		lenient().when(accountConfiguration.getPassword()).thenReturn(PASSWORD);
+		lenient().when(accountConfiguration.getAuthenticationFolder()).thenReturn(AUTH_FOLDER);
+		lenient().when(accountConfiguration.isUse2Fa()).thenReturn(USE_2FA);
+		lenient().when(accountConfiguration.getDiscord()).thenReturn(discordConfiguration);
 	}
 	
 	@Test
@@ -48,7 +52,7 @@ class MinerFactoryTest{
 		try(var apiFactory = mockStatic(ApiFactory.class)){
 			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, PASSWORD, AUTH_FOLDER, USE_2FA)).thenReturn(passportApi);
 			
-			var miner = MinerFactory.create(configuration);
+			var miner = MinerFactory.create(accountConfiguration);
 			
 			assertThat(miner.getMessageHandlers())
 					.hasSize(5)
@@ -70,9 +74,9 @@ class MinerFactoryTest{
 			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, PASSWORD, AUTH_FOLDER, USE_2FA)).thenReturn(passportApi);
 			apiFactory.when(() -> ApiFactory.createdDiscordApi(discordWebhook)).thenReturn(discordApi);
 			
-			when(configuration.getDiscordWebhook()).thenReturn(discordWebhook);
+			when(discordConfiguration.getUrl()).thenReturn(discordWebhook);
 			
-			var miner = MinerFactory.create(configuration);
+			var miner = MinerFactory.create(accountConfiguration);
 			
 			assertThat(miner.getMessageHandlers())
 					.hasSize(6)
