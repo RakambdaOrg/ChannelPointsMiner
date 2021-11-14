@@ -1,6 +1,8 @@
 package fr.raksrinana.channelpointsminer.api.ws;
 
+import fr.raksrinana.channelpointsminer.api.gql.data.types.MultiplierReasonCode;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.claimclaimed.ClaimClaimedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
@@ -302,6 +304,43 @@ class TwitchWebSocketClientMessageTest{
 														.isAcknowledged(false)
 														.build())
 												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onClaimClaimed(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/claimClaimed.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(COMMUNITY_POINTS_USER_V1)
+								.target("123456789")
+								.build())
+						.message(ClaimClaimed.builder()
+								.data(ClaimClaimedData.builder()
+										.claim(Claim.builder()
+												.id("claim-id")
+												.userId("123456789")
+												.channelId("987654321")
+												.pointGain(PointGain.builder()
+														.userId("123456789")
+														.channelId("987654321")
+														.totalPoints(60)
+														.baselinePoints(50)
+														.reasonCode(CLAIM)
+														.multipliers(List.of(CommunityPointsMultiplier.builder()
+																.reasonCode(MultiplierReasonCode.SUB_T1)
+																.factor(0.2f)
+																.build()))
+														.build())
+												.createdAt(ZonedDateTime.of(2021, 11, 24, 18, 37, 8, 0, UTC))
+												.build())
+										.timestamp(ZonedDateTime.of(2021, 11, 15, 19, 25, 9, 815949729, UTC))
 										.build())
 								.build())
 						.build())
