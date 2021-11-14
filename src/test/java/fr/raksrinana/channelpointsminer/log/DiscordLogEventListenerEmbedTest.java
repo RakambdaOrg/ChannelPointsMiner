@@ -302,4 +302,23 @@ class DiscordLogEventListenerEmbedTest{
 						.build()))
 				.build());
 	}
+	
+	@Test
+	void onMinerStarted(){
+		var version = "test-version";
+		var commit = "test-commit";
+		var branch = "test-branch";
+		tested.onLogEvent(new MinerStartedLogEvent(miner, version, commit, branch));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("Miner started")
+						.field(Field.builder().name("Version").value(version).build())
+						.field(Field.builder().name("Commit").value(commit).build())
+						.field(Field.builder().name("Branch").value(branch).build())
+						.build()))
+				.build());
+	}
 }

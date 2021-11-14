@@ -27,6 +27,7 @@ class DiscordLogEventListenerMessageTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
 	private static final String USERNAME = "username";
+	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
 	
 	private DiscordLogEventListener tested;
 	
@@ -104,7 +105,7 @@ class DiscordLogEventListenerMessageTest{
 		tested.onLogEvent(new StreamUpLogEvent(miner, null));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, "UnknownStreamer"))
+				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, UNKNOWN_STREAMER))
 				.build());
 	}
 	
@@ -214,6 +215,18 @@ class DiscordLogEventListenerMessageTest{
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] 🧧 %s : Bet result [%s | Unknown final gain, obtained %d points]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 56))
+				.build());
+	}
+	
+	@Test
+	void onMinerStarted(){
+		var version = "test-version";
+		var commit = "test-commit";
+		var branch = "test-branch";
+		tested.onLogEvent(new MinerStartedLogEvent(miner, version, commit, branch));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] ✅ %s : Miner started (version: %s [%s - %s])".formatted(USERNAME, UNKNOWN_STREAMER, version, commit, branch))
 				.build());
 	}
 }
