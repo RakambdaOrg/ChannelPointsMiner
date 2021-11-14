@@ -453,7 +453,7 @@ class MinerTest{
 			when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			tested.getStreamers().add(streamer);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
@@ -483,7 +483,7 @@ class MinerTest{
 			when(streamerSettings.isJoinIrc()).thenReturn(false);
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			tested.getStreamers().add(streamer);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			

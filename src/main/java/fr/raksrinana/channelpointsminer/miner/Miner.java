@@ -42,8 +42,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	private final AccountConfiguration accountConfiguration;
 	private final PassportApi passportApi;
 	
-	@Getter
-	private final Set<Streamer> streamers;
+	private final Map<String, Streamer> streamers;
 	@Getter
 	private final TwitchWebSocketPool webSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
@@ -85,7 +84,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
 		
-		streamers = ConcurrentHashMap.newKeySet();
+		streamers = new ConcurrentHashMap<>();
 		messageHandlers = new LinkedList<>();
 		logEventListeners = new LinkedList<>();
 		minerData = new MinerData();
@@ -146,25 +145,36 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		return accountConfiguration.getUsername();
 	}
 	
+	@NotNull
+	@VisibleForTesting
+	@TestOnly
+	protected Map<String, Streamer> getStreamerMap(){
+		return streamers;
+	}
+	
+	@Override
+	@NotNull
+	public Collection<Streamer> getStreamers(){
+		return streamers.values();
+	}
+	
 	@Override
 	@NotNull
 	public Optional<Streamer> getStreamerById(@NotNull String id){
-		return getStreamers().stream()
-				.filter(s -> Objects.equals(s.getId(), id))
-				.findFirst();
+		return Optional.ofNullable(streamers.get(id));
 	}
 	
 	@Override
 	public void addStreamer(@NotNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
-			if(streamers.contains(streamer)){
+			if(containsStreamer(streamer)){
 				log.debug("Streamer is already being mined");
 				return;
 			}
 			log.info("Adding to the mining list with settings {}", streamer.getSettings());
 			updateStreamerInfos(streamer);
 			
-			streamers.add(streamer);
+			streamers.put(streamer.getId(), streamer);
 			updateStreamer(streamer);
 		}
 	}
@@ -172,7 +182,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	@Override
 	public void updateStreamer(@NotNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
-			if(!streamers.contains(streamer)){
+			if(!containsStreamer(streamer)){
 				log.debug("Streamer is can't be updated as it is unknown");
 				return;
 			}
@@ -210,7 +220,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
 			ircClient.leave(streamer.getUsername());
-			return streamers.remove(streamer);
+			return streamers.remove(streamer.getId()) != null;
 		}
 	}
 	
@@ -219,6 +229,11 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			getUpdateStreamInfo().run(streamer);
 		}
+	}
+	
+	@Override
+	public boolean containsStreamer(@NotNull Streamer streamer){
+		return streamers.containsKey(streamer.getId());
 	}
 	
 	@Override

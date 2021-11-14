@@ -51,6 +51,8 @@ public interface IMiner extends ILogEventListener{
 	
 	void updateStreamerInfos(@NotNull Streamer streamer);
 	
+	boolean containsStreamer(@NotNull Streamer streamer);
+	
 	@NotNull
 	ScheduledFuture<?> schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit unit);
 }
