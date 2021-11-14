@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.names)
     alias(libs.plugins.lombok)
     alias(libs.plugins.jib)
+    alias(libs.plugins.gitProperties)
 }
 
 group = "fr.raksrinana"
