@@ -13,7 +13,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@JsonSubTypes.Type(value = FromStartDelay.class, name = "fromStart"),
 		@JsonSubTypes.Type(value = PercentageDelay.class, name = "percentage"),
 })
-public interface DelayCalculator{
+public interface IDelayCalculator{
 	@NotNull
 	ZonedDateTime calculate(@NotNull Event event);
 }

@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ResponseResponse extends TwitchWebSocketResponse{
+public class ResponseResponse extends ITwitchWebSocketResponse{
 	@JsonProperty("error")
 	private String error;
 	@JsonProperty("nonce")

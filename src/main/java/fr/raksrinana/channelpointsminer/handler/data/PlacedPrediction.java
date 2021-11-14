@@ -14,6 +14,8 @@ public class PlacedPrediction{
 	@NotNull
 	private String eventId;
 	@Nullable
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	private int amount;
+	@NotNull
+	private String outcomeId;
 }

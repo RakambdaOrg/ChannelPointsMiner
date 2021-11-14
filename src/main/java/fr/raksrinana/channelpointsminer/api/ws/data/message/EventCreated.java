@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class EventCreated extends Message{
+public class EventCreated extends IMessage{
 	@JsonProperty("data")
 	private EventCreatedData data;
 }

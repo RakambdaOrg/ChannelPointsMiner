@@ -5,9 +5,9 @@ import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.api.twitch.TwitchApi;
-import fr.raksrinana.channelpointsminer.api.ws.TwitchMessageListener;
+import fr.raksrinana.channelpointsminer.api.ws.ITwitchMessageListener;
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
@@ -15,10 +15,12 @@ import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.handler.MessageHandler;
+import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
+import fr.raksrinana.channelpointsminer.log.ILogEventListener;
 import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.log.event.ILogEvent;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.AccessLevel;
@@ -36,12 +38,11 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Log4j2
-public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
+public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	private final AccountConfiguration accountConfiguration;
 	private final PassportApi passportApi;
 	
-	@Getter
-	private final Set<Streamer> streamers;
+	private final Map<String, Streamer> streamers;
 	@Getter
 	private final TwitchWebSocketPool webSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
@@ -51,7 +52,12 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			@TestOnly,
 			@VisibleForTesting
 	})
-	private final Collection<MessageHandler> messageHandlers;
+	private final Collection<IMessageHandler> messageHandlers;
+	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
+			@TestOnly,
+			@VisibleForTesting
+	})
+	private final Collection<ILogEventListener> logEventListeners;
 	@Getter
 	private final MinerData minerData;
 	
@@ -78,8 +84,9 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
 		
-		streamers = ConcurrentHashMap.newKeySet();
+		streamers = new ConcurrentHashMap<>();
 		messageHandlers = new LinkedList<>();
+		logEventListeners = new LinkedList<>();
 		minerData = new MinerData();
 	}
 	
@@ -138,25 +145,36 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		return accountConfiguration.getUsername();
 	}
 	
+	@NotNull
+	@VisibleForTesting
+	@TestOnly
+	protected Map<String, Streamer> getStreamerMap(){
+		return streamers;
+	}
+	
+	@Override
+	@NotNull
+	public Collection<Streamer> getStreamers(){
+		return streamers.values();
+	}
+	
 	@Override
 	@NotNull
 	public Optional<Streamer> getStreamerById(@NotNull String id){
-		return getStreamers().stream()
-				.filter(s -> Objects.equals(s.getId(), id))
-				.findFirst();
+		return Optional.ofNullable(streamers.get(id));
 	}
 	
 	@Override
 	public void addStreamer(@NotNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
-			if(streamers.contains(streamer)){
+			if(containsStreamer(streamer)){
 				log.debug("Streamer is already being mined");
 				return;
 			}
 			log.info("Adding to the mining list with settings {}", streamer.getSettings());
 			updateStreamerInfos(streamer);
 			
-			streamers.add(streamer);
+			streamers.put(streamer.getId(), streamer);
 			updateStreamer(streamer);
 		}
 	}
@@ -164,7 +182,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	@Override
 	public void updateStreamer(@NotNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
-			if(!streamers.contains(streamer)){
+			if(!containsStreamer(streamer)){
 				log.debug("Streamer is can't be updated as it is unknown");
 				return;
 			}
@@ -202,7 +220,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
 			ircClient.leave(streamer.getUsername());
-			return streamers.remove(streamer);
+			return streamers.remove(streamer.getId()) != null;
 		}
 	}
 	
@@ -211,6 +229,11 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			getUpdateStreamInfo().run(streamer);
 		}
+	}
+	
+	@Override
+	public boolean containsStreamer(@NotNull Streamer streamer){
+		return streamers.containsKey(streamer.getId());
 	}
 	
 	@Override
@@ -237,13 +260,25 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	}
 	
 	@Override
-	public void onTwitchMessage(@NotNull Topic topic, @NotNull Message message){
+	public void onTwitchMessage(@NotNull Topic topic, @NotNull IMessage message){
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
 		messageHandlers.forEach(handler -> handlerExecutor.submit(() -> {
 			try(var ignored = LogContext.restore(values, messages)){
 				handler.handle(topic, message);
+			}
+		}));
+	}
+	
+	@Override
+	public void onLogEvent(ILogEvent event){
+		var values = ThreadContext.getImmutableContext();
+		var messages = ThreadContext.getImmutableStack().asList();
+		
+		logEventListeners.forEach(listener -> handlerExecutor.submit(() -> {
+			try(var ignored = LogContext.restore(values, messages)){
+				listener.onLogEvent(event);
 			}
 		}));
 	}
@@ -255,8 +290,12 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		return updateStreamInfo;
 	}
 	
-	public void addHandler(MessageHandler handler){
+	public void addHandler(@NotNull IMessageHandler handler){
 		messageHandlers.add(handler);
+	}
+	
+	public void addLogEventListener(@NotNull ILogEventListener eventListener){
+		logEventListeners.add(eventListener);
 	}
 	
 	@Override

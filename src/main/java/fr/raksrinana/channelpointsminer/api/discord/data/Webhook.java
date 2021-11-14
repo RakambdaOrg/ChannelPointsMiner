@@ -19,6 +19,7 @@ import java.util.Collection;
 @ToString
 public class Webhook{
 	@JsonProperty("username")
+	@Setter
 	private String username;
 	@JsonProperty("avatar_url")
 	@JsonSerialize(using = URLSerializer.class)

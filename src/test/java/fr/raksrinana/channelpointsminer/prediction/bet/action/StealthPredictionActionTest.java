@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.prediction.bet.action;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Predictor;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
 import fr.raksrinana.channelpointsminer.prediction.bet.Placement;
 import org.mockito.Mock;
@@ -23,7 +23,7 @@ class StealthPredictionActionTest{
 	private final StealthPredictionAction tested = StealthPredictionAction.builder().build();
 	
 	@Mock
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	@Mock
 	private Outcome outcome;
 	
@@ -32,7 +32,7 @@ class StealthPredictionActionTest{
 	@BeforeEach
 	void setUp(){
 		placement = Placement.builder()
-				.prediction(prediction)
+				.bettingPrediction(bettingPrediction)
 				.outcome(outcome)
 				.amount(AMOUNT)
 				.build();
@@ -45,7 +45,7 @@ class StealthPredictionActionTest{
 		assertThrows(BetPlacementException.class, () -> tested.perform(placement));
 		
 		assertThat(placement).isEqualTo(Placement.builder()
-				.prediction(prediction)
+				.bettingPrediction(bettingPrediction)
 				.outcome(outcome)
 				.amount(AMOUNT)
 				.build());
@@ -64,7 +64,7 @@ class StealthPredictionActionTest{
 		tested.perform(placement);
 		
 		assertThat(placement).isEqualTo(Placement.builder()
-				.prediction(prediction)
+				.bettingPrediction(bettingPrediction)
 				.outcome(outcome)
 				.amount(AMOUNT)
 				.build());
@@ -83,7 +83,7 @@ class StealthPredictionActionTest{
 		tested.perform(placement);
 		
 		assertThat(placement).isEqualTo(Placement.builder()
-				.prediction(prediction)
+				.bettingPrediction(bettingPrediction)
 				.outcome(outcome)
 				.amount(AMOUNT - 5 - 1)
 				.build());
@@ -102,7 +102,7 @@ class StealthPredictionActionTest{
 		tested.perform(placement);
 		
 		assertThat(placement).isEqualTo(Placement.builder()
-				.prediction(prediction)
+				.bettingPrediction(bettingPrediction)
 				.outcome(outcome)
 				.amount(AMOUNT - 1)
 				.build());

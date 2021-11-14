@@ -24,7 +24,7 @@ import java.util.Optional;
 @SuperBuilder
 @NoArgsConstructor
 @Log4j2
-public class DropsPriority extends StreamerPriority{
+public class DropsPriority extends IStreamerPriority{
 	@Override
 	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
 		if(streamer.isParticipateCampaigns()

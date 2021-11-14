@@ -2,8 +2,8 @@ package fr.raksrinana.channelpointsminer.api.ws;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
+import fr.raksrinana.channelpointsminer.api.ws.data.response.ITwitchWebSocketResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
-import fr.raksrinana.channelpointsminer.api.ws.data.response.TwitchWebSocketResponse;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.factory.TwitchWebSocketClientFactory;
 import lombok.extern.log4j.Log4j2;
@@ -18,11 +18,11 @@ import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
-public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListener{
+public class TwitchWebSocketPool implements AutoCloseable, ITwitchWebSocketListener{
 	private static final int SOCKET_TIMEOUT_MINUTES = 5;
 	
 	private final Collection<TwitchWebSocketClient> clients;
-	private final List<TwitchMessageListener> listeners;
+	private final List<ITwitchMessageListener> listeners;
 	private final int maxTopicPerClient;
 	
 	public TwitchWebSocketPool(int maxTopicPerClient){
@@ -85,12 +85,12 @@ public class TwitchWebSocketPool implements AutoCloseable, TwitchWebSocketListen
 		}
 	}
 	
-	public void addListener(@NotNull TwitchMessageListener listener){
+	public void addListener(@NotNull ITwitchMessageListener listener){
 		listeners.add(listener);
 	}
 	
 	@Override
-	public void onWebSocketMessage(@NotNull TwitchWebSocketResponse response){
+	public void onWebSocketMessage(@NotNull ITwitchWebSocketResponse response){
 		if(response instanceof MessageResponse m){
 			var topic = m.getData().getTopic();
 			var message = m.getData().getMessage();

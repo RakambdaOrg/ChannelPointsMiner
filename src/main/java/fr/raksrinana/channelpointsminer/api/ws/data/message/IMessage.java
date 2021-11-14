@@ -31,5 +31,5 @@ import lombok.ToString;
 })
 @EqualsAndHashCode
 @ToString
-public abstract class Message{
+public abstract class IMessage{
 }

@@ -1,11 +1,11 @@
 package fr.raksrinana.channelpointsminer.api.ws;
 
-import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
+import fr.raksrinana.channelpointsminer.api.ws.data.response.ITwitchWebSocketResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageData;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
-import fr.raksrinana.channelpointsminer.api.ws.data.response.TwitchWebSocketResponse;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.factory.TwitchWebSocketClientFactory;
 import org.mockito.Mock;
@@ -36,9 +36,9 @@ class TwitchWebSocketPoolTest{
 	@Mock
 	private TwitchWebSocketClient client;
 	@Mock
-	private TwitchWebSocketResponse twitchWebSocketResponse;
+	private ITwitchWebSocketResponse twitchWebSocketResponse;
 	@Mock
-	private TwitchMessageListener twitchMessageListener;
+	private ITwitchMessageListener twitchMessageListener;
 	
 	@BeforeEach
 	void setUp(){
@@ -187,7 +187,7 @@ class TwitchWebSocketPoolTest{
 	void messagesAreRedirected(){
 		var response = mock(MessageResponse.class);
 		var data = mock(MessageData.class);
-		var message = mock(Message.class);
+		var message = mock(IMessage.class);
 		
 		when(response.getData()).thenReturn(data);
 		when(data.getMessage()).thenReturn(message);

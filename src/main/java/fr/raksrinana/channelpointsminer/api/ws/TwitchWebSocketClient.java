@@ -2,16 +2,16 @@ package fr.raksrinana.channelpointsminer.api.ws;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import fr.raksrinana.channelpointsminer.api.ws.data.request.ITwitchWebSocketRequest;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.ListenTopicRequest;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.PingRequest;
-import fr.raksrinana.channelpointsminer.api.ws.data.request.TwitchWebSocketRequest;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.UnlistenTopicRequest;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
+import fr.raksrinana.channelpointsminer.api.ws.data.response.ITwitchWebSocketResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.PongResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.ResponseResponse;
-import fr.raksrinana.channelpointsminer.api.ws.data.response.TwitchWebSocketResponse;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
@@ -31,7 +31,7 @@ import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 public class TwitchWebSocketClient extends WebSocketClient{
 	@Getter
 	private final Set<Topics> topics;
-	private final List<TwitchWebSocketListener> listeners;
+	private final List<ITwitchWebSocketListener> listeners;
 	@Getter
 	private final String uuid;
 	
@@ -60,7 +60,7 @@ public class TwitchWebSocketClient extends WebSocketClient{
 	public void onMessage(String messageStr){
 		try(var logContext = LogContext.empty().withSocketId(uuid)){
 			log.trace("Received Websocket message: {}", messageStr.strip());
-			var message = JacksonUtils.read(messageStr, new TypeReference<TwitchWebSocketResponse>(){});
+			var message = JacksonUtils.read(messageStr, new TypeReference<ITwitchWebSocketResponse>(){});
 			log.trace("Parsed message: {}", message);
 			
 			if(message instanceof ResponseResponse responseMessage){
@@ -110,7 +110,7 @@ public class TwitchWebSocketClient extends WebSocketClient{
 		send(new PingRequest());
 	}
 	
-	private void send(@NotNull TwitchWebSocketRequest request){
+	private void send(@NotNull ITwitchWebSocketRequest request){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var data = JacksonUtils.writeAsString(request);
 			log.trace("Sending WebSocket message: {}", data);
@@ -121,7 +121,7 @@ public class TwitchWebSocketClient extends WebSocketClient{
 		}
 	}
 	
-	public void addListener(@NotNull TwitchWebSocketListener listener){
+	public void addListener(@NotNull ITwitchWebSocketListener listener){
 		listeners.add(listener);
 	}
 	

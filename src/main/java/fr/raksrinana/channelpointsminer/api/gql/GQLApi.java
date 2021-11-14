@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.api.gql;
 
-import fr.raksrinana.channelpointsminer.api.gql.data.GQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.api.gql.data.IGQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.channelfollows.ChannelFollowsData;
 import fr.raksrinana.channelpointsminer.api.gql.data.channelfollows.ChannelFollowsOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.channelpointscontext.ChannelPointsContextData;
@@ -128,7 +128,7 @@ public class GQLApi{
 	}
 	
 	@NotNull
-	private <T> Optional<GQLResponse<T>> postRequest(@NotNull GQLOperation<T> operation){
+	private <T> Optional<GQLResponse<T>> postRequest(@NotNull IGQLOperation<T> operation){
 		var response = Unirest.post(ENDPOINT)
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
 				.body(operation)

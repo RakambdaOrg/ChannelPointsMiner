@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class ChannelLastViewedContentUpdated extends Message{
+public class ChannelLastViewedContentUpdated extends IMessage{
 	@JsonProperty("data")
 	private ChannelLastViewedContentUpdatedData data;
 }

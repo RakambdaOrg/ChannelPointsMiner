@@ -5,11 +5,12 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.eventcreated.EventCr
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
+import fr.raksrinana.channelpointsminer.log.event.EventCreatedLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
-import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
+import fr.raksrinana.channelpointsminer.prediction.delay.IDelayCalculator;
 import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -63,7 +64,7 @@ class PredictionsHandlerEventCreatedTest{
 	@Mock
 	private PredictionSettings predictionSettings;
 	@Mock
-	private DelayCalculator delayCalculator;
+	private IDelayCalculator delayCalculator;
 	
 	@BeforeEach
 	void setUp(){
@@ -139,7 +140,7 @@ class PredictionsHandlerEventCreatedTest{
 				return mock(ScheduledFuture.class);
 			});
 			
-			var expectedPrediction = Prediction.builder()
+			var expectedPrediction = BettingPrediction.builder()
 					.event(event)
 					.streamer(streamer)
 					.state(PredictionState.SCHEDULED)
@@ -150,6 +151,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
+			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
 			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}
@@ -165,6 +167,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(5L), eq(TimeUnit.SECONDS));
+			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
 		}
 	}
 	
@@ -179,6 +182,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(WINDOW_SECONDS - 60L - 5L), eq(TimeUnit.SECONDS));
+			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
 		}
 	}
 	
@@ -187,11 +191,13 @@ class PredictionsHandlerEventCreatedTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
 			
-			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
+			tested.getPredictions().put(EVENT_ID, mock(BettingPrediction.class));
+			
 			assertDoesNotThrow(() -> tested.handle(topic, eventCreated));
 			assertThat(tested.getPredictions()).hasSize(1);
 			
-			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
+			verify(miner, never()).schedule(any(), anyLong(), any());
+			verify(miner, never()).onLogEvent(any());
 		}
 	}
 }

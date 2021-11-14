@@ -26,7 +26,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @ToString
 @EqualsAndHashCode
 @SuperBuilder
-public abstract class StreamerPriority{
+public abstract class IStreamerPriority{
 	@JsonProperty("score")
 	private int score;
 	

@@ -15,7 +15,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Commercial extends Message{
+public class Commercial extends IMessage{
 	@JsonProperty("server_time")
 	@JsonDeserialize(using = TwitchTimestampDeserializer.class)
 	@NotNull

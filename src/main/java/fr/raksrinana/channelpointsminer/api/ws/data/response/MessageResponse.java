@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MessageResponse extends TwitchWebSocketResponse{
+public class MessageResponse extends ITwitchWebSocketResponse{
 	@JsonProperty("data")
 	private MessageData data;
 }

@@ -7,16 +7,18 @@ import fr.raksrinana.channelpointsminer.api.passport.exceptions.CaptchaSolveRequ
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.handler.MessageHandler;
+import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
+import fr.raksrinana.channelpointsminer.log.ILogEventListener;
+import fr.raksrinana.channelpointsminer.log.event.ILogEvent;
 import fr.raksrinana.channelpointsminer.runnable.StreamerConfigurationReload;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -214,7 +216,7 @@ class MinerTest{
 	
 	@Test
 	void unknownMessageIsNotForwarded(){
-		var message = mock(Message.class);
+		var message = mock(IMessage.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
 		verify(executorService, never()).submit(any(Runnable.class));
@@ -222,13 +224,13 @@ class MinerTest{
 	
 	@Test
 	void messageHandlersAreCalled(){
-		var handler1 = mock(MessageHandler.class);
-		var handler2 = mock(MessageHandler.class);
+		var handler1 = mock(IMessageHandler.class);
+		var handler2 = mock(IMessageHandler.class);
 		
 		tested.addHandler(handler1);
 		tested.addHandler(handler2);
 		
-		var message = mock(Message.class);
+		var message = mock(IMessage.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
 		verify(executorService, times(2)).submit(any(Runnable.class));
@@ -451,7 +453,7 @@ class MinerTest{
 			when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			tested.getStreamers().add(streamer);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
@@ -481,7 +483,7 @@ class MinerTest{
 			when(streamerSettings.isJoinIrc()).thenReturn(false);
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			tested.getStreamers().add(streamer);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
@@ -497,5 +499,21 @@ class MinerTest{
 		when(accountConfiguration.getUsername()).thenReturn(username);
 		
 		assertThat(tested.getUsername()).isEqualTo(username);
+	}
+	
+	@Test
+	void logEventHandlers(){
+		var listener1 = mock(ILogEventListener.class);
+		var listener2 = mock(ILogEventListener.class);
+		
+		tested.addLogEventListener(listener1);
+		tested.addLogEventListener(listener2);
+		
+		var event = mock(ILogEvent.class);
+		assertDoesNotThrow(() -> tested.onLogEvent(event));
+		
+		verify(executorService, times(2)).submit(any(Runnable.class));
+		verify(listener1).onLogEvent(event);
+		verify(listener2).onLogEvent(event);
 	}
 }

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings("unused")
-public abstract class HandlerAdapter implements MessageHandler{
+public abstract class HandlerAdapter implements IMessageHandler{
 	private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 	private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
 	private static final Set<Class<?>> unresolved;
@@ -53,8 +53,8 @@ public abstract class HandlerAdapter implements MessageHandler{
 	public void onPredictionUpdated(@NotNull Topic topic, @NotNull PredictionUpdated message){}
 	
 	@Override
-	public void handle(@NotNull Topic topic, @NotNull Message message){
-		for(var clazz : ClassWalker.range(message.getClass(), Message.class)){
+	public void handle(@NotNull Topic topic, @NotNull IMessage message){
+		for(var clazz : ClassWalker.range(message.getClass(), IMessage.class)){
 			if(unresolved.contains(clazz)){
 				continue;
 			}

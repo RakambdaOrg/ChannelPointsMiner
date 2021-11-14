@@ -7,7 +7,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class UnlistenTopicRequest extends TwitchWebSocketRequest{
+public class UnlistenTopicRequest extends ITwitchWebSocketRequest{
 	private static final int NONCE_LENGTH = 30;
 	
 	@JsonProperty("nonce")

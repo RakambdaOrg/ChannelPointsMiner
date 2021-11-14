@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class Prediction{
+public class BettingPrediction{
 	@NotNull
 	private Streamer streamer;
 	@Setter

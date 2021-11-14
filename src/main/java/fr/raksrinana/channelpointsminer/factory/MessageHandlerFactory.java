@@ -1,12 +1,6 @@
 package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
-import fr.raksrinana.channelpointsminer.handler.ClaimAvailableHandler;
-import fr.raksrinana.channelpointsminer.handler.FollowRaidHandler;
-import fr.raksrinana.channelpointsminer.handler.MessageHandler;
-import fr.raksrinana.channelpointsminer.handler.StreamStartEndHandler;
-import fr.raksrinana.channelpointsminer.log.DiscordLoggerHandler;
-import fr.raksrinana.channelpointsminer.log.LogLoggerHandler;
+import fr.raksrinana.channelpointsminer.handler.*;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import lombok.NoArgsConstructor;
@@ -15,27 +9,28 @@ import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public class MessageHandlerFactory{
-	public static MessageHandler createLogger(@NotNull IMiner miner){
-		return new LogLoggerHandler(miner);
-	}
-	
-	public static MessageHandler createDiscordLogger(@NotNull IMiner miner, @NotNull DiscordApi discordApi, boolean useEmbeds){
-		return new DiscordLoggerHandler(miner, discordApi, useEmbeds);
-	}
-	
-	public static MessageHandler createClaimAvailableHandler(@NotNull IMiner miner){
+	@NotNull
+	public static IMessageHandler createClaimAvailableHandler(@NotNull IMiner miner){
 		return new ClaimAvailableHandler(miner);
 	}
 	
-	public static MessageHandler createStreamStartEndHandler(@NotNull IMiner miner){
+	@NotNull
+	public static IMessageHandler createStreamStartEndHandler(@NotNull IMiner miner){
 		return new StreamStartEndHandler(miner);
 	}
 	
-	public static MessageHandler createFollowRaidHandler(@NotNull IMiner miner){
+	@NotNull
+	public static IMessageHandler createFollowRaidHandler(@NotNull IMiner miner){
 		return new FollowRaidHandler(miner);
 	}
 	
-	public static MessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer){
-		return new fr.raksrinana.channelpointsminer.handler.PredictionsHandler(miner, betPlacer);
+	@NotNull
+	public static IMessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer){
+		return new PredictionsHandler(miner, betPlacer);
+	}
+	
+	@NotNull
+	public static IMessageHandler createPointsHandler(@NotNull IMiner miner){
+		return new PointsHandler(miner);
 	}
 }

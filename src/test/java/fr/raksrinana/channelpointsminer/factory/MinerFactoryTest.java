@@ -4,12 +4,9 @@ import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.config.DiscordConfiguration;
-import fr.raksrinana.channelpointsminer.handler.ClaimAvailableHandler;
-import fr.raksrinana.channelpointsminer.handler.FollowRaidHandler;
-import fr.raksrinana.channelpointsminer.handler.PredictionsHandler;
-import fr.raksrinana.channelpointsminer.handler.StreamStartEndHandler;
-import fr.raksrinana.channelpointsminer.log.DiscordLoggerHandler;
-import fr.raksrinana.channelpointsminer.log.LogLoggerHandler;
+import fr.raksrinana.channelpointsminer.handler.*;
+import fr.raksrinana.channelpointsminer.log.DiscordLogEventListener;
+import fr.raksrinana.channelpointsminer.log.LoggerLogEventListener;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,11 +53,15 @@ class MinerFactoryTest{
 			
 			assertThat(miner.getMessageHandlers())
 					.hasSize(5)
-					.hasAtLeastOneElementOfType(LogLoggerHandler.class)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
-					.hasAtLeastOneElementOfType(PredictionsHandler.class);
+					.hasAtLeastOneElementOfType(PredictionsHandler.class)
+					.hasAtLeastOneElementOfType(PointsHandler.class);
+			
+			assertThat(miner.getLogEventListeners())
+					.hasSize(1)
+					.hasAtLeastOneElementOfType(LoggerLogEventListener.class);
 			
 			miner.close();
 		}
@@ -79,13 +80,17 @@ class MinerFactoryTest{
 			var miner = MinerFactory.create(accountConfiguration);
 			
 			assertThat(miner.getMessageHandlers())
-					.hasSize(6)
-					.hasAtLeastOneElementOfType(LogLoggerHandler.class)
-					.hasAtLeastOneElementOfType(DiscordLoggerHandler.class)
+					.hasSize(5)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
-					.hasAtLeastOneElementOfType(PredictionsHandler.class);
+					.hasAtLeastOneElementOfType(PredictionsHandler.class)
+					.hasAtLeastOneElementOfType(PointsHandler.class);
+			
+			assertThat(miner.getLogEventListeners())
+					.hasSize(2)
+					.hasAtLeastOneElementOfType(LoggerLogEventListener.class)
+					.hasAtLeastOneElementOfType(DiscordLogEventListener.class);
 			
 			miner.close();
 		}

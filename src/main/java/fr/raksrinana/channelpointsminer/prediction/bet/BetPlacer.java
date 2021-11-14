@@ -6,7 +6,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionError;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.MakePredictionPayload;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.factory.TransactionIdFactory;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
@@ -22,43 +22,43 @@ public class BetPlacer{
 	@NotNull
 	private final IMiner miner;
 	
-	public void placeBet(@NotNull Prediction prediction){
-		var event = prediction.getEvent();
+	public void placeBet(@NotNull BettingPrediction bettingPrediction){
+		var event = bettingPrediction.getEvent();
 		try(var ignored = LogContext.with(miner).withEventId(event.getId())){
 			if(event.getStatus() != EventStatus.ACTIVE){
 				log.warn("Cannot place bet anymore, current status is {}", event.getStatus());
-				prediction.setState(PredictionState.BET_ERROR);
+				bettingPrediction.setState(PredictionState.BET_ERROR);
 				return;
 			}
 			
-			var outcomePicker = prediction.getStreamer().getSettings().getPredictions().getOutcomePicker();
-			var outcome = outcomePicker.chooseOutcome(prediction);
+			var outcomePicker = bettingPrediction.getStreamer().getSettings().getPredictions().getOutcomePicker();
+			var outcome = outcomePicker.chooseOutcome(bettingPrediction);
 			
-			var amountCalculator = prediction.getStreamer().getSettings().getPredictions().getAmountCalculator();
-			var amount = amountCalculator.calculateAmount(prediction, outcome);
+			var amountCalculator = bettingPrediction.getStreamer().getSettings().getPredictions().getAmountCalculator();
+			var amount = amountCalculator.calculateAmount(bettingPrediction, outcome);
 			if(amount <= 10){
 				log.warn("Cannot place a bet with less than {} points (was {})", MINIMUM_BET_AMOUNT, amount);
-				prediction.setState(PredictionState.BET_ERROR);
+				bettingPrediction.setState(PredictionState.BET_ERROR);
 				return;
 			}
 			
 			var placement = Placement.builder()
-					.prediction(prediction)
+					.bettingPrediction(bettingPrediction)
 					.outcome(outcome)
 					.amount(amount)
 					.build();
 			
-			var actions = prediction.getStreamer().getSettings().getPredictions().getActions();
+			var actions = bettingPrediction.getStreamer().getSettings().getPredictions().getActions();
 			for(var action : actions){
 				action.perform(placement);
 			}
 			
 			log.info("Placing bet of {} points on {} ({})", amount, outcome.getColor(), outcome.getTitle());
 			var transactionId = TransactionIdFactory.create();
-			var result = miner.getGqlApi().makePrediction(placement.getPrediction().getEvent().getId(), placement.getOutcome().getId(), placement.getAmount(), transactionId);
+			var result = miner.getGqlApi().makePrediction(placement.getBettingPrediction().getEvent().getId(), placement.getOutcome().getId(), placement.getAmount(), transactionId);
 			if(result.isEmpty()){
 				log.error("Failed to place bet");
-				prediction.setState(PredictionState.BET_ERROR);
+				bettingPrediction.setState(PredictionState.BET_ERROR);
 				return;
 			}
 			
@@ -68,12 +68,12 @@ public class BetPlacer{
 					.map(MakePredictionError::getCode)
 					.ifPresent(code -> {
 						log.error("Failed to place bet: {}", code);
-						prediction.setState(PredictionState.BET_ERROR);
+						bettingPrediction.setState(PredictionState.BET_ERROR);
 					});
 		}
 		catch(BetPlacementException e){
 			log.error("Failed to place bet", e);
-			prediction.setState(PredictionState.BET_ERROR);
+			bettingPrediction.setState(PredictionState.BET_ERROR);
 		}
 	}
 }

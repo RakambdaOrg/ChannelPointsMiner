@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-public abstract class TwitchWebSocketRequest{
+public abstract class ITwitchWebSocketRequest{
 	@JsonProperty("type")
 	private String type;
 	
-	public TwitchWebSocketRequest(String type){
+	public ITwitchWebSocketRequest(String type){
 		this.type = type;
 	}
 }

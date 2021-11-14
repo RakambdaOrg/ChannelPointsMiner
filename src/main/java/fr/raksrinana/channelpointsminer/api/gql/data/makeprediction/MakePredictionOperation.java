@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.api.gql.data.makeprediction;
 
-import fr.raksrinana.channelpointsminer.api.gql.data.GQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.api.gql.data.IGQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.PersistedQueryExtension;
 import kong.unirest.GenericType;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class MakePredictionOperation extends GQLOperation<MakePredictionData>{
+public class MakePredictionOperation extends IGQLOperation<MakePredictionData>{
 	public MakePredictionOperation(@NotNull String eventId, @NotNull String outcomeId, int amount, @NotNull String transactionId){
 		super("MakePrediction");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "b44682ecc88358817009f20e69d75081b1e58825bb40aa53d5dbadcc17c881d8"));
