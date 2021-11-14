@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.runnable;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,12 @@ public class StreamerConfigurationReload implements Runnable{
 	
 	@Override
 	public void run(){
-		var streamers = getAllStreamers();
-		removeStreamers(streamers);
-		updateStreamers(streamers);
-		addStreamers(streamers);
+		try(var ignored = LogContext.with(miner)){
+			var streamers = getAllStreamers();
+			removeStreamers(streamers);
+			updateStreamers(streamers);
+			addStreamers(streamers);
+		}
 	}
 	
 	@NotNull

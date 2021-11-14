@@ -10,7 +10,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TwitchIrcEventListenerTest{
-	private final TwitchIrcEventListener tested = new TwitchIrcEventListener();
+	private static final String USERNAME = "username";
+	
+	private final TwitchIrcEventListener tested = new TwitchIrcEventListener(USERNAME);
 	
 	@Mock
 	private ClientConnectionClosedEvent clientConnectionClosedEvent;

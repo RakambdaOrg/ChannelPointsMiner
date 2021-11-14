@@ -1,10 +1,7 @@
 package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
-import fr.raksrinana.channelpointsminer.api.discord.data.Author;
-import fr.raksrinana.channelpointsminer.api.discord.data.Embed;
-import fr.raksrinana.channelpointsminer.api.discord.data.Field;
-import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
+import fr.raksrinana.channelpointsminer.api.discord.data.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.eventcreated.EventCreatedData;
@@ -33,6 +30,7 @@ import static org.mockito.Mockito.*;
 class DiscordLoggerHandlerEmbedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
+	private static final String USERNAME = "username";
 	
 	private DiscordLoggerHandler tested;
 	
@@ -46,6 +44,7 @@ class DiscordLoggerHandlerEmbedTest{
 	private Topic topic;
 	
 	private Author author;
+	private Footer footer;
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
@@ -59,8 +58,12 @@ class DiscordLoggerHandlerEmbedTest{
 				.url(channelUrl)
 				.iconUrl(streamerProfileUrl)
 				.build();
+		footer = Footer.builder()
+				.text(USERNAME)
+				.build();
 		
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
+		lenient().when(miner.getUsername()).thenReturn(USERNAME);
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
 		lenient().when(streamer.getProfileImage()).thenReturn(Optional.of(streamerProfileUrl));
 		lenient().when(streamer.getChannelUrl()).thenReturn(channelUrl);
@@ -83,6 +86,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(CYAN.getRGB())
 						.description("Claim available")
 						.build()))
@@ -106,6 +110,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(GREEN.getRGB())
 						.description("Points earned")
 						.field(Field.builder().name("Earned").value("25").build())
@@ -130,6 +135,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(RED.getRGB())
 						.description("Points spent")
 						.field(Field.builder().name("New balance").value("25").build())
@@ -146,6 +152,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(CYAN.getRGB())
 						.description("Stream stopped")
 						.build()))
@@ -161,6 +168,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(CYAN.getRGB())
 						.description("Stream started")
 						.build()))
@@ -183,6 +191,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(PINK.getRGB())
 						.description("Prediction created")
 						.field(Field.builder().name("Title").value(title).build())
@@ -206,6 +215,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(PINK.getRGB())
 						.description("Bet placed")
 						.field(Field.builder().name("Points placed").value("25").build())
@@ -232,6 +242,7 @@ class DiscordLoggerHandlerEmbedTest{
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
+						.footer(footer)
 						.color(PINK.getRGB())
 						.description("Prediction result")
 						.field(Field.builder().name("Type").value("WIN").build())
@@ -250,6 +261,7 @@ class DiscordLoggerHandlerEmbedTest{
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
+						.footer(footer)
 						.color(CYAN.getRGB())
 						.description("Stream started")
 						.build()))

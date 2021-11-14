@@ -105,7 +105,7 @@ public class Streamer{
 	}
 	
 	public int getScore(@NotNull IMiner miner){
-		try(var ignored = LogContext.with(this)){
+		try(var ignored = LogContext.with(miner).withStreamer(this)){
 			var score = settings.getPriorities().stream()
 					.mapToInt(p -> {
 						var s = p.getScore(miner, this);

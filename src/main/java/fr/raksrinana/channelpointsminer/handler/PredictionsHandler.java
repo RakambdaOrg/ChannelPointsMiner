@@ -51,7 +51,7 @@ public class PredictionsHandler extends HandlerAdapter{
 	public void onEventCreated(@NotNull Topic topic, @NotNull EventCreated message){
 		var streamerOptional = miner.getStreamerById(topic.getTarget());
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(event.getId())){
+		try(var ignored = LogContext.with(miner).withStreamer(streamerOptional.orElse(null)).withEventId(event.getId())){
 			if(event.getStatus() != EventStatus.ACTIVE){
 				log.debug("Event is not active");
 				return;
@@ -83,7 +83,7 @@ public class PredictionsHandler extends HandlerAdapter{
 	public void onEventUpdated(@NotNull Topic topic, @NotNull EventUpdated message){
 		var streamerOptional = miner.getStreamerById(topic.getTarget());
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(event.getId())){
+		try(var ignored = LogContext.with(miner).withStreamer(streamerOptional.orElse(null)).withEventId(event.getId())){
 			var prediction = predictions.get(event.getId());
 			if(Objects.isNull(prediction)){
 				log.debug("Event update on unknown prediction");
@@ -111,10 +111,32 @@ public class PredictionsHandler extends HandlerAdapter{
 		predictionPlaced(message.getData().getPrediction());
 	}
 	
+	@Override
+	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){
+		var predictionData = message.getData().getPrediction();
+		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
+		var eventId = predictionData.getEventId();
+		try(var ignored = LogContext.with(miner).withStreamer(streamerOptional.orElse(null)).withEventId(eventId)){
+			var result = Optional.ofNullable(predictionData.getResult());
+			var pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
+			var resultType = result.map(PredictionResultPayload::getType).orElse(PredictionResultType.UNKNOWN);
+			
+			Optional.ofNullable(placedPredictions.get(eventId))
+					.map(prediction -> pointsWon - prediction.getAmount())
+					.ifPresentOrElse(
+							gain -> log.info("Prediction result {}: {}", resultType, gain),
+							() -> log.info("Prediction result {}: unknown gain", resultType)
+					);
+			
+			predictions.remove(eventId);
+			placedPredictions.remove(eventId);
+		}
+	}
+	
 	private void predictionPlaced(@NotNull fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction predictionData){
 		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
 		var eventId = predictionData.getEventId();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
+		try(var ignored = LogContext.with(miner).withStreamer(streamerOptional.orElse(null)).withEventId(eventId)){
 			var placedPoints = predictionData.getPoints();
 			log.info("Prediction made, placed {} points", placedPoints);
 			
@@ -129,28 +151,6 @@ public class PredictionsHandler extends HandlerAdapter{
 					.prediction(prediction.orElse(null))
 					.amount(placedPoints)
 					.build());
-		}
-	}
-	
-	@Override
-	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){
-		var predictionData = message.getData().getPrediction();
-		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
-		var eventId = predictionData.getEventId();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
-			var result = Optional.ofNullable(predictionData.getResult());
-			var pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
-			var resultType = result.map(PredictionResultPayload::getType).orElse(PredictionResultType.UNKNOWN);
-			
-			Optional.ofNullable(placedPredictions.get(eventId))
-					.map(prediction -> pointsWon - prediction.getAmount())
-					.ifPresentOrElse(
-							gain -> log.info("Prediction result {}: {}", resultType, gain),
-							() -> log.info("Prediction result {}: unknown gain", resultType)
-					);
-			
-			predictions.remove(eventId);
-			placedPredictions.remove(eventId);
 		}
 	}
 	

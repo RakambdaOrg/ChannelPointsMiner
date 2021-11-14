@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.apache.logging.log4j.CloseableThreadContext;
 import org.jetbrains.annotations.NotNull;
@@ -8,8 +9,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class LogContext implements AutoCloseable{
+	private static final String ACCOUNT_NAME_KEY = "account_name";
 	private static final String STREAMER_NAME_KEY = "streamer_name";
 	private static final String WEBSOCKET_ID_KEY = "websocket_id";
 	private static final String WEBSOCKET_TOPIC = "websocket_topic";
@@ -17,9 +20,9 @@ public class LogContext implements AutoCloseable{
 	
 	private final CloseableThreadContext.Instance ctc;
 	
-	private LogContext(@Nullable Streamer streamer){
-		if(Objects.nonNull(streamer)){
-			ctc = CloseableThreadContext.put(STREAMER_NAME_KEY, streamer.getUsername());
+	private LogContext(@Nullable String accountName){
+		if(Objects.nonNull(accountName)){
+			ctc = CloseableThreadContext.put(ACCOUNT_NAME_KEY, accountName);
 		}
 		else{
 			ctc = CloseableThreadContext.putAll(Map.of());
@@ -40,9 +43,20 @@ public class LogContext implements AutoCloseable{
 		return new LogContext(values, messages);
 	}
 	
+	public static LogContext with(@Nullable IMiner miner){
+		return with(Optional.ofNullable(miner).map(IMiner::getUsername).orElse(null));
+	}
+	
+	public static LogContext with(@Nullable String accountName){
+		return new LogContext(accountName);
+	}
+	
 	@NotNull
-	public static LogContext with(@Nullable Streamer streamer){
-		return new LogContext(streamer);
+	public LogContext withStreamer(@Nullable Streamer streamer){
+		if(Objects.nonNull(streamer)){
+			ctc.put(STREAMER_NAME_KEY, streamer.getUsername());
+		}
+		return this;
 	}
 	
 	@NotNull

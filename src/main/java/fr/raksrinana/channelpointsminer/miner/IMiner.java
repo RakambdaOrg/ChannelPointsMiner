@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 public interface IMiner{
 	@NotNull
+	String getUsername();
+	
+	@NotNull
 	Collection<Streamer> getStreamers();
 	
 	@NotNull

@@ -17,29 +17,24 @@ public class StreamStartEndHandler extends HandlerAdapter{
 	
 	@Override
 	public void onStreamDown(@NotNull Topic topic, @NotNull StreamDown message){
-		var streamerOptional = miner.getStreamerById(topic.getTarget());
-		if(streamerOptional.isEmpty()){
-			log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
-			return;
-		}
-		
-		var streamer = streamerOptional.get();
-		try(var ignored = LogContext.with(streamer)){
-			//Wait that the API updates
-			miner.schedule(() -> miner.updateStreamerInfos(streamer), 15, SECONDS);
-		}
+		updateStream(topic);
 	}
 	
 	@Override
 	public void onStreamUp(@NotNull Topic topic, @NotNull StreamUp message){
-		var streamerOptional = miner.getStreamerById(topic.getTarget());
-		if(streamerOptional.isEmpty()){
-			log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
-			return;
-		}
-		
-		var streamer = streamerOptional.get();
-		try(var ignored = LogContext.with(streamer)){
+		updateStream(topic);
+	}
+	
+	private void updateStream(@NotNull Topic topic){
+		try(var context = LogContext.with(miner)){
+			var streamerOptional = miner.getStreamerById(topic.getTarget());
+			if(streamerOptional.isEmpty()){
+				log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
+				return;
+			}
+			
+			var streamer = streamerOptional.get();
+			context.withStreamer(streamer);
 			//Wait that the API updates
 			miner.schedule(() -> miner.updateStreamerInfos(streamer), 15, SECONDS);
 		}

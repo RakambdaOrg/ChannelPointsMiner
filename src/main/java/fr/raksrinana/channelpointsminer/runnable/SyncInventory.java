@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.inventory.InventoryData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.Inventory;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDropSelfEdge;
+import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
@@ -22,23 +23,25 @@ public class SyncInventory implements Runnable{
 	
 	@Override
 	public void run(){
-		if(!needUpdate()){
-			log.trace("Skipped inventory syncing");
-			return;
-		}
-		log.debug("Syncing inventory");
-		try{
-			var inventory = miner.getGqlApi().inventory()
-					.map(GQLResponse::getData)
-					.orElse(null);
-			miner.getMinerData().setInventory(inventory);
-			if(Objects.nonNull(inventory)){
-				claimDrops(inventory);
+		try(var ignored = LogContext.with(miner)){
+			if(!needUpdate()){
+				log.trace("Skipped inventory syncing");
+				return;
 			}
-			log.debug("Done syncing inventory");
-		}
-		catch(Exception e){
-			log.error("Failed to sync inventory", e);
+			log.debug("Syncing inventory");
+			try{
+				var inventory = miner.getGqlApi().inventory()
+						.map(GQLResponse::getData)
+						.orElse(null);
+				miner.getMinerData().setInventory(inventory);
+				if(Objects.nonNull(inventory)){
+					claimDrops(inventory);
+				}
+				log.debug("Done syncing inventory");
+			}
+			catch(Exception e){
+				log.error("Failed to sync inventory", e);
+			}
 		}
 	}
 	

@@ -19,6 +19,6 @@ class TwitchIrcFactoryTest{
 	
 	@Test
 	void createListener(){
-		assertThat(TwitchIrcFactory.createListener()).isNotNull().isInstanceOf(TwitchIrcEventListener.class);
+		assertThat(TwitchIrcFactory.createListener("username")).isNotNull().isInstanceOf(TwitchIrcEventListener.class);
 	}
 }

@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.runnable;
 
+import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +14,8 @@ public class WebSocketPing implements Runnable{
 	
 	@Override
 	public void run(){
-		miner.getWebSocketPool().ping();
+		try(var ignored = LogContext.with(miner)){
+			miner.getWebSocketPool().ping();
+		}
 	}
 }

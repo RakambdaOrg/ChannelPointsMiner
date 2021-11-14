@@ -490,4 +490,12 @@ class MinerTest{
 			verify(twitchIrcClient).leave(STREAMER_USERNAME);
 		}
 	}
+	
+	@Test
+	void getUsername(){
+		var username = "username";
+		when(accountConfiguration.getUsername()).thenReturn(username);
+		
+		assertThat(tested.getUsername()).isEqualTo(username);
+	}
 }
