@@ -34,7 +34,9 @@ public class Main{
 		
 		var accountConfigurations = ConfigurationFactory.getInstance();
 		for(var accountConfiguration : accountConfigurations.getAccounts()){
-			MinerFactory.create(accountConfiguration).start();
+			if(accountConfiguration.isEnabled()){
+				MinerFactory.create(accountConfiguration).start();
+			}
 		}
 	}
 	

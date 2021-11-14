@@ -138,6 +138,11 @@ Account settings define all the settings for a Twitch account that will be used 
 |If set to true link:https://www.twitch.tv/directory/following/[streamers followed,window="_blank"] on the account will be mined.
 |false
 
+|enabled
+|If set to true the account will be mined.
+Otherwise, it won't be mined but still allows you to have its configuration defined for later.
+|true
+
 |defaultStreamerSettings [[global_settings__default_streamer_settings]]
 |Default <<streamer_settings,streamer settings>> to apply to every streamer.
 |Default streamer settings

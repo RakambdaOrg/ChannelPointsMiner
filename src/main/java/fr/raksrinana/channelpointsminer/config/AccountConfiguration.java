@@ -40,6 +40,10 @@ public class AccountConfiguration{
 	@Comment(value = "Load streamers to scrape from follow list.", defaultValue = "false")
 	@Builder.Default
 	private boolean loadFollows = false;
+	@JsonProperty("enabled")
+	@Comment(value = "If the account is marked as enabled it'll be mined.", defaultValue = "true")
+	@Builder.Default
+	private boolean enabled = true;
 	@JsonProperty("defaultStreamerSettings")
 	@Comment(value = "Default settings for the streamers mined.")
 	@Builder.Default
