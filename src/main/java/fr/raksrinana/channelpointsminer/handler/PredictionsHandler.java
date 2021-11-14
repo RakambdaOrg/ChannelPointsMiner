@@ -10,6 +10,7 @@ import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.log.event.EventCreatedLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.PredictionMadeLogEvent;
 import fr.raksrinana.channelpointsminer.log.event.PredictionResultLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
@@ -172,9 +173,9 @@ public class PredictionsHandler extends HandlerAdapter{
 	}
 	
 	private void predictionPlaced(@NotNull fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction predictionData){
-		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
+		var streamer = miner.getStreamerById(predictionData.getChannelId()).orElse(null);
 		var eventId = predictionData.getEventId();
-		try(var ignored = LogContext.with(miner).withStreamer(streamerOptional.orElse(null)).withEventId(eventId)){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(eventId)){
 			var placedPoints = predictionData.getPoints();
 			
 			var prediction = Optional.ofNullable(predictions.get(eventId))
@@ -183,12 +184,15 @@ public class PredictionsHandler extends HandlerAdapter{
 						return p;
 					});
 			
-			placedPredictions.put(eventId, PlacedPrediction.builder()
+			var placedPrediction = PlacedPrediction.builder()
 					.eventId(eventId)
 					.bettingPrediction(prediction.orElse(null))
 					.amount(placedPoints)
 					.outcomeId(predictionData.getOutcomeId())
-					.build());
+					.build();
+			
+			placedPredictions.put(eventId, placedPrediction);
+			miner.onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
 		}
 	}
 }

@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
+import fr.raksrinana.channelpointsminer.log.event.PredictionMadeLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -22,8 +23,7 @@ import static fr.raksrinana.channelpointsminer.handler.data.PredictionState.PLAC
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerPredictionMadeTest{
@@ -69,12 +69,16 @@ class PredictionsHandlerPredictionMadeTest{
 	
 	@Test
 	void noPredictionsMadePreviously(){
-		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
-		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, PlacedPrediction.builder()
+		var placedPrediction = PlacedPrediction.builder()
 				.eventId(EVENT_ID)
 				.amount(AMOUNT)
 				.outcomeId(OUTCOME_ID)
-				.build()));
+				.build();
+		
+		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
+		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
+		
+		verify(miner).onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
 	}
 	
 	@Test
@@ -85,27 +89,35 @@ class PredictionsHandlerPredictionMadeTest{
 				.streamer(streamer)
 				.state(PLACED)
 				.build();
-		tested.getPredictions().put(EVENT_ID, prediction);
-		
-		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
-		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, PlacedPrediction.builder()
+		var placedPrediction = PlacedPrediction.builder()
 				.eventId(EVENT_ID)
 				.amount(AMOUNT)
 				.outcomeId(OUTCOME_ID)
 				.bettingPrediction(prediction)
-				.build()));
+				.build();
+		
+		tested.getPredictions().put(EVENT_ID, prediction);
+		
+		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
+		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
+		
+		verify(miner).onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
 	}
 	
 	@Test
 	void predictionsEventFiredTwiceReplacesPrevious(){
 		var previousPlaced = mock(PlacedPrediction.class);
-		tested.getPlacedPredictions().put(EVENT_ID, previousPlaced);
-		
-		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
-		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, PlacedPrediction.builder()
+		var placedPrediction = PlacedPrediction.builder()
 				.eventId(EVENT_ID)
 				.amount(AMOUNT)
 				.outcomeId(OUTCOME_ID)
-				.build()));
+				.build();
+		
+		tested.getPlacedPredictions().put(EVENT_ID, previousPlaced);
+		
+		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
+		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
+		
+		verify(miner).onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
 	}
 }
