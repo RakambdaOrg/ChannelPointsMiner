@@ -458,6 +458,9 @@ These keys are listed below:
 |===
 |Key |Description
 
+|account_name
+|The account used to do the mining.
+
 |streamer_name
 |The name of the streamer for which the message is linked to.
 

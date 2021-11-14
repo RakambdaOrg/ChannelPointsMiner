@@ -1,7 +1,6 @@
 package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
-import fr.raksrinana.channelpointsminer.api.discord.data.Author;
 import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimavailable.ClaimAvailableData;
@@ -20,8 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Optional;
 import static org.mockito.Mockito.*;
 
@@ -29,6 +26,7 @@ import static org.mockito.Mockito.*;
 class DiscordLoggerHandlerMessageTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
+	private static final String USERNAME = "username";
 	
 	private DiscordLoggerHandler tested;
 	
@@ -41,25 +39,13 @@ class DiscordLoggerHandlerMessageTest{
 	@Mock
 	private Topic topic;
 	
-	private Author author;
-	
 	@BeforeEach
-	void setUp() throws MalformedURLException{
+	void setUp(){
 		tested = new DiscordLoggerHandler(miner, discordApi, false);
 		
-		var streamerProfileUrl = new URL("https://streamer-image");
-		var channelUrl = new URL("https://streamer");
-		
-		author = Author.builder()
-				.name(STREAMER_USERNAME)
-				.url(channelUrl)
-				.iconUrl(streamerProfileUrl)
-				.build();
-		
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
+		lenient().when(miner.getUsername()).thenReturn(USERNAME);
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
-		lenient().when(streamer.getProfileImage()).thenReturn(Optional.of(streamerProfileUrl));
-		lenient().when(streamer.getChannelUrl()).thenReturn(channelUrl);
 		
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
 	}
@@ -77,7 +63,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, claimAvailable);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("🎫 %s : Claim available".formatted(STREAMER_USERNAME))
+				.content("[%s] 🎫 %s : Claim available".formatted(USERNAME, STREAMER_USERNAME))
 				.build());
 	}
 	
@@ -96,7 +82,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, pointsEarned);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("💰 %s : Points earned [%+d | %s]".formatted(STREAMER_USERNAME, 25, "CLAIM"))
+				.content("[%s] 💰 %s : Points earned [%+d | %s]".formatted(USERNAME, STREAMER_USERNAME, 25, "CLAIM"))
 				.build());
 	}
 	
@@ -114,7 +100,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, pointsSpent);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("💸 %s : Points spent [new balance %d]".formatted(STREAMER_USERNAME, 25))
+				.content("[%s] 💸 %s : Points spent [new balance %d]".formatted(USERNAME, STREAMER_USERNAME, 25))
 				.build());
 	}
 	
@@ -125,7 +111,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, streamUp);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("▶️ %s : Stream started".formatted(STREAMER_USERNAME))
+				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, STREAMER_USERNAME))
 				.build());
 	}
 	
@@ -138,7 +124,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, streamUp);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("▶️ %s : Stream started".formatted("UnknownStreamer"))
+				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, "UnknownStreamer"))
 				.build());
 	}
 	
@@ -149,7 +135,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, streamDown);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("⏹️ %s : Stream stopped".formatted(STREAMER_USERNAME))
+				.content("[%s] ⏹️ %s : Stream stopped".formatted(USERNAME, STREAMER_USERNAME))
 				.build());
 	}
 	
@@ -167,7 +153,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, eventCreated);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("📑 %s : New prediction [%s]".formatted(STREAMER_USERNAME, title))
+				.content("[%s] 📑 %s : New prediction [%s]".formatted(USERNAME, STREAMER_USERNAME, title))
 				.build());
 	}
 	
@@ -185,7 +171,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, predictionMade);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("🪙 %s : Bet placed [%d]".formatted(STREAMER_USERNAME, 25))
+				.content("[%s] 🪙 %s : Bet placed [%d]".formatted(USERNAME, STREAMER_USERNAME, 25))
 				.build());
 	}
 	
@@ -206,7 +192,7 @@ class DiscordLoggerHandlerMessageTest{
 		tested.handle(topic, predictionResult);
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("🧧 %s : Prediction result [%s | +%d]".formatted(STREAMER_USERNAME, "WIN", 56))
+				.content("[%s] 🧧 %s : Prediction result [%s | +%d]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 56))
 				.build());
 	}
 }

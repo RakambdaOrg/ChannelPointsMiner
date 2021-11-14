@@ -89,25 +89,27 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	 * @throws IllegalStateException If the login failed.
 	 */
 	public void start(){
-		log.info("Starting miner");
-		webSocketPool.addListener(this);
-		
-		login();
-		
-		scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(createSendMinutesWatched(this), 0, 1, MINUTES);
-		scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
-		scheduledExecutor.scheduleAtFixedRate(createSyncInventory(this), 1, 15, MINUTES);
-		
-		var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, accountConfiguration.isLoadFollows());
-		if(accountConfiguration.getReloadEvery() > 0){
-			scheduledExecutor.scheduleWithFixedDelay(streamerConfigurationReload, 0, accountConfiguration.getReloadEvery(), MINUTES);
+		try(var ignored = LogContext.with(this)){
+			log.info("Starting miner");
+			webSocketPool.addListener(this);
+			
+			login();
+			
+			scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
+			scheduledExecutor.scheduleWithFixedDelay(createSendMinutesWatched(this), 0, 1, MINUTES);
+			scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
+			scheduledExecutor.scheduleAtFixedRate(createSyncInventory(this), 1, 15, MINUTES);
+			
+			var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, accountConfiguration.isLoadFollows());
+			if(accountConfiguration.getReloadEvery() > 0){
+				scheduledExecutor.scheduleWithFixedDelay(streamerConfigurationReload, 0, accountConfiguration.getReloadEvery(), MINUTES);
+			}
+			else{
+				scheduledExecutor.schedule(streamerConfigurationReload, 0, MINUTES);
+			}
+			
+			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 		}
-		else{
-			scheduledExecutor.schedule(streamerConfigurationReload, 0, MINUTES);
-		}
-		
-		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 	}
 	
 	/**
@@ -132,6 +134,12 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	@NotNull
+	public String getUsername(){
+		return accountConfiguration.getUsername();
+	}
+	
+	@Override
+	@NotNull
 	public Optional<Streamer> getStreamerById(@NotNull String id){
 		return getStreamers().stream()
 				.filter(s -> Objects.equals(s.getId(), id))
@@ -140,7 +148,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	public void addStreamer(@NotNull Streamer streamer){
-		try(var ignored = LogContext.with(streamer)){
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			if(streamers.contains(streamer)){
 				log.debug("Streamer is already being mined");
 				return;
@@ -155,7 +163,7 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	public void updateStreamer(@NotNull Streamer streamer){
-		try(var ignored = LogContext.with(streamer)){
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			if(!streamers.contains(streamer)){
 				log.debug("Streamer is can't be updated as it is unknown");
 				return;
@@ -189,16 +197,20 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	public boolean removeStreamer(@NotNull Streamer streamer){
-		removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
-		removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
-		removeTopic(RAID, streamer.getId());
-		ircClient.leave(streamer.getUsername());
-		return streamers.remove(streamer);
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
+			removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
+			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
+			removeTopic(RAID, streamer.getId());
+			ircClient.leave(streamer.getUsername());
+			return streamers.remove(streamer);
+		}
 	}
 	
 	@Override
 	public void updateStreamerInfos(@NotNull Streamer streamer){
-		getUpdateStreamInfo().run(streamer);
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
+			getUpdateStreamInfo().run(streamer);
+		}
 	}
 	
 	@Override

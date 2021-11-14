@@ -24,7 +24,7 @@ public class BetPlacer{
 	
 	public void placeBet(@NotNull Prediction prediction){
 		var event = prediction.getEvent();
-		try(var ignored = LogContext.empty().withEventId(event.getId())){
+		try(var ignored = LogContext.with(miner).withEventId(event.getId())){
 			if(event.getStatus() != EventStatus.ACTIVE){
 				log.warn("Cannot place bet anymore, current status is {}", event.getStatus());
 				prediction.setState(PredictionState.BET_ERROR);

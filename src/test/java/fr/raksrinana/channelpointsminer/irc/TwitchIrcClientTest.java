@@ -43,7 +43,7 @@ class TwitchIrcClientTest{
 	void joinChannelCreatesClient(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
 			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
-			factory.when(TwitchIrcFactory::createListener).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			
@@ -58,7 +58,7 @@ class TwitchIrcClientTest{
 	void joinChannelCreatesClientOnlyOnce(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
 			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
-			factory.when(TwitchIrcFactory::createListener).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertDoesNotThrow(() -> tested.join(STREAMER));
@@ -78,7 +78,7 @@ class TwitchIrcClientTest{
 	void leaveChannel(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
 			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
-			factory.when(TwitchIrcFactory::createListener).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertDoesNotThrow(() -> tested.leave(STREAMER));
@@ -92,7 +92,7 @@ class TwitchIrcClientTest{
 	void close(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
 			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
-			factory.when(TwitchIrcFactory::createListener).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertDoesNotThrow(() -> tested.close());

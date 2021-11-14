@@ -14,7 +14,7 @@ public class ClaimAvailableHandler extends HandlerAdapter{
 	@Override
 	public void onClaimAvailable(@NotNull Topic topic, @NotNull ClaimAvailable message){
 		var streamer = miner.getStreamerById(message.getData().getClaim().getChannelId());
-		try(var ignored = LogContext.with(streamer.orElse(null))){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer.orElse(null))){
 			miner.getGqlApi().claimCommunityPoints(message.getData().getClaim().getChannelId(), message.getData().getClaim().getId());
 		}
 	}

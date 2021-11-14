@@ -16,7 +16,7 @@ public class LogLoggerHandler extends HandlerAdapter{
 	@Override
 	public void onClaimAvailable(@NotNull Topic topic, @NotNull ClaimAvailable message){
 		var streamer = miner.getStreamerById(message.getData().getClaim().getChannelId());
-		try(var ignored = LogContext.with(streamer.orElse(null))){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer.orElse(null))){
 			log.info("Claim available");
 		}
 	}
@@ -24,7 +24,7 @@ public class LogLoggerHandler extends HandlerAdapter{
 	@Override
 	public void onPointsEarned(@NotNull Topic topic, @NotNull PointsEarned message){
 		var streamer = miner.getStreamerById(message.getData().getChannelId());
-		try(var ignored = LogContext.with(streamer.orElse(null))){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer.orElse(null))){
 			var pointGain = message.getData().getPointGain();
 			log.info("Points earned +{} ({})", pointGain.getTotalPoints(), pointGain.getReasonCode());
 		}
@@ -33,7 +33,7 @@ public class LogLoggerHandler extends HandlerAdapter{
 	@Override
 	public void onPointsSpent(@NotNull Topic topic, @NotNull PointsSpent message){
 		var streamer = miner.getStreamerById(message.getData().getBalance().getChannelId());
-		try(var ignored = LogContext.with(streamer.orElse(null))){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer.orElse(null))){
 			var balance = message.getData().getBalance();
 			log.info("Points spent ({})", balance.getBalance());
 		}
@@ -42,7 +42,7 @@ public class LogLoggerHandler extends HandlerAdapter{
 	@Override
 	public void onStreamDown(@NotNull Topic topic, @NotNull StreamDown message){
 		var streamer = miner.getStreamerById(topic.getTarget());
-		try(var ignored = LogContext.with(streamer.orElse(null))){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer.orElse(null))){
 			log.info("Stream stopped");
 		}
 	}
@@ -50,7 +50,7 @@ public class LogLoggerHandler extends HandlerAdapter{
 	@Override
 	public void onStreamUp(@NotNull Topic topic, @NotNull StreamUp message){
 		var streamer = miner.getStreamerById(topic.getTarget());
-		try(var ignored = LogContext.with(streamer.orElse(null))){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer.orElse(null))){
 			log.info("Stream started");
 		}
 	}
