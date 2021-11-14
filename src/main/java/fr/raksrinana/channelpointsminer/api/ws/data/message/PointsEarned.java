@@ -12,7 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PointsEarned extends Message{
+public class PointsEarned extends IMessage{
 	@JsonProperty("data")
 	private PointsEarnedData data;
 }

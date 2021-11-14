@@ -5,7 +5,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.*;
 import fr.raksrinana.channelpointsminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
-import fr.raksrinana.channelpointsminer.priority.StreamerPriority;
+import fr.raksrinana.channelpointsminer.priority.IStreamerPriority;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -410,8 +410,8 @@ class StreamerTest{
 		var s1 = 15;
 		var s2 = 17;
 		
-		var p1 = mock(StreamerPriority.class);
-		var p2 = mock(StreamerPriority.class);
+		var p1 = mock(IStreamerPriority.class);
+		var p2 = mock(IStreamerPriority.class);
 		
 		when(p1.getScore(miner, tested)).thenReturn(s1);
 		when(p2.getScore(miner, tested)).thenReturn(s2);

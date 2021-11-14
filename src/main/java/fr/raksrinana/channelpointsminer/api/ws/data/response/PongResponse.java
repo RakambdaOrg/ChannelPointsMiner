@@ -9,5 +9,5 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PongResponse extends TwitchWebSocketResponse{
+public class PongResponse extends ITwitchWebSocketResponse{
 }

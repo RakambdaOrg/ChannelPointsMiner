@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PointsAbovePriority extends StreamerPriority{
+public class PointsAbovePriority extends IStreamerPriority{
 	@JsonProperty("threshold")
 	private int threshold;
 	

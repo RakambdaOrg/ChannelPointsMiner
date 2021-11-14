@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.api.gql.data.claimcommunitypoints;
 
-import fr.raksrinana.channelpointsminer.api.gql.data.GQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.api.gql.data.IGQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.PersistedQueryExtension;
 import kong.unirest.GenericType;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class ClaimCommunityPointsOperation extends GQLOperation<ClaimCommunityPointsData>{
+public class ClaimCommunityPointsOperation extends IGQLOperation<ClaimCommunityPointsData>{
 	public ClaimCommunityPointsOperation(@NotNull String channelId, @NotNull String claimId){
 		super("ClaimCommunityPoints");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "46aaeebe02c99afdf4fc97c7c0cba964124bf6b0af229395f1f6d1feed05b3d0"));

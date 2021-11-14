@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.api.ws.data.response;
 
-import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,7 +17,7 @@ class MessageDataTest{
 	private static final String JSON_CONTENT = "json-content";
 	
 	@Mock
-	private Message message;
+	private IMessage message;
 	
 	@Test
 	void setMessage(){

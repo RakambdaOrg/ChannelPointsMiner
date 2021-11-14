@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.prediction.bet.amount;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.Mock;
@@ -23,7 +23,7 @@ class PercentageAmountTest{
 	private final PercentageAmount tested = PercentageAmount.builder().percentage(PERCENTAGE).max(MAX).build();
 	
 	@Mock
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	@Mock
 	private Outcome outcome;
 	@Mock
@@ -31,26 +31,26 @@ class PercentageAmountTest{
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(prediction.getStreamer()).thenReturn(streamer);
+		lenient().when(bettingPrediction.getStreamer()).thenReturn(streamer);
 		lenient().when(streamer.getChannelPoints()).thenReturn(Optional.of(STREAMER_POINTS));
 	}
 	
 	@Test
 	void calculateUnderMax() throws BetPlacementException{
-		assertThat(tested.calculateAmount(prediction, outcome)).isEqualTo(25);
+		assertThat(tested.calculateAmount(bettingPrediction, outcome)).isEqualTo(25);
 	}
 	
 	@Test
 	void calculateOverMax() throws BetPlacementException{
 		lenient().when(streamer.getChannelPoints()).thenReturn(Optional.of(1000));
 		
-		assertThat(tested.calculateAmount(prediction, outcome)).isEqualTo(MAX);
+		assertThat(tested.calculateAmount(bettingPrediction, outcome)).isEqualTo(MAX);
 	}
 	
 	@Test
 	void calculateUnknownPoints(){
 		lenient().when(streamer.getChannelPoints()).thenReturn(Optional.empty());
 		
-		assertThrows(BetPlacementException.class, () -> tested.calculateAmount(prediction, outcome));
+		assertThrows(BetPlacementException.class, () -> tested.calculateAmount(bettingPrediction, outcome));
 	}
 }

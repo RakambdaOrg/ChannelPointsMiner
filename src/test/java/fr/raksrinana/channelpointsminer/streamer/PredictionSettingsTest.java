@@ -1,9 +1,9 @@
 package fr.raksrinana.channelpointsminer.streamer;
 
-import fr.raksrinana.channelpointsminer.prediction.bet.action.PredictionAction;
-import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
-import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
-import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
+import fr.raksrinana.channelpointsminer.prediction.bet.action.IPredictionAction;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.IAmountCalculator;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.IOutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.delay.IDelayCalculator;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -14,13 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 class PredictionSettingsTest{
 	@Mock
-	private DelayCalculator delayCalculator;
+	private IDelayCalculator delayCalculator;
 	@Mock
-	private OutcomePicker outcomePicker;
+	private IOutcomePicker outcomePicker;
 	@Mock
-	private AmountCalculator amountCalculator;
+	private IAmountCalculator amountCalculator;
 	@Mock
-	private PredictionAction predictionAction;
+	private IPredictionAction predictionAction;
 	
 	@Test
 	void copy(){

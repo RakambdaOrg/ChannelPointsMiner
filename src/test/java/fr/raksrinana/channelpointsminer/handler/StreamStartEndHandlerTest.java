@@ -3,6 +3,8 @@ package fr.raksrinana.channelpointsminer.handler;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamDown;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamUp;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.log.event.StreamDownLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamUpLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.InjectMocks;
@@ -50,18 +52,20 @@ class StreamStartEndHandlerTest{
 		
 		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		
-		assertDoesNotThrow(() -> tested.onStreamUp(topic, streamUpMessage));
+		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
+		verify(miner).onLogEvent(new StreamUpLogEvent(miner, streamer));
 	}
 	
 	@Test
 	void streamUpUnknown(){
 		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
 		
-		assertDoesNotThrow(() -> tested.onStreamUp(topic, streamUpMessage));
+		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
+		verify(miner).onLogEvent(new StreamUpLogEvent(miner, null));
 	}
 	
 	@Test
@@ -74,17 +78,19 @@ class StreamStartEndHandlerTest{
 		
 		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		
-		assertDoesNotThrow(() -> tested.onStreamDown(topic, streamDownMessage));
+		assertDoesNotThrow(() -> tested.handle(topic, streamDownMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
+		verify(miner).onLogEvent(new StreamDownLogEvent(miner, streamer));
 	}
 	
 	@Test
 	void streamDownUnknown(){
 		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
 		
-		assertDoesNotThrow(() -> tested.onStreamDown(topic, streamDownMessage));
+		assertDoesNotThrow(() -> tested.handle(topic, streamDownMessage));
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
+		verify(miner).onLogEvent(new StreamDownLogEvent(miner, null));
 	}
 }

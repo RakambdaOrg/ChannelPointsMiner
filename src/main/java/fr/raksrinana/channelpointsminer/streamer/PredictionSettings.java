@@ -3,13 +3,13 @@ package fr.raksrinana.channelpointsminer.streamer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.raksrinana.channelpointsminer.prediction.bet.action.PredictionAction;
-import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
+import fr.raksrinana.channelpointsminer.prediction.bet.action.IPredictionAction;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.IAmountCalculator;
 import fr.raksrinana.channelpointsminer.prediction.bet.amount.PercentageAmount;
-import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.IOutcomePicker;
 import fr.raksrinana.channelpointsminer.prediction.bet.outcome.SmartOutcomePicker;
-import fr.raksrinana.channelpointsminer.prediction.delay.DelayCalculator;
 import fr.raksrinana.channelpointsminer.prediction.delay.FromEndDelay;
+import fr.raksrinana.channelpointsminer.prediction.delay.IDelayCalculator;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -27,22 +27,22 @@ public class PredictionSettings{
 	@JsonProperty("delayCalculator")
 	@NotNull
 	@Builder.Default
-	private DelayCalculator delayCalculator = FromEndDelay.builder().seconds(10).build();
+	private IDelayCalculator delayCalculator = FromEndDelay.builder().seconds(10).build();
 	@JsonProperty("minimumPointsRequired")
 	@Builder.Default
 	private int minimumPointsRequired = 0;
 	@JsonProperty("outcomePicker")
 	@NotNull
 	@Builder.Default
-	private OutcomePicker outcomePicker = SmartOutcomePicker.builder().percentageGap(.2f).build();
+	private IOutcomePicker outcomePicker = SmartOutcomePicker.builder().percentageGap(.2f).build();
 	@JsonProperty("amountCalculator")
 	@NotNull
 	@Builder.Default
-	private AmountCalculator amountCalculator = PercentageAmount.builder().percentage(.2F).max(50_000).build();
+	private IAmountCalculator amountCalculator = PercentageAmount.builder().percentage(.2F).max(50_000).build();
 	@JsonProperty("actions")
 	@NotNull
 	@Builder.Default
-	private List<PredictionAction> actions = new ArrayList<>();
+	private List<IPredictionAction> actions = new ArrayList<>();
 	
 	public PredictionSettings(PredictionSettings origin){
 		delayCalculator = origin.delayCalculator;

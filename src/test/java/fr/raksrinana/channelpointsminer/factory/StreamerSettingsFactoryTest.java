@@ -175,7 +175,7 @@ class StreamerSettingsFactoryTest{
 	void getStreamerConfigurationWithConfigFileAllRedefined(){
 		TestUtils.copyFromResources("factory/fullyOverridden.json", tempDir.resolve(STREAMER_USERNAME + ".json"));
 		
-		var priorities = new ArrayList<StreamerPriority>();
+		var priorities = new ArrayList<IStreamerPriority>();
 		priorities.add(ConstantPriority.builder()
 				.score(50)
 				.build());

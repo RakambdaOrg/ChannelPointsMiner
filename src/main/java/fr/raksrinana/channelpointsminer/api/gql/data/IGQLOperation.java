@@ -12,7 +12,7 @@ import java.util.Map;
 @Getter
 @EqualsAndHashCode
 @ToString
-public abstract class GQLOperation<T>{
+public abstract class IGQLOperation<T>{
 	private static final String PERSISTED_QUERY_EXTENSION_NAME = "persistedQuery";
 	
 	@JsonProperty("operationName")
@@ -22,7 +22,7 @@ public abstract class GQLOperation<T>{
 	@JsonProperty("variables")
 	private Map<String, Object> variables = new HashMap<>();
 	
-	public GQLOperation(@NotNull String operationName){
+	public IGQLOperation(@NotNull String operationName){
 		this.operationName = operationName;
 	}
 	

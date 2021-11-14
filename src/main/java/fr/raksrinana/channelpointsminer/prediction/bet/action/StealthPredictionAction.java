@@ -16,7 +16,7 @@ import java.util.Comparator;
 @Builder
 @AllArgsConstructor
 @Log4j2
-public class StealthPredictionAction implements PredictionAction{
+public class StealthPredictionAction implements IPredictionAction{
 	@Override
 	public void perform(@NotNull Placement placement) throws BetPlacementException{
 		var topPoints = placement.getOutcome().getTopPredictors()

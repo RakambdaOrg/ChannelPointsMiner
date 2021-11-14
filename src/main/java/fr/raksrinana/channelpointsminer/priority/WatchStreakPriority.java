@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @ToString(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
-public class WatchStreakPriority extends StreamerPriority{
+public class WatchStreakPriority extends IStreamerPriority{
 	@Override
 	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
 		return streamer.mayClaimStreak() ? getScore() : 0;

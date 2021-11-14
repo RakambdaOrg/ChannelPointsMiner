@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.prediction.bet.amount;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -15,12 +15,12 @@ class ConstantAmountTest{
 	private final ConstantAmount tested = ConstantAmount.builder().amount(AMOUNT).build();
 	
 	@Mock
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	@Mock
 	private Outcome outcome;
 	
 	@Test
 	void calculate(){
-		assertThat(tested.calculateAmount(prediction, outcome)).isEqualTo(AMOUNT);
+		assertThat(tested.calculateAmount(bettingPrediction, outcome)).isEqualTo(AMOUNT);
 	}
 }

@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PredictionUpdated extends Message{
+public class PredictionUpdated extends IMessage{
 	@JsonProperty("data")
 	private PredictionUpdatedData data;
 }

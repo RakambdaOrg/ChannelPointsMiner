@@ -11,6 +11,6 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @JsonSubTypes(value = {
 		@JsonSubTypes.Type(value = StealthPredictionAction.class, name = "stealth"),
 })
-public interface PredictionAction{
+public interface IPredictionAction{
 	void perform(@NotNull Placement placement) throws BetPlacementException;
 }

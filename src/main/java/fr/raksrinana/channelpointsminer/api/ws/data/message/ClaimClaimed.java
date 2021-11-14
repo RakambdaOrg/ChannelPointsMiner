@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class ClaimClaimed extends Message{
+public class ClaimClaimed extends IMessage{
 	@JsonProperty("data")
 	private ClaimClaimedData data;
 }

@@ -26,7 +26,7 @@ class TwitchWebSocketClientPongTest{
 	private TwitchWebSocketClient tested;
 	
 	@Mock
-	private TwitchWebSocketListener listener;
+	private ITwitchWebSocketListener listener;
 	
 	@BeforeEach
 	void setUp(WebsocketMockServer server){

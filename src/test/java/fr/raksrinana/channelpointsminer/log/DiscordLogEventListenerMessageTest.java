@@ -2,16 +2,15 @@ package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.claimavailable.ClaimAvailableData;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.eventcreated.EventCreatedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
+import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
+import fr.raksrinana.channelpointsminer.log.event.*;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.Mock;
@@ -19,16 +18,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.List;
 import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DiscordLoggerHandlerMessageTest{
+class DiscordLogEventListenerMessageTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
 	private static final String USERNAME = "username";
 	
-	private DiscordLoggerHandler tested;
+	private DiscordLogEventListener tested;
 	
 	@Mock
 	private IMiner miner;
@@ -41,7 +41,7 @@ class DiscordLoggerHandlerMessageTest{
 	
 	@BeforeEach
 	void setUp(){
-		tested = new DiscordLoggerHandler(miner, discordApi, false);
+		tested = new DiscordLogEventListener(discordApi, false);
 		
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		lenient().when(miner.getUsername()).thenReturn(USERNAME);
@@ -52,15 +52,7 @@ class DiscordLoggerHandlerMessageTest{
 	
 	@Test
 	void onClaimAvailable(){
-		var claimAvailable = mock(ClaimAvailable.class);
-		var data = mock(ClaimAvailableData.class);
-		var claim = mock(Claim.class);
-		
-		when(claimAvailable.getData()).thenReturn(data);
-		when(data.getClaim()).thenReturn(claim);
-		when(claim.getChannelId()).thenReturn(STREAMER_ID);
-		
-		tested.handle(topic, claimAvailable);
+		tested.onLogEvent(new ClaimAvailableLogEvent(miner, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] 🎫 %s : Claim available".formatted(USERNAME, STREAMER_USERNAME))
@@ -69,17 +61,14 @@ class DiscordLoggerHandlerMessageTest{
 	
 	@Test
 	void onPointsEarned(){
-		var pointsEarned = mock(PointsEarned.class);
 		var data = mock(PointsEarnedData.class);
 		var pointGain = mock(PointGain.class);
 		
-		when(pointsEarned.getData()).thenReturn(data);
 		when(data.getPointGain()).thenReturn(pointGain);
-		when(data.getChannelId()).thenReturn(STREAMER_ID);
 		when(pointGain.getTotalPoints()).thenReturn(25);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		
-		tested.handle(topic, pointsEarned);
+		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] 💰 %s : Points earned [%+d | %s]".formatted(USERNAME, STREAMER_USERNAME, 25, "CLAIM"))
@@ -88,27 +77,22 @@ class DiscordLoggerHandlerMessageTest{
 	
 	@Test
 	void onPointsSpent(){
-		var pointsSpent = mock(PointsSpent.class);
 		var data = mock(PointsSpentData.class);
 		var balance = mock(Balance.class);
 		
-		when(pointsSpent.getData()).thenReturn(data);
 		when(data.getBalance()).thenReturn(balance);
-		when(balance.getChannelId()).thenReturn(STREAMER_ID);
 		when(balance.getBalance()).thenReturn(25);
 		
-		tested.handle(topic, pointsSpent);
+		tested.onLogEvent(new PointsSpentLogEvent(miner, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 💸 %s : Points spent [new balance %d]".formatted(USERNAME, STREAMER_USERNAME, 25))
+				.content("[%s] 💸 %s : Points spent [%d new balance]".formatted(USERNAME, STREAMER_USERNAME, 25))
 				.build());
 	}
 	
 	@Test
 	void onStreamUp(){
-		var streamUp = mock(StreamUp.class);
-		
-		tested.handle(topic, streamUp);
+		tested.onLogEvent(new StreamUpLogEvent(miner, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, STREAMER_USERNAME))
@@ -117,11 +101,7 @@ class DiscordLoggerHandlerMessageTest{
 	
 	@Test
 	void authorNotFound(){
-		var streamUp = mock(StreamUp.class);
-		
-		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
-		
-		tested.handle(topic, streamUp);
+		tested.onLogEvent(new StreamUpLogEvent(miner, null));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, "UnknownStreamer"))
@@ -130,9 +110,7 @@ class DiscordLoggerHandlerMessageTest{
 	
 	@Test
 	void onStreamDown(){
-		var streamDown = mock(StreamDown.class);
-		
-		tested.handle(topic, streamDown);
+		tested.onLogEvent(new StreamDownLogEvent(miner, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ⏹️ %s : Stream stopped".formatted(USERNAME, STREAMER_USERNAME))
@@ -142,57 +120,100 @@ class DiscordLoggerHandlerMessageTest{
 	@Test
 	void onEventCreated(){
 		var title = "MyTitle";
-		var eventCreated = mock(EventCreated.class);
-		var eventCreatedData = mock(EventCreatedData.class);
 		var event = mock(Event.class);
 		
-		when(eventCreated.getData()).thenReturn(eventCreatedData);
-		when(eventCreatedData.getEvent()).thenReturn(event);
 		when(event.getTitle()).thenReturn(title);
 		
-		tested.handle(topic, eventCreated);
+		tested.onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 📑 %s : New prediction [%s]".formatted(USERNAME, STREAMER_USERNAME, title))
+				.content("[%s] 📑 %s : Prediction created [%s]".formatted(USERNAME, STREAMER_USERNAME, title))
 				.build());
 	}
 	
 	@Test
 	void onPredictionMade(){
-		var predictionMade = mock(PredictionMade.class);
-		var predictionMadeData = mock(PredictionMadeData.class);
-		var prediction = mock(Prediction.class);
+		var outcomeId = "outcome-id";
+		var outcomeName = "Out2";
+		var placedPrediction = mock(PlacedPrediction.class);
+		var prediction = mock(BettingPrediction.class);
+		var event = mock(Event.class);
+		var outcome1 = mock(Outcome.class);
+		var outcome2 = mock(Outcome.class);
 		
-		when(predictionMade.getData()).thenReturn(predictionMadeData);
-		when(predictionMadeData.getPrediction()).thenReturn(prediction);
-		when(prediction.getChannelId()).thenReturn(STREAMER_ID);
-		when(prediction.getPoints()).thenReturn(25);
+		when(placedPrediction.getAmount()).thenReturn(25);
+		when(placedPrediction.getOutcomeId()).thenReturn(outcomeId);
+		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
+		when(prediction.getEvent()).thenReturn(event);
+		when(event.getOutcomes()).thenReturn(List.of(outcome1, outcome2));
+		when(outcome1.getId()).thenReturn("bad-id");
+		when(outcome2.getId()).thenReturn(outcomeId);
+		when(outcome2.getColor()).thenReturn(OutcomeColor.BLUE);
+		when(outcome2.getTitle()).thenReturn(outcomeName);
 		
-		tested.handle(topic, predictionMade);
+		tested.onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 🪙 %s : Bet placed [%d]".formatted(USERNAME, STREAMER_USERNAME, 25))
+				.content("[%s] 🪙 %s : Bet placed [%d | %s: %s]".formatted(USERNAME, STREAMER_USERNAME, 25, "BLUE", outcomeName))
+				.build());
+	}
+	
+	@Test
+	void onPredictionMadeUnknownOutcome(){
+		var placedPrediction = mock(PlacedPrediction.class);
+		var prediction = mock(BettingPrediction.class);
+		var event = mock(Event.class);
+		var outcome1 = mock(Outcome.class);
+		
+		when(placedPrediction.getAmount()).thenReturn(25);
+		when(placedPrediction.getOutcomeId()).thenReturn("outcome-id");
+		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
+		when(prediction.getEvent()).thenReturn(event);
+		when(event.getOutcomes()).thenReturn(List.of(outcome1));
+		when(outcome1.getId()).thenReturn("bad-id");
+		
+		tested.onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] 🪙 %s : Bet placed [%d | %s]".formatted(USERNAME, STREAMER_USERNAME, 25, "UnknownOutcome"))
 				.build());
 	}
 	
 	@Test
 	void onPredictionResult(){
-		var predictionResult = mock(PredictionResult.class);
+		var placedPrediction = mock(PlacedPrediction.class);
 		var predictionResultData = mock(PredictionResultData.class);
 		var prediction = mock(Prediction.class);
 		var result = mock(PredictionResultPayload.class);
 		
-		when(predictionResult.getData()).thenReturn(predictionResultData);
+		when(placedPrediction.getAmount()).thenReturn(16);
 		when(predictionResultData.getPrediction()).thenReturn(prediction);
-		when(prediction.getChannelId()).thenReturn(STREAMER_ID);
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
 		
-		tested.handle(topic, predictionResult);
+		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, placedPrediction, predictionResultData));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 🧧 %s : Prediction result [%s | +%d]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 56))
+				.content("[%s] 🧧 %s : Bet result [%s | +%d]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 40))
+				.build());
+	}
+	
+	@Test
+	void onPredictionResultNoPlacedPrediction(){
+		var predictionResultData = mock(PredictionResultData.class);
+		var prediction = mock(Prediction.class);
+		var result = mock(PredictionResultPayload.class);
+		
+		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(prediction.getResult()).thenReturn(result);
+		when(result.getType()).thenReturn(PredictionResultType.WIN);
+		when(result.getPointsWon()).thenReturn(56);
+		
+		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, null, predictionResultData));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] 🧧 %s : Bet result [%s | Unknown final gain, obtained %d points]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 56))
 				.build());
 	}
 }

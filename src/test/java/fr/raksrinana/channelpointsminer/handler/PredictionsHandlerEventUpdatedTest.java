@@ -4,7 +4,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.eventupdated.EventUpdatedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
@@ -84,7 +84,7 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
-		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, Prediction.builder()
+		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, BettingPrediction.builder()
 				.event(event2)
 				.streamer(streamer)
 				.state(PredictionState.SCHEDULED)
@@ -96,8 +96,8 @@ class PredictionsHandlerEventUpdatedTest{
 		tested.getPredictions().put(EVENT_ID, createDefaultPrediction());
 	}
 	
-	private Prediction createDefaultPrediction(){
-		return Prediction.builder()
+	private BettingPrediction createDefaultPrediction(){
+		return BettingPrediction.builder()
 				.event(event)
 				.streamer(streamer)
 				.state(PredictionState.SCHEDULED)
