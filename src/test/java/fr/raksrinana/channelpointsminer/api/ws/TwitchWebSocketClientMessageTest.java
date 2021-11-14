@@ -48,6 +48,7 @@ class TwitchWebSocketClientMessageTest{
 	void setUp(WebsocketMockServer server) throws InterruptedException{
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
 		tested = new TwitchWebSocketClient(uri);
+		tested.setReuseAddr(true);
 		tested.addListener(listener);
 		tested.connectBlocking();
 		server.awaitMessage();
