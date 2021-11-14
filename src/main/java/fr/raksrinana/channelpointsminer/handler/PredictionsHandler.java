@@ -50,45 +50,34 @@ public class PredictionsHandler extends HandlerAdapter{
 	
 	@Override
 	public void onEventCreated(@NotNull Topic topic, @NotNull EventCreated message){
-		var streamerOptional = miner.getStreamerById(topic.getTarget());
+		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.with(miner).withStreamer(streamerOptional.orElse(null)).withEventId(event.getId())){
-			if(event.getStatus() != EventStatus.ACTIVE){
-				log.debug("Event is not active");
-				return;
-			}
-			
-			if(streamerOptional.isEmpty()){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
+			if(Objects.isNull(streamer)){
 				log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
 				return;
 			}
-			var streamer = streamerOptional.get();
 			
-			if(!hasEnoughPoints(streamer)){
-				log.info("Not placing bet, not enough points");
-				return;
-			}
-			
-			var prediction = predictions.computeIfAbsent(event.getId(), key -> createPrediction(streamer, event));
-			if(prediction.getState() != PredictionState.CREATED){
-				log.debug("Event is already being handled");
-				return;
-			}
-			
-			miner.onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
-			prediction.setState(PredictionState.SCHEDULING);
-			schedulePrediction(streamer, prediction);
+			onNewPrediction(streamer, event);
 		}
 	}
 	
 	@Override
 	public void onEventUpdated(@NotNull Topic topic, @NotNull EventUpdated message){
-		var streamerOptional = miner.getStreamerById(topic.getTarget());
+		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.with(miner).withStreamer(streamerOptional.orElse(null)).withEventId(event.getId())){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
 			var prediction = predictions.get(event.getId());
+			
 			if(Objects.isNull(prediction)){
-				log.debug("Event update on unknown prediction");
+				log.debug("Event update on unknown prediction, creating it");
+				
+				if(Objects.isNull(streamer)){
+					log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
+					return;
+				}
+				
+				onNewPrediction(streamer, event);
 				return;
 			}
 			
@@ -101,6 +90,28 @@ public class PredictionsHandler extends HandlerAdapter{
 			prediction.setLastUpdate(eventDate);
 			prediction.setEvent(event);
 		}
+	}
+	
+	private void onNewPrediction(@NotNull Streamer streamer, @NotNull Event event){
+		if(event.getStatus() != EventStatus.ACTIVE){
+			log.debug("Event is not active");
+			return;
+		}
+		
+		if(!hasEnoughPoints(streamer)){
+			log.info("Not placing bet, not enough points");
+			return;
+		}
+		
+		var prediction = predictions.computeIfAbsent(event.getId(), key -> createPrediction(streamer, event));
+		if(prediction.getState() != PredictionState.CREATED){
+			log.debug("Event is already being handled");
+			return;
+		}
+		
+		miner.onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
+		prediction.setState(PredictionState.SCHEDULING);
+		schedulePrediction(streamer, prediction);
 	}
 	
 	@Override
