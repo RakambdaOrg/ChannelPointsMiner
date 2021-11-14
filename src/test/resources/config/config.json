@@ -5,6 +5,7 @@
       "password": "password",
       "use2FA": true,
       "loadFollows": true,
+      "enabled": false,
       "defaultStreamerSettings": {
         "makePredictions": true,
         "followRaid": true,

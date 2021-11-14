@@ -43,6 +43,7 @@ class ConfigurationFactoryTest{
 						.password("password")
 						.use2Fa(true)
 						.loadFollows(true)
+						.enabled(false)
 						.defaultStreamerSettings(StreamerSettings.builder()
 								.makePredictions(true)
 								.followRaid(true)
