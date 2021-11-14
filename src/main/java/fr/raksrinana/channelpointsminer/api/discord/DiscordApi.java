@@ -21,6 +21,7 @@ public class DiscordApi{
 	
 	@SneakyThrows
 	public synchronized void sendMessage(@NotNull Webhook webhook){
+		webhook.setUsername("ChannelPointsMiner");
 		sendMessage(webhook, 0);
 	}
 	
