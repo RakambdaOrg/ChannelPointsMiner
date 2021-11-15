@@ -29,6 +29,7 @@ class TwitchWebSocketClientResponseTest{
 	void setUp(WebsocketMockServer server){
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
 		tested = new TwitchWebSocketClient(uri);
+		tested.setReuseAddr(true);
 		tested.addListener(listener);
 	}
 	
