@@ -28,8 +28,9 @@ public class PredictionMadeLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
-		return "Bet placed [%d | %s]".formatted(placedPrediction.getAmount(), getOutcome());
+		return "Bet placed [%s | %s]".formatted(millify(placedPrediction.getAmount(), false), getOutcome());
 	}
 	
 	@NotNull
@@ -45,6 +46,7 @@ public class PredictionMadeLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "🪙";
 	}
@@ -55,14 +57,16 @@ public class PredictionMadeLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Bet placed";
 	}
 	
 	@Override
+	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(
-				Field.builder().name("Points placed").value(Integer.toString(placedPrediction.getAmount())).build(),
+				Field.builder().name("Points placed").value(millify(placedPrediction.getAmount(), false)).build(),
 				Field.builder().name("Outcome").value(getOutcome()).build());
 	}
 }

@@ -104,9 +104,63 @@ class DiscordLogEventListenerEmbedTest{
 						.footer(footer)
 						.color(GREEN.getRGB())
 						.description("Points earned")
-						.field(Field.builder().name("Points").value("25").build())
+						.field(Field.builder().name("Points").value("+25").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
 						.field(Field.builder().name("Balance").value("200").build())
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onPointsEarnedBigValue(){
+		var data = mock(PointsEarnedData.class);
+		var pointGain = mock(PointGain.class);
+		var balance = mock(Balance.class);
+		
+		when(data.getPointGain()).thenReturn(pointGain);
+		when(data.getBalance()).thenReturn(balance);
+		when(pointGain.getTotalPoints()).thenReturn(2500);
+		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(balance.getBalance()).thenReturn(12345678);
+		
+		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(GREEN.getRGB())
+						.description("Points earned")
+						.field(Field.builder().name("Points").value("+2.5K").build())
+						.field(Field.builder().name("Reason").value("CLAIM").build())
+						.field(Field.builder().name("Balance").value("12.35M").build())
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onPointsEarnedBigNegativeValue(){
+		var data = mock(PointsEarnedData.class);
+		var pointGain = mock(PointGain.class);
+		var balance = mock(Balance.class);
+		
+		when(data.getPointGain()).thenReturn(pointGain);
+		when(data.getBalance()).thenReturn(balance);
+		when(pointGain.getTotalPoints()).thenReturn(-2500);
+		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(balance.getBalance()).thenReturn(12345678);
+		
+		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(GREEN.getRGB())
+						.description("Points earned")
+						.field(Field.builder().name("Points").value("-2.5K").build())
+						.field(Field.builder().name("Reason").value("CLAIM").build())
+						.field(Field.builder().name("Balance").value("12.35M").build())
 						.build()))
 				.build());
 	}
@@ -327,7 +381,7 @@ class DiscordLogEventListenerEmbedTest{
 						.color(PINK.getRGB())
 						.description("Bet result")
 						.field(Field.builder().name("Type").value("WIN").build())
-						.field(Field.builder().name("Points gained").value("Unknown final gain, obtained 56 points").build())
+						.field(Field.builder().name("Points gained").value("Unknown final gain, obtained +56 points").build())
 						.build()))
 				.build());
 	}

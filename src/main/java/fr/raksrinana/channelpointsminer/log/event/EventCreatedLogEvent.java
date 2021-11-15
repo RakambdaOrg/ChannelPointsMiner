@@ -22,11 +22,13 @@ public class EventCreatedLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
 		return "Prediction created [%s]".formatted(event.getTitle());
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "📑";
 	}
@@ -37,11 +39,13 @@ public class EventCreatedLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Prediction created";
 	}
 	
 	@Override
+	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(Field.builder()
 				.name("Title")

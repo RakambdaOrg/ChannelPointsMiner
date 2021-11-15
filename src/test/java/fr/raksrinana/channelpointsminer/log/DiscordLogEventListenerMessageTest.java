@@ -80,6 +80,44 @@ class DiscordLogEventListenerMessageTest{
 	}
 	
 	@Test
+	void onPointsEarnedBigValue(){
+		var data = mock(PointsEarnedData.class);
+		var pointGain = mock(PointGain.class);
+		var balance = mock(Balance.class);
+		
+		when(data.getPointGain()).thenReturn(pointGain);
+		when(data.getBalance()).thenReturn(balance);
+		when(pointGain.getTotalPoints()).thenReturn(2500);
+		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(balance.getBalance()).thenReturn(12345678);
+		
+		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] 💰 %s : Points earned [%s | %s | %s]".formatted(USERNAME, STREAMER_USERNAME, "+2.5K", "CLAIM", "12.35M"))
+				.build());
+	}
+	
+	@Test
+	void onPointsEarnedBigNegativeValue(){
+		var data = mock(PointsEarnedData.class);
+		var pointGain = mock(PointGain.class);
+		var balance = mock(Balance.class);
+		
+		when(data.getPointGain()).thenReturn(pointGain);
+		when(data.getBalance()).thenReturn(balance);
+		when(pointGain.getTotalPoints()).thenReturn(-2500);
+		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(balance.getBalance()).thenReturn(12345678);
+		
+		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] 💰 %s : Points earned [%s | %s | %s]".formatted(USERNAME, STREAMER_USERNAME, "-2.5K", "CLAIM", "12.35M"))
+				.build());
+	}
+	
+	@Test
 	void onPointsSpent(){
 		var data = mock(PointsSpentData.class);
 		var balance = mock(Balance.class);
@@ -235,7 +273,7 @@ class DiscordLogEventListenerMessageTest{
 		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, null, predictionResultData));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 🧧 %s : Bet result [%s | Unknown final gain, obtained %d points]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 56))
+				.content("[%s] 🧧 %s : Bet result [%s | Unknown final gain, obtained %+d points]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 56))
 				.build());
 	}
 	

@@ -22,14 +22,16 @@ public class PointsEarnedLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
-		return "Points earned [%+d | %s | %s]".formatted(
-				pointsEarnedData.getPointGain().getTotalPoints(),
+		return "Points earned [%s | %s | %s]".formatted(
+				millify(pointsEarnedData.getPointGain().getTotalPoints(), true),
 				pointsEarnedData.getPointGain().getReasonCode(),
-				pointsEarnedData.getBalance().getBalance());
+				millify(pointsEarnedData.getBalance().getBalance(), false));
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "💰";
 	}
@@ -40,15 +42,17 @@ public class PointsEarnedLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Points earned";
 	}
 	
 	@Override
+	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(
-				Field.builder().name("Points").value(Integer.toString(pointsEarnedData.getPointGain().getTotalPoints())).build(),
+				Field.builder().name("Points").value(millify(pointsEarnedData.getPointGain().getTotalPoints(), true)).build(),
 				Field.builder().name("Reason").value(pointsEarnedData.getPointGain().getReasonCode().toString()).build(),
-				Field.builder().name("Balance").value(Integer.toString(pointsEarnedData.getBalance().getBalance())).build());
+				Field.builder().name("Balance").value(millify(pointsEarnedData.getBalance().getBalance(), false)).build());
 	}
 }

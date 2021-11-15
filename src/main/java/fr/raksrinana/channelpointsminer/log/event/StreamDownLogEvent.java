@@ -15,11 +15,13 @@ public class StreamDownLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
 		return "Stream stopped";
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "⏹️";
 	}
@@ -30,6 +32,7 @@ public class StreamDownLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Stream stopped";
 	}

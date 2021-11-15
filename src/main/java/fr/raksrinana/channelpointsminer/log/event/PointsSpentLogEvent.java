@@ -22,11 +22,13 @@ public class PointsSpentLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
-		return "Points spent [%d]".formatted(pointsSpentData.getBalance().getBalance());
+		return "Points spent [%s]".formatted(millify(pointsSpentData.getBalance().getBalance(), false));
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "💸";
 	}
@@ -37,15 +39,17 @@ public class PointsSpentLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Points spent";
 	}
 	
 	@Override
+	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(Field.builder()
 				.name("Balance")
-				.value(Integer.toString(pointsSpentData.getBalance().getBalance()))
+				.value(millify(pointsSpentData.getBalance().getBalance(), false))
 				.build());
 	}
 }

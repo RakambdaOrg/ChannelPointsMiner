@@ -10,10 +10,8 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.text.NumberFormat;
+import java.util.*;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
@@ -23,8 +21,15 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	protected static final int COLOR_PREDICTION = Color.PINK.getRGB();
 	protected static final int COLOR_POINTS_WON = Color.GREEN.getRGB();
 	protected static final int COLOR_POINTS_LOST = Color.RED.getRGB();
+	protected static final NumberFormat NUMBER_FORMAT = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
 	
 	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
+	
+	@NotNull
+	public String millify(int value, boolean includeSign){
+		var sign = (includeSign && value > 0) ? "+" : "";
+		return sign + NUMBER_FORMAT.format(value);
+	}
 	
 	@Getter
 	@NotNull
@@ -32,21 +37,7 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	@Nullable
 	private final Streamer streamer;
 	
-	@Override
-	public Optional<Streamer> getStreamer(){
-		return Optional.ofNullable(streamer);
-	}
-	
-	@Override
-	public Webhook getAsWebhookMessage(){
-		return Webhook.builder().content("[%s] %s %s : %s".formatted(
-						miner.getUsername(),
-						getEmoji(),
-						getStreamer().map(Streamer::getUsername).orElse(UNKNOWN_STREAMER),
-						getWebhookMessage()))
-				.build();
-	}
-	
+	@NotNull
 	@Override
 	public Webhook getAsWebhookEmbed(){
 		var embed = Embed.builder()
@@ -61,6 +52,23 @@ public abstract class AbstractLogEvent implements ILogEvent{
 				.build();
 	}
 	
+	@NotNull
+	@Override
+	public Webhook getAsWebhookMessage(){
+		return Webhook.builder().content("[%s] %s %s : %s".formatted(
+						miner.getUsername(),
+						getEmoji(),
+						getStreamer().map(Streamer::getUsername).orElse(UNKNOWN_STREAMER),
+						getWebhookMessage()))
+				.build();
+	}
+	
+	@NotNull
+	@Override
+	public Optional<Streamer> getStreamer(){
+		return Optional.ofNullable(streamer);
+	}
+	
 	@Nullable
 	private Author getEmbedAuthor(){
 		if(Objects.isNull(streamer)){
@@ -73,17 +81,25 @@ public abstract class AbstractLogEvent implements ILogEvent{
 				.build();
 	}
 	
+	@NotNull
 	protected abstract String getEmoji();
 	
+	@NotNull
 	protected String getWebhookMessage(){
 		return getAsLog();
 	}
 	
 	protected abstract int getEmbedColor();
 	
+	@NotNull
 	protected abstract String getEmbedDescription();
 	
+	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of();
+	}
+	
+	static{
+		NUMBER_FORMAT.setMaximumFractionDigits(2);
 	}
 }

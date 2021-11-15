@@ -15,11 +15,13 @@ public class ClaimAvailableLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
 		return "Claim available";
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "🎫";
 	}
@@ -30,6 +32,8 @@ public class ClaimAvailableLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Claim available";
 	}

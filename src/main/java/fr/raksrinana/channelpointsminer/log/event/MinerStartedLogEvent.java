@@ -23,11 +23,13 @@ public class MinerStartedLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
 		return "Miner started (version: %s [%s - %s])".formatted(version, commit, branch);
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "✅";
 	}
@@ -38,11 +40,13 @@ public class MinerStartedLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Miner started";
 	}
 	
 	@Override
+	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(
 				Field.builder().name("Version").value(version).build(),

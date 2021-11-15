@@ -28,6 +28,7 @@ public class PredictionResultLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	public String getAsLog(){
 		return "Bet result [%s | %s]".formatted(getType(), getGain());
 	}
@@ -48,11 +49,12 @@ public class PredictionResultLogEvent extends AbstractLogEvent{
 		
 		return Optional.ofNullable(placedPrediction)
 				.map(prediction -> pointsWon - prediction.getAmount())
-				.map("%+d"::formatted)
-				.orElse("Unknown final gain, obtained %d points".formatted(pointsWon));
+				.map(value -> millify(value, true))
+				.orElse("Unknown final gain, obtained %s points".formatted(millify(pointsWon, true)));
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmoji(){
 		return "🧧";
 	}
@@ -63,11 +65,13 @@ public class PredictionResultLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
+	@NotNull
 	protected String getEmbedDescription(){
 		return "Bet result";
 	}
 	
 	@Override
+	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(
 				Field.builder().name("Type").value(getType().toString()).build(),
