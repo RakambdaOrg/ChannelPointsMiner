@@ -39,6 +39,10 @@ public class PredictionResultLogEvent extends AbstractLogEvent{
 	}
 	
 	private String getGain(){
+		if(getType() == PredictionResultType.REFUND){
+			return "0";
+		}
+		
 		var result = Optional.ofNullable(predictionResultData.getPrediction().getResult());
 		var pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
 		
