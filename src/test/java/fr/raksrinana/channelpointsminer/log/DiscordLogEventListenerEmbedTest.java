@@ -88,10 +88,13 @@ class DiscordLogEventListenerEmbedTest{
 	void onPointsEarned(){
 		var data = mock(PointsEarnedData.class);
 		var pointGain = mock(PointGain.class);
+		var balance = mock(Balance.class);
 		
 		when(data.getPointGain()).thenReturn(pointGain);
+		when(data.getBalance()).thenReturn(balance);
 		when(pointGain.getTotalPoints()).thenReturn(25);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(balance.getBalance()).thenReturn(200);
 		
 		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
 		
@@ -103,6 +106,7 @@ class DiscordLogEventListenerEmbedTest{
 						.description("Points earned")
 						.field(Field.builder().name("Points").value("25").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
+						.field(Field.builder().name("Balance").value("200").build())
 						.build()))
 				.build());
 	}
@@ -123,7 +127,7 @@ class DiscordLogEventListenerEmbedTest{
 						.footer(footer)
 						.color(RED.getRGB())
 						.description("Points spent")
-						.field(Field.builder().name("New balance").value("25").build())
+						.field(Field.builder().name("Balance").value("25").build())
 						.build()))
 				.build());
 	}
@@ -274,6 +278,31 @@ class DiscordLogEventListenerEmbedTest{
 						.description("Bet result")
 						.field(Field.builder().name("Type").value("WIN").build())
 						.field(Field.builder().name("Points gained").value("+40").build())
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onPredictionResultRefund(){
+		var placedPrediction = mock(PlacedPrediction.class);
+		var predictionResultData = mock(PredictionResultData.class);
+		var prediction = mock(Prediction.class);
+		var result = mock(PredictionResultPayload.class);
+		
+		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(prediction.getResult()).thenReturn(result);
+		when(result.getType()).thenReturn(PredictionResultType.REFUND);
+		
+		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, placedPrediction, predictionResultData));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(PINK.getRGB())
+						.description("Bet result")
+						.field(Field.builder().name("Type").value("REFUND").build())
+						.field(Field.builder().name("Points gained").value("0").build())
 						.build()))
 				.build());
 	}

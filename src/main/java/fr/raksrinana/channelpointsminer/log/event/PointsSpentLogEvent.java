@@ -23,7 +23,7 @@ public class PointsSpentLogEvent extends AbstractLogEvent{
 	
 	@Override
 	public String getAsLog(){
-		return "Points spent [%d new balance]".formatted(pointsSpentData.getBalance().getBalance());
+		return "Points spent [%d]".formatted(pointsSpentData.getBalance().getBalance());
 	}
 	
 	@Override
@@ -44,7 +44,7 @@ public class PointsSpentLogEvent extends AbstractLogEvent{
 	@Override
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(Field.builder()
-				.name("New balance")
+				.name("Balance")
 				.value(Integer.toString(pointsSpentData.getBalance().getBalance()))
 				.build());
 	}

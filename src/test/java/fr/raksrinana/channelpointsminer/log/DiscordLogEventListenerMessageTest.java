@@ -64,15 +64,18 @@ class DiscordLogEventListenerMessageTest{
 	void onPointsEarned(){
 		var data = mock(PointsEarnedData.class);
 		var pointGain = mock(PointGain.class);
+		var balance = mock(Balance.class);
 		
 		when(data.getPointGain()).thenReturn(pointGain);
+		when(data.getBalance()).thenReturn(balance);
 		when(pointGain.getTotalPoints()).thenReturn(25);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(balance.getBalance()).thenReturn(200);
 		
 		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 💰 %s : Points earned [%+d | %s]".formatted(USERNAME, STREAMER_USERNAME, 25, "CLAIM"))
+				.content("[%s] 💰 %s : Points earned [%+d | %s | %d]".formatted(USERNAME, STREAMER_USERNAME, 25, "CLAIM", 200))
 				.build());
 	}
 	
@@ -87,7 +90,7 @@ class DiscordLogEventListenerMessageTest{
 		tested.onLogEvent(new PointsSpentLogEvent(miner, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 💸 %s : Points spent [%d new balance]".formatted(USERNAME, STREAMER_USERNAME, 25))
+				.content("[%s] 💸 %s : Points spent [%d]".formatted(USERNAME, STREAMER_USERNAME, 25))
 				.build());
 	}
 	
@@ -197,6 +200,24 @@ class DiscordLogEventListenerMessageTest{
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] 🧧 %s : Bet result [%s | +%d]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 40))
+				.build());
+	}
+	
+	@Test
+	void onPredictionResultRefund(){
+		var placedPrediction = mock(PlacedPrediction.class);
+		var predictionResultData = mock(PredictionResultData.class);
+		var prediction = mock(Prediction.class);
+		var result = mock(PredictionResultPayload.class);
+		
+		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(prediction.getResult()).thenReturn(result);
+		when(result.getType()).thenReturn(PredictionResultType.REFUND);
+		
+		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, placedPrediction, predictionResultData));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] 🧧 %s : Bet result [%s | %d]".formatted(USERNAME, STREAMER_USERNAME, "REFUND", 0))
 				.build());
 	}
 	

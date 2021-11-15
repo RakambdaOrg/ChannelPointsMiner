@@ -23,9 +23,10 @@ public class PointsEarnedLogEvent extends AbstractLogEvent{
 	
 	@Override
 	public String getAsLog(){
-		return "Points earned [%+d | %s]".formatted(
+		return "Points earned [%+d | %s | %s]".formatted(
 				pointsEarnedData.getPointGain().getTotalPoints(),
-				pointsEarnedData.getPointGain().getReasonCode());
+				pointsEarnedData.getPointGain().getReasonCode(),
+				pointsEarnedData.getBalance().getBalance());
 	}
 	
 	@Override
@@ -47,6 +48,7 @@ public class PointsEarnedLogEvent extends AbstractLogEvent{
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of(
 				Field.builder().name("Points").value(Integer.toString(pointsEarnedData.getPointGain().getTotalPoints())).build(),
-				Field.builder().name("Reason").value(pointsEarnedData.getPointGain().getReasonCode().toString()).build());
+				Field.builder().name("Reason").value(pointsEarnedData.getPointGain().getReasonCode().toString()).build(),
+				Field.builder().name("Balance").value(Integer.toString(pointsEarnedData.getBalance().getBalance())).build());
 	}
 }
