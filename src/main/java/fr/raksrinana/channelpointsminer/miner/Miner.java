@@ -21,6 +21,8 @@ import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.log.ILogEventListener;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.log.event.ILogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerAddedLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerRemovedLogEvent;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.AccessLevel;
@@ -175,6 +177,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			updateStreamerInfos(streamer);
 			
 			streamers.put(streamer.getId(), streamer);
+			onLogEvent(new StreamerAddedLogEvent(this, streamer));
 			updateStreamer(streamer);
 		}
 	}
@@ -216,10 +219,17 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	@Override
 	public boolean removeStreamer(@NotNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
+			if(!containsStreamer(streamer)){
+				log.debug("Can't remove streamer as it isn't in the mining list");
+				return false;
+			}
+			log.info("Removing streamer from the mining list");
 			removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
 			ircClient.leave(streamer.getUsername());
+			
+			onLogEvent(new StreamerRemovedLogEvent(this, streamer));
 			return streamers.remove(streamer.getId()) != null;
 		}
 	}

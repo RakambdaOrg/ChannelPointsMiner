@@ -24,6 +24,7 @@ public class StreamerConfigurationReload implements Runnable{
 	@Override
 	public void run(){
 		try(var ignored = LogContext.with(miner)){
+			log.debug("Updating streamer list");
 			var streamers = getAllStreamers();
 			removeStreamers(streamers);
 			updateStreamers(streamers);

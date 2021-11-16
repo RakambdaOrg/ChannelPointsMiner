@@ -288,4 +288,22 @@ class DiscordLogEventListenerMessageTest{
 				.content("[%s] ✅ %s : Miner started (version: %s [%s - %s])".formatted(USERNAME, UNKNOWN_STREAMER, version, commit, branch))
 				.build());
 	}
+	
+	@Test
+	void onStreamerAdded(){
+		tested.onLogEvent(new StreamerAddedLogEvent(miner, streamer));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] ➕ %s : Streamer added".formatted(USERNAME, STREAMER_USERNAME))
+				.build());
+	}
+	
+	@Test
+	void onStreamerRemoved(){
+		tested.onLogEvent(new StreamerRemovedLogEvent(miner, streamer));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] ➖ %s : Streamer removed".formatted(USERNAME, STREAMER_USERNAME))
+				.build());
+	}
 }

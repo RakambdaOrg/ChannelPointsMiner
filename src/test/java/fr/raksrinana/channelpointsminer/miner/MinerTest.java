@@ -19,6 +19,8 @@ import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.log.ILogEventListener;
 import fr.raksrinana.channelpointsminer.log.event.ILogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerAddedLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerRemovedLogEvent;
 import fr.raksrinana.channelpointsminer.runnable.StreamerConfigurationReload;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -79,6 +81,8 @@ class MinerTest{
 	private TwitchIrcClient twitchIrcClient;
 	@Mock
 	private StreamerConfigurationReload streamerConfigurationReload;
+	@Mock
+	private ILogEventListener logEventListener;
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
@@ -251,6 +255,7 @@ class MinerTest{
 			
 			when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -262,6 +267,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient).join(STREAMER_USERNAME);
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -278,6 +284,7 @@ class MinerTest{
 			
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -291,6 +298,7 @@ class MinerTest{
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -307,6 +315,7 @@ class MinerTest{
 			
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -319,6 +328,7 @@ class MinerTest{
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -333,6 +343,7 @@ class MinerTest{
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -345,6 +356,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -412,15 +424,41 @@ class MinerTest{
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
-			tested.start();
-			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
+			tested.addLogEventListener(logEventListener);
+			
+			tested.start();
 			tested.removeStreamer(streamer);
 			
 			verify(webSocketPool).removeTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchIrcClient).leave(STREAMER_USERNAME);
+			verify(logEventListener).onLogEvent(new StreamerRemovedLogEvent(tested, streamer));
+		}
+	}
+	
+	@Test
+	void removeUnknownStreamer(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			tested.addLogEventListener(logEventListener);
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			
+			tested.start();
+			tested.removeStreamer(streamer);
+			
+			verify(webSocketPool, never()).removeTopic(any());
+			verify(twitchIrcClient, never()).leave(any());
+			verify(logEventListener, never()).onLogEvent(any());
 		}
 	}
 	
