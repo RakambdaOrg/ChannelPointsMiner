@@ -21,14 +21,19 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	protected static final int COLOR_PREDICTION = Color.PINK.getRGB();
 	protected static final int COLOR_POINTS_WON = Color.GREEN.getRGB();
 	protected static final int COLOR_POINTS_LOST = Color.RED.getRGB();
-	protected static final NumberFormat NUMBER_FORMAT = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
 	
 	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
+	
+	private final ThreadLocal<NumberFormat> numberFormatLocal = ThreadLocal.withInitial(() -> {
+		var formatter = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
+		formatter.setMaximumFractionDigits(2);
+		return formatter;
+	});
 	
 	@NotNull
 	public String millify(int value, boolean includeSign){
 		var sign = (includeSign && value > 0) ? "+" : "";
-		return sign + NUMBER_FORMAT.format(value);
+		return sign + numberFormatLocal.get().format(value);
 	}
 	
 	@Getter
@@ -97,9 +102,5 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	@NotNull
 	protected Collection<? extends Field> getEmbedFields(){
 		return List.of();
-	}
-	
-	static{
-		NUMBER_FORMAT.setMaximumFractionDigits(2);
 	}
 }

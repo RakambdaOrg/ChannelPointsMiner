@@ -2,6 +2,7 @@ changelog:
   exclude:
     labels:
       - "type: 📚 dependencies"
+      - "type: 🐛 dev bug"
   categories:
     - title: "🚀 Features"
       labels:
