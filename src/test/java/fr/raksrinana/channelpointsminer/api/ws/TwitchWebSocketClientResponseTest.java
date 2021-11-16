@@ -44,7 +44,7 @@ class TwitchWebSocketClientResponseTest{
 		tested.connectBlocking();
 		server.awaitMessage();
 		
-		tested.onMessage(getAllResourceContent("api/ws/response_bad_auth.json"));
+		tested.onMessage(getAllResourceContent("api/ws/response_badAuth.json"));
 		
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketClosed(eq(tested), anyInt(), anyString(), anyBoolean());
 		assertThat(server.isReceivedClose()).isTrue();

@@ -1,0 +1,7 @@
+{
+  "type": "MESSAGE",
+  "data": {
+    "topic": "community-points-user-v1.123456789",
+    "message": "{\"type\":\"claim-available\",\"data\":{\"timestamp\":\"2021-11-15T19:00:58.685741905Z\",\"claim\":{\"id\":\"claim-id\",\"user_id\":\"123456789\",\"channel_id\":\"987654321\",\"point_gain\":{\"user_id\":\"123456789\",\"channel_id\":\"987654321\",\"total_points\":50,\"baseline_points\":50,\"reason_code\":\"CLAIM\",\"multipliers\":[]},\"created_at\":\"2021-11-15T19:00:18Z\"}}}"
+  }
+}
