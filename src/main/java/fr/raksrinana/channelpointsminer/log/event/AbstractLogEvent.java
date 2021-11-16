@@ -31,12 +31,6 @@ public abstract class AbstractLogEvent implements ILogEvent{
 		return formatter;
 	});
 	
-	@NotNull
-	public String millify(int value, boolean includeSign){
-		var sign = (includeSign && value > 0) ? "+" : "";
-		return sign + numberFormatLocal.get().format(value);
-	}
-	
 	@Getter
 	@NotNull
 	private final IMiner miner;
@@ -85,6 +79,12 @@ public abstract class AbstractLogEvent implements ILogEvent{
 				.iconUrl(streamer.getProfileImage().orElse(null))
 				.url(streamer.getChannelUrl())
 				.build();
+	}
+	
+	@NotNull
+	public String millify(int value, boolean includeSign){
+		var sign = (includeSign && value > 0) ? "+" : "";
+		return sign + numberFormatLocal.get().format(value);
 	}
 	
 	@NotNull
