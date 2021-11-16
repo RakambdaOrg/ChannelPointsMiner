@@ -24,6 +24,7 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	
 	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
 	
+	@EqualsAndHashCode.Exclude
 	private final ThreadLocal<NumberFormat> numberFormatLocal = ThreadLocal.withInitial(() -> {
 		var formatter = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
 		formatter.setMaximumFractionDigits(2);
