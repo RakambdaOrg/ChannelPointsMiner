@@ -404,4 +404,32 @@ class DiscordLogEventListenerEmbedTest{
 						.build()))
 				.build());
 	}
+	
+	@Test
+	void onStreamerAdded(){
+		tested.onLogEvent(new StreamerAddedLogEvent(miner, streamer));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("Streamer added")
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onStreamerRemoved(){
+		tested.onLogEvent(new StreamerRemovedLogEvent(miner, streamer));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("Streamer removed")
+						.build()))
+				.build());
+	}
 }
