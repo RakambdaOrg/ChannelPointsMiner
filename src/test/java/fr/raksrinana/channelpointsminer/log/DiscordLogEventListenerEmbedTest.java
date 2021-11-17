@@ -432,4 +432,21 @@ class DiscordLogEventListenerEmbedTest{
 						.build()))
 				.build());
 	}
+	
+	@Test
+	void onStreamerUnknown(){
+		tested.onLogEvent(new StreamerUnknownLogEvent(miner, STREAMER_USERNAME));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(Author.builder()
+								.name(STREAMER_USERNAME)
+								.build())
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("Streamer unknown")
+						.field(Field.builder().name("Username").value(STREAMER_USERNAME).build())
+						.build()))
+				.build());
+	}
 }

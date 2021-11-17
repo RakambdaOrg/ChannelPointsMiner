@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.log.event.StreamerUnknownLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
@@ -106,7 +107,7 @@ public class StreamerConfigurationReload implements Runnable{
 				.map(ReportMenuItemData::getUser)
 				.map(user -> new Streamer(user.getId(), username, streamerSettingsFactory.createStreamerSettings(username)));
 		if(streamer.isEmpty()){
-			log.error("Failed to get streamer {}", username);
+			miner.onLogEvent(new StreamerUnknownLogEvent(miner, username));
 		}
 		return streamer;
 	}

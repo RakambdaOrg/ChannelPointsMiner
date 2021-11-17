@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.channelpointsminer.log.event.StreamerUnknownLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -76,6 +77,7 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		
 		verify(miner).addStreamer(expectedStreamer);
 		verify(gqlApi, never()).allChannelFollows();
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@SneakyThrows
@@ -97,5 +99,6 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		
 		verify(miner, never()).addStreamer(any());
 		verify(gqlApi, never()).allChannelFollows();
+		verify(miner).onLogEvent(new StreamerUnknownLogEvent(miner, STREAMER_USERNAME));
 	}
 }

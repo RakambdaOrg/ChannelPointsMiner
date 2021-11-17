@@ -13,7 +13,7 @@ public class DiscordLogEventListener implements ILogEventListener{
 	
 	@Override
 	public void onLogEvent(ILogEvent event){
-		try(var ignored = LogContext.with(event.getMiner()).withStreamer(event.getStreamer().orElse(null))){
+		try(var ignored = LogContext.with(event.getMiner()).withStreamer(event.getStreamerUsername().orElse(null))){
 			if(useEmbeds){
 				discordApi.sendMessage(event.getAsWebhookEmbed());
 			}

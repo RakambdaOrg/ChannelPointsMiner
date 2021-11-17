@@ -11,7 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
@@ -58,9 +61,15 @@ public abstract class AbstractLogEvent implements ILogEvent{
 		return Webhook.builder().content("[%s] %s %s : %s".formatted(
 						miner.getUsername(),
 						getEmoji(),
-						getStreamer().map(Streamer::getUsername).orElse(UNKNOWN_STREAMER),
+						getStreamerUsername().orElse(UNKNOWN_STREAMER),
 						getWebhookMessage()))
 				.build();
+	}
+	
+	@Override
+	@NotNull
+	public Optional<String> getStreamerUsername(){
+		return getStreamer().map(Streamer::getUsername);
 	}
 	
 	@NotNull
@@ -71,14 +80,18 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	
 	@Nullable
 	private Author getEmbedAuthor(){
-		if(Objects.isNull(streamer)){
+		var username = getStreamerUsername();
+		if(username.isEmpty()){
 			return null;
 		}
-		return Author.builder()
-				.name(streamer.getUsername())
-				.iconUrl(streamer.getProfileImage().orElse(null))
-				.url(streamer.getChannelUrl())
-				.build();
+		
+		var author = Author.builder().name(username.get());
+		
+		getStreamer().ifPresent(s -> author
+				.iconUrl(s.getProfileImage().orElse(null))
+				.url(s.getChannelUrl()));
+		
+		return author.build();
 	}
 	
 	@NotNull

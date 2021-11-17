@@ -54,7 +54,15 @@ public class LogContext implements AutoCloseable{
 	@NotNull
 	public LogContext withStreamer(@Nullable Streamer streamer){
 		if(Objects.nonNull(streamer)){
-			ctc.put(STREAMER_NAME_KEY, streamer.getUsername());
+			return withStreamer(streamer.getUsername());
+		}
+		return this;
+	}
+	
+	@NotNull
+	public LogContext withStreamer(@Nullable String streamer){
+		if(Objects.nonNull(streamer)){
+			ctc.put(STREAMER_NAME_KEY, streamer);
 		}
 		return this;
 	}

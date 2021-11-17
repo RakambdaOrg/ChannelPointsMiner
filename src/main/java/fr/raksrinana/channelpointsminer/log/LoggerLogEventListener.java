@@ -9,7 +9,7 @@ import lombok.extern.log4j.Log4j2;
 public class LoggerLogEventListener implements ILogEventListener{
 	@Override
 	public void onLogEvent(ILogEvent event){
-		try(var ignored = LogContext.with(event.getMiner()).withStreamer(event.getStreamer().orElse(null))){
+		try(var ignored = LogContext.with(event.getMiner()).withStreamer(event.getStreamerUsername().orElse(null))){
 			log.info(event.getAsLog());
 		}
 	}

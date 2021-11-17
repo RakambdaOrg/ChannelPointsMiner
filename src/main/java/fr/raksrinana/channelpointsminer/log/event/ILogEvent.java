@@ -21,4 +21,7 @@ public interface ILogEvent{
 	
 	@NotNull
 	Optional<Streamer> getStreamer();
+	
+	@NotNull
+	Optional<String> getStreamerUsername();
 }

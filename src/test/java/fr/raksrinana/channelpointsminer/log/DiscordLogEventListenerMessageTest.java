@@ -306,4 +306,13 @@ class DiscordLogEventListenerMessageTest{
 				.content("[%s] ➖ %s : Streamer removed".formatted(USERNAME, STREAMER_USERNAME))
 				.build());
 	}
+	
+	@Test
+	void onStreamerUnknown(){
+		tested.onLogEvent(new StreamerUnknownLogEvent(miner, STREAMER_USERNAME));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] ❌ %s : Streamer unknown".formatted(USERNAME, STREAMER_USERNAME))
+				.build());
+	}
 }
