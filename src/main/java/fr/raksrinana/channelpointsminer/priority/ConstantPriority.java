@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @ToString(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
-public class ConstantPriority extends StreamerPriority{
+public class ConstantPriority extends IStreamerPriority{
 	@Override
 	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
 		return getScore();

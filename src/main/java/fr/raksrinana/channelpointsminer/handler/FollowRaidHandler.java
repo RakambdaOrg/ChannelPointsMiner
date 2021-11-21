@@ -15,14 +15,15 @@ public class FollowRaidHandler extends HandlerAdapter{
 	
 	@Override
 	public void onRaidUpdateV2(@NotNull Topic topic, @NotNull RaidUpdateV2 message){
-		var streamerOptional = miner.getStreamerById(topic.getTarget());
-		if(streamerOptional.isEmpty()){
-			log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
-			return;
-		}
-		
-		var streamer = streamerOptional.get();
-		try(var ignored = LogContext.with(streamer)){
+		try(var context = LogContext.with(miner)){
+			var streamerOptional = miner.getStreamerById(topic.getTarget());
+			if(streamerOptional.isEmpty()){
+				log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
+				return;
+			}
+			
+			var streamer = streamerOptional.get();
+			context.withStreamer(streamer);
 			miner.getGqlApi().joinRaid(message.getRaid().getId());
 		}
 	}

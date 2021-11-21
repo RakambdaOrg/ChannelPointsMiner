@@ -30,7 +30,7 @@ public class SendMinutesWatched implements Runnable{
 	@Override
 	public void run(){
 		log.debug("Sending all minutes watched");
-		try{
+		try(var ignored = LogContext.with(miner)){
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
@@ -65,7 +65,7 @@ public class SendMinutesWatched implements Runnable{
 	}
 	
 	private boolean send(Streamer streamer){
-		try(var ignored = LogContext.with(streamer)){
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			log.debug("Sending minutes watched");
 			var streamId = streamer.getStreamId();
 			if(streamId.isEmpty()){

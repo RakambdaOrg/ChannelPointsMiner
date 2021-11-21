@@ -17,7 +17,7 @@ import static fr.raksrinana.channelpointsminer.api.gql.data.types.MultiplierReas
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscribedPriority extends StreamerPriority{
+public class SubscribedPriority extends IStreamerPriority{
 	@JsonProperty("score2")
 	private int score2;
 	@JsonProperty("score3")

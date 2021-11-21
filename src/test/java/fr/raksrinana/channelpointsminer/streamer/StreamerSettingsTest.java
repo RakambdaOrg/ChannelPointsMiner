@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.streamer;
 
-import fr.raksrinana.channelpointsminer.priority.StreamerPriority;
+import fr.raksrinana.channelpointsminer.priority.IStreamerPriority;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 class StreamerSettingsTest{
 	@Mock
-	private StreamerPriority priority;
+	private IStreamerPriority priority;
 	
 	@Test
 	void copy(){

@@ -7,16 +7,20 @@ import fr.raksrinana.channelpointsminer.api.passport.exceptions.CaptchaSolveRequ
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.handler.MessageHandler;
+import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
+import fr.raksrinana.channelpointsminer.log.ILogEventListener;
+import fr.raksrinana.channelpointsminer.log.event.ILogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerAddedLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerRemovedLogEvent;
 import fr.raksrinana.channelpointsminer.runnable.StreamerConfigurationReload;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -77,6 +81,8 @@ class MinerTest{
 	private TwitchIrcClient twitchIrcClient;
 	@Mock
 	private StreamerConfigurationReload streamerConfigurationReload;
+	@Mock
+	private ILogEventListener logEventListener;
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
@@ -214,7 +220,7 @@ class MinerTest{
 	
 	@Test
 	void unknownMessageIsNotForwarded(){
-		var message = mock(Message.class);
+		var message = mock(IMessage.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
 		verify(executorService, never()).submit(any(Runnable.class));
@@ -222,13 +228,13 @@ class MinerTest{
 	
 	@Test
 	void messageHandlersAreCalled(){
-		var handler1 = mock(MessageHandler.class);
-		var handler2 = mock(MessageHandler.class);
+		var handler1 = mock(IMessageHandler.class);
+		var handler2 = mock(IMessageHandler.class);
 		
 		tested.addHandler(handler1);
 		tested.addHandler(handler2);
 		
-		var message = mock(Message.class);
+		var message = mock(IMessage.class);
 		assertDoesNotThrow(() -> tested.onTwitchMessage(topic, message));
 		
 		verify(executorService, times(2)).submit(any(Runnable.class));
@@ -249,6 +255,7 @@ class MinerTest{
 			
 			when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -260,6 +267,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient).join(STREAMER_USERNAME);
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -276,6 +284,7 @@ class MinerTest{
 			
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -289,6 +298,7 @@ class MinerTest{
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -305,6 +315,7 @@ class MinerTest{
 			
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -317,6 +328,7 @@ class MinerTest{
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -331,6 +343,7 @@ class MinerTest{
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
+			tested.addLogEventListener(logEventListener);
 			tested.start();
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
@@ -343,6 +356,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(twitchIrcClient, never()).join(any());
+			verify(logEventListener).onLogEvent(new StreamerAddedLogEvent(tested, streamer));
 		}
 	}
 	
@@ -410,15 +424,41 @@ class MinerTest{
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
-			tested.start();
-			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
+			tested.addLogEventListener(logEventListener);
+			
+			tested.start();
 			tested.removeStreamer(streamer);
 			
 			verify(webSocketPool).removeTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchIrcClient).leave(STREAMER_USERNAME);
+			verify(logEventListener).onLogEvent(new StreamerRemovedLogEvent(tested, streamer));
+		}
+	}
+	
+	@Test
+	void removeUnknownStreamer(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			tested.addLogEventListener(logEventListener);
+			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+			
+			tested.start();
+			tested.removeStreamer(streamer);
+			
+			verify(webSocketPool, never()).removeTopic(any());
+			verify(twitchIrcClient, never()).leave(any());
+			verify(logEventListener, never()).onLogEvent(any());
 		}
 	}
 	
@@ -451,7 +491,7 @@ class MinerTest{
 			when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			tested.getStreamers().add(streamer);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
@@ -481,7 +521,7 @@ class MinerTest{
 			when(streamerSettings.isJoinIrc()).thenReturn(false);
 			
 			var streamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
-			tested.getStreamers().add(streamer);
+			tested.getStreamerMap().put(STREAMER_ID, streamer);
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
@@ -489,5 +529,29 @@ class MinerTest{
 			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchIrcClient).leave(STREAMER_USERNAME);
 		}
+	}
+	
+	@Test
+	void getUsername(){
+		var username = "username";
+		when(accountConfiguration.getUsername()).thenReturn(username);
+		
+		assertThat(tested.getUsername()).isEqualTo(username);
+	}
+	
+	@Test
+	void logEventHandlers(){
+		var listener1 = mock(ILogEventListener.class);
+		var listener2 = mock(ILogEventListener.class);
+		
+		tested.addLogEventListener(listener1);
+		tested.addLogEventListener(listener2);
+		
+		var event = mock(ILogEvent.class);
+		assertDoesNotThrow(() -> tested.onLogEvent(event));
+		
+		verify(executorService, times(2)).submit(any(Runnable.class));
+		verify(listener1).onLogEvent(event);
+		verify(listener2).onLogEvent(event);
 	}
 }

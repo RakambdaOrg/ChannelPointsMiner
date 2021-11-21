@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Log4j2
-public class FromStartDelay implements DelayCalculator{
+public class FromStartDelay implements IDelayCalculator{
 	private int seconds;
 	
 	@Override

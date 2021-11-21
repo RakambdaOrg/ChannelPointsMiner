@@ -13,7 +13,7 @@ import java.time.Instant;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class StreamDown extends Message{
+public class StreamDown extends IMessage{
 	@JsonProperty("server_time")
 	@JsonDeserialize(using = TwitchTimestampDeserializer.class)
 	private Instant serverTime;

@@ -32,7 +32,7 @@ class DiscordApiTest{
 	@Test
 	void nominal(MockClient unirest){
 		var webhook = Webhook.builder()
-				.username("ChannelPointsMiner")
+				.username("UsernameWillBeOverriden")
 				.content("Test message")
 				.build();
 		
@@ -50,7 +50,6 @@ class DiscordApiTest{
 	@Test
 	void nominalRetryAfter(MockClient unirest){
 		var webhook = Webhook.builder()
-				.username("ChannelPointsMiner")
 				.content("Test message")
 				.build();
 		
@@ -68,7 +67,6 @@ class DiscordApiTest{
 	@Test
 	void error(MockClient unirest){
 		var webhook = Webhook.builder()
-				.username("ChannelPointsMiner")
 				.content("Test message")
 				.build();
 		

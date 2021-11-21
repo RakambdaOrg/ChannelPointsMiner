@@ -138,6 +138,11 @@ Account settings define all the settings for a Twitch account that will be used 
 |If set to true link:https://www.twitch.tv/directory/following/[streamers followed,window="_blank"] on the account will be mined.
 |false
 
+|enabled
+|If set to true the account will be mined.
+Otherwise, it won't be mined but still allows you to have its configuration defined for later.
+|true
+
 |defaultStreamerSettings [[global_settings__default_streamer_settings]]
 |Default <<streamer_settings,streamer settings>> to apply to every streamer.
 |Default streamer settings
@@ -155,7 +160,7 @@ Account settings define all the settings for a Twitch account that will be used 
 New streamer configurations will be added, already existing ones will be updated, and removed one will be removed.
 
 A zero or negative value will disable this feature.
-We recommend to setting this value to something not too low as this is a rather intensive treatment (15 minutes minimum seems fair).
+We recommend setting this value to something not too low as this is a rather intensive treatment (15 minutes minimum seems fair).
 
 NOTE: Only <<streamer_settings,streamer settings>> are reloaded, not the <<global_settings,global settings>>.
 |0
@@ -457,6 +462,9 @@ These keys are listed below:
 [cols="1,3"]
 |===
 |Key |Description
+
+|account_name
+|The account used to do the mining.
 
 |streamer_name
 |The name of the streamer for which the message is linked to.

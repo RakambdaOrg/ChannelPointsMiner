@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.prediction.bet;
 
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class Placement{
 	@NotNull
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	@NotNull
 	private Outcome outcome;
 	private int amount;

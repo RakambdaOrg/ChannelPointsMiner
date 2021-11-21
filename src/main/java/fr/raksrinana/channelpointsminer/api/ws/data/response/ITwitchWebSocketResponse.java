@@ -17,5 +17,5 @@ import lombok.ToString;
 })
 @ToString
 @EqualsAndHashCode
-public abstract class TwitchWebSocketResponse{
+public abstract class ITwitchWebSocketResponse{
 }

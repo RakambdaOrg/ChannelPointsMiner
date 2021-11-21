@@ -28,6 +28,8 @@ public class WebsocketMockServer extends WebSocketServer{
 	
 	public WebsocketMockServer(int port){
 		super(new InetSocketAddress(port));
+		setReuseAddr(true);
+		
 		this.port = port;
 		
 		receivedMessages = new ArrayList<>();

@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.prediction.bet.outcome;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Predictor;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,7 +20,7 @@ class BiggestPredictorOutcomePickerTest{
 	private final BiggestPredictorOutcomePicker tested = BiggestPredictorOutcomePicker.builder().build();
 	
 	@Mock
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	@Mock
 	private Event event;
 	@Mock
@@ -30,7 +30,7 @@ class BiggestPredictorOutcomePickerTest{
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(prediction.getEvent()).thenReturn(event);
+		lenient().when(bettingPrediction.getEvent()).thenReturn(event);
 		lenient().when(event.getOutcomes()).thenReturn(List.of(blueOutcome, pinkOutcome));
 	}
 	
@@ -49,13 +49,13 @@ class BiggestPredictorOutcomePickerTest{
 		when(blueOutcome.getTopPredictors()).thenReturn(List.of(predictor10, predictor11));
 		when(pinkOutcome.getTopPredictors()).thenReturn(List.of(predictor20, predictor21));
 		
-		assertThat(tested.chooseOutcome(prediction)).isEqualTo(pinkOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(pinkOutcome);
 	}
 	
 	@Test
 	void missingOutcome(){
 		when(event.getOutcomes()).thenReturn(List.of());
 		
-		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(prediction));
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
 	}
 }

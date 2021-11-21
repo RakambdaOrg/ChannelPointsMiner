@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.prediction.bet.outcome;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.OutcomeColor;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,7 +21,7 @@ class SmartOutcomePickerTest{
 	private final SmartOutcomePicker tested = SmartOutcomePicker.builder().percentageGap(.1F).build();
 	
 	@Mock
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	@Mock
 	private Event event;
 	@Mock
@@ -31,7 +31,7 @@ class SmartOutcomePickerTest{
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(prediction.getEvent()).thenReturn(event);
+		lenient().when(bettingPrediction.getEvent()).thenReturn(event);
 		lenient().when(event.getOutcomes()).thenReturn(List.of(blueOutcome, pinkOutcome));
 		
 		lenient().when(blueOutcome.getColor()).thenReturn(OutcomeColor.BLUE);
@@ -46,7 +46,7 @@ class SmartOutcomePickerTest{
 		when(blueOutcome.getTotalPoints()).thenReturn(10L);
 		when(pinkOutcome.getTotalPoints()).thenReturn(20L);
 		
-		assertThat(tested.chooseOutcome(prediction)).isEqualTo(blueOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(blueOutcome);
 	}
 	
 	@Test
@@ -54,20 +54,20 @@ class SmartOutcomePickerTest{
 		when(blueOutcome.getTotalUsers()).thenReturn(40);
 		when(pinkOutcome.getTotalUsers()).thenReturn(60);
 		
-		assertThat(tested.chooseOutcome(prediction)).isEqualTo(pinkOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(pinkOutcome);
 	}
 	
 	@Test
 	void missingBlue(){
 		when(event.getOutcomes()).thenReturn(List.of(pinkOutcome));
 		
-		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(prediction));
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
 	}
 	
 	@Test
 	void missingPink(){
 		when(event.getOutcomes()).thenReturn(List.of(blueOutcome));
 		
-		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(prediction));
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
 	}
 }

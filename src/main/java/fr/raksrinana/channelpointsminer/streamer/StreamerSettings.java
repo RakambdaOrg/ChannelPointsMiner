@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.streamer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.raksrinana.channelpointsminer.priority.StreamerPriority;
+import fr.raksrinana.channelpointsminer.priority.IStreamerPriority;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class StreamerSettings{
 	@JsonProperty("priorities")
 	@Builder.Default
 	@NotNull
-	private List<StreamerPriority> priorities = new ArrayList<>();
+	private List<IStreamerPriority> priorities = new ArrayList<>();
 	
 	public StreamerSettings(@NotNull StreamerSettings origin){
 		this();

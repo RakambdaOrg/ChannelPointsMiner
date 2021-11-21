@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Log4j2
-public class PercentageDelay implements DelayCalculator{
+public class PercentageDelay implements IDelayCalculator{
 	private float percent;
 	
 	@Override

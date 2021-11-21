@@ -10,12 +10,12 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.factory.TransactionIdFactory;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
-import fr.raksrinana.channelpointsminer.prediction.bet.action.PredictionAction;
-import fr.raksrinana.channelpointsminer.prediction.bet.amount.AmountCalculator;
-import fr.raksrinana.channelpointsminer.prediction.bet.outcome.OutcomePicker;
+import fr.raksrinana.channelpointsminer.prediction.bet.action.IPredictionAction;
+import fr.raksrinana.channelpointsminer.prediction.bet.amount.IAmountCalculator;
+import fr.raksrinana.channelpointsminer.prediction.bet.outcome.IOutcomePicker;
 import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -45,7 +45,7 @@ class BetPlacerTest{
 	@Mock
 	private GQLApi gqlApi;
 	@Mock
-	private Prediction prediction;
+	private BettingPrediction bettingPrediction;
 	@Mock
 	private Event event;
 	@Mock
@@ -55,9 +55,9 @@ class BetPlacerTest{
 	@Mock
 	private PredictionSettings predictionSettings;
 	@Mock
-	private OutcomePicker outcomePicker;
+	private IOutcomePicker outcomePicker;
 	@Mock
-	private AmountCalculator amountCalculator;
+	private IAmountCalculator amountCalculator;
 	@Mock
 	private Outcome outcome;
 	@Mock
@@ -67,13 +67,13 @@ class BetPlacerTest{
 	@Mock
 	private MakePredictionPayload makePrediction;
 	@Mock
-	private PredictionAction predictionAction;
+	private IPredictionAction predictionAction;
 	
 	@BeforeEach
 	void setUp() throws BetPlacementException{
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
-		lenient().when(prediction.getEvent()).thenReturn(event);
-		lenient().when(prediction.getStreamer()).thenReturn(streamer);
+		lenient().when(bettingPrediction.getEvent()).thenReturn(event);
+		lenient().when(bettingPrediction.getStreamer()).thenReturn(streamer);
 		
 		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.getPredictions()).thenReturn(predictionSettings);
@@ -86,8 +86,8 @@ class BetPlacerTest{
 		
 		lenient().when(outcome.getId()).thenReturn(OUTCOME_ID);
 		
-		lenient().when(outcomePicker.chooseOutcome(prediction)).thenReturn(outcome);
-		lenient().when(amountCalculator.calculateAmount(prediction, outcome)).thenReturn(AMOUNT);
+		lenient().when(outcomePicker.chooseOutcome(bettingPrediction)).thenReturn(outcome);
+		lenient().when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(AMOUNT);
 		
 		lenient().when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
 		lenient().when(gqlResponse.getData()).thenReturn(makePredictionData);
@@ -98,40 +98,40 @@ class BetPlacerTest{
 	void eventNotActive(){
 		when(event.getStatus()).thenReturn(EventStatus.LOCKED);
 		
-		assertDoesNotThrow(() -> tested.placeBet(prediction));
+		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
-		verify(prediction).setState(PredictionState.BET_ERROR);
+		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
 	void outcomeException() throws BetPlacementException{
-		when(outcomePicker.chooseOutcome(prediction)).thenThrow(new BetPlacementException("For tests"));
+		when(outcomePicker.chooseOutcome(bettingPrediction)).thenThrow(new BetPlacementException("For tests"));
 		
-		assertDoesNotThrow(() -> tested.placeBet(prediction));
+		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
-		verify(prediction).setState(PredictionState.BET_ERROR);
+		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
 	void amountException() throws BetPlacementException{
-		when(amountCalculator.calculateAmount(prediction, outcome)).thenThrow(new BetPlacementException("For tests"));
+		when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenThrow(new BetPlacementException("For tests"));
 		
-		assertDoesNotThrow(() -> tested.placeBet(prediction));
+		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
-		verify(prediction).setState(PredictionState.BET_ERROR);
+		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
 	void amountTooLow() throws BetPlacementException{
-		when(amountCalculator.calculateAmount(prediction, outcome)).thenReturn(5);
+		when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(5);
 		
-		assertDoesNotThrow(() -> tested.placeBet(prediction));
+		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
-		verify(prediction).setState(PredictionState.BET_ERROR);
+		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 	}
 	
 	@Test
@@ -139,10 +139,10 @@ class BetPlacerTest{
 		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
 			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
 			
-			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 			
 			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
-			verify(prediction, never()).setState(any());
+			verify(bettingPrediction, never()).setState(any());
 		}
 	}
 	
@@ -160,12 +160,12 @@ class BetPlacerTest{
 			}).when(predictionAction).perform(any());
 			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, newAmount, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
 			
-			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 			
 			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, newAmount, TRANSACTION_ID);
-			verify(prediction, never()).setState(any());
+			verify(bettingPrediction, never()).setState(any());
 			verify(predictionAction).perform(Placement.builder()
-					.prediction(prediction)
+					.bettingPrediction(bettingPrediction)
 					.outcome(outcome)
 					.amount(newAmount)
 					.build());
@@ -180,12 +180,12 @@ class BetPlacerTest{
 			when(predictionSettings.getActions()).thenReturn(List.of(predictionAction));
 			doThrow(new BetPlacementException("For tests")).when(predictionAction).perform(any());
 			
-			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 			
 			verify(gqlApi, never()).makePrediction(anyString(), anyString(), anyInt(), anyString());
-			verify(prediction).setState(PredictionState.BET_ERROR);
+			verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 			verify(predictionAction).perform(Placement.builder()
-					.prediction(prediction)
+					.bettingPrediction(bettingPrediction)
 					.outcome(outcome)
 					.amount(AMOUNT)
 					.build());
@@ -199,10 +199,10 @@ class BetPlacerTest{
 			
 			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID)).thenReturn(Optional.empty());
 			
-			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 			
 			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
-			verify(prediction).setState(PredictionState.BET_ERROR);
+			verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 		}
 	}
 	
@@ -215,10 +215,10 @@ class BetPlacerTest{
 					.code(MakePredictionErrorCode.NOT_ENOUGH_POINTS)
 					.build());
 			
-			assertDoesNotThrow(() -> tested.placeBet(prediction));
+			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 			
 			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID);
-			verify(prediction).setState(PredictionState.BET_ERROR);
+			verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 		}
 	}
 }

@@ -5,6 +5,8 @@ import fr.raksrinana.channelpointsminer.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerFactory;
 import fr.raksrinana.channelpointsminer.log.UnirestLogger;
+import fr.raksrinana.channelpointsminer.log.event.MinerStartedLogEvent;
+import fr.raksrinana.channelpointsminer.util.GitProperties;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
 import kong.unirest.Unirest;
 import kong.unirest.jackson.JacksonObjectMapper;
@@ -29,12 +31,21 @@ public class Main{
 		}
 		// #############################
 		
+		var version = GitProperties.getVersion();
+		var commitId = GitProperties.getCommitId();
+		var branch = GitProperties.getBranch();
+		log.info("Starting everything up ({} | {} | {})", version, commitId, branch);
+		
 		CLIHolder.setInstance(parseCLIParameters(args));
 		preSetup();
 		
 		var accountConfigurations = ConfigurationFactory.getInstance();
 		for(var accountConfiguration : accountConfigurations.getAccounts()){
-			MinerFactory.create(accountConfiguration).start();
+			if(accountConfiguration.isEnabled()){
+				var miner = MinerFactory.create(accountConfiguration);
+				miner.start();
+				miner.onLogEvent(new MinerStartedLogEvent(miner, version, commitId, branch));
+			}
 		}
 	}
 	

@@ -21,15 +21,16 @@ public class MinerFactory{
 				Executors.newScheduledThreadPool(4),
 				Executors.newCachedThreadPool());
 		
-		miner.addHandler(MessageHandlerFactory.createLogger(miner));
 		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
+		miner.addHandler(MessageHandlerFactory.createPointsHandler(miner));
 		
+		miner.addLogEventListener(LogEventListenerFactory.createLogger());
 		if(Objects.nonNull(config.getDiscord().getUrl())){
 			var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
-			miner.addHandler(MessageHandlerFactory.createDiscordLogger(miner, discordApi, config.getDiscord().isEmbeds()));
+			miner.addLogEventListener(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord().isEmbeds()));
 		}
 		
 		return miner;

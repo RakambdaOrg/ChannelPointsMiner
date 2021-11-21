@@ -5,9 +5,9 @@ import fr.raksrinana.channelpointsminer.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.api.twitch.TwitchApi;
-import fr.raksrinana.channelpointsminer.api.ws.TwitchMessageListener;
+import fr.raksrinana.channelpointsminer.api.ws.ITwitchMessageListener;
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.Message;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
@@ -15,10 +15,14 @@ import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.handler.MessageHandler;
+import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
+import fr.raksrinana.channelpointsminer.log.ILogEventListener;
 import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.log.event.ILogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerAddedLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.StreamerRemovedLogEvent;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.AccessLevel;
@@ -36,12 +40,11 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Log4j2
-public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
+public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	private final AccountConfiguration accountConfiguration;
 	private final PassportApi passportApi;
 	
-	@Getter
-	private final Set<Streamer> streamers;
+	private final Map<String, Streamer> streamers;
 	@Getter
 	private final TwitchWebSocketPool webSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
@@ -51,7 +54,12 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 			@TestOnly,
 			@VisibleForTesting
 	})
-	private final Collection<MessageHandler> messageHandlers;
+	private final Collection<IMessageHandler> messageHandlers;
+	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
+			@TestOnly,
+			@VisibleForTesting
+	})
+	private final Collection<ILogEventListener> logEventListeners;
 	@Getter
 	private final MinerData minerData;
 	
@@ -78,8 +86,9 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
 		
-		streamers = ConcurrentHashMap.newKeySet();
+		streamers = new ConcurrentHashMap<>();
 		messageHandlers = new LinkedList<>();
+		logEventListeners = new LinkedList<>();
 		minerData = new MinerData();
 	}
 	
@@ -89,25 +98,27 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	 * @throws IllegalStateException If the login failed.
 	 */
 	public void start(){
-		log.info("Starting miner");
-		webSocketPool.addListener(this);
-		
-		login();
-		
-		scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
-		scheduledExecutor.scheduleWithFixedDelay(createSendMinutesWatched(this), 0, 1, MINUTES);
-		scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
-		scheduledExecutor.scheduleAtFixedRate(createSyncInventory(this), 1, 15, MINUTES);
-		
-		var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, accountConfiguration.isLoadFollows());
-		if(accountConfiguration.getReloadEvery() > 0){
-			scheduledExecutor.scheduleWithFixedDelay(streamerConfigurationReload, 0, accountConfiguration.getReloadEvery(), MINUTES);
+		try(var ignored = LogContext.with(this)){
+			log.info("Starting miner");
+			webSocketPool.addListener(this);
+			
+			login();
+			
+			scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
+			scheduledExecutor.scheduleWithFixedDelay(createSendMinutesWatched(this), 0, 1, MINUTES);
+			scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
+			scheduledExecutor.scheduleAtFixedRate(createSyncInventory(this), 1, 15, MINUTES);
+			
+			var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, accountConfiguration.isLoadFollows());
+			if(accountConfiguration.getReloadEvery() > 0){
+				scheduledExecutor.scheduleWithFixedDelay(streamerConfigurationReload, 0, accountConfiguration.getReloadEvery(), MINUTES);
+			}
+			else{
+				scheduledExecutor.schedule(streamerConfigurationReload, 0, MINUTES);
+			}
+			
+			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 		}
-		else{
-			scheduledExecutor.schedule(streamerConfigurationReload, 0, MINUTES);
-		}
-		
-		listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
 	}
 	
 	/**
@@ -132,31 +143,49 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	@NotNull
+	public String getUsername(){
+		return accountConfiguration.getUsername();
+	}
+	
+	@NotNull
+	@VisibleForTesting
+	@TestOnly
+	protected Map<String, Streamer> getStreamerMap(){
+		return streamers;
+	}
+	
+	@Override
+	@NotNull
+	public Collection<Streamer> getStreamers(){
+		return streamers.values();
+	}
+	
+	@Override
+	@NotNull
 	public Optional<Streamer> getStreamerById(@NotNull String id){
-		return getStreamers().stream()
-				.filter(s -> Objects.equals(s.getId(), id))
-				.findFirst();
+		return Optional.ofNullable(streamers.get(id));
 	}
 	
 	@Override
 	public void addStreamer(@NotNull Streamer streamer){
-		try(var ignored = LogContext.with(streamer)){
-			if(streamers.contains(streamer)){
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
+			if(containsStreamer(streamer)){
 				log.debug("Streamer is already being mined");
 				return;
 			}
 			log.info("Adding to the mining list with settings {}", streamer.getSettings());
 			updateStreamerInfos(streamer);
 			
-			streamers.add(streamer);
+			streamers.put(streamer.getId(), streamer);
+			onLogEvent(new StreamerAddedLogEvent(this, streamer));
 			updateStreamer(streamer);
 		}
 	}
 	
 	@Override
 	public void updateStreamer(@NotNull Streamer streamer){
-		try(var ignored = LogContext.with(streamer)){
-			if(!streamers.contains(streamer)){
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
+			if(!containsStreamer(streamer)){
 				log.debug("Streamer is can't be updated as it is unknown");
 				return;
 			}
@@ -189,16 +218,32 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	
 	@Override
 	public boolean removeStreamer(@NotNull Streamer streamer){
-		removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
-		removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
-		removeTopic(RAID, streamer.getId());
-		ircClient.leave(streamer.getUsername());
-		return streamers.remove(streamer);
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
+			if(!containsStreamer(streamer)){
+				log.debug("Can't remove streamer as it isn't in the mining list");
+				return false;
+			}
+			log.info("Removing streamer from the mining list");
+			removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
+			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
+			removeTopic(RAID, streamer.getId());
+			ircClient.leave(streamer.getUsername());
+			
+			onLogEvent(new StreamerRemovedLogEvent(this, streamer));
+			return streamers.remove(streamer.getId()) != null;
+		}
 	}
 	
 	@Override
 	public void updateStreamerInfos(@NotNull Streamer streamer){
-		getUpdateStreamInfo().run(streamer);
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
+			getUpdateStreamInfo().run(streamer);
+		}
+	}
+	
+	@Override
+	public boolean containsStreamer(@NotNull Streamer streamer){
+		return streamers.containsKey(streamer.getId());
 	}
 	
 	@Override
@@ -225,13 +270,25 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 	}
 	
 	@Override
-	public void onTwitchMessage(@NotNull Topic topic, @NotNull Message message){
+	public void onTwitchMessage(@NotNull Topic topic, @NotNull IMessage message){
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
 		messageHandlers.forEach(handler -> handlerExecutor.submit(() -> {
 			try(var ignored = LogContext.restore(values, messages)){
 				handler.handle(topic, message);
+			}
+		}));
+	}
+	
+	@Override
+	public void onLogEvent(ILogEvent event){
+		var values = ThreadContext.getImmutableContext();
+		var messages = ThreadContext.getImmutableStack().asList();
+		
+		logEventListeners.forEach(listener -> handlerExecutor.submit(() -> {
+			try(var ignored = LogContext.restore(values, messages)){
+				listener.onLogEvent(event);
 			}
 		}));
 	}
@@ -243,8 +300,12 @@ public class Miner implements AutoCloseable, IMiner, TwitchMessageListener{
 		return updateStreamInfo;
 	}
 	
-	public void addHandler(MessageHandler handler){
+	public void addHandler(@NotNull IMessageHandler handler){
 		messageHandlers.add(handler);
+	}
+	
+	public void addLogEventListener(@NotNull ILogEventListener eventListener){
+		logEventListeners.add(eventListener);
 	}
 	
 	@Override

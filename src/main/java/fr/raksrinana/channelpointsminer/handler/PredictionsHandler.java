@@ -3,14 +3,15 @@ package fr.raksrinana.channelpointsminer.handler;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.log.event.EventCreatedLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.PredictionMadeLogEvent;
+import fr.raksrinana.channelpointsminer.log.event.PredictionResultLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -40,7 +41,7 @@ public class PredictionsHandler extends HandlerAdapter{
 			@TestOnly,
 			@VisibleForTesting
 	})
-	private final Map<String, Prediction> predictions = new ConcurrentHashMap<>();
+	private final Map<String, BettingPrediction> predictions = new ConcurrentHashMap<>();
 	@Getter(value = PROTECTED, onMethod_ = {
 			@TestOnly,
 			@VisibleForTesting
@@ -49,44 +50,34 @@ public class PredictionsHandler extends HandlerAdapter{
 	
 	@Override
 	public void onEventCreated(@NotNull Topic topic, @NotNull EventCreated message){
-		var streamerOptional = miner.getStreamerById(topic.getTarget());
+		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(event.getId())){
-			if(event.getStatus() != EventStatus.ACTIVE){
-				log.debug("Event is not active");
-				return;
-			}
-			
-			if(streamerOptional.isEmpty()){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
+			if(Objects.isNull(streamer)){
 				log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
 				return;
 			}
-			var streamer = streamerOptional.get();
 			
-			if(!hasEnoughPoints(streamer)){
-				log.info("Not placing bet, not enough points");
-				return;
-			}
-			
-			var prediction = predictions.computeIfAbsent(event.getId(), key -> createPrediction(streamer, event));
-			if(prediction.getState() != PredictionState.CREATED){
-				log.debug("Prediction has already been placed");
-				return;
-			}
-			
-			prediction.setState(PredictionState.SCHEDULING);
-			schedulePrediction(streamer, prediction);
+			onNewPrediction(streamer, event);
 		}
 	}
 	
 	@Override
 	public void onEventUpdated(@NotNull Topic topic, @NotNull EventUpdated message){
-		var streamerOptional = miner.getStreamerById(topic.getTarget());
+		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(event.getId())){
+		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
 			var prediction = predictions.get(event.getId());
+			
 			if(Objects.isNull(prediction)){
-				log.debug("Event update on unknown prediction");
+				log.debug("Event update on unknown prediction, creating it");
+				
+				if(Objects.isNull(streamer)){
+					log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
+					return;
+				}
+				
+				onNewPrediction(streamer, event);
 				return;
 			}
 			
@@ -101,6 +92,28 @@ public class PredictionsHandler extends HandlerAdapter{
 		}
 	}
 	
+	private void onNewPrediction(@NotNull Streamer streamer, @NotNull Event event){
+		if(event.getStatus() != EventStatus.ACTIVE){
+			log.debug("Event is not active");
+			return;
+		}
+		
+		if(!hasEnoughPoints(streamer)){
+			log.info("Not placing bet, not enough points");
+			return;
+		}
+		
+		var prediction = predictions.computeIfAbsent(event.getId(), key -> createPrediction(streamer, event));
+		if(prediction.getState() != PredictionState.CREATED){
+			log.debug("Event is already being handled");
+			return;
+		}
+		
+		miner.onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
+		prediction.setState(PredictionState.SCHEDULING);
+		schedulePrediction(streamer, prediction);
+	}
+	
 	@Override
 	public void onPredictionMade(@NotNull Topic topic, @NotNull PredictionMade message){
 		predictionPlaced(message.getData().getPrediction());
@@ -111,47 +124,29 @@ public class PredictionsHandler extends HandlerAdapter{
 		predictionPlaced(message.getData().getPrediction());
 	}
 	
-	private void predictionPlaced(@NotNull fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction predictionData){
-		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
-		var eventId = predictionData.getEventId();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
-			var placedPoints = predictionData.getPoints();
-			log.info("Prediction made, placed {} points", placedPoints);
-			
-			var prediction = Optional.ofNullable(predictions.get(eventId))
-					.map(p -> {
-						p.setState(PredictionState.PLACED);
-						return p;
-					});
-			
-			placedPredictions.put(eventId, PlacedPrediction.builder()
-					.eventId(eventId)
-					.prediction(prediction.orElse(null))
-					.amount(placedPoints)
-					.build());
-		}
-	}
-	
 	@Override
 	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){
 		var predictionData = message.getData().getPrediction();
-		var streamerOptional = miner.getStreamerById(predictionData.getChannelId());
+		var streamer = miner.getStreamerById(predictionData.getChannelId()).orElse(null);
 		var eventId = predictionData.getEventId();
-		try(var ignored = LogContext.with(streamerOptional.orElse(null)).withEventId(eventId)){
-			var result = Optional.ofNullable(predictionData.getResult());
-			var pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
-			var resultType = result.map(PredictionResultPayload::getType).orElse(PredictionResultType.UNKNOWN);
-			
-			Optional.ofNullable(placedPredictions.get(eventId))
-					.map(prediction -> pointsWon - prediction.getAmount())
-					.ifPresentOrElse(
-							gain -> log.info("Prediction result {}: {}", resultType, gain),
-							() -> log.info("Prediction result {}: unknown gain", resultType)
-					);
-			
+		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(eventId)){
+			if(Objects.isNull(predictionData.getResult())){
+				log.warn("Received prediction result without result data");
+				return;
+			}
+			miner.onLogEvent(new PredictionResultLogEvent(miner, streamer, placedPredictions.get(eventId), message.getData()));
 			predictions.remove(eventId);
 			placedPredictions.remove(eventId);
 		}
+	}
+	
+	@NotNull
+	private BettingPrediction createPrediction(@NotNull Streamer streamer, @NotNull Event event){
+		return BettingPrediction.builder()
+				.streamer(streamer)
+				.event(event)
+				.lastUpdate(event.getCreatedAt())
+				.build();
 	}
 	
 	private boolean hasEnoughPoints(@NotNull Streamer streamer){
@@ -159,18 +154,9 @@ public class PredictionsHandler extends HandlerAdapter{
 		return streamer.getChannelPoints().map(points -> points >= requiredPoints).orElse(false);
 	}
 	
-	@NotNull
-	private Prediction createPrediction(@NotNull Streamer streamer, @NotNull Event event){
-		return Prediction.builder()
-				.streamer(streamer)
-				.event(event)
-				.lastUpdate(event.getCreatedAt())
-				.build();
-	}
-	
-	private void schedulePrediction(@NotNull Streamer streamer, @NotNull Prediction prediction){
+	private void schedulePrediction(@NotNull Streamer streamer, @NotNull BettingPrediction bettingPrediction){
 		var delayCalculator = streamer.getSettings().getPredictions().getDelayCalculator();
-		var event = prediction.getEvent();
+		var event = bettingPrediction.getEvent();
 		
 		var placeAt = delayCalculator.calculate(event);
 		log.debug("Requested to place bet at {}", placeAt);
@@ -193,7 +179,31 @@ public class PredictionsHandler extends HandlerAdapter{
 				Math.max(OFFSET, now.until(placeAt, ChronoUnit.SECONDS)));
 		
 		log.info("Will place bet after {} seconds", secondsDelay);
-		miner.schedule(() -> betPlacer.placeBet(prediction), secondsDelay, TimeUnit.SECONDS);
-		prediction.setState(PredictionState.SCHEDULED);
+		miner.schedule(() -> betPlacer.placeBet(bettingPrediction), secondsDelay, TimeUnit.SECONDS);
+		bettingPrediction.setState(PredictionState.SCHEDULED);
+	}
+	
+	private void predictionPlaced(@NotNull fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction predictionData){
+		var streamer = miner.getStreamerById(predictionData.getChannelId()).orElse(null);
+		var eventId = predictionData.getEventId();
+		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(eventId)){
+			var placedPoints = predictionData.getPoints();
+			
+			var prediction = Optional.ofNullable(predictions.get(eventId))
+					.map(p -> {
+						p.setState(PredictionState.PLACED);
+						return p;
+					});
+			
+			var placedPrediction = PlacedPrediction.builder()
+					.eventId(eventId)
+					.bettingPrediction(prediction.orElse(null))
+					.amount(placedPoints)
+					.outcomeId(predictionData.getOutcomeId())
+					.build();
+			
+			placedPredictions.put(eventId, placedPrediction);
+			miner.onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
+		}
 	}
 }

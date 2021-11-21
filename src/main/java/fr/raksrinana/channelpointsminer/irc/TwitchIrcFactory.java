@@ -36,7 +36,7 @@ public class TwitchIrcFactory{
 	}
 	
 	@NotNull
-	public static TwitchIrcEventListener createListener(){
-		return new TwitchIrcEventListener();
+	public static TwitchIrcEventListener createListener(@NotNull String accountName){
+		return new TwitchIrcEventListener(accountName);
 	}
 }

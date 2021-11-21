@@ -3,12 +3,18 @@ package fr.raksrinana.channelpointsminer.handler;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.eventupdated.EventUpdatedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.handler.data.Prediction;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
+import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
+import fr.raksrinana.channelpointsminer.log.event.EventCreatedLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
+import fr.raksrinana.channelpointsminer.prediction.delay.IDelayCalculator;
+import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -28,8 +35,12 @@ import static org.mockito.Mockito.*;
 class PredictionsHandlerEventUpdatedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String EVENT_ID = "event-id";
+	private static final int MINIMUM_REQUIRED = 50;
+	private static final int WINDOW_SECONDS = 300;
 	private static final ZonedDateTime EVENT_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 0, 0, UTC);
 	private static final ZonedDateTime EVENT_UPDATE_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 30, 0, UTC);
+	private static final ZonedDateTime SCHEDULE_DATE = ZonedDateTime.of(2021, 10, 10, 12, 1, 0, 0, UTC);
+	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
 	
 	@InjectMocks
 	private PredictionsHandler tested;
@@ -51,6 +62,13 @@ class PredictionsHandlerEventUpdatedTest{
 	@Mock
 	private Streamer streamer;
 	
+	@Mock
+	private StreamerSettings streamerSettings;
+	@Mock
+	private PredictionSettings predictionSettings;
+	@Mock
+	private IDelayCalculator delayCalculator;
+	
 	@BeforeEach
 	void setUp(){
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
@@ -62,8 +80,19 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		lenient().when(event.getId()).thenReturn(EVENT_ID);
 		lenient().when(event2.getId()).thenReturn(EVENT_ID);
+		lenient().when(event2.getStatus()).thenReturn(EventStatus.ACTIVE);
+		lenient().when(event2.getCreatedAt()).thenReturn(EVENT_DATE);
+		lenient().when(event2.getPredictionWindowSeconds()).thenReturn(WINDOW_SECONDS);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
+		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
+		lenient().when(streamer.getChannelPoints()).thenReturn(Optional.of(MINIMUM_REQUIRED + 1));
+		
+		lenient().when(streamerSettings.getPredictions()).thenReturn(predictionSettings);
+		lenient().when(predictionSettings.getMinimumPointsRequired()).thenReturn(MINIMUM_REQUIRED);
+		lenient().when(predictionSettings.getDelayCalculator()).thenReturn(delayCalculator);
+		
+		lenient().when(delayCalculator.calculate(event2)).thenReturn(SCHEDULE_DATE);
 		
 		lenient().when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
 			var runnable = invocation.getArgument(0, Runnable.class);
@@ -74,6 +103,28 @@ class PredictionsHandlerEventUpdatedTest{
 	
 	@Test
 	void unknownEvent(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			var expectedPrediction = BettingPrediction.builder()
+					.event(event2)
+					.streamer(streamer)
+					.state(PredictionState.SCHEDULED)
+					.lastUpdate(EVENT_DATE)
+					.build();
+			
+			assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
+			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
+			
+			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
+			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event2));
+			verify(betPlacer).placeBet(expectedPrediction);
+		}
+	}
+	
+	@Test
+	void unknownEventUnknownStreamer(){
+		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		assertThat(tested.getPredictions()).isEmpty();
 	}
@@ -84,7 +135,7 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
-		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, Prediction.builder()
+		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, BettingPrediction.builder()
 				.event(event2)
 				.streamer(streamer)
 				.state(PredictionState.SCHEDULED)
@@ -96,8 +147,8 @@ class PredictionsHandlerEventUpdatedTest{
 		tested.getPredictions().put(EVENT_ID, createDefaultPrediction());
 	}
 	
-	private Prediction createDefaultPrediction(){
-		return Prediction.builder()
+	private BettingPrediction createDefaultPrediction(){
+		return BettingPrediction.builder()
 				.event(event)
 				.streamer(streamer)
 				.state(PredictionState.SCHEDULED)

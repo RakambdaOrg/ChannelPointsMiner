@@ -20,23 +20,25 @@ public class UpdateStreamInfo implements Runnable{
 	
 	@Override
 	public void run(){
-		log.debug("Updating all stream info");
-		try{
-			miner.getStreamers().stream()
-					.filter(Streamer::needUpdate)
-					.forEach(streamer -> {
-						run(streamer);
-						CommonUtils.randomSleep(500, 100);
-					});
-			log.debug("Done updating all stream info");
-		}
-		catch(Exception e){
-			log.error("Failed to update all stream info", e);
+		try(var ignored = LogContext.with(miner)){
+			log.debug("Updating all stream info");
+			try{
+				miner.getStreamers().stream()
+						.filter(Streamer::needUpdate)
+						.forEach(streamer -> {
+							run(streamer);
+							CommonUtils.randomSleep(500, 100);
+						});
+				log.debug("Done updating all stream info");
+			}
+			catch(Exception e){
+				log.error("Failed to update all stream info", e);
+			}
 		}
 	}
 	
 	public void run(@NotNull Streamer streamer){
-		try(var ignored = LogContext.with(streamer)){
+		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			var wasStreaming = streamer.isStreaming();
 			
 			updateVideoInfo(streamer);

@@ -27,4 +27,10 @@ public class LoginResponse{
 	@Nullable
 	@JsonProperty("error_description")
 	private String errorDescription;
+	@JsonProperty("captcha_proof")
+	@Nullable
+	private String captchaProof;
+	@JsonProperty("sms_proof")
+	@Nullable
+	private String smsProof;
 }
