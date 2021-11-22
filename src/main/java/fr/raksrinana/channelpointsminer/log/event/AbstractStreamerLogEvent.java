@@ -6,21 +6,12 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.text.NumberFormat;
-import java.util.Locale;
 import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public abstract class AbstractStreamerLogEvent extends AbstractLogEvent{
 	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
-	
-	@EqualsAndHashCode.Exclude
-	private final ThreadLocal<NumberFormat> numberFormatLocal = ThreadLocal.withInitial(() -> {
-		var formatter = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
-		formatter.setMaximumFractionDigits(2);
-		return formatter;
-	});
 	
 	@Nullable
 	private final Streamer streamer;
