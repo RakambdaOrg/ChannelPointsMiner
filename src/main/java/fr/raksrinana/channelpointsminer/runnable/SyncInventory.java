@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.Inventory;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDropSelfEdge;
 import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.log.event.DropClaimLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
@@ -53,18 +54,22 @@ public class SyncInventory implements Runnable{
 		var dropsToClaim = ofNullable(inventory.getCurrentUser().getInventory())
 				.map(Inventory::getDropCampaignsInProgress).stream().flatMap(Collection::stream)
 				.flatMap(dropCampaign -> dropCampaign.getTimeBasedDrops().stream())
-				.map(TimeBasedDrop::getSelf)
-				.filter(Objects::nonNull)
-				.filter(timeBasedDropSelfEdge -> !timeBasedDropSelfEdge.isClaimed())
-				.map(TimeBasedDropSelfEdge::getDropInstanceId)
-				.filter(Objects::nonNull)
+				.filter(timeBasedDrop -> Objects.nonNull(timeBasedDrop.getSelf()))
+				.filter(timeBasedDrop -> !timeBasedDrop.getSelf().isClaimed())
+				.filter(timeBasedDrop -> Objects.nonNull(timeBasedDrop.getSelf().getDropInstanceId()))
 				.toList();
 		
 		if(dropsToClaim.isEmpty()){
 			return;
 		}
 		
-		log.info("Claiming drops {}", dropsToClaim);
-		dropsToClaim.forEach(miner.getGqlApi()::dropsPageClaimDropRewards);
+		log.debug("Claiming drops {}", dropsToClaim);
+		dropsToClaim.stream()
+				.map(drop -> new DropClaimLogEvent(miner, drop))
+				.forEach(miner::onLogEvent);
+		dropsToClaim.stream()
+				.map(TimeBasedDrop::getSelf)
+				.map(TimeBasedDropSelfEdge::getDropInstanceId)
+				.forEach(miner.getGqlApi()::dropsPageClaimDropRewards);
 	}
 }

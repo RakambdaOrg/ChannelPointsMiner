@@ -1,7 +1,6 @@
 package fr.raksrinana.channelpointsminer.log.event;
 
 import fr.raksrinana.channelpointsminer.miner.IMiner;
-import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,32 +20,10 @@ class AbstractLogEventTest{
 	
 	@Mock
 	private IMiner miner;
-	@Mock
-	private Streamer streamer;
 	
 	@BeforeEach
 	void setUp(){
-		tested = new AbstractLogEvent(miner, streamer){
-			@Override
-			protected String getEmoji(){
-				return "emoji";
-			}
-			
-			@Override
-			protected int getEmbedColor(){
-				return 24;
-			}
-			
-			@Override
-			protected String getEmbedDescription(){
-				return getAsLog();
-			}
-			
-			@Override
-			public String getAsLog(){
-				return "value " + millify(1000, true);
-			}
-		};
+		tested = new MinerStartedLogEvent(miner, "", "", "");
 	}
 	
 	@Test
@@ -54,13 +31,13 @@ class AbstractLogEventTest{
 		var executor = Executors.newFixedThreadPool(4);
 		try{
 			var futures = IntStream.range(0, 1000000)
-					.mapToObj(i -> executor.submit(() -> tested.getAsLog()))
+					.mapToObj(i -> executor.submit(() -> tested.millify(1000, true)))
 					.toList();
 			
 			futures.forEach(future -> {
 				try{
 					var value = future.get(1, MINUTES);
-					assertThat(value).isEqualTo("value +1K");
+					assertThat(value).isEqualTo("+1K");
 				}
 				catch(InterruptedException | ExecutionException | TimeoutException e){
 					fail("Failed to wait for value", e);

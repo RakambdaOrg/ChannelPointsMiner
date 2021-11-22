@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PredictionResultLogEvent extends AbstractLogEvent{
+public class PredictionResultLogEvent extends AbstractStreamerLogEvent{
 	private final PlacedPrediction placedPrediction;
 	private final PredictionResultData predictionResultData;
 	
