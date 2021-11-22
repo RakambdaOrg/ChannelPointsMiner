@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.inventory.InventoryData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.*;
+import fr.raksrinana.channelpointsminer.log.event.DropClaimLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.MinerData;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -74,6 +75,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(inventoryData);
 		verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
+		verify(miner).onLogEvent(new DropClaimLogEvent(miner, timeBasedDrop));
 	}
 	
 	@Test
@@ -85,6 +87,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(inventoryData);
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -96,6 +99,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(inventoryData);
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -107,6 +111,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(inventoryData);
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -118,6 +123,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(inventoryData);
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -129,6 +135,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(inventoryData);
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -140,6 +147,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(inventoryData);
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -150,6 +158,7 @@ class SyncInventoryTest{
 		
 		verify(minerData).setInventory(null);
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -160,6 +169,7 @@ class SyncInventoryTest{
 		
 		verify(minerData, never()).setInventory(any());
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -170,6 +180,7 @@ class SyncInventoryTest{
 		
 		verify(minerData, never()).setInventory(any());
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 	
 	@Test
@@ -180,5 +191,6 @@ class SyncInventoryTest{
 		
 		verify(minerData, never()).setInventory(any());
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(miner, never()).onLogEvent(any());
 	}
 }

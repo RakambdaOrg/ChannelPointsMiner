@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
@@ -313,6 +314,19 @@ class DiscordLogEventListenerMessageTest{
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ❌ %s : Streamer unknown".formatted(USERNAME, STREAMER_USERNAME))
+				.build());
+	}
+	
+	@Test
+	void onDropClaim(){
+		var name = "drop-name";
+		var drop = mock(TimeBasedDrop.class);
+		when(drop.getName()).thenReturn(name);
+		
+		tested.onLogEvent(new DropClaimLogEvent(miner, drop));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.content("[%s] 🎁 %s : Claiming drop [%s]".formatted(USERNAME, UNKNOWN_STREAMER, name))
 				.build());
 	}
 }
