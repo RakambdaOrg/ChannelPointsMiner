@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class StreamerUnknownLogEvent extends AbstractLogEvent{
+public class StreamerUnknownLogEvent extends AbstractStreamerLogEvent{
 	private final String username;
 	
 	public StreamerUnknownLogEvent(@NotNull IMiner miner, @NotNull String username){

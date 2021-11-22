@@ -13,7 +13,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class EventCreatedLogEvent extends AbstractLogEvent{
+public class EventCreatedLogEvent extends AbstractStreamerLogEvent{
 	private final Event event;
 	
 	public EventCreatedLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer, @NotNull Event event){

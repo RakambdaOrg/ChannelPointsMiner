@@ -286,7 +286,7 @@ class DiscordLogEventListenerMessageTest{
 		tested.onLogEvent(new MinerStartedLogEvent(miner, version, commit, branch));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] ✅ %s : Miner started (version: %s [%s - %s])".formatted(USERNAME, UNKNOWN_STREAMER, version, commit, branch))
+				.content("[%s] ✅ : Miner started (version: %s [%s - %s])".formatted(USERNAME, version, commit, branch))
 				.build());
 	}
 	
@@ -326,7 +326,7 @@ class DiscordLogEventListenerMessageTest{
 		tested.onLogEvent(new DropClaimLogEvent(miner, drop));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
-				.content("[%s] 🎁 %s : Claiming drop [%s]".formatted(USERNAME, UNKNOWN_STREAMER, name))
+				.content("[%s] 🎁 : Claiming drop [%s]".formatted(USERNAME, name))
 				.build());
 	}
 }

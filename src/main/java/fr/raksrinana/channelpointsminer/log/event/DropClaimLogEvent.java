@@ -15,7 +15,7 @@ public class DropClaimLogEvent extends AbstractLogEvent{
 	private final TimeBasedDrop drop;
 	
 	public DropClaimLogEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop){
-		super(miner, null);
+		super(miner);
 		this.drop = drop;
 	}
 	

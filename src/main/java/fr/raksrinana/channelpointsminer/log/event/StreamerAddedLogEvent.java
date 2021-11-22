@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class StreamerAddedLogEvent extends AbstractLogEvent{
+public class StreamerAddedLogEvent extends AbstractStreamerLogEvent{
 	public StreamerAddedLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer){
 		super(miner, streamer);
 	}
