@@ -29,8 +29,6 @@ class StreamerConfigurationReloadUpdateTest{
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
 	@Mock
-	private StreamerSettings existingStreamerSettings;
-	@Mock
 	private GQLApi gqlApi;
 	
 	@Mock
@@ -38,12 +36,12 @@ class StreamerConfigurationReloadUpdateTest{
 	@Mock
 	private StreamerSettings streamerSettings;
 	
+	@Mock
 	private Streamer existingStreamer;
 	
 	@BeforeEach
 	void setUp(){
 		tested = new StreamerConfigurationReload(miner, streamerSettingsFactory, true);
-		existingStreamer = spy(new Streamer(EXISTING_STREAMER_ID, STREAMER_USERNAME, existingStreamerSettings));
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
@@ -52,6 +50,7 @@ class StreamerConfigurationReloadUpdateTest{
 		lenient().when(miner.getStreamers()).thenReturn(List.of(existingStreamer));
 		
 		lenient().when(existingStreamer.getId()).thenReturn(EXISTING_STREAMER_ID);
+		lenient().when(existingStreamer.getUsername()).thenReturn(STREAMER_USERNAME);
 		
 		lenient().when(user.getId()).thenReturn(STREAMER_ID);
 		lenient().when(user.getLogin()).thenReturn(STREAMER_USERNAME);
@@ -59,6 +58,7 @@ class StreamerConfigurationReloadUpdateTest{
 	
 	@Test
 	void addNew(){
+		when(existingStreamer.getUsername()).thenReturn(STREAMER_USERNAME + "Old");
 		when(gqlApi.allChannelFollows()).thenReturn(List.of(user));
 		
 		assertDoesNotThrow(() -> tested.run());
