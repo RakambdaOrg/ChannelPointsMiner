@@ -2,8 +2,6 @@ package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.api.discord.data.*;
-import fr.raksrinana.channelpointsminer.api.gql.data.types.DropCampaign;
-import fr.raksrinana.channelpointsminer.api.gql.data.types.Game;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
@@ -456,15 +454,8 @@ class DiscordLogEventListenerEmbedTest{
 	@Test
 	void onDropClaim(){
 		var name = "drop-name";
-		var gameName = "game-name";
-		
 		var drop = mock(TimeBasedDrop.class);
-		var campaign = mock(DropCampaign.class);
-		var game = mock(Game.class);
 		when(drop.getName()).thenReturn(name);
-		when(drop.getCampaign()).thenReturn(campaign);
-		when(campaign.getGame()).thenReturn(game);
-		when(game.getName()).thenReturn(gameName);
 		
 		tested.onLogEvent(new DropClaimLogEvent(miner, drop));
 		
@@ -474,7 +465,6 @@ class DiscordLogEventListenerEmbedTest{
 						.color(CYAN.getRGB())
 						.description("Claiming drop")
 						.field(Field.builder().name("Name").value(name).build())
-						.field(Field.builder().name("Game").value(gameName).build())
 						.build()))
 				.build());
 	}
