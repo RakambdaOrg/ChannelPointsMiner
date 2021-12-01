@@ -2,16 +2,21 @@ package fr.raksrinana.channelpointsminer.runnable;
 
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.log.event.StreamerUnknownLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
+import fr.raksrinana.channelpointsminer.runnable.data.StreamerResult;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -33,82 +38,101 @@ public class StreamerConfigurationReload implements Runnable{
 		}
 	}
 	
-	@NotNull
-	private List<Streamer> getAllStreamers(){
-		var streamers = new ArrayList<>(getStreamersFromConfiguration());
-		
-		var excludedIds = streamers.stream().map(Streamer::getId).toList();
-		streamers.addAll(getStreamersFromFollows(excludedIds));
-		
-		return streamers;
-	}
-	
-	private void removeStreamers(@NotNull List<Streamer> newStreamers){
+	private void removeStreamers(@NotNull Map<String, StreamerResult> newStreamers){
 		miner.getStreamers().stream()
-				.filter(oldStreamer -> !newStreamers.contains(oldStreamer))
+				.filter(oldStreamer -> !newStreamers.containsKey(oldStreamer.getUsername().toLowerCase(Locale.ROOT)))
 				.forEach(miner::removeStreamer);
 	}
 	
-	private void updateStreamers(@NotNull List<Streamer> newStreamers){
+	private void updateStreamers(@NotNull Map<String, StreamerResult> newStreamers){
 		miner.getStreamers().stream()
-				.map(oldStreamer -> newStreamers.stream()
-						.filter(s -> Objects.equals(s, oldStreamer))
+				.map(oldStreamer -> newStreamers.entrySet().stream()
+						.filter(entry -> Objects.equals(entry.getKey(), oldStreamer.getUsername().toLowerCase(Locale.ROOT)))
 						.findAny()
-						.map(streamer -> Map.entry(oldStreamer, streamer)))
+						.map(Map.Entry::getValue)
+						.map(result -> {
+							var settings = result.getStreamerSettingsSupplier().get();
+							var streamer = result.getStreamerSupplier().apply(settings);
+							return Map.entry(oldStreamer, streamer);
+						}))
 				.flatMap(Optional::stream)
+				.filter(entry -> entry.getValue().isPresent())
 				.forEach(entry -> {
 					var old = entry.getKey();
-					var update = entry.getValue();
+					var update = entry.getValue().get();
 					
 					old.setSettings(update.getSettings());
 					miner.updateStreamer(old);
 				});
 	}
 	
-	private void addStreamers(@NotNull List<Streamer> newStreamers){
-		newStreamers.stream()
-				.filter(newStreamer -> !miner.getStreamers().contains(newStreamer))
+	private void addStreamers(@NotNull Map<String, StreamerResult> newStreamers){
+		var currentMinerNames = miner.getStreamers().stream()
+				.map(Streamer::getUsername)
+				.map(String::toLowerCase)
+				.toList();
+		newStreamers.entrySet().stream()
+				.filter(entry -> !currentMinerNames.contains(entry.getKey()))
+				.map(Map.Entry::getValue)
+				.map(result -> {
+					var settings = result.getStreamerSettingsSupplier().get();
+					return result.getStreamerSupplier().apply(settings);
+				})
+				.flatMap(Optional::stream)
 				.forEach(miner::addStreamer);
 	}
 	
 	@NotNull
-	private List<Streamer> getStreamersFromConfiguration(){
+	private Map<String, StreamerResult> getAllStreamers(){
+		var streamers = new HashMap<String, StreamerResult>();
+		streamers.putAll(getStreamersFromFollows(streamers.keySet()));
+		streamers.putAll(getStreamersFromConfiguration(streamers.keySet()));
+		return streamers;
+	}
+	
+	@NotNull
+	private Map<String, StreamerResult> getStreamersFromFollows(@NotNull Collection<String> excludedNames){
+		if(!loadFollows){
+			return Map.of();
+		}
+		
+		Function<String, StreamerSettings> settingsFunction = streamerSettingsFactory::createStreamerSettings;
+		
+		log.debug("Loading streamers from follow list");
+		return miner.getGqlApi().allChannelFollows().stream()
+				.filter(user -> !excludedNames.contains(user.getLogin().toLowerCase(Locale.ROOT)))
+				.collect(Collectors.toMap(user -> user.getLogin().toLowerCase(Locale.ROOT), user -> {
+					var streamerName = user.getLogin();
+					return new StreamerResult(
+							streamerName,
+							() -> settingsFunction.apply(streamerName),
+							settings -> Optional.of(new Streamer(user.getId(), streamerName, settings)));
+				}));
+	}
+	
+	@NotNull
+	private Map<String, StreamerResult> getStreamersFromConfiguration(@NotNull Collection<String> excludedNames){
 		log.debug("Loading streamers from configuration");
 		return streamerSettingsFactory.getStreamerConfigs()
 				.map(Path::getFileName)
 				.map(Path::toString)
 				.map(name -> name.substring(0, name.length() - ".json".length()))
-				.map(this::createStreamer)
-				.flatMap(Optional::stream)
-				.toList();
+				.filter(name -> !excludedNames.contains(name.toLowerCase(Locale.ROOT)))
+				.collect(Collectors.toMap(name -> name.toLowerCase(Locale.ROOT), name -> new StreamerResult(
+						name,
+						() -> streamerSettingsFactory.createStreamerSettings(name),
+						settings -> getStreamerId(name).map(id -> new Streamer(id, name, settings)))));
 	}
 	
 	@NotNull
-	private List<Streamer> getStreamersFromFollows(@NotNull Collection<String> excludedIds){
-		if(!loadFollows){
-			return List.of();
-		}
-		
-		log.debug("Loading streamers from follow list");
-		return miner.getGqlApi().allChannelFollows().stream()
-				.filter(user -> !excludedIds.contains(user.getId()))
-				.map(user -> {
-					var streamerId = user.getId();
-					var streamerName = user.getLogin();
-					return new Streamer(streamerId, streamerName, streamerSettingsFactory.createStreamerSettings(streamerName));
-				})
-				.toList();
-	}
-	
-	@NotNull
-	private Optional<Streamer> createStreamer(@NotNull String username){
-		var streamer = miner.getGqlApi().reportMenuItem(username)
+	private Optional<String> getStreamerId(@NotNull String username){
+		var id = miner.getGqlApi().reportMenuItem(username)
 				.map(GQLResponse::getData)
 				.map(ReportMenuItemData::getUser)
-				.map(user -> new Streamer(user.getId(), username, streamerSettingsFactory.createStreamerSettings(username)));
-		if(streamer.isEmpty()){
+				.map(User::getId);
+		if(id.isEmpty()){
 			miner.onLogEvent(new StreamerUnknownLogEvent(miner, username));
 		}
-		return streamer;
+		return id;
 	}
 }

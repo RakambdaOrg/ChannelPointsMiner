@@ -25,8 +25,6 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	protected static final int COLOR_POINTS_WON = Color.GREEN.getRGB();
 	protected static final int COLOR_POINTS_LOST = Color.RED.getRGB();
 	
-	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
-	
 	@EqualsAndHashCode.Exclude
 	private final ThreadLocal<NumberFormat> numberFormatLocal = ThreadLocal.withInitial(() -> {
 		var formatter = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
@@ -37,8 +35,6 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	@Getter
 	@NotNull
 	private final IMiner miner;
-	@Nullable
-	private final Streamer streamer;
 	
 	@NotNull
 	@Override
@@ -58,12 +54,15 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	@NotNull
 	@Override
 	public Webhook getAsWebhookMessage(){
-		return Webhook.builder().content("[%s] %s %s : %s".formatted(
-						miner.getUsername(),
-						getEmoji(),
-						getStreamerUsername().orElse(UNKNOWN_STREAMER),
-						getWebhookMessage()))
-				.build();
+		return Webhook.builder().content(getWebhookContent()).build();
+	}
+	
+	@NotNull
+	protected String getWebhookContent(){
+		return "[%s] %s : %s".formatted(
+				miner.getUsername(),
+				getEmoji(),
+				getWebhookMessage());
 	}
 	
 	@Override
@@ -75,7 +74,7 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	@NotNull
 	@Override
 	public Optional<Streamer> getStreamer(){
-		return Optional.ofNullable(streamer);
+		return Optional.empty();
 	}
 	
 	@Nullable

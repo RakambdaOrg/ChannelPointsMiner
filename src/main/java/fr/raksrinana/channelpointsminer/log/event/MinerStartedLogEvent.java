@@ -16,7 +16,7 @@ public class MinerStartedLogEvent extends AbstractLogEvent{
 	private final String branch;
 	
 	public MinerStartedLogEvent(@NotNull IMiner miner, @NotNull String version, @NotNull String commit, @NotNull String branch){
-		super(miner, null);
+		super(miner);
 		this.version = version;
 		this.commit = commit;
 		this.branch = branch;

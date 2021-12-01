@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PredictionMadeLogEvent extends AbstractLogEvent{
+public class PredictionMadeLogEvent extends AbstractStreamerLogEvent{
 	private static final String UNKNOWN_OUTCOME = "UnknownOutcome";
 	
 	private final PlacedPrediction placedPrediction;

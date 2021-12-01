@@ -2,5 +2,6 @@ package fr.raksrinana.channelpointsminer.api.gql.data.types;
 
 public enum DropCampaignStatus{
 	ACTIVE,
-	EXPIRED
+	EXPIRED,
+	UPCOMING
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PointsSpentLogEvent extends AbstractLogEvent{
+public class PointsSpentLogEvent extends AbstractStreamerLogEvent{
 	private final PointsSpentData pointsSpentData;
 	
 	public PointsSpentLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer, @NotNull PointsSpentData pointsSpentData){
