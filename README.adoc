@@ -14,7 +14,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Claim bonus points when they are available.
 * Follow raids.
 * Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
-* Join IRC chat
+* Join IRC chat.
 * Participate in predictions.
 
 Limits:
