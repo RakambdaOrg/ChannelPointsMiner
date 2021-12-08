@@ -76,6 +76,8 @@ class StreamerSettingsFactoryTest{
 	
 	@Test
 	void getStreamerConfigurationWithIOException(){
+		TestUtils.copyFromResources("factory/nothingRedefined.json", tempDir.resolve(STREAMER_USERNAME + ".json"));
+		
 		try(var jacksonUtils = mockStatic(JacksonUtils.class)){
 			jacksonUtils.when(() -> JacksonUtils.update(any(), any())).thenThrow(new IOException("For tests"));
 			
