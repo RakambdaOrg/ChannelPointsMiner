@@ -10,6 +10,7 @@ import fr.raksrinana.channelpointsminer.priority.*;
 import fr.raksrinana.channelpointsminer.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.tests.TestUtils;
+import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,8 +24,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class StreamerSettingsFactoryTest{
@@ -72,6 +72,18 @@ class StreamerSettingsFactoryTest{
 	void getStreamerConfigurationWithNoConfigFile(){
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(DEFAULT);
+	}
+	
+	@Test
+	void getStreamerConfigurationWithIOException(){
+		TestUtils.copyFromResources("factory/nothingRedefined.json", tempDir.resolve(STREAMER_USERNAME + ".json"));
+		
+		try(var jacksonUtils = mockStatic(JacksonUtils.class)){
+			jacksonUtils.when(() -> JacksonUtils.update(any(), any())).thenThrow(new IOException("For tests"));
+			
+			assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
+					.usingRecursiveComparison().isEqualTo(DEFAULT);
+		}
 	}
 	
 	@Test
