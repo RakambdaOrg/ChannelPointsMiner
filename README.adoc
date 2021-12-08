@@ -77,7 +77,7 @@ services:
       - ./log4j2.xml:/usr/src/app/log4j2.xml:ro
 ----
 
-NOTE: If you have 2FA enabled you'll have to enter your token the first time in order to login. As Docker doesn't give an interractive shell by default you'll have to run the container in interractive mode yourself the first time. More can be read about it in #87.
+NOTE: If you have 2FA enabled you'll have to enter your token the first time in order to login. As Docker doesn't give an interractive shell by default you'll have to run the container in interractive mode yourself the first time. More can be read about it in link:https://github.com/RakSrinaNa/ChannelPointsMiner/issues/87[#87].
 
 == How to mine streamers
 
