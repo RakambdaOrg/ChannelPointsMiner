@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.util;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 import static lombok.AccessLevel.PRIVATE;
@@ -26,9 +27,14 @@ public class CommonUtils{
 	 */
 	@NotNull
 	public static String getUserInput(@NotNull String message){
-		System.out.println(message);
-		
-		var scanner = new Scanner(System.in);
-		return scanner.nextLine();
+		try{
+			System.out.println(message);
+			
+			var scanner = new Scanner(System.in);
+			return scanner.nextLine();
+		}
+		catch(NoSuchElementException e){
+			throw new NoSuchElementException("No line was read from input. If you're using this in a Docker container consider starting it in interactive mode.", e);
+		}
 	}
 }
