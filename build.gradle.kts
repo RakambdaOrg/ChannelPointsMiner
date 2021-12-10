@@ -114,7 +114,7 @@ jib {
             }
             platform {
                 os = "linux"
-                architecture = "arm/v7"
+                architecture = "arm"
             }
         }
     }
