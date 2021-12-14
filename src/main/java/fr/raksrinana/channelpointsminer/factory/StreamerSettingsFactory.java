@@ -33,8 +33,15 @@ public class StreamerSettingsFactory{
 		}
 		var streamerPath = streamerPathOptional.get();
 		
-		try(var is = Files.newInputStream(streamerPath)){
-			return JacksonUtils.update(is, defaultSettings);
+		try{
+			if(Files.size(streamerPath) <= 0){
+				log.debug("File {} is empty, using defaults", streamerPath);
+				return defaultSettings;
+			}
+			
+			try(var is = Files.newInputStream(streamerPath)){
+				return JacksonUtils.update(is, defaultSettings);
+			}
 		}
 		catch(IOException e){
 			log.error("Failed to read streamer settings from {}, using defaults", streamerPath, e);

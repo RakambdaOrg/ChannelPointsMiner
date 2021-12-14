@@ -14,7 +14,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Claim bonus points when they are available.
 * Follow raids.
 * Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
-* Join IRC chat
+* Join IRC chat.
 * Participate in predictions.
 
 Limits:
@@ -77,6 +77,8 @@ services:
       - ./log4j2.xml:/usr/src/app/log4j2.xml:ro
 ----
 
+NOTE: If you have 2FA enabled you'll have to enter your token the first time in order to login. As Docker doesn't give an interractive shell by default you'll have to run the container in interractive mode yourself the first time. More can be read about it in link:https://github.com/RakSrinaNa/ChannelPointsMiner/issues/87[#87].
+
 == How to mine streamers
 
 You have two options to load streamers in the mining list:
@@ -84,7 +86,7 @@ You have two options to load streamers in the mining list:
 * Be specific and define streamer settings for each streamer you want to watch.
 For this simply add a JSON file withing one of the <<global_settings__streamer_config_directories,streamer config directory>> with the name of the streamer (eg: `mystreamer.json`).
 The content of the file will override the <<global_settings__default_streamer_settings,default streamer settings>> for the keys that are redefined.
-If you want to use the <<global_settings__default_streamer_settings,default streamer settings>> simply use an empty JSON object in the file (ie: `{}`).
+If you want to use the <<global_settings__default_streamer_settings,default streamer settings>> simply use an empty file or put an empty JSON object in the file (ie: `{}`).
 * Load them from the follows list.
 Every follow will be loaded and default settings will be applied to them.
 

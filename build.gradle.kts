@@ -102,7 +102,7 @@ java {
 
 jib {
     from {
-        image = "openjdk:17-slim"
+        image = "eclipse-temurin:17-jdk"
         platforms {
             platform {
                 os = "linux"
@@ -111,6 +111,10 @@ jib {
             platform {
                 os = "linux"
                 architecture = "amd64"
+            }
+            platform {
+                os = "linux"
+                architecture = "arm"
             }
         }
     }

@@ -28,7 +28,7 @@ public class ConfigurationFactory{
 				INSTANCE = JacksonUtils.read(fis, new TypeReference<>(){});
 			}
 			catch(IOException e){
-				throw new IllegalStateException("No main config found", e);
+				throw new IllegalStateException("No main config found at " + configurationFile.toAbsolutePath(), e);
 			}
 		}
 		return INSTANCE;

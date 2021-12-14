@@ -62,7 +62,7 @@ jobs:
         if: always()
         with:
           arguments: jacocoTestReport
-      - uses: check-run-reporter/action@v2.7.1
+      - uses: check-run-reporter/action@v2.7.2
         if: always()
         with:
           token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
