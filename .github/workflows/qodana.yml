@@ -10,20 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.0
-      - name: Cache Qodana dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/work/_temp/_github_home/qodana-cache
-          key: ${{ runner.os }}-qodana-${{ github.ref }}
-          restore-keys: |
-            ${{ runner.os }}-qodana-${{ github.ref }}
-            ${{ runner.os }}-qodana-
       - name: Run Qodana
-        uses: JetBrains/qodana-action@v3.2.1
+        uses: JetBrains/qodana-action@v4.0.0
         with:
           linter: qodana-jvm-community
-      - name: Save Qodana's results to artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: 'qodana-report'
-          path: ${{ github.workspace }}/qodana
