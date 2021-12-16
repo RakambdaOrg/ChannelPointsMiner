@@ -13,4 +13,4 @@ jobs:
       - name: Run Qodana
         uses: JetBrains/qodana-action@v4.0.0
         with:
-          linter: qodana-jvm-community
+          linter: jetbrains/qodana-jvm-community
