@@ -200,6 +200,35 @@ class TwitchWebSocketClientMessageTest{
 	}
 	
 	@Test
+	void onRaidCancelV2(WebsocketMockServer server) throws MalformedURLException{
+		server.send(getAllResourceContent("api/ws/raidCancelV2.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(RAID)
+								.target("123456789")
+								.build())
+						.message(RaidCancelV2.builder()
+								.raid(Raid.builder()
+										.id("raid-id")
+										.creatorId("123456")
+										.sourceId("456789")
+										.targetId("987654")
+										.targetLogin("target-name")
+										.targetDisplayName("target-display-name")
+										.targetProfileImage(new URL("https://google.com/target-image"))
+										.transitionJitterSeconds(0)
+										.forceRaidNowSeconds(90)
+										.viewerCount(200)
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
 	void onViewCount(WebsocketMockServer server){
 		server.send(getAllResourceContent("api/ws/viewCount.json"));
 		
