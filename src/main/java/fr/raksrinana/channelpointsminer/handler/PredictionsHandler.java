@@ -1,6 +1,10 @@
 package fr.raksrinana.channelpointsminer.handler;
 
-import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.EventCreated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionResult;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionUpdated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;

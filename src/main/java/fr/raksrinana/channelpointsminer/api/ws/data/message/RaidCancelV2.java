@@ -1,7 +1,8 @@
-package fr.raksrinana.channelpointsminer.api.gql.data.types;
+package fr.raksrinana.channelpointsminer.api.ws.data.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Raid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -9,23 +10,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-@JsonTypeName("BroadcastSettings")
+@JsonTypeName("raid_cancel_v2")
 @Getter
+@EqualsAndHashCode(callSuper = true)
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(callSuper = true)
-@ToString
-public class BroadcastSettings extends GQLType{
-	@JsonProperty("id")
+public class RaidCancelV2 extends IMessage{
+	@JsonProperty("raid")
 	@NotNull
-	private String id;
-	@JsonProperty("title")
-	@NotNull
-	private String title;
-	@JsonProperty("game")
-	@Nullable
-	private Game game;
+	private Raid raid;
 }

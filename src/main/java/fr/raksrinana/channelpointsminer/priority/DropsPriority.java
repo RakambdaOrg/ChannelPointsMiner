@@ -2,7 +2,11 @@ package fr.raksrinana.channelpointsminer.priority;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
-import fr.raksrinana.channelpointsminer.api.gql.data.types.*;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.Channel;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.DropBenefitEdge;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.DropCampaign;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.Tag;
+import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
