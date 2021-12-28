@@ -1,6 +1,23 @@
 package fr.raksrinana.channelpointsminer.handler;
 
-import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.ChannelLastViewedContentUpdated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimAvailable;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimClaimed;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.Commercial;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.EventCreated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.GlobalLastViewedContentUpdated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PointsEarned;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PointsSpent;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionResult;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionUpdated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidGoV2;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidUpdateV2;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamDown;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamUp;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.util.ClassWalker;
 import org.jetbrains.annotations.NotNull;

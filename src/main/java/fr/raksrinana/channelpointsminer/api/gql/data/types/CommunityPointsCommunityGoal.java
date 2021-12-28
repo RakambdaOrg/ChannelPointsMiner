@@ -5,7 +5,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.channelpointsminer.util.json.ColorDeserializer;
 import fr.raksrinana.channelpointsminer.util.json.ISO8601ZonedDateTimeDeserializer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.awt.Color;
 import java.time.ZonedDateTime;
 

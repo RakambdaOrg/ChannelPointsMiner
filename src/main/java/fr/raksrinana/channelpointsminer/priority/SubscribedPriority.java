@@ -5,10 +5,16 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.CommunityPointsMultiplier;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
-import static fr.raksrinana.channelpointsminer.api.gql.data.types.MultiplierReasonCode.*;
+import static fr.raksrinana.channelpointsminer.api.gql.data.types.MultiplierReasonCode.SUB_T1;
+import static fr.raksrinana.channelpointsminer.api.gql.data.types.MultiplierReasonCode.SUB_T2;
+import static fr.raksrinana.channelpointsminer.api.gql.data.types.MultiplierReasonCode.SUB_T3;
 
 @JsonTypeName("subscribed")
 @Getter

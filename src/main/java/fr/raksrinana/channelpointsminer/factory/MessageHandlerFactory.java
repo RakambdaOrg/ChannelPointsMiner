@@ -1,6 +1,11 @@
 package fr.raksrinana.channelpointsminer.factory;
 
-import fr.raksrinana.channelpointsminer.handler.*;
+import fr.raksrinana.channelpointsminer.handler.ClaimAvailableHandler;
+import fr.raksrinana.channelpointsminer.handler.FollowRaidHandler;
+import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
+import fr.raksrinana.channelpointsminer.handler.PointsHandler;
+import fr.raksrinana.channelpointsminer.handler.PredictionsHandler;
+import fr.raksrinana.channelpointsminer.handler.StreamStartEndHandler;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import lombok.NoArgsConstructor;

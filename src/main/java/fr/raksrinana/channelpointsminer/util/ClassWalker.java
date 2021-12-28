@@ -17,7 +17,11 @@
 package fr.raksrinana.channelpointsminer.util;
 
 import org.jetbrains.annotations.NotNull;
-import java.util.*;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class ClassWalker implements Iterable<Class<?>>{
 	private final Class<?> clazz;

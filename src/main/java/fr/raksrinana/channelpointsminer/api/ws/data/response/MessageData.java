@@ -6,7 +6,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.io.IOException;
 
 @Getter

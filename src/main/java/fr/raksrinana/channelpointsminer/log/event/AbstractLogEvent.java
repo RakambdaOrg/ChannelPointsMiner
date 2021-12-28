@@ -1,6 +1,10 @@
 package fr.raksrinana.channelpointsminer.log.event;
 
-import fr.raksrinana.channelpointsminer.api.discord.data.*;
+import fr.raksrinana.channelpointsminer.api.discord.data.Author;
+import fr.raksrinana.channelpointsminer.api.discord.data.Embed;
+import fr.raksrinana.channelpointsminer.api.discord.data.Field;
+import fr.raksrinana.channelpointsminer.api.discord.data.Footer;
+import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;

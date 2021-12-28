@@ -3,7 +3,12 @@ package fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.RequestInfo;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
