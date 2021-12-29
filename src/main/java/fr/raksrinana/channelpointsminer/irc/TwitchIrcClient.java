@@ -23,6 +23,10 @@ public class TwitchIrcClient implements AutoCloseable{
 	public void join(@NotNull String channel){
 		var client = getIrcClient();
 		var ircChannelName = "#%s".formatted(channel.toLowerCase(Locale.ROOT));
+		if(client.getChannel(ircChannelName).isPresent()){
+			log.trace("Tried to join IRC channel {} that is already joined", ircChannelName);
+			return;
+		}
 		
 		log.info("Joining IRC channel {}", ircChannelName);
 		client.addChannel(ircChannelName);
@@ -35,6 +39,10 @@ public class TwitchIrcClient implements AutoCloseable{
 		}
 		
 		var ircChannelName = "#%s".formatted(channel);
+		if(ircClient.getChannel(ircChannelName).isEmpty()){
+			log.trace("Tried to leave IRC channel {} that is not joined", ircChannelName);
+			return;
+		}
 		
 		log.info("Leaving IRC channel {}", ircChannelName);
 		ircClient.removeChannel(ircChannelName);
