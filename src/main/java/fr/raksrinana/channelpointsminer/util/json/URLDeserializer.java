@@ -9,10 +9,13 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Pattern;
 import static java.util.Objects.nonNull;
 
 @Log4j2
 public class URLDeserializer extends StdDeserializer<URL>{
+	private static final Pattern SCHEME_PATTERN = Pattern.compile("^\\w+://.*");
+	
 	public URLDeserializer(){
 		this(null);
 	}
@@ -26,7 +29,10 @@ public class URLDeserializer extends StdDeserializer<URL>{
 	public URL deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext deserializationContext) throws IOException{
 		try{
 			var value = jsonParser.getValueAsString();
-			if(nonNull(value) && !value.isBlank() && !value.equals(".")){
+			if(nonNull(value) && !value.isBlank()){
+				if(!SCHEME_PATTERN.matcher(value).matches()){
+					value = "https://" + value;
+				}
 				return new URL(value);
 			}
 		}
