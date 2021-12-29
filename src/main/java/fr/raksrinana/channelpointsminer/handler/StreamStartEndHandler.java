@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
+import java.util.Optional;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @RequiredArgsConstructor
@@ -24,6 +25,9 @@ public class StreamStartEndHandler extends HandlerAdapter{
 	public void onStreamDown(@NotNull Topic topic, @NotNull StreamDown message){
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		updateStream(topic, streamer);
+		Optional.ofNullable(streamer)
+				.map(Streamer::getUsername)
+				.ifPresent(miner.getIrcClient()::leave);
 		miner.onLogEvent(new StreamDownLogEvent(miner, streamer));
 	}
 	
@@ -31,6 +35,10 @@ public class StreamStartEndHandler extends HandlerAdapter{
 	public void onStreamUp(@NotNull Topic topic, @NotNull StreamUp message){
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		updateStream(topic, streamer);
+		Optional.ofNullable(streamer)
+				.filter(s -> s.getSettings().isJoinIrc())
+				.map(Streamer::getUsername)
+				.ifPresent(miner.getIrcClient()::join);
 		miner.onLogEvent(new StreamUpLogEvent(miner, streamer));
 	}
 	
