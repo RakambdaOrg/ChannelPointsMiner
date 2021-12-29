@@ -119,7 +119,6 @@ jib {
         }
     }
     to {
-        image = "mrcraftcod/channel-points-miner"
         auth {
             username = project.findProperty("dockerUsername").toString()
             password = project.findProperty("dockerPassword").toString()

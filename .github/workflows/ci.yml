@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+    tags:
   pull_request:
     branches:
       - main
@@ -13,6 +14,7 @@ on:
 
 env:
   APP_JAVA_VERSION: 17
+  DOCKER_IMAGE_NAME: mrcraftcod/channel-points-miner
 
 jobs:
   build:
@@ -112,8 +114,8 @@ jobs:
           cache: 'gradle'
       - name: Set gradle permissions
         run: chmod +x gradlew
-      - name: Push branch on Docker Hub
-        run: ./gradlew jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.tags=${GITHUB_REF##*/}
+      - name: Push branch/tag on Docker Hub
+        run: ./gradlew jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_IMAGE_NAME}:${GITHUB_REF##*/}"
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
-        run: ./gradlew jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
+        run: ./gradlew jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_IMAGE_NAME}:latest"
