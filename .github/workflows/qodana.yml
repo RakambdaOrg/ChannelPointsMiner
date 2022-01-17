@@ -11,6 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Run Qodana
-        uses: JetBrains/qodana-action@v4.2.2
+        uses: JetBrains/qodana-action@v4.2.3
         with:
           linter: jetbrains/qodana-jvm-community
