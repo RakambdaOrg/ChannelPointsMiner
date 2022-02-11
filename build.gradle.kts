@@ -128,6 +128,7 @@ jib {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
 }
+
 lombok {
     version.set("edge-SNAPSHOT")
 }
