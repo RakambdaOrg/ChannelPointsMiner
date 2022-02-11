@@ -14,7 +14,7 @@
       "streamerConfigDirectories": [
         {
           "path": "streamers",
-          "recursive": false
+          "recursive": true
         }
       ],
       "discord": {

@@ -46,6 +46,9 @@ public class Main{
 				miner.start();
 				miner.onLogEvent(new MinerStartedLogEvent(miner, version, commitId, branch));
 			}
+			else{
+				log.info("Account {} is disabled, skipping it", accountConfiguration.getUsername());
+			}
 		}
 	}
 	

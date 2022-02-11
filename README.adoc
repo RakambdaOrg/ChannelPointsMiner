@@ -114,7 +114,7 @@ Something like:
 }
 ----
 
-A full example can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config/config.json[src/test/resources/config/config.json,window="_blank"].
+Examples can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config[src/test/resources/config,window="_blank"].
 
 === Account settings [[account_settings]]
 
