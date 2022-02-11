@@ -43,7 +43,7 @@ public class DiscordApi{
 		
 		if(response.getStatus() == 429){
 			var retryAfter = response.getBody().getRetryAfter();
-			log.warn("Failed to send discord message, rate limited, retrying in {} millis", retryAfter);
+			log.warn("Failed to send discord message, rate limited, retrying in {} milliseconds", retryAfter);
 			Thread.sleep(retryAfter + 50);
 			sendMessage(webhook, attempt + 1);
 		}
