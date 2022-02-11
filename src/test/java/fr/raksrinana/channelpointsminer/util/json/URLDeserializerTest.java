@@ -13,6 +13,11 @@ class URLDeserializerTest extends DeserializerTest<URL>{
 	}
 	
 	@Test
+	void noSchemeAssumesHttps() throws MalformedURLException{
+		assertThat(deserialize("\"test.com/path/to/dir\"")).isEqualTo(new URL("https://test.com/path/to/dir"));
+	}
+	
+	@Test
 	void empty(){
 		assertThat(deserialize("\"\"")).isNull();
 	}

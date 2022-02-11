@@ -3,10 +3,12 @@ package fr.raksrinana.channelpointsminer.handler;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamDown;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamUp;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.log.event.StreamDownLogEvent;
 import fr.raksrinana.channelpointsminer.log.event.StreamUpLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,11 +19,15 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StreamStartEndHandlerTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String STREAMER_NAME = "streamer-name";
 	
 	@InjectMocks
 	private StreamStartEndHandler tested;
@@ -31,15 +37,23 @@ class StreamStartEndHandlerTest{
 	@Mock
 	private Streamer streamer;
 	@Mock
+	private StreamerSettings streamerSettings;
+	@Mock
 	private Topic topic;
 	@Mock
 	private StreamUp streamUpMessage;
 	@Mock
 	private StreamDown streamDownMessage;
+	@Mock
+	private TwitchIrcClient ircClient;
 	
 	@BeforeEach
 	void setUp(){
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
+		lenient().when(streamer.getUsername()).thenReturn(STREAMER_NAME);
+		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
+		lenient().when(streamerSettings.isJoinIrc()).thenReturn(false);
+		lenient().when(miner.getIrcClient()).thenReturn(ircClient);
 	}
 	
 	@Test
@@ -56,6 +70,25 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner).updateStreamerInfos(streamer);
 		verify(miner).onLogEvent(new StreamUpLogEvent(miner, streamer));
+		verify(ircClient, never()).join(any());
+	}
+	
+	@Test
+	void streamUpWithJoinIrc(){
+		when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+			var runnable = invocation.getArgument(0, Runnable.class);
+			runnable.run();
+			return null;
+		});
+		
+		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
+		lenient().when(streamerSettings.isJoinIrc()).thenReturn(true);
+		
+		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
+		
+		verify(miner).updateStreamerInfos(streamer);
+		verify(miner).onLogEvent(new StreamUpLogEvent(miner, streamer));
+		verify(ircClient).join(STREAMER_NAME);
 	}
 	
 	@Test
@@ -66,6 +99,7 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
 		verify(miner).onLogEvent(new StreamUpLogEvent(miner, null));
+		verify(ircClient, never()).join(any());
 	}
 	
 	@Test
@@ -82,6 +116,7 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner).updateStreamerInfos(streamer);
 		verify(miner).onLogEvent(new StreamDownLogEvent(miner, streamer));
+		verify(ircClient).leave(STREAMER_NAME);
 	}
 	
 	@Test
@@ -92,5 +127,6 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
 		verify(miner).onLogEvent(new StreamDownLogEvent(miner, null));
+		verify(ircClient, never()).leave(any());
 	}
 }

@@ -85,6 +85,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	private GQLApi gqlApi;
 	@Getter
 	private TwitchApi twitchApi;
+	@Getter
 	private TwitchIrcClient ircClient;
 	
 	public Miner(@NotNull AccountConfiguration accountConfiguration,
@@ -221,11 +222,11 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 				removeTopic(RAID, streamer.getId());
 			}
 			
-			if(streamer.getSettings().isJoinIrc()){
-				ircClient.join(streamer.getUsername());
+			if(streamer.isStreaming() && streamer.getSettings().isJoinIrc()){
+				getIrcClient().join(streamer.getUsername());
 			}
 			else{
-				ircClient.leave(streamer.getUsername());
+				getIrcClient().leave(streamer.getUsername());
 			}
 		}
 	}

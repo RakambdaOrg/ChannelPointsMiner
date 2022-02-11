@@ -33,8 +33,48 @@ class ConfigurationFactoryTest{
 	}
 	
 	@Test
-	void getInstance() throws MalformedURLException{
-		var testConfig = TestUtils.getResourcePath("config/config.json");
+	void getInstanceDefaults() throws MalformedURLException{
+		var testConfig = TestUtils.getResourcePath("config/config-minimalistic.json");
+		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
+		
+		var expected = Configuration.builder()
+				.accounts(List.of(AccountConfiguration.builder()
+						.username("username")
+						.password("password")
+						.use2Fa(false)
+						.loadFollows(false)
+						.enabled(true)
+						.defaultStreamerSettings(StreamerSettings.builder()
+								.makePredictions(false)
+								.followRaid(false)
+								.participateCampaigns(false)
+								.build())
+						.streamerConfigDirectories(List.of(StreamerDirectory.builder()
+								.path(Paths.get("streamers"))
+								.recursive(false)
+								.build()))
+						.discord(DiscordConfiguration.builder()
+								.url(new URL("https://discord-webhook"))
+								.embeds(false)
+								.build())
+						.reloadEvery(15)
+						.build()))
+				.build();
+		
+		try(var cliHolder = Mockito.mockStatic(CLIHolder.class)){
+			cliHolder.when(CLIHolder::getInstance).thenReturn(cliParameters);
+			
+			var firstInstance = ConfigurationFactory.getInstance();
+			var secondInstance = ConfigurationFactory.getInstance();
+			
+			assertThat(firstInstance).usingRecursiveComparison().isEqualTo(expected);
+			assertThat(secondInstance).isSameAs(firstInstance);
+		}
+	}
+	
+	@Test
+	void getInstanceOverridden() throws MalformedURLException{
+		var testConfig = TestUtils.getResourcePath("config/config-with-more-customization.json");
 		when(cliParameters.getConfigurationFile()).thenReturn(testConfig);
 		
 		var expected = Configuration.builder()
@@ -51,7 +91,7 @@ class ConfigurationFactoryTest{
 								.build())
 						.streamerConfigDirectories(List.of(StreamerDirectory.builder()
 								.path(Paths.get("streamers"))
-								.recursive(false)
+								.recursive(true)
 								.build()))
 						.discord(DiscordConfiguration.builder()
 								.url(new URL("https://discord-webhook"))

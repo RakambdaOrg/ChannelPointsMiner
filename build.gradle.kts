@@ -119,7 +119,6 @@ jib {
         }
     }
     to {
-        image = "mrcraftcod/channel-points-miner"
         auth {
             username = project.findProperty("dockerUsername").toString()
             password = project.findProperty("dockerPassword").toString()
@@ -129,6 +128,7 @@ jib {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
 }
+
 lombok {
     version.set("edge-SNAPSHOT")
 }
