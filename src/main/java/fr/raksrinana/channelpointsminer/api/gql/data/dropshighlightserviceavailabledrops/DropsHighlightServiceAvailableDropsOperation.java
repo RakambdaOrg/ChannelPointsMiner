@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.api.gql.data.dropshighlightserviceavail
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.IGQLOperation;
 import fr.raksrinana.channelpointsminer.api.gql.data.PersistedQueryExtension;
-import kong.unirest.GenericType;
+import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

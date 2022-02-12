@@ -1,10 +1,10 @@
 package fr.raksrinana.channelpointsminer.log;
 
-import kong.unirest.Config;
-import kong.unirest.HttpRequest;
-import kong.unirest.HttpRequestSummary;
-import kong.unirest.HttpResponse;
-import kong.unirest.Interceptor;
+import kong.unirest.core.Config;
+import kong.unirest.core.HttpRequest;
+import kong.unirest.core.HttpRequestSummary;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Interceptor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

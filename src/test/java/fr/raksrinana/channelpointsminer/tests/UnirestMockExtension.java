@@ -1,10 +1,23 @@
 package fr.raksrinana.channelpointsminer.tests;
 
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
-import kong.unirest.*;
+import kong.unirest.core.Config;
+import kong.unirest.core.HttpRequest;
+import kong.unirest.core.HttpRequestSummary;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Interceptor;
+import kong.unirest.core.MockClient;
+import kong.unirest.core.Unirest;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.Extension;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import java.util.Objects;
 
 @Log4j2

@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.util.json;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import kong.unirest.Cookie;
+import kong.unirest.core.Cookie;
 import java.io.IOException;
 
 public class CookieDeserializer extends StdDeserializer<Cookie>{

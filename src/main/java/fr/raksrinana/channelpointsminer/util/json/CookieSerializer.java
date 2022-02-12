@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.util.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import kong.unirest.Cookie;
+import kong.unirest.core.Cookie;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 

@@ -3,16 +3,16 @@ package fr.raksrinana.channelpointsminer.api.discord;
 import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
 import fr.raksrinana.channelpointsminer.tests.TestUtils;
 import fr.raksrinana.channelpointsminer.tests.UnirestMockExtension;
-import kong.unirest.HttpMethod;
-import kong.unirest.MockClient;
+import kong.unirest.core.HttpMethod;
+import kong.unirest.core.MockClient;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URL;
-import static kong.unirest.ContentType.APPLICATION_JSON;
-import static kong.unirest.HeaderNames.CONTENT_TYPE;
+import static kong.unirest.core.ContentType.APPLICATION_JSON;
+import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(MockitoExtension.class)
