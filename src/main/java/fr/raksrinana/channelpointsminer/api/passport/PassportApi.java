@@ -9,8 +9,8 @@ import fr.raksrinana.channelpointsminer.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.MissingAuthy2FA;
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.MissingTwitchGuard;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Unirest;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
@@ -22,8 +22,8 @@ import java.util.Optional;
 import static fr.raksrinana.channelpointsminer.util.CommonUtils.getUserInput;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static kong.unirest.ContentType.APPLICATION_JSON;
-import static kong.unirest.HeaderNames.CONTENT_TYPE;
+import static kong.unirest.core.ContentType.APPLICATION_JSON;
+import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 
 @Log4j2
 public class PassportApi{

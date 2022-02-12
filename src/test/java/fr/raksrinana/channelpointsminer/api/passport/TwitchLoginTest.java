@@ -5,7 +5,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
-import kong.unirest.Cookie;
+import kong.unirest.core.Cookie;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;

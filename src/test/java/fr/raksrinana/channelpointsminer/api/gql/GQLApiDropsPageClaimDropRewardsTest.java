@@ -7,7 +7,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.ClaimDropRewardsStatu
 import fr.raksrinana.channelpointsminer.api.gql.data.types.Game;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.tests.UnirestMockExtension;
-import kong.unirest.MockClient;
+import kong.unirest.core.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,7 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import static fr.raksrinana.channelpointsminer.tests.TestUtils.getAllResourceContent;
-import static kong.unirest.HttpMethod.POST;
+import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;

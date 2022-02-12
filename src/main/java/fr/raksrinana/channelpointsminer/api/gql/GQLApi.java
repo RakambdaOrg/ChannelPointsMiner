@@ -28,7 +28,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.videoplayerstreaminfooverla
 import fr.raksrinana.channelpointsminer.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelOperation;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.api.passport.exceptions.InvalidCredentials;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import static kong.unirest.HeaderNames.AUTHORIZATION;
+import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @Log4j2
 @RequiredArgsConstructor

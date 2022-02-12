@@ -11,7 +11,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.util.json.CookieDeserializer;
 import fr.raksrinana.channelpointsminer.util.json.CookieSerializer;
-import kong.unirest.Cookie;
+import kong.unirest.core.Cookie;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

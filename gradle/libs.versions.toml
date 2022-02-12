@@ -26,7 +26,7 @@ git-properties-version = "2.4.0"
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2-version" }
 log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j18-impl", version.ref = "log4j2-slf4j-version" }
-unirest-java = { group = "com.konghq", name = "unirest-java", version.ref = "unirest-version" }
+unirest-java = { group = "com.konghq", name = "unirest-java-core", version.ref = "unirest-version" }
 unirest-objectmapper-jackson = { group = "com.konghq", name = "unirest-objectmapper-jackson", version.ref = "unirest-version" }
 unirestMocks = { group = "com.konghq", name = "unirest-mocks", version.ref = "unirest-version" }
 picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-version" }
