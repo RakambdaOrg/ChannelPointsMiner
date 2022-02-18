@@ -18,7 +18,7 @@ kitteh-irc-version = "8.0.0"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
-lombok-version = "6.4.0"
+lombok-version = "6.4.1"
 jib-version = "3.2.0"
 git-properties-version = "2.4.0"
 
