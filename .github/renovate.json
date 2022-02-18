@@ -4,5 +4,6 @@
   ],
   "labels": ["type: \uD83D\uDCDA dependencies"],
   "enabledManagers": ["gradle"],
-  "dependencyDashboard": false
+  "dependencyDashboard": false,
+  "baseBranches": ["develop"]
 }
