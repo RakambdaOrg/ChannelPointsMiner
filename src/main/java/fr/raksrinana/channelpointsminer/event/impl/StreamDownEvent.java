@@ -1,5 +1,6 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
@@ -9,9 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class StreamDownLogEvent extends AbstractStreamerLogEvent{
-	public StreamDownLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer){
-		super(miner, streamer);
+public class StreamDownEvent extends AbstractStreamerEvent{
+	public StreamDownEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer){
+		super(miner, streamerId, streamerUsername, streamer);
 	}
 	
 	@Override

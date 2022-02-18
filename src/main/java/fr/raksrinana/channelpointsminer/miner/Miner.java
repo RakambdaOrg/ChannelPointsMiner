@@ -12,17 +12,17 @@ import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
+import fr.raksrinana.channelpointsminer.event.IEvent;
+import fr.raksrinana.channelpointsminer.event.IEventListener;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerAddedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerRemovedEvent;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
-import fr.raksrinana.channelpointsminer.log.ILogEventListener;
 import fr.raksrinana.channelpointsminer.log.LogContext;
-import fr.raksrinana.channelpointsminer.log.event.ILogEvent;
-import fr.raksrinana.channelpointsminer.log.event.StreamerAddedLogEvent;
-import fr.raksrinana.channelpointsminer.log.event.StreamerRemovedLogEvent;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.AccessLevel;
@@ -73,7 +73,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			@TestOnly,
 			@VisibleForTesting
 	})
-	private final Collection<ILogEventListener> logEventListeners;
+	private final Collection<IEventListener> eventListeners;
 	@Getter
 	private final MinerData minerData;
 	
@@ -103,7 +103,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		
 		streamers = new ConcurrentHashMap<>();
 		messageHandlers = new LinkedList<>();
-		logEventListeners = new LinkedList<>();
+		eventListeners = new LinkedList<>();
 		minerData = new MinerData();
 	}
 	
@@ -192,7 +192,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			updateStreamerInfos(streamer);
 			
 			streamers.put(streamer.getId(), streamer);
-			onLogEvent(new StreamerAddedLogEvent(this, streamer));
+			onEvent(new StreamerAddedEvent(this, streamer));
 			updateStreamer(streamer);
 		}
 	}
@@ -244,7 +244,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			removeTopic(RAID, streamer.getId());
 			ircClient.leave(streamer.getUsername());
 			
-			onLogEvent(new StreamerRemovedLogEvent(this, streamer));
+			onEvent(new StreamerRemovedEvent(this, streamer));
 			return streamers.remove(streamer.getId()) != null;
 		}
 	}
@@ -297,13 +297,13 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	}
 	
 	@Override
-	public void onLogEvent(ILogEvent event){
+	public void onEvent(IEvent event){
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
-		logEventListeners.forEach(listener -> handlerExecutor.submit(() -> {
+		eventListeners.forEach(listener -> handlerExecutor.submit(() -> {
 			try(var ignored = LogContext.restore(values, messages)){
-				listener.onLogEvent(event);
+				listener.onEvent(event);
 			}
 		}));
 	}
@@ -319,8 +319,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		messageHandlers.add(handler);
 	}
 	
-	public void addLogEventListener(@NotNull ILogEventListener eventListener){
-		logEventListeners.add(eventListener);
+	public void addEventListener(@NotNull IEventListener listener){
+		eventListeners.add(listener);
 	}
 	
 	@Override
@@ -330,6 +330,9 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		webSocketPool.close();
 		if(!Objects.isNull(ircClient)){
 			ircClient.close();
+		}
+		for(var listener : eventListeners){
+			listener.close();
 		}
 	}
 }

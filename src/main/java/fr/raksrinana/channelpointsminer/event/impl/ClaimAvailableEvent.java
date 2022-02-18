@@ -1,5 +1,6 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
@@ -9,21 +10,21 @@ import org.jetbrains.annotations.Nullable;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class StreamerRemovedLogEvent extends AbstractStreamerLogEvent{
-	public StreamerRemovedLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer){
-		super(miner, streamer);
+public class ClaimAvailableEvent extends AbstractStreamerEvent{
+	public ClaimAvailableEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer){
+		super(miner, streamerId, streamerUsername, streamer);
 	}
 	
 	@Override
 	@NotNull
 	public String getAsLog(){
-		return "Streamer removed";
+		return "Claim available";
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
-		return "➖";
+		return "🎫";
 	}
 	
 	@Override
@@ -32,8 +33,9 @@ public class StreamerRemovedLogEvent extends AbstractStreamerLogEvent{
 	}
 	
 	@Override
+	
 	@NotNull
 	protected String getEmbedDescription(){
-		return "Streamer removed";
+		return "Claim available";
 	}
 }

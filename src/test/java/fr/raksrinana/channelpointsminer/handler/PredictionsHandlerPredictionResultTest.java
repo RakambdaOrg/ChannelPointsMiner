@@ -5,9 +5,9 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionresult.Pre
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.impl.PredictionResultEvent;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
-import fr.raksrinana.channelpointsminer.log.event.PredictionResultLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -20,13 +20,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerPredictionResultTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String CHANNEL_NAME = "channel-name";
 	private static final String EVENT_ID = "event-id";
-	private static final int AMOUNT = 50;
 	
 	@InjectMocks
 	private PredictionsHandler tested;
@@ -62,6 +67,7 @@ class PredictionsHandlerPredictionResultTest{
 		lenient().when(predictionResultPayload.getPointsWon()).thenReturn(100);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
+		lenient().when(streamer.getUsername()).thenReturn(CHANNEL_NAME);
 	}
 	
 	@Test
@@ -77,7 +83,7 @@ class PredictionsHandlerPredictionResultTest{
 		assertThat(tested.getPlacedPredictions()).isNotEmpty();
 		assertThat(tested.getPredictions()).isNotEmpty();
 		
-		verify(miner, never()).onLogEvent(any());
+		verify(miner, never()).onEvent(any());
 	}
 	
 	@Test
@@ -88,7 +94,7 @@ class PredictionsHandlerPredictionResultTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionResult));
 		assertThat(tested.getPredictions()).isEmpty();
 		
-		verify(miner).onLogEvent(new PredictionResultLogEvent(miner, streamer, null, predictionResultData));
+		verify(miner).onEvent(new PredictionResultEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, null, predictionResultData));
 	}
 	
 	@Test
@@ -103,6 +109,6 @@ class PredictionsHandlerPredictionResultTest{
 		assertThat(tested.getPlacedPredictions()).isEmpty();
 		assertThat(tested.getPredictions()).isEmpty();
 		
-		verify(miner).onLogEvent(new PredictionResultLogEvent(miner, streamer, predictionPlaced, predictionResultData));
+		verify(miner).onEvent(new PredictionResultEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, predictionPlaced, predictionResultData));
 	}
 }

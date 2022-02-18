@@ -1,12 +1,10 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
-import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.jetbrains.annotations.NotNull;
-import java.util.Optional;
 
-public interface ILogEvent{
+public interface IEvent{
 	@NotNull
 	String getAsLog();
 	
@@ -18,10 +16,4 @@ public interface ILogEvent{
 	
 	@NotNull
 	IMiner getMiner();
-	
-	@NotNull
-	Optional<Streamer> getStreamer();
-	
-	@NotNull
-	Optional<String> getStreamerUsername();
 }

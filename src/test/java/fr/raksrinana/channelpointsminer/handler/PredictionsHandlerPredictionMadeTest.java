@@ -4,9 +4,9 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.impl.PredictionMadeEvent;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
-import fr.raksrinana.channelpointsminer.log.event.PredictionMadeLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -23,11 +23,14 @@ import static fr.raksrinana.channelpointsminer.handler.data.PredictionState.PLAC
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerPredictionMadeTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String CHANNEL_NAME = "channel-name";
 	private static final String EVENT_ID = "event-id";
 	private static final String OUTCOME_ID = "outcome-id";
 	private static final ZonedDateTime EVENT_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 0, 0, UTC);
@@ -65,6 +68,7 @@ class PredictionsHandlerPredictionMadeTest{
 		lenient().when(wsPrediction.getOutcomeId()).thenReturn(OUTCOME_ID);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
+		lenient().when(streamer.getUsername()).thenReturn(CHANNEL_NAME);
 	}
 	
 	@Test
@@ -78,7 +82,7 @@ class PredictionsHandlerPredictionMadeTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
-		verify(miner).onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
+		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
 	}
 	
 	@Test
@@ -101,7 +105,7 @@ class PredictionsHandlerPredictionMadeTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
-		verify(miner).onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
+		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
 	}
 	
 	@Test
@@ -118,6 +122,6 @@ class PredictionsHandlerPredictionMadeTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
-		verify(miner).onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
+		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
 	}
 }

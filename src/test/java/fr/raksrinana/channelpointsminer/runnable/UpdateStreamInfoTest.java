@@ -24,7 +24,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateStreamInfoTest{
@@ -49,6 +55,8 @@ class UpdateStreamInfoTest{
 	private GQLResponse<VideoPlayerStreamInfoOverlayChannelData> gqlResponseVideoPlayer;
 	@Mock
 	private GQLResponse<ChannelPointsContextData> gqlResponseChannelPoints;
+	@Mock
+	private GQLResponse<DropsHighlightServiceAvailableDropsData> dropsHighlightServiceAvailableDrops;
 	@Mock
 	private VideoPlayerStreamInfoOverlayChannelData videoPlayerStreamInfoOverlayChannelData;
 	@Mock
@@ -242,8 +250,7 @@ class UpdateStreamInfoTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			var data = mock(DropsHighlightServiceAvailableDropsData.class);
-			var response = (GQLResponse<DropsHighlightServiceAvailableDropsData>) mock(GQLResponse.class);
-			when(response.getData()).thenReturn(data);
+			when(dropsHighlightServiceAvailableDrops.getData()).thenReturn(data);
 			
 			when(streamer.isStreaming()).thenReturn(true);
 			when(streamer.isParticipateCampaigns()).thenReturn(true);
@@ -251,7 +258,7 @@ class UpdateStreamInfoTest{
 			when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
 			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
-			when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.of(response));
+			when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.of(dropsHighlightServiceAvailableDrops));
 			
 			assertDoesNotThrow(() -> tested.run());
 			

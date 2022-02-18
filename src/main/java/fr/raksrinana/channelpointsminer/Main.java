@@ -2,10 +2,10 @@ package fr.raksrinana.channelpointsminer;
 
 import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
+import fr.raksrinana.channelpointsminer.event.impl.MinerStartedEvent;
 import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerFactory;
 import fr.raksrinana.channelpointsminer.log.UnirestLogger;
-import fr.raksrinana.channelpointsminer.log.event.MinerStartedLogEvent;
 import fr.raksrinana.channelpointsminer.util.GitProperties;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
 import kong.unirest.core.Unirest;
@@ -44,7 +44,7 @@ public class Main{
 			if(accountConfiguration.isEnabled()){
 				var miner = MinerFactory.create(accountConfiguration);
 				miner.start();
-				miner.onLogEvent(new MinerStartedLogEvent(miner, version, commitId, branch));
+				miner.onEvent(new MinerStartedEvent(miner, version, commitId, branch));
 			}
 			else{
 				log.info("Account {} is disabled, skipping it", accountConfiguration.getUsername());

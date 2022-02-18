@@ -1,7 +1,8 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
+import fr.raksrinana.channelpointsminer.event.AbstractEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -11,10 +12,10 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class DropClaimLogEvent extends AbstractLogEvent{
+public class DropClaimEvent extends AbstractEvent{
 	private final TimeBasedDrop drop;
 	
-	public DropClaimLogEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop){
+	public DropClaimEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop){
 		super(miner);
 		this.drop = drop;
 	}

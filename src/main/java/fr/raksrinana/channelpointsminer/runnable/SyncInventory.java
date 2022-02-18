@@ -5,8 +5,8 @@ import fr.raksrinana.channelpointsminer.api.gql.data.inventory.InventoryData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.Inventory;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDropSelfEdge;
+import fr.raksrinana.channelpointsminer.event.impl.DropClaimEvent;
 import fr.raksrinana.channelpointsminer.log.LogContext;
-import fr.raksrinana.channelpointsminer.log.event.DropClaimLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +65,8 @@ public class SyncInventory implements Runnable{
 		
 		log.debug("Claiming drops {}", dropsToClaim);
 		dropsToClaim.stream()
-				.map(drop -> new DropClaimLogEvent(miner, drop))
-				.forEach(miner::onLogEvent);
+				.map(drop -> new DropClaimEvent(miner, drop))
+				.forEach(miner::onEvent);
 		dropsToClaim.stream()
 				.map(TimeBasedDrop::getSelf)
 				.map(TimeBasedDropSelfEdge::getDropInstanceId)

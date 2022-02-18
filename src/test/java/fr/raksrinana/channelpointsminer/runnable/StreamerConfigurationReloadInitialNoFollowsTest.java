@@ -4,8 +4,8 @@ import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerUnknownEvent;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.log.event.StreamerUnknownLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -22,7 +22,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StreamerConfigurationReloadInitialNoFollowsTest{
@@ -77,7 +81,7 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		
 		verify(miner).addStreamer(expectedStreamer);
 		verify(gqlApi, never()).allChannelFollows();
-		verify(miner, never()).onLogEvent(any());
+		verify(miner, never()).onEvent(any());
 	}
 	
 	@SneakyThrows
@@ -99,6 +103,6 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		
 		verify(miner, never()).addStreamer(any());
 		verify(gqlApi, never()).allChannelFollows();
-		verify(miner).onLogEvent(new StreamerUnknownLogEvent(miner, STREAMER_USERNAME));
+		verify(miner).onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME));
 	}
 }

@@ -6,8 +6,8 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.log.event.PointsEarnedLogEvent;
-import fr.raksrinana.channelpointsminer.log.event.PointsSpentLogEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PointsEarnedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PointsSpentEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.InjectMocks;
@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class PointsHandlerTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String CHANNEL_NAME = "channel-name";
 	
 	@InjectMocks
 	private PointsHandler tested;
@@ -53,19 +54,20 @@ class PointsHandlerTest{
 		lenient().when(pointsSpentMessage.getData()).thenReturn(pointsSpentData);
 		lenient().when(pointsSpentData.getBalance()).thenReturn(balance);
 		lenient().when(balance.getChannelId()).thenReturn(STREAMER_ID);
+		lenient().when(streamer.getUsername()).thenReturn(CHANNEL_NAME);
 	}
 	
 	@Test
 	void pointsEarned(){
 		assertDoesNotThrow(() -> tested.handle(topic, pointsEarnedMessage));
 		
-		verify(miner).onLogEvent(new PointsEarnedLogEvent(miner, streamer, pointsEarnedData));
+		verify(miner).onEvent(new PointsEarnedEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, pointsEarnedData));
 	}
 	
 	@Test
 	void pointsSpent(){
 		assertDoesNotThrow(() -> tested.handle(topic, pointsSpentMessage));
 		
-		verify(miner).onLogEvent(new PointsSpentLogEvent(miner, streamer, pointsSpentData));
+		verify(miner).onEvent(new PointsSpentEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, pointsSpentData));
 	}
 }

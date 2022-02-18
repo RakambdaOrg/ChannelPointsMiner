@@ -1,7 +1,8 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
@@ -17,13 +18,13 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PredictionMadeLogEvent extends AbstractStreamerLogEvent{
+public class PredictionMadeEvent extends AbstractStreamerEvent{
 	private static final String UNKNOWN_OUTCOME = "UnknownOutcome";
 	
 	private final PlacedPrediction placedPrediction;
 	
-	public PredictionMadeLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer, @NotNull PlacedPrediction placedPrediction){
-		super(miner, streamer);
+	public PredictionMadeEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PlacedPrediction placedPrediction){
+		super(miner, streamerId, streamerUsername, streamer);
 		this.placedPrediction = placedPrediction;
 	}
 	

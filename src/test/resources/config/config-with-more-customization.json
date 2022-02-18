@@ -21,7 +21,17 @@
         "webhookUrl": "https://discord-webhook",
         "embeds": true
       },
-      "reloadEvery": 15
+      "reloadEvery": 15,
+      "analytics": {
+        "enabled": true,
+        "database": {
+          "host": "host",
+          "port": 1234,
+          "username": "user",
+          "password": "pass",
+          "database": "db"
+        }
+      }
     }
   ]
 }

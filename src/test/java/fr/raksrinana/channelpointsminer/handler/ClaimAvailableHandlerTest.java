@@ -5,7 +5,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Claim;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.log.event.ClaimAvailableLogEvent;
+import fr.raksrinana.channelpointsminer.event.impl.ClaimAvailableEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.InjectMocks;
@@ -16,12 +16,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ClaimAvailableHandlerTest{
 	private static final String CLAIM_ID = "claim-id";
 	private static final String CHANNEL_ID = "channel-id";
+	private static final String CHANNEL_NAME = "channel-name";
 	
 	@InjectMocks
 	private ClaimAvailableHandler tested;
@@ -45,6 +48,7 @@ class ClaimAvailableHandlerTest{
 	void setUp(){
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getStreamerById(CHANNEL_ID)).thenReturn(Optional.of(streamer));
+		lenient().when(streamer.getUsername()).thenReturn(CHANNEL_NAME);
 	}
 	
 	@Test
@@ -57,6 +61,6 @@ class ClaimAvailableHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, claimAvailable));
 		
 		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
-		verify(miner).onLogEvent(new ClaimAvailableLogEvent(miner, streamer));
+		verify(miner).onEvent(new ClaimAvailableEvent(miner, CHANNEL_ID, CHANNEL_NAME, streamer));
 	}
 }

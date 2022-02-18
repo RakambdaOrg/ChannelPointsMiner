@@ -1,9 +1,10 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -17,12 +18,12 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PredictionResultLogEvent extends AbstractStreamerLogEvent{
+public class PredictionResultEvent extends AbstractStreamerEvent{
 	private final PlacedPrediction placedPrediction;
 	private final PredictionResultData predictionResultData;
 	
-	public PredictionResultLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer, @Nullable PlacedPrediction placedPrediction, @NotNull PredictionResultData predictionResultData){
-		super(miner, streamer);
+	public PredictionResultEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @Nullable PlacedPrediction placedPrediction, @NotNull PredictionResultData predictionResultData){
+		super(miner, streamerId, streamerUsername, streamer);
 		this.placedPrediction = placedPrediction;
 		this.predictionResultData = predictionResultData;
 	}
@@ -45,7 +46,7 @@ public class PredictionResultLogEvent extends AbstractStreamerLogEvent{
 		}
 		
 		var result = Optional.ofNullable(predictionResultData.getPrediction().getResult());
-		var pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
+		int pointsWon = result.map(PredictionResultPayload::getPointsWon).orElse(0);
 		
 		return Optional.ofNullable(placedPrediction)
 				.map(prediction -> pointsWon - prediction.getAmount())

@@ -3,7 +3,9 @@ package fr.raksrinana.channelpointsminer.factory;
 import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
+import fr.raksrinana.channelpointsminer.config.AnalyticsConfiguration;
 import fr.raksrinana.channelpointsminer.config.Configuration;
+import fr.raksrinana.channelpointsminer.config.DatabaseConfiguration;
 import fr.raksrinana.channelpointsminer.config.DiscordConfiguration;
 import fr.raksrinana.channelpointsminer.config.StreamerDirectory;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -58,6 +60,9 @@ class ConfigurationFactoryTest{
 								.embeds(false)
 								.build())
 						.reloadEvery(15)
+						.analytics(AnalyticsConfiguration.builder()
+								.enabled(false)
+								.build())
 						.build()))
 				.build();
 		
@@ -98,6 +103,16 @@ class ConfigurationFactoryTest{
 								.embeds(true)
 								.build())
 						.reloadEvery(15)
+						.analytics(AnalyticsConfiguration.builder()
+								.enabled(true)
+								.database(DatabaseConfiguration.builder()
+										.host("host")
+										.port(1234)
+										.username("user")
+										.password("pass")
+										.database("db")
+										.build())
+								.build())
 						.build()))
 				.build();
 		

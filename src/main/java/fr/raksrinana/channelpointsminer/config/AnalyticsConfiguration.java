@@ -5,16 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Configuration{
-	@NotNull
-	@JsonProperty("accounts")
-	@Comment(value = "List of account configurations.")
-	private List<AccountConfiguration> accounts;
+public class AnalyticsConfiguration{
+	@JsonProperty("enabled")
+	@Builder.Default
+	private boolean enabled = false;
+	@Nullable
+	@JsonProperty("database")
+	private DatabaseConfiguration database;
 }

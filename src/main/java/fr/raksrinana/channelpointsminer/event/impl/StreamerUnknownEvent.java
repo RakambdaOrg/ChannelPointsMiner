@@ -1,34 +1,25 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Field;
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class StreamerUnknownLogEvent extends AbstractStreamerLogEvent{
-	private final String username;
-	
-	public StreamerUnknownLogEvent(@NotNull IMiner miner, @NotNull String username){
-		super(miner, null);
-		this.username = username;
+public class StreamerUnknownEvent extends AbstractStreamerEvent{
+	public StreamerUnknownEvent(@NotNull IMiner miner, @NotNull String streamerUsername){
+		super(miner, "-1", streamerUsername, null);
 	}
 	
 	@Override
 	@NotNull
 	public String getAsLog(){
 		return "Streamer unknown";
-	}
-	
-	@Override
-	@NotNull
-	public Optional<String> getStreamerUsername(){
-		return Optional.of(username);
 	}
 	
 	@Override
@@ -51,6 +42,6 @@ public class StreamerUnknownLogEvent extends AbstractStreamerLogEvent{
 	@NotNull
 	@Override
 	protected Collection<? extends Field> getEmbedFields(){
-		return List.of(Field.builder().name("Username").value(username).build());
+		return List.of(Field.builder().name("Username").value(getStreamerUsername().orElseThrow()).build());
 	}
 }

@@ -1,17 +1,40 @@
 package fr.raksrinana.channelpointsminer.log;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
-import fr.raksrinana.channelpointsminer.api.discord.data.*;
+import fr.raksrinana.channelpointsminer.api.discord.data.Author;
+import fr.raksrinana.channelpointsminer.api.discord.data.Embed;
+import fr.raksrinana.channelpointsminer.api.discord.data.Field;
+import fr.raksrinana.channelpointsminer.api.discord.data.Footer;
+import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionresult.PredictionResultData;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.*;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.OutcomeColor;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PointGain;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PointReasonCode;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.impl.ClaimAvailableEvent;
+import fr.raksrinana.channelpointsminer.event.impl.DropClaimEvent;
+import fr.raksrinana.channelpointsminer.event.impl.EventCreatedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.MinerStartedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PointsEarnedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PointsSpentEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PredictionMadeEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PredictionResultEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamDownEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamUpEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerAddedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerRemovedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerUnknownEvent;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
-import fr.raksrinana.channelpointsminer.log.event.*;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.Mock;
@@ -23,16 +46,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import static java.awt.Color.*;
-import static org.mockito.Mockito.*;
+import static java.awt.Color.CYAN;
+import static java.awt.Color.GREEN;
+import static java.awt.Color.PINK;
+import static java.awt.Color.RED;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DiscordLogEventListenerEmbedTest{
+class DiscordEventListenerEmbedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
 	private static final String USERNAME = "username";
 	
-	private DiscordLogEventListener tested;
+	private DiscordEventListener tested;
 	
 	@Mock
 	private IMiner miner;
@@ -48,7 +77,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		tested = new DiscordLogEventListener(discordApi, true);
+		tested = new DiscordEventListener(discordApi, true);
 		
 		var streamerProfileUrl = new URL("https://streamer-image");
 		var channelUrl = new URL("https://streamer");
@@ -73,7 +102,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@Test
 	void onClaimAvailable(){
-		tested.onLogEvent(new ClaimAvailableLogEvent(miner, streamer));
+		tested.onEvent(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -97,7 +126,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(200);
 		
-		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
+		tested.onEvent(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -124,7 +153,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
 		
-		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
+		tested.onEvent(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -151,7 +180,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
 		
-		tested.onLogEvent(new PointsEarnedLogEvent(miner, streamer, data));
+		tested.onEvent(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -174,7 +203,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(data.getBalance()).thenReturn(balance);
 		when(balance.getBalance()).thenReturn(25);
 		
-		tested.onLogEvent(new PointsSpentLogEvent(miner, streamer, data));
+		tested.onEvent(new PointsSpentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -189,7 +218,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@Test
 	void onStreamUp(){
-		tested.onLogEvent(new StreamUpLogEvent(miner, streamer));
+		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -203,7 +232,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@Test
 	void authorNotFound(){
-		tested.onLogEvent(new StreamUpLogEvent(miner, null));
+		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -216,7 +245,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@Test
 	void onStreamDown(){
-		tested.onLogEvent(new StreamDownLogEvent(miner, streamer));
+		tested.onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -235,7 +264,7 @@ class DiscordLogEventListenerEmbedTest{
 		
 		when(event.getTitle()).thenReturn(title);
 		
-		tested.onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
+		tested.onEvent(new EventCreatedEvent(miner, streamer, event));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -268,7 +297,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(outcome2.getColor()).thenReturn(OutcomeColor.BLUE);
 		when(outcome2.getTitle()).thenReturn(outcomeName);
 		
-		tested.onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
+		tested.onEvent(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -296,7 +325,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(event.getOutcomes()).thenReturn(List.of(outcome1));
 		when(outcome1.getId()).thenReturn("bad-id");
 		
-		tested.onLogEvent(new PredictionMadeLogEvent(miner, streamer, placedPrediction));
+		tested.onEvent(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -323,7 +352,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
 		
-		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, placedPrediction, predictionResultData));
+		tested.onEvent(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -348,7 +377,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.REFUND);
 		
-		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, placedPrediction, predictionResultData));
+		tested.onEvent(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -373,7 +402,7 @@ class DiscordLogEventListenerEmbedTest{
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
 		
-		tested.onLogEvent(new PredictionResultLogEvent(miner, streamer, null, predictionResultData));
+		tested.onEvent(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, null, predictionResultData));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -392,7 +421,7 @@ class DiscordLogEventListenerEmbedTest{
 		var version = "test-version";
 		var commit = "test-commit";
 		var branch = "test-branch";
-		tested.onLogEvent(new MinerStartedLogEvent(miner, version, commit, branch));
+		tested.onEvent(new MinerStartedEvent(miner, version, commit, branch));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -408,7 +437,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@Test
 	void onStreamerAdded(){
-		tested.onLogEvent(new StreamerAddedLogEvent(miner, streamer));
+		tested.onEvent(new StreamerAddedEvent(miner, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -422,7 +451,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@Test
 	void onStreamerRemoved(){
-		tested.onLogEvent(new StreamerRemovedLogEvent(miner, streamer));
+		tested.onEvent(new StreamerRemovedEvent(miner, streamer));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -436,7 +465,7 @@ class DiscordLogEventListenerEmbedTest{
 	
 	@Test
 	void onStreamerUnknown(){
-		tested.onLogEvent(new StreamerUnknownLogEvent(miner, STREAMER_USERNAME));
+		tested.onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -457,7 +486,7 @@ class DiscordLogEventListenerEmbedTest{
 		var drop = mock(TimeBasedDrop.class);
 		when(drop.getName()).thenReturn(name);
 		
-		tested.onLogEvent(new DropClaimLogEvent(miner, drop));
+		tested.onEvent(new DropClaimEvent(miner, drop));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()

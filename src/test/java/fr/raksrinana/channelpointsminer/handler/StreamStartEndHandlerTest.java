@@ -3,9 +3,9 @@ package fr.raksrinana.channelpointsminer.handler;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamDown;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamUp;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.impl.StreamDownEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamUpEvent;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
-import fr.raksrinana.channelpointsminer.log.event.StreamDownLogEvent;
-import fr.raksrinana.channelpointsminer.log.event.StreamUpLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -69,7 +69,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
-		verify(miner).onLogEvent(new StreamUpLogEvent(miner, streamer));
+		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_NAME, streamer));
 		verify(ircClient, never()).join(any());
 	}
 	
@@ -87,7 +87,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
-		verify(miner).onLogEvent(new StreamUpLogEvent(miner, streamer));
+		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_NAME, streamer));
 		verify(ircClient).join(STREAMER_NAME);
 	}
 	
@@ -98,7 +98,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
-		verify(miner).onLogEvent(new StreamUpLogEvent(miner, null));
+		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null));
 		verify(ircClient, never()).join(any());
 	}
 	
@@ -115,7 +115,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamDownMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
-		verify(miner).onLogEvent(new StreamDownLogEvent(miner, streamer));
+		verify(miner).onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_NAME, streamer));
 		verify(ircClient).leave(STREAMER_NAME);
 	}
 	
@@ -126,7 +126,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamDownMessage));
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
-		verify(miner).onLogEvent(new StreamDownLogEvent(miner, null));
+		verify(miner).onEvent(new StreamDownEvent(miner, STREAMER_ID, null, null));
 		verify(ircClient, never()).leave(any());
 	}
 }

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Log4j2
 public class AccountConfiguration{
 	@NotNull
 	@JsonProperty("username")
@@ -62,4 +60,8 @@ public class AccountConfiguration{
 	@Comment(value = "Reload streamer settings every x minutes.", defaultValue = "0")
 	@Builder.Default
 	private int reloadEvery = 0;
+	@JsonProperty("analytics")
+	@NotNull
+	@Builder.Default
+	private AnalyticsConfiguration analytics = new AnalyticsConfiguration();
 }
