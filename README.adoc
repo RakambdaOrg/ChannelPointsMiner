@@ -114,7 +114,7 @@ Something like:
 }
 ----
 
-Examples can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config[src/test/resources/config,window="_blank"].
+Examples can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
 
 === Account settings [[account_settings]]
 
@@ -135,6 +135,10 @@ Account settings define all the settings for a Twitch account that will be used 
 |use2FA
 |If you use 2-factor authentication enable this to ask the 2FA code directly when login in.
 |false
+
+|authenticationFolder
+|Path to the folder containing the authentication file
+|./authentication
 
 |loadFollows
 |If set to true link:https://www.twitch.tv/directory/following/[streamers followed,window="_blank"] on the account will be mined.

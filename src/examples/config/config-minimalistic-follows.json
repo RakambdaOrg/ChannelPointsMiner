@@ -1,0 +1,9 @@
+{
+  "accounts": [
+    {
+      "username": "username",
+      "password": "password",
+      "loadFollows": true
+    }
+  ]
+}
