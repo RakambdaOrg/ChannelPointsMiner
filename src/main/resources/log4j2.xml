@@ -37,6 +37,10 @@
             <AppenderRef ref="console"/>
             <AppenderRef ref="router"/>
         </Logger>
+        <Logger level="warn" name="com.zaxxer.hikari" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="router"/>
+        </Logger>
         <Root level="trace" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="router"/>

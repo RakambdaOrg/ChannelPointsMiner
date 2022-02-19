@@ -25,6 +25,9 @@
         <Logger level="warn" name="io.netty" additivity="false">
             <AppenderRef ref="console"/>
         </Logger>
+        <Logger level="warn" name="com.zaxxer.hikari" additivity="false">
+            <AppenderRef ref="file"/>
+        </Logger>
         <Root level="info" additivity="false">
             <AppenderRef ref="file"/>
         </Root>

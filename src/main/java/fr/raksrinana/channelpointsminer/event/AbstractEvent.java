@@ -22,7 +22,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public abstract class AbstractEvent implements IEvent{
+public abstract class AbstractEvent implements IEvent, ILoggableEvent{
 	protected static final int COLOR_INFO = Color.CYAN.getRGB();
 	protected static final int COLOR_PREDICTION = Color.PINK.getRGB();
 	protected static final int COLOR_POINTS_WON = Color.GREEN.getRGB();
