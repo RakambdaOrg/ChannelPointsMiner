@@ -6,14 +6,15 @@ import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class StreamerUnknownEvent extends AbstractStreamerEvent{
-	public StreamerUnknownEvent(@NotNull IMiner miner, @NotNull String streamerUsername){
-		super(miner, "-1", streamerUsername, null);
+	public StreamerUnknownEvent(@NotNull IMiner miner, @NotNull String streamerUsername, @NotNull Instant instant){
+		super(miner, "-1", streamerUsername, null, instant);
 	}
 	
 	@Override

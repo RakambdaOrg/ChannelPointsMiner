@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,9 @@ public abstract class AbstractEvent implements IEvent{
 	@Getter
 	@NotNull
 	private final IMiner miner;
+	@Getter
+	@NotNull
+	private final Instant instant;
 	
 	@NotNull
 	@Override

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.time.Instant;
 import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
@@ -20,12 +21,12 @@ public abstract class AbstractStreamerEvent extends AbstractEvent implements ISt
 	private final String streamerUsername;
 	private final Streamer streamer;
 	
-	public AbstractStreamerEvent(@NotNull IMiner miner, @NotNull Streamer streamer){
-		this(miner, streamer.getId(), streamer.getUsername(), streamer);
+	public AbstractStreamerEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Instant instant){
+		this(miner, streamer.getId(), streamer.getUsername(), streamer, instant);
 	}
 	
-	public AbstractStreamerEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer){
-		super(miner);
+	public AbstractStreamerEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant){
+		super(miner, instant);
 		this.streamerId = streamerId;
 		this.streamerUsername = streamerUsername;
 		this.streamer = streamer;

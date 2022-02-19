@@ -24,7 +24,7 @@ public class PredictionMadeEvent extends AbstractStreamerEvent{
 	private final PlacedPrediction placedPrediction;
 	
 	public PredictionMadeEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PlacedPrediction placedPrediction){
-		super(miner, streamerId, streamerUsername, streamer);
+		super(miner, streamerId, streamerUsername, streamer, placedPrediction.getPredictedAt());
 		this.placedPrediction = placedPrediction;
 	}
 	

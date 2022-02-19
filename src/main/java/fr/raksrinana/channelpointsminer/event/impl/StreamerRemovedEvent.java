@@ -6,12 +6,13 @@ import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class StreamerRemovedEvent extends AbstractStreamerEvent{
-	public StreamerRemovedEvent(@NotNull IMiner miner, @NotNull Streamer streamer){
-		super(miner, streamer);
+	public StreamerRemovedEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Instant instant){
+		super(miner, streamer, instant);
 	}
 	
 	@Override

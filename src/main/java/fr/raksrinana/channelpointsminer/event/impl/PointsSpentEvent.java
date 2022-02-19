@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,10 +16,11 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class PointsSpentEvent extends AbstractStreamerEvent{
+	@Getter
 	private final PointsSpentData pointsSpentData;
 	
 	public PointsSpentEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PointsSpentData pointsSpentData){
-		super(miner, streamerId, streamerUsername, streamer);
+		super(miner, streamerId, streamerUsername, streamer, pointsSpentData.getTimestamp().toInstant());
 		this.pointsSpentData = pointsSpentData;
 	}
 	

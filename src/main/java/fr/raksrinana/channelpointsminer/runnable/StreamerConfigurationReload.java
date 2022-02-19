@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuIt
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.event.impl.StreamerUnknownEvent;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.runnable.data.StreamerResult;
@@ -138,7 +139,7 @@ public class StreamerConfigurationReload implements Runnable{
 				.map(ReportMenuItemData::getUser)
 				.map(User::getId);
 		if(id.isEmpty()){
-			miner.onEvent(new StreamerUnknownEvent(miner, username));
+			miner.onEvent(new StreamerUnknownEvent(miner, username, TimeFactory.now()));
 		}
 		return id;
 	}

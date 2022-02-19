@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.lenient;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.verify;
 class PointsHandlerTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String CHANNEL_NAME = "channel-name";
+	private static final ZonedDateTime NOW = ZonedDateTime.now();
 	
 	@InjectMocks
 	private PointsHandler tested;
@@ -51,8 +53,10 @@ class PointsHandlerTest{
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		lenient().when(pointsEarnedMessage.getData()).thenReturn(pointsEarnedData);
 		lenient().when(pointsEarnedData.getChannelId()).thenReturn(STREAMER_ID);
+		lenient().when(pointsEarnedData.getTimestamp()).thenReturn(NOW);
 		lenient().when(pointsSpentMessage.getData()).thenReturn(pointsSpentData);
 		lenient().when(pointsSpentData.getBalance()).thenReturn(balance);
+		lenient().when(pointsSpentData.getTimestamp()).thenReturn(NOW);
 		lenient().when(balance.getChannelId()).thenReturn(STREAMER_ID);
 		lenient().when(streamer.getUsername()).thenReturn(CHANNEL_NAME);
 	}

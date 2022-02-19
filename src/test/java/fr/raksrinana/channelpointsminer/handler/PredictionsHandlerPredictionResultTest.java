@@ -17,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -32,6 +35,8 @@ class PredictionsHandlerPredictionResultTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String CHANNEL_NAME = "channel-name";
 	private static final String EVENT_ID = "event-id";
+	private static final Instant RESULT_DATE = Instant.parse("2020-05-17T12:14:20.000Z");
+	private static final ZonedDateTime ZONED_RESULT_DATE = ZonedDateTime.ofInstant(RESULT_DATE, ZoneId.systemDefault());
 	
 	@InjectMocks
 	private PredictionsHandler tested;
@@ -60,6 +65,7 @@ class PredictionsHandlerPredictionResultTest{
 		
 		lenient().when(predictionResult.getData()).thenReturn(predictionResultData);
 		lenient().when(predictionResultData.getPrediction()).thenReturn(wsPrediction);
+		lenient().when(predictionResultData.getTimestamp()).thenReturn(ZONED_RESULT_DATE);
 		lenient().when(wsPrediction.getEventId()).thenReturn(EVENT_ID);
 		lenient().when(wsPrediction.getChannelId()).thenReturn(STREAMER_ID);
 		lenient().when(wsPrediction.getResult()).thenReturn(predictionResultPayload);

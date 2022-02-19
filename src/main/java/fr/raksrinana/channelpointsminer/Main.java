@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.event.impl.MinerStartedEvent;
 import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerFactory;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.log.UnirestLogger;
 import fr.raksrinana.channelpointsminer.util.GitProperties;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
@@ -44,7 +45,7 @@ public class Main{
 			if(accountConfiguration.isEnabled()){
 				var miner = MinerFactory.create(accountConfiguration);
 				miner.start();
-				miner.onEvent(new MinerStartedEvent(miner, version, commitId, branch));
+				miner.onEvent(new MinerStartedEvent(miner, version, commitId, branch, TimeFactory.now()));
 			}
 			else{
 				log.info("Account {} is disabled, skipping it", accountConfiguration.getUsername());

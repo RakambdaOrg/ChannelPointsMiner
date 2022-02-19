@@ -23,7 +23,7 @@ public class PredictionResultEvent extends AbstractStreamerEvent{
 	private final PredictionResultData predictionResultData;
 	
 	public PredictionResultEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @Nullable PlacedPrediction placedPrediction, @NotNull PredictionResultData predictionResultData){
-		super(miner, streamerId, streamerUsername, streamer);
+		super(miner, streamerId, streamerUsername, streamer, predictionResultData.getTimestamp().toInstant());
 		this.placedPrediction = placedPrediction;
 		this.predictionResultData = predictionResultData;
 	}

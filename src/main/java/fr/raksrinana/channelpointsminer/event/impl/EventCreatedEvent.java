@@ -17,7 +17,7 @@ public class EventCreatedEvent extends AbstractStreamerEvent{
 	private final Event event;
 	
 	public EventCreatedEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Event event){
-		super(miner, streamer);
+		super(miner, streamer, event.getCreatedAt().toInstant());
 		this.event = event;
 	}
 	

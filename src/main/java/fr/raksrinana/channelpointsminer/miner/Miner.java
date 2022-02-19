@@ -19,6 +19,7 @@ import fr.raksrinana.channelpointsminer.event.impl.StreamerRemovedEvent;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
@@ -192,7 +193,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			updateStreamerInfos(streamer);
 			
 			streamers.put(streamer.getId(), streamer);
-			onEvent(new StreamerAddedEvent(this, streamer));
+			onEvent(new StreamerAddedEvent(this, streamer, TimeFactory.now()));
 			updateStreamer(streamer);
 		}
 	}
@@ -244,7 +245,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			removeTopic(RAID, streamer.getId());
 			ircClient.leave(streamer.getUsername());
 			
-			onEvent(new StreamerRemovedEvent(this, streamer));
+			onEvent(new StreamerRemovedEvent(this, streamer, TimeFactory.now()));
 			return streamers.remove(streamer.getId()) != null;
 		}
 	}

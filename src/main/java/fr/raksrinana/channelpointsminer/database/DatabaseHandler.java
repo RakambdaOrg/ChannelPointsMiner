@@ -1,13 +1,14 @@
 package fr.raksrinana.channelpointsminer.database;
 
-import fr.raksrinana.channelpointsminer.database.entity.ChannelEntity;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.event.IEvent;
 import fr.raksrinana.channelpointsminer.event.IEventListener;
 import fr.raksrinana.channelpointsminer.event.IStreamerEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PointsEarnedEvent;
+import fr.raksrinana.channelpointsminer.event.impl.PointsSpentEvent;
 import fr.raksrinana.channelpointsminer.event.impl.StreamDownEvent;
 import fr.raksrinana.channelpointsminer.event.impl.StreamUpEvent;
 import fr.raksrinana.channelpointsminer.event.impl.StreamerAddedEvent;
-import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,12 @@ public class DatabaseHandler implements IEventListener{
 			else if(event instanceof StreamDownEvent e){
 				updateStreamer(e);
 			}
+			else if(event instanceof PointsEarnedEvent e){
+				updateBalance(e, e.getPointsEarnedData().getBalance());
+			}
+			else if(event instanceof PointsSpentEvent e){
+				updateBalance(e, e.getPointsSpentData().getBalance());
+			}
 		}
 		catch(Exception e){
 			log.error("Failed to process database event", e);
@@ -38,17 +45,15 @@ public class DatabaseHandler implements IEventListener{
 	}
 	
 	private void addStreamer(@NotNull IStreamerEvent event) throws SQLException{
-		var entity = ChannelEntity.builder()
-				.id(event.getStreamerId())
-				.username(event.getStreamerUsername().orElseThrow(() -> new IllegalStateException("No username present in streamer")))
-				.lastStatusChange(TimeFactory.now())
-				.build();
-		
-		database.createChannelOrUpdate(entity);
+		database.createChannel(event.getStreamerId(), event.getStreamerUsername().orElseThrow(() -> new IllegalStateException("No username present in streamer")));
 	}
 	
 	private void updateStreamer(@NotNull IStreamerEvent event) throws SQLException{
-		database.updateChannelStatusTime(event.getStreamerId(), TimeFactory.now());
+		database.updateChannelStatusTime(event.getStreamerId(), event.getInstant());
+	}
+	
+	private void updateBalance(@NotNull IStreamerEvent event, @NotNull Balance balance) throws SQLException{
+		database.addBalance(event.getStreamerId(), balance.getBalance(), event.getInstant());
 	}
 	
 	@Override

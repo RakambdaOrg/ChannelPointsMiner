@@ -18,6 +18,7 @@ import fr.raksrinana.channelpointsminer.event.impl.StreamerRemovedEvent;
 import fr.raksrinana.channelpointsminer.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -64,6 +66,7 @@ class MinerTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String USER_ID = "user-id";
 	private static final String ACCESS_TOKEN = "access-token";
+	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
 	
 	private Miner tested;
 	
@@ -257,11 +260,14 @@ class MinerTest{
 	@Test
 	void addStreamerWithPredictions(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class)){
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
 			
@@ -283,18 +289,21 @@ class MinerTest{
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer));
+			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
 		}
 	}
 	
 	@Test
 	void addStreamerWithRaid(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class)){
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
 			
@@ -315,7 +324,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer));
+			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
 		}
 	}
 	
@@ -323,12 +332,15 @@ class MinerTest{
 	void addStreamerWithIrcAndStreamerOffline(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			lenient().when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
@@ -347,7 +359,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer));
+			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
 			verify(twitchIrcClient, never()).join(any());
 		}
 	}
@@ -356,12 +368,15 @@ class MinerTest{
 	void addStreamerWithIrcAndStreamerOnline(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			lenient().when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
@@ -381,7 +396,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer));
+			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
 			verify(twitchIrcClient).join(STREAMER_USERNAME);
 		}
 	}
@@ -389,11 +404,14 @@ class MinerTest{
 	@Test
 	void addDuplicateStreamer(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
-				var runnableFactory = mockStatic(MinerRunnableFactory.class)){
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			tested.addEventListener(eventListener);
 			tested.start();
@@ -412,7 +430,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer));
+			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
 		}
 	}
 	
@@ -471,12 +489,15 @@ class MinerTest{
 	void removeStreamer(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class);
 				var ircFactory = mockStatic(TwitchIrcFactory.class)){
 			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			var streamer = mock(Streamer.class);
 			when(streamer.getId()).thenReturn(STREAMER_ID);
@@ -491,7 +512,7 @@ class MinerTest{
 			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchIrcClient).leave(STREAMER_USERNAME);
-			verify(eventListener).onEvent(new StreamerRemovedEvent(tested, streamer));
+			verify(eventListener).onEvent(new StreamerRemovedEvent(tested, streamer, NOW));
 		}
 	}
 	

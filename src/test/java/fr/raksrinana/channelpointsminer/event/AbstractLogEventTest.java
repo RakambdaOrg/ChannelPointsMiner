@@ -7,6 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
@@ -24,7 +25,7 @@ class AbstractLogEventTest{
 	
 	@BeforeEach
 	void setUp(){
-		tested = new MinerStartedEvent(miner, "", "", "");
+		tested = new MinerStartedEvent(miner, "", "", "", Instant.now());
 	}
 	
 	@Test

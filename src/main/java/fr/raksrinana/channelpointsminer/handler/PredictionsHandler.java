@@ -208,6 +208,7 @@ public class PredictionsHandler extends HandlerAdapter{
 					.bettingPrediction(prediction.orElse(null))
 					.amount(placedPoints)
 					.outcomeId(predictionData.getOutcomeId())
+					.predictedAt(predictionData.getPredictedAt().toInstant())
 					.build();
 			
 			placedPredictions.put(eventId, placedPrediction);

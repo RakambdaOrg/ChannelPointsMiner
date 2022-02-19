@@ -19,7 +19,7 @@ public class ClaimAvailableHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(channelId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
 		try(var ignored = LogContext.with(miner).withStreamer(streamer)){
-			miner.onEvent(new ClaimAvailableEvent(miner, channelId, username, streamer));
+			miner.onEvent(new ClaimAvailableEvent(miner, channelId, username, streamer, message.getData().getTimestamp().toInstant()));
 			miner.getGqlApi().claimCommunityPoints(channelId, message.getData().getClaim().getId());
 		}
 	}

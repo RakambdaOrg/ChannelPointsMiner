@@ -7,6 +7,7 @@ import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,8 +16,8 @@ import java.util.List;
 public class DropClaimEvent extends AbstractEvent{
 	private final TimeBasedDrop drop;
 	
-	public DropClaimEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop){
-		super(miner);
+	public DropClaimEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop, @NotNull Instant instant){
+		super(miner, instant);
 		this.drop = drop;
 	}
 	

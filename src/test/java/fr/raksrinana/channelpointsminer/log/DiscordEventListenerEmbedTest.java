@@ -44,6 +44,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import static java.awt.Color.CYAN;
@@ -60,6 +63,8 @@ class DiscordEventListenerEmbedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
 	private static final String USERNAME = "username";
+	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
+	private static final ZonedDateTime ZONED_NOW = ZonedDateTime.ofInstant(NOW, ZoneId.systemDefault());
 	
 	private DiscordEventListener tested;
 	
@@ -102,7 +107,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void onClaimAvailable(){
-		tested.onEvent(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
+		tested.onEvent(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -122,6 +127,7 @@ class DiscordEventListenerEmbedTest{
 		
 		when(data.getPointGain()).thenReturn(pointGain);
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(25);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(200);
@@ -149,6 +155,7 @@ class DiscordEventListenerEmbedTest{
 		
 		when(data.getPointGain()).thenReturn(pointGain);
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(2500);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
@@ -176,6 +183,7 @@ class DiscordEventListenerEmbedTest{
 		
 		when(data.getPointGain()).thenReturn(pointGain);
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(-2500);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
@@ -201,6 +209,7 @@ class DiscordEventListenerEmbedTest{
 		var balance = mock(Balance.class);
 		
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(balance.getBalance()).thenReturn(25);
 		
 		tested.onEvent(new PointsSpentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
@@ -218,7 +227,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void onStreamUp(){
-		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
+		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -232,7 +241,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void authorNotFound(){
-		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null));
+		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -245,7 +254,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void onStreamDown(){
-		tested.onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
+		tested.onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -263,6 +272,7 @@ class DiscordEventListenerEmbedTest{
 		var event = mock(Event.class);
 		
 		when(event.getTitle()).thenReturn(title);
+		when(event.getCreatedAt()).thenReturn(ZONED_NOW);
 		
 		tested.onEvent(new EventCreatedEvent(miner, streamer, event));
 		
@@ -290,6 +300,7 @@ class DiscordEventListenerEmbedTest{
 		when(placedPrediction.getAmount()).thenReturn(25);
 		when(placedPrediction.getOutcomeId()).thenReturn(outcomeId);
 		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
+		when(placedPrediction.getPredictedAt()).thenReturn(NOW);
 		when(prediction.getEvent()).thenReturn(event);
 		when(event.getOutcomes()).thenReturn(List.of(outcome1, outcome2));
 		when(outcome1.getId()).thenReturn("bad-id");
@@ -321,6 +332,7 @@ class DiscordEventListenerEmbedTest{
 		when(placedPrediction.getAmount()).thenReturn(25);
 		when(placedPrediction.getOutcomeId()).thenReturn("outcome-id");
 		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
+		when(placedPrediction.getPredictedAt()).thenReturn(NOW);
 		when(prediction.getEvent()).thenReturn(event);
 		when(event.getOutcomes()).thenReturn(List.of(outcome1));
 		when(outcome1.getId()).thenReturn("bad-id");
@@ -348,6 +360,7 @@ class DiscordEventListenerEmbedTest{
 		
 		when(placedPrediction.getAmount()).thenReturn(16);
 		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(predictionResultData.getTimestamp()).thenReturn(ZONED_NOW);
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
@@ -374,6 +387,7 @@ class DiscordEventListenerEmbedTest{
 		var result = mock(PredictionResultPayload.class);
 		
 		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(predictionResultData.getTimestamp()).thenReturn(ZONED_NOW);
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.REFUND);
 		
@@ -398,6 +412,7 @@ class DiscordEventListenerEmbedTest{
 		var result = mock(PredictionResultPayload.class);
 		
 		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(predictionResultData.getTimestamp()).thenReturn(ZONED_NOW);
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
@@ -421,7 +436,7 @@ class DiscordEventListenerEmbedTest{
 		var version = "test-version";
 		var commit = "test-commit";
 		var branch = "test-branch";
-		tested.onEvent(new MinerStartedEvent(miner, version, commit, branch));
+		tested.onEvent(new MinerStartedEvent(miner, version, commit, branch, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -437,7 +452,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void onStreamerAdded(){
-		tested.onEvent(new StreamerAddedEvent(miner, streamer));
+		tested.onEvent(new StreamerAddedEvent(miner, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -451,7 +466,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void onStreamerRemoved(){
-		tested.onEvent(new StreamerRemovedEvent(miner, streamer));
+		tested.onEvent(new StreamerRemovedEvent(miner, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -465,7 +480,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void onStreamerUnknown(){
-		tested.onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME));
+		tested.onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -486,7 +501,7 @@ class DiscordEventListenerEmbedTest{
 		var drop = mock(TimeBasedDrop.class);
 		when(drop.getName()).thenReturn(name);
 		
-		tested.onEvent(new DropClaimEvent(miner, drop));
+		tested.onEvent(new DropClaimEvent(miner, drop, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.embeds(List.of(Embed.builder()

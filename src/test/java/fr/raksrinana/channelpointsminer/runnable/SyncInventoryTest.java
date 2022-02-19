@@ -9,6 +9,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDropSelfEdge;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.event.impl.DropClaimEvent;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.MinerData;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -18,11 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +33,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SyncInventoryTest{
 	private static final String DROP_ID = "drop-id";
+	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
 	
 	@InjectMocks
 	private SyncInventory tested;
@@ -78,12 +82,16 @@ class SyncInventoryTest{
 	
 	@Test
 	void updateInventoryWithDropToClaim(){
-		when(gqlApi.inventory()).thenReturn(Optional.of(response));
-		assertDoesNotThrow(() -> tested.run());
-		
-		verify(minerData).setInventory(inventoryData);
-		verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
-		verify(miner).onEvent(new DropClaimEvent(miner, timeBasedDrop));
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(gqlApi.inventory()).thenReturn(Optional.of(response));
+			assertDoesNotThrow(() -> tested.run());
+			
+			verify(minerData).setInventory(inventoryData);
+			verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
+			verify(miner).onEvent(new DropClaimEvent(miner, timeBasedDrop, NOW));
+		}
 	}
 	
 	@Test

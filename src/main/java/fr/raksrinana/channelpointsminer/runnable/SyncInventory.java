@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.api.gql.data.types.Inventory;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDropSelfEdge;
 import fr.raksrinana.channelpointsminer.event.impl.DropClaimEvent;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -65,7 +66,7 @@ public class SyncInventory implements Runnable{
 		
 		log.debug("Claiming drops {}", dropsToClaim);
 		dropsToClaim.stream()
-				.map(drop -> new DropClaimEvent(miner, drop))
+				.map(drop -> new DropClaimEvent(miner, drop, TimeFactory.now()))
 				.forEach(miner::onEvent);
 		dropsToClaim.stream()
 				.map(TimeBasedDrop::getSelf)

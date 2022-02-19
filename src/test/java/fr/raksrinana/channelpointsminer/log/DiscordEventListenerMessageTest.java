@@ -38,6 +38,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import static org.mockito.Mockito.lenient;
@@ -51,6 +54,8 @@ class DiscordEventListenerMessageTest{
 	private static final String STREAMER_USERNAME = "streamer-name";
 	private static final String USERNAME = "username";
 	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
+	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
+	private static final ZonedDateTime ZONED_NOW = ZonedDateTime.ofInstant(NOW, ZoneId.systemDefault());
 	
 	private DiscordEventListener tested;
 	
@@ -76,7 +81,7 @@ class DiscordEventListenerMessageTest{
 	
 	@Test
 	void onClaimAvailable(){
-		tested.onEvent(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
+		tested.onEvent(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] 🎫 %s : Claim available".formatted(USERNAME, STREAMER_USERNAME))
@@ -91,6 +96,7 @@ class DiscordEventListenerMessageTest{
 		
 		when(data.getPointGain()).thenReturn(pointGain);
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(25);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(200);
@@ -110,6 +116,7 @@ class DiscordEventListenerMessageTest{
 		
 		when(data.getPointGain()).thenReturn(pointGain);
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(2500);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
@@ -129,6 +136,7 @@ class DiscordEventListenerMessageTest{
 		
 		when(data.getPointGain()).thenReturn(pointGain);
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(-2500);
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
@@ -146,6 +154,7 @@ class DiscordEventListenerMessageTest{
 		var balance = mock(Balance.class);
 		
 		when(data.getBalance()).thenReturn(balance);
+		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(balance.getBalance()).thenReturn(25);
 		
 		tested.onEvent(new PointsSpentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
@@ -157,7 +166,7 @@ class DiscordEventListenerMessageTest{
 	
 	@Test
 	void onStreamUp(){
-		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
+		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, STREAMER_USERNAME))
@@ -166,7 +175,7 @@ class DiscordEventListenerMessageTest{
 	
 	@Test
 	void authorNotFound(){
-		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null));
+		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, UNKNOWN_STREAMER))
@@ -175,7 +184,7 @@ class DiscordEventListenerMessageTest{
 	
 	@Test
 	void onStreamDown(){
-		tested.onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer));
+		tested.onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ⏹️ %s : Stream stopped".formatted(USERNAME, STREAMER_USERNAME))
@@ -188,6 +197,7 @@ class DiscordEventListenerMessageTest{
 		var event = mock(Event.class);
 		
 		when(event.getTitle()).thenReturn(title);
+		when(event.getCreatedAt()).thenReturn(ZONED_NOW);
 		
 		tested.onEvent(new EventCreatedEvent(miner, streamer, event));
 		
@@ -209,6 +219,7 @@ class DiscordEventListenerMessageTest{
 		when(placedPrediction.getAmount()).thenReturn(25);
 		when(placedPrediction.getOutcomeId()).thenReturn(outcomeId);
 		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
+		when(placedPrediction.getPredictedAt()).thenReturn(NOW);
 		when(prediction.getEvent()).thenReturn(event);
 		when(event.getOutcomes()).thenReturn(List.of(outcome1, outcome2));
 		when(outcome1.getId()).thenReturn("bad-id");
@@ -233,6 +244,7 @@ class DiscordEventListenerMessageTest{
 		when(placedPrediction.getAmount()).thenReturn(25);
 		when(placedPrediction.getOutcomeId()).thenReturn("outcome-id");
 		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
+		when(placedPrediction.getPredictedAt()).thenReturn(NOW);
 		when(prediction.getEvent()).thenReturn(event);
 		when(event.getOutcomes()).thenReturn(List.of(outcome1));
 		when(outcome1.getId()).thenReturn("bad-id");
@@ -253,6 +265,7 @@ class DiscordEventListenerMessageTest{
 		
 		when(placedPrediction.getAmount()).thenReturn(16);
 		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(predictionResultData.getTimestamp()).thenReturn(ZONED_NOW);
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
@@ -272,6 +285,7 @@ class DiscordEventListenerMessageTest{
 		var result = mock(PredictionResultPayload.class);
 		
 		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(predictionResultData.getTimestamp()).thenReturn(ZONED_NOW);
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.REFUND);
 		
@@ -289,6 +303,7 @@ class DiscordEventListenerMessageTest{
 		var result = mock(PredictionResultPayload.class);
 		
 		when(predictionResultData.getPrediction()).thenReturn(prediction);
+		when(predictionResultData.getTimestamp()).thenReturn(ZONED_NOW);
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
@@ -305,7 +320,7 @@ class DiscordEventListenerMessageTest{
 		var version = "test-version";
 		var commit = "test-commit";
 		var branch = "test-branch";
-		tested.onEvent(new MinerStartedEvent(miner, version, commit, branch));
+		tested.onEvent(new MinerStartedEvent(miner, version, commit, branch, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ✅ : Miner started (version: %s [%s - %s])".formatted(USERNAME, version, commit, branch))
@@ -314,7 +329,7 @@ class DiscordEventListenerMessageTest{
 	
 	@Test
 	void onStreamerAdded(){
-		tested.onEvent(new StreamerAddedEvent(miner, streamer));
+		tested.onEvent(new StreamerAddedEvent(miner, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ➕ %s : Streamer added".formatted(USERNAME, STREAMER_USERNAME))
@@ -323,7 +338,7 @@ class DiscordEventListenerMessageTest{
 	
 	@Test
 	void onStreamerRemoved(){
-		tested.onEvent(new StreamerRemovedEvent(miner, streamer));
+		tested.onEvent(new StreamerRemovedEvent(miner, streamer, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ➖ %s : Streamer removed".formatted(USERNAME, STREAMER_USERNAME))
@@ -332,7 +347,7 @@ class DiscordEventListenerMessageTest{
 	
 	@Test
 	void onStreamerUnknown(){
-		tested.onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME));
+		tested.onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] ❌ %s : Streamer unknown".formatted(USERNAME, STREAMER_USERNAME))
@@ -345,7 +360,7 @@ class DiscordEventListenerMessageTest{
 		var drop = mock(TimeBasedDrop.class);
 		when(drop.getName()).thenReturn(name);
 		
-		tested.onEvent(new DropClaimEvent(miner, drop));
+		tested.onEvent(new DropClaimEvent(miner, drop, NOW));
 		
 		verify(discordApi).sendMessage(Webhook.builder()
 				.content("[%s] 🎁 : Claiming drop [%s]".formatted(USERNAME, name))

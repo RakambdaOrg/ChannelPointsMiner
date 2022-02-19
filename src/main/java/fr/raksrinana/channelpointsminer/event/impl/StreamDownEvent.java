@@ -7,12 +7,13 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class StreamDownEvent extends AbstractStreamerEvent{
-	public StreamDownEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer){
-		super(miner, streamerId, streamerUsername, streamer);
+	public StreamDownEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant){
+		super(miner, streamerId, streamerUsername, streamer, instant);
 	}
 	
 	@Override

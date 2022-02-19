@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,8 +17,8 @@ public class MinerStartedEvent extends AbstractEvent{
 	private final String commit;
 	private final String branch;
 	
-	public MinerStartedEvent(@NotNull IMiner miner, @NotNull String version, @NotNull String commit, @NotNull String branch){
-		super(miner);
+	public MinerStartedEvent(@NotNull IMiner miner, @NotNull String version, @NotNull String commit, @NotNull String branch, @NotNull Instant instant){
+		super(miner, instant);
 		this.version = version;
 		this.commit = commit;
 		this.branch = branch;
