@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DatabaseFactoryTest{
@@ -25,16 +26,28 @@ class DatabaseFactoryTest{
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(databaseConfiguration.getHost()).thenReturn(HOST);
-		lenient().when(databaseConfiguration.getPort()).thenReturn(PORT);
+		lenient().when(databaseConfiguration.getJdbcUrl()).thenReturn("jdbc:mariadb://%s:%d/%s".formatted(HOST, PORT, DATABASE));
 		lenient().when(databaseConfiguration.getUsername()).thenReturn(USERNAME);
 		lenient().when(databaseConfiguration.getPassword()).thenReturn(PASSWORD);
-		lenient().when(databaseConfiguration.getDatabase()).thenReturn(DATABASE);
 	}
 	
 	@Test
 	void createDatabaseException(){
 		assertThrows(Exception.class, () -> DatabaseFactory.createDatabase(databaseConfiguration));
+	}
+	
+	@Test
+	void createDatabaseInvalidJdbcUrl(){
+		when(databaseConfiguration.getJdbcUrl()).thenReturn("jdbc:mariadb");
+		
+		assertThrows(IllegalStateException.class, () -> DatabaseFactory.createDatabase(databaseConfiguration));
+	}
+	
+	@Test
+	void createDatabaseInvalidJdbcType(){
+		when(databaseConfiguration.getJdbcUrl()).thenReturn("jdbc:unknown");
+		
+		assertThrows(IllegalStateException.class, () -> DatabaseFactory.createDatabase(databaseConfiguration));
 	}
 	
 	@Test

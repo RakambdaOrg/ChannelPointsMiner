@@ -21,6 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PointsHandlerTest{
@@ -69,9 +70,27 @@ class PointsHandlerTest{
 	}
 	
 	@Test
+	void pointsEarnedStreamerUnknown(){
+		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> tested.handle(topic, pointsEarnedMessage));
+		
+		verify(miner).onEvent(new PointsEarnedEvent(miner, STREAMER_ID, null, null, pointsEarnedData));
+	}
+	
+	@Test
 	void pointsSpent(){
 		assertDoesNotThrow(() -> tested.handle(topic, pointsSpentMessage));
 		
 		verify(miner).onEvent(new PointsSpentEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, pointsSpentData));
+	}
+	
+	@Test
+	void pointsSpentStreamerUnknown(){
+		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> tested.handle(topic, pointsSpentMessage));
+		
+		verify(miner).onEvent(new PointsSpentEvent(miner, STREAMER_ID, null, null, pointsSpentData));
 	}
 }

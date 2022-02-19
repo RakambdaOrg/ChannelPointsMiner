@@ -11,24 +11,37 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.SQLException;
 
 public class DatabaseFactory{
+	@NotNull
 	public static IDatabase createDatabase(@NotNull DatabaseConfiguration configuration) throws SQLException, HikariPool.PoolInitializationException{
-		var dbURL = "jdbc:mariadb://%s:%d/%s".formatted(
-				configuration.getHost(),
-				configuration.getPort(),
-				configuration.getDatabase()
-		);
-		
-		var poolConfiguration = new HikariConfig();
-		poolConfiguration.setJdbcUrl(dbURL);
-		poolConfiguration.setUsername(configuration.getUsername());
-		poolConfiguration.setPassword(configuration.getPassword());
-		poolConfiguration.setDriverClassName("org.mariadb.jdbc.Driver");
-		
-		var db = new MariaDBDatabase(new HikariDataSource(poolConfiguration));
+		var db = new MariaDBDatabase(createDatasource(configuration));
 		db.initDatabase();
 		return db;
 	}
 	
+	@NotNull
+	private static HikariDataSource createDatasource(@NotNull DatabaseConfiguration configuration){
+		var jdbcUrl = configuration.getJdbcUrl();
+		
+		var parts = jdbcUrl.split(":");
+		if(parts.length < 3){
+			throw new IllegalStateException("Malformed JDBC URL");
+		}
+		
+		var driver = switch(parts[1]){
+			case "mariadb" -> "org.mariadb.jdbc.Driver";
+			default -> throw new IllegalStateException("Unknown JDBC type " + parts[1]);
+		};
+		
+		var poolConfiguration = new HikariConfig();
+		poolConfiguration.setJdbcUrl(jdbcUrl);
+		poolConfiguration.setUsername(configuration.getUsername());
+		poolConfiguration.setPassword(configuration.getPassword());
+		poolConfiguration.setDriverClassName(driver);
+		
+		return new HikariDataSource(poolConfiguration);
+	}
+	
+	@NotNull
 	public static DatabaseHandler createDatabaseHandler(@NotNull IDatabase database){
 		return new DatabaseHandler(database);
 	}

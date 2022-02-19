@@ -117,4 +117,21 @@ class PredictionsHandlerPredictionResultTest{
 		
 		verify(miner).onEvent(new PredictionResultEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, predictionPlaced, predictionResultData));
 	}
+	
+	@Test
+	void removedPredictionPlacedUnknownStreamer(){
+		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
+		
+		var prediction = mock(BettingPrediction.class);
+		var predictionPlaced = mock(PlacedPrediction.class);
+		
+		tested.getPredictions().put(EVENT_ID, prediction);
+		tested.getPlacedPredictions().put(EVENT_ID, predictionPlaced);
+		
+		assertDoesNotThrow(() -> tested.handle(topic, predictionResult));
+		assertThat(tested.getPlacedPredictions()).isEmpty();
+		assertThat(tested.getPredictions()).isEmpty();
+		
+		verify(miner).onEvent(new PredictionResultEvent(miner, STREAMER_ID, null, null, predictionPlaced, predictionResultData));
+	}
 }

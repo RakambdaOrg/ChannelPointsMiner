@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 @NoArgsConstructor
@@ -13,17 +14,12 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class DatabaseConfiguration{
 	@NotNull
-	@JsonProperty("host")
-	private String host;
-	@JsonProperty("port")
-	private int port;
-	@NotNull
-	@JsonProperty("database")
-	private String database;
-	@NotNull
+	@JsonProperty("jdbcUrl")
+	private String jdbcUrl;
+	@Nullable
 	@JsonProperty("username")
 	private String username;
-	@NotNull
+	@Nullable
 	@JsonProperty("password")
 	private String password;
 }

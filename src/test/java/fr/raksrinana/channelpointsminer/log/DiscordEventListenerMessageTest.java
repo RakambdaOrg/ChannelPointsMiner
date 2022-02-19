@@ -16,6 +16,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.IEvent;
 import fr.raksrinana.channelpointsminer.event.impl.ClaimAvailableEvent;
 import fr.raksrinana.channelpointsminer.event.impl.DropClaimEvent;
 import fr.raksrinana.channelpointsminer.event.impl.EventCreatedEvent;
@@ -43,8 +44,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,6 +80,15 @@ class DiscordEventListenerMessageTest{
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
 		
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
+	}
+	
+	@Test
+	void notLoggableEventIsIgnored(){
+		var event = mock(IEvent.class);
+		
+		tested.onEvent(event);
+		
+		verify(discordApi, never()).sendMessage(any());
 	}
 	
 	@Test

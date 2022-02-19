@@ -29,6 +29,7 @@ class ClaimAvailableHandlerTest{
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CHANNEL_NAME = "channel-name";
 	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
+	private static final ZonedDateTime ZONED_NOW = ZonedDateTime.ofInstant(NOW, ZoneId.systemDefault());
 	
 	@InjectMocks
 	private ClaimAvailableHandler tested;
@@ -67,5 +68,21 @@ class ClaimAvailableHandlerTest{
 		
 		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
 		verify(miner).onEvent(new ClaimAvailableEvent(miner, CHANNEL_ID, CHANNEL_NAME, streamer, NOW));
+	}
+	
+	@Test
+	void claimUnknownStreamer(){
+		when(miner.getStreamerById(CHANNEL_ID)).thenReturn(Optional.empty());
+		
+		when(claimAvailable.getData()).thenReturn(claimAvailableData);
+		when(claimAvailableData.getTimestamp()).thenReturn(ZONED_NOW);
+		when(claimAvailableData.getClaim()).thenReturn(claim);
+		when(claim.getId()).thenReturn(CLAIM_ID);
+		when(claim.getChannelId()).thenReturn(CHANNEL_ID);
+		
+		assertDoesNotThrow(() -> tested.handle(topic, claimAvailable));
+		
+		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
+		verify(miner).onEvent(new ClaimAvailableEvent(miner, CHANNEL_ID, null, null, NOW));
 	}
 }

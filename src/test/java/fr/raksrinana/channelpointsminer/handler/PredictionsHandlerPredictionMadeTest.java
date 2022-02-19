@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerPredictionMadeTest{
@@ -89,6 +90,23 @@ class PredictionsHandlerPredictionMadeTest{
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
 		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
+	}
+	
+	@Test
+	void noPredictionsMadePreviouslyUnknownStreamer(){
+		when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
+		
+		var placedPrediction = PlacedPrediction.builder()
+				.eventId(EVENT_ID)
+				.amount(AMOUNT)
+				.outcomeId(OUTCOME_ID)
+				.predictedAt(PREDICTION_DATE)
+				.build();
+		
+		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
+		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
+		
+		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, null, null, placedPrediction));
 	}
 	
 	@Test

@@ -20,6 +20,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.IEvent;
 import fr.raksrinana.channelpointsminer.event.impl.ClaimAvailableEvent;
 import fr.raksrinana.channelpointsminer.event.impl.DropClaimEvent;
 import fr.raksrinana.channelpointsminer.event.impl.EventCreatedEvent;
@@ -53,8 +54,10 @@ import static java.awt.Color.CYAN;
 import static java.awt.Color.GREEN;
 import static java.awt.Color.PINK;
 import static java.awt.Color.RED;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -103,6 +106,15 @@ class DiscordEventListenerEmbedTest{
 		lenient().when(streamer.getChannelUrl()).thenReturn(channelUrl);
 		
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
+	}
+	
+	@Test
+	void notLoggableEventIsIgnored(){
+		var event = mock(IEvent.class);
+		
+		tested.onEvent(event);
+		
+		verify(discordApi, never()).sendMessage(any());
 	}
 	
 	@Test

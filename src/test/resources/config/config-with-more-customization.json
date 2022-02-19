@@ -25,11 +25,9 @@
       "analytics": {
         "enabled": true,
         "database": {
-          "host": "host",
-          "port": 1234,
+          "jdbcUrl": "jdbcUrl",
           "username": "user",
-          "password": "pass",
-          "database": "db"
+          "password": "pass"
         }
       }
     }
