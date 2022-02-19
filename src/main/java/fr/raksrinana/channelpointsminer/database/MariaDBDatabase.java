@@ -32,6 +32,18 @@ public class MariaDBDatabase implements IDatabase{
 						    `Reason` VARCHAR(16) NULL,
 						    INDEX `PointsDateIdx`(`BalanceDate`)
 						)
+						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+				"""
+						CREATE TABLE IF NOT EXISTS `Prediction` (
+							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
+							`EventID` VARCHAR(36) NOT NULL,
+							`EventDate` DATETIME NOT NULL,
+							`Type` VARCHAR(16) NULL,
+							`Description` VARCHAR(255) NULL,
+							INDEX `EventDateIdx`(`EventDate`),
+							INDEX `EventTypeIdx`(`Type`)
+						)
 						ENGINE=InnoDB DEFAULT CHARSET=utf8;""");
 	}
 	
@@ -73,7 +85,7 @@ public class MariaDBDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant balanceInstant) throws SQLException{
+	public void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant instant) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
 						INSERT INTO `Balance`(`ChannelId`, `BalanceDate`, `Balance`, `Reason`)
@@ -81,9 +93,27 @@ public class MariaDBDatabase implements IDatabase{
 				)){
 			
 			statement.setString(1, channelId);
-			statement.setObject(2, LocalDateTime.ofInstant(balanceInstant, UTC));
+			statement.setObject(2, LocalDateTime.ofInstant(instant, UTC));
 			statement.setInt(3, balance);
 			statement.setString(4, reason);
+			
+			statement.executeUpdate();
+		}
+	}
+	
+	@Override
+	public void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant) throws SQLException{
+		try(var conn = getConnection();
+				var statement = conn.prepareStatement("""
+						INSERT INTO `Prediction`(`ChannelId`, `EventId`, `EventDate`, `Type`, `Description`)
+						VALUES(?, ?, ?, ?, ?);"""
+				)){
+			
+			statement.setString(1, channelId);
+			statement.setString(2, eventId);
+			statement.setObject(3, LocalDateTime.ofInstant(instant, UTC));
+			statement.setString(4, type);
+			statement.setString(5, description);
 			
 			statement.executeUpdate();
 		}

@@ -13,7 +13,9 @@ public interface IDatabase extends AutoCloseable{
 	
 	void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException;
 	
-	void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant balanceInstant) throws SQLException;
+	void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant instant) throws SQLException;
+	
+	void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant) throws SQLException;
 	
 	@Override
 	void close();

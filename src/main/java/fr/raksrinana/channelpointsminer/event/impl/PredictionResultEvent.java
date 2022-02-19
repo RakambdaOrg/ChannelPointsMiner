@@ -9,6 +9,7 @@ import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @ToString
 public class PredictionResultEvent extends AbstractStreamerEvent{
 	private final PlacedPrediction placedPrediction;
+	@Getter
 	private final PredictionResultData predictionResultData;
 	
 	public PredictionResultEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @Nullable PlacedPrediction placedPrediction, @NotNull PredictionResultData predictionResultData){
@@ -40,7 +42,8 @@ public class PredictionResultEvent extends AbstractStreamerEvent{
 		return result.map(PredictionResultPayload::getType).orElse(PredictionResultType.UNKNOWN);
 	}
 	
-	private String getGain(){
+	@NotNull
+	public String getGain(){
 		if(getType() == PredictionResultType.REFUND){
 			return "0";
 		}
