@@ -291,4 +291,11 @@ class DatabaseHandlerTest{
 		
 		verify(database).addPrediction(CHANNEL_ID, EVENT_ID, "RESULT", gain, NOW);
 	}
+	
+	@Test
+	void closeClosesDatabase(){
+		tested.close();
+		
+		verify(database).close();
+	}
 }
