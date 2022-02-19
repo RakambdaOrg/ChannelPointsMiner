@@ -25,23 +25,11 @@
         </Routing>
     </Appenders>
     <Loggers>
-        <Logger level="warn" name="org.java_websocket" additivity="false">
+        <Logger level="trace" name="fr.raksrinana.channelpointsminer" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="router"/>
         </Logger>
-        <Logger level="warn" name="org.kitteh.irc" additivity="false">
-            <AppenderRef ref="console"/>
-            <AppenderRef ref="router"/>
-        </Logger>
-        <Logger level="warn" name="io.netty" additivity="false">
-            <AppenderRef ref="console"/>
-            <AppenderRef ref="router"/>
-        </Logger>
-        <Logger level="warn" name="com.zaxxer.hikari" additivity="false">
-            <AppenderRef ref="console"/>
-            <AppenderRef ref="router"/>
-        </Logger>
-        <Root level="trace" additivity="false">
+        <Root level="warn" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="router"/>
         </Root>
