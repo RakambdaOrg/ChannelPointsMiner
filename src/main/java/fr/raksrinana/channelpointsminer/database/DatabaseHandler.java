@@ -12,6 +12,7 @@ import fr.raksrinana.channelpointsminer.event.impl.StreamerAddedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
 
 @RequiredArgsConstructor
@@ -33,10 +34,11 @@ public class DatabaseHandler implements IEventListener{
 				updateStreamer(e);
 			}
 			else if(event instanceof PointsEarnedEvent e){
-				updateBalance(e, e.getPointsEarnedData().getBalance());
+				var reasonCode = e.getPointsEarnedData().getPointGain().getReasonCode();
+				updateBalance(e, e.getPointsEarnedData().getBalance(), reasonCode.name());
 			}
 			else if(event instanceof PointsSpentEvent e){
-				updateBalance(e, e.getPointsSpentData().getBalance());
+				updateBalance(e, e.getPointsSpentData().getBalance(), null);
 			}
 		}
 		catch(Exception e){
@@ -52,8 +54,8 @@ public class DatabaseHandler implements IEventListener{
 		database.updateChannelStatusTime(event.getStreamerId(), event.getInstant());
 	}
 	
-	private void updateBalance(@NotNull IStreamerEvent event, @NotNull Balance balance) throws SQLException{
-		database.addBalance(event.getStreamerId(), balance.getBalance(), event.getInstant());
+	private void updateBalance(@NotNull IStreamerEvent event, @NotNull Balance balance, @Nullable String reason) throws SQLException{
+		database.addBalance(event.getStreamerId(), balance.getBalance(), reason, event.getInstant());
 	}
 	
 	@Override

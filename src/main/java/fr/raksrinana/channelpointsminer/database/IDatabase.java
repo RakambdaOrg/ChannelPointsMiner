@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.database;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -12,7 +13,7 @@ public interface IDatabase extends AutoCloseable{
 	
 	void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException;
 	
-	void addBalance(@NotNull String channelId, int balance, @NotNull Instant balanceInstant) throws SQLException;
+	void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant balanceInstant) throws SQLException;
 	
 	@Override
 	void close();

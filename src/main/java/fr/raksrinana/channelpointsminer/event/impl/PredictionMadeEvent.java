@@ -8,6 +8,7 @@ import fr.raksrinana.channelpointsminer.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class PredictionMadeEvent extends AbstractStreamerEvent{
 	private static final String UNKNOWN_OUTCOME = "UnknownOutcome";
 	
+	@Getter
 	private final PlacedPrediction placedPrediction;
 	
 	public PredictionMadeEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PlacedPrediction placedPrediction){

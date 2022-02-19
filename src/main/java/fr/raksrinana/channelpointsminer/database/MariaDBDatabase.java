@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.database;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -28,6 +29,7 @@ public class MariaDBDatabase implements IDatabase{
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 						    `BalanceDate` DATETIME NOT NULL,
 						    `Balance` INT NOT NULL,
+						    `Reason` VARCHAR(16) NULL,
 						    INDEX `PointsDateIdx`(`BalanceDate`)
 						)
 						ENGINE=InnoDB DEFAULT CHARSET=utf8;""");
@@ -71,16 +73,17 @@ public class MariaDBDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void addBalance(@NotNull String channelId, int balance, @NotNull Instant balanceInstant) throws SQLException{
+	public void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant balanceInstant) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
-						INSERT INTO `Balance`(`ChannelId`, `BalanceDate`, `Balance`)
-						VALUES(?, ?, ?);"""
+						INSERT INTO `Balance`(`ChannelId`, `BalanceDate`, `Balance`, `Reason`)
+						VALUES(?, ?, ?, ?);"""
 				)){
 			
 			statement.setString(1, channelId);
 			statement.setObject(2, LocalDateTime.ofInstant(balanceInstant, UTC));
 			statement.setInt(3, balance);
+			statement.setString(4, reason);
 			
 			statement.executeUpdate();
 		}
