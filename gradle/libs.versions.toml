@@ -17,6 +17,7 @@ json-unit-version = "2.32.0"
 kitteh-irc-version = "8.0.0"
 hikari-cp-version = "5.0.1"
 mariadb-version = "3.0.2-rc"
+sqlite-version = "3.36.0.3"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
@@ -40,8 +41,9 @@ lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "l
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
 websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version" }
 kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitteh-irc-version" }
-mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb-version" }
 hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari-cp-version" }
+mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb-version" }
+sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-version" }
 
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }

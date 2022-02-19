@@ -3,9 +3,11 @@ package fr.raksrinana.channelpointsminer.database;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import static java.time.ZoneOffset.UTC;
 
-public class MariaDBDatabase extends BaseDatabase{
-	public MariaDBDatabase(HikariDataSource dataSource){
+public class SQLiteDatabase extends BaseDatabase{
+	public SQLiteDatabase(HikariDataSource dataSource){
 		super(dataSource);
 	}
 	
@@ -16,42 +18,45 @@ public class MariaDBDatabase extends BaseDatabase{
 							`ID` VARCHAR(32) NOT NULL PRIMARY KEY,
 						    `Username` VARCHAR(128) NOT NULL,
 						    `LastStatusChange` DATETIME NOT NULL
-						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+						);""",
 				"""
 						CREATE TABLE IF NOT EXISTS `Balance` (
-							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+							`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 						    `BalanceDate` DATETIME NOT NULL,
-						    `Balance` INT NOT NULL,
-						    `Reason` VARCHAR(16) NULL,
-						    INDEX `PointsDateIdx`(`BalanceDate`)
-						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+						    `Balance` INTEGER NOT NULL,
+						    `Reason` VARCHAR(16) NULL
+						);""",
+				"""
+						CREATE INDEX IF NOT EXISTS `PointsDateIdx` ON `Balance`(`BalanceDate`);""",
 				"""
 						CREATE TABLE IF NOT EXISTS `Prediction` (
-							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+							`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 							`EventID` VARCHAR(36) NOT NULL,
 							`EventDate` DATETIME NOT NULL,
 							`Type` VARCHAR(16) NULL,
-							`Description` VARCHAR(255) NULL,
-							INDEX `EventDateIdx`(`EventDate`),
-							INDEX `EventTypeIdx`(`Type`)
-						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""");
+							`Description` VARCHAR(255) NULL
+						);""",
+				"""
+						CREATE INDEX IF NOT EXISTS `EventDateIdx` ON `Prediction`(`EventDate`);""",
+				"""
+						CREATE INDEX IF NOT EXISTS `EventTypeIdx` ON `Prediction`(`Type`);""");
 	}
 	
 	@Override
 	public void createChannel(@NotNull String channelId, @NotNull String username) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
-						INSERT IGNORE INTO `Channel`(`ID`, `Username`, `LastStatusChange`)
-						VALUES(?, ?, NOW());"""
+						INSERT OR IGNORE INTO `Channel`(`ID`, `Username`, `LastStatusChange`)
+						VALUES(?, ?, ?);"""
 				)){
+			
+			var timestamp = LocalDateTime.now(UTC);
 			
 			statement.setString(1, channelId);
 			statement.setString(2, username);
+			statement.setObject(3, timestamp);
 			
 			statement.executeUpdate();
 		}

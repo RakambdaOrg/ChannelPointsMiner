@@ -27,6 +27,7 @@ dependencies {
 
     implementation(libs.hikaricp)
     implementation(libs.mariadb)
+    implementation(libs.sqlite)
 
     compileOnly(libs.jetbrainsAnnotations)
 
