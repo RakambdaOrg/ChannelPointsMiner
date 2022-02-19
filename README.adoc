@@ -68,7 +68,7 @@ services:
   miner:
     image: mrcraftcod/channel-points-miner:latest
     command: "--settings /usr/src/app/config.json"
-    env:
+    environment:
       JDK_JAVA_OPTIONS: "-Dlog4j.configurationFile=/usr/src/app/log4j2.xml"
     volumes:
       - ./authentication:/usr/src/app/authentication
