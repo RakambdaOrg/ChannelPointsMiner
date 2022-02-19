@@ -13,13 +13,16 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 @Builder
 public class DatabaseConfiguration{
-	@NotNull
 	@JsonProperty("jdbcUrl")
+	@Comment(value = "JDBC connection URL")
+	@NotNull
 	private String jdbcUrl;
-	@Nullable
 	@JsonProperty("username")
-	private String username;
+	@Comment(value = "Database username")
 	@Nullable
+	private String username;
 	@JsonProperty("password")
+	@Comment(value = "Database password")
+	@Nullable
 	private String password;
 }

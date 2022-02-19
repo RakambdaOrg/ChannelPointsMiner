@@ -62,6 +62,7 @@ public class AccountConfiguration{
 	private int reloadEvery = 0;
 	@JsonProperty("analytics")
 	@NotNull
+	@Comment(value = "Analytics settings")
 	@Builder.Default
 	private AnalyticsConfiguration analytics = new AnalyticsConfiguration();
 }

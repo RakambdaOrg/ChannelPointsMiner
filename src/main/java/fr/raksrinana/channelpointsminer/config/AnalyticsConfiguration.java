@@ -13,9 +13,11 @@ import org.jetbrains.annotations.Nullable;
 @Builder
 public class AnalyticsConfiguration{
 	@JsonProperty("enabled")
+	@Comment(value = "Enable or disable data collection")
 	@Builder.Default
 	private boolean enabled = false;
-	@Nullable
 	@JsonProperty("database")
+	@Comment(value = "Database settings")
+	@Nullable
 	private DatabaseConfiguration database;
 }
