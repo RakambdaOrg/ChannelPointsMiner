@@ -36,8 +36,9 @@ public class DatabaseHandler implements IEventListener{
 				updateStreamer(e);
 			}
 			else if(event instanceof PointsEarnedEvent e){
-				var reasonCode = e.getPointsEarnedData().getPointGain().getReasonCode();
-				updateBalance(e, e.getPointsEarnedData().getBalance(), reasonCode.name());
+				var pointsEarnedData = e.getPointsEarnedData();
+				var reasonCode = pointsEarnedData.getPointGain().getReasonCode();
+				updateBalance(e, pointsEarnedData.getBalance(), reasonCode.name());
 			}
 			else if(event instanceof PointsSpentEvent e){
 				updateBalance(e, e.getPointsSpentData().getBalance(), null);
@@ -67,8 +68,8 @@ public class DatabaseHandler implements IEventListener{
 		database.addBalance(event.getStreamerId(), balance.getBalance(), reason, event.getInstant());
 	}
 	
-	private void addPrediction(@NotNull IStreamerEvent e, @NotNull String eventId, @NotNull String type, @NotNull String description) throws SQLException{
-		database.addPrediction(e.getStreamerId(), eventId, type, description, e.getInstant());
+	private void addPrediction(@NotNull IStreamerEvent event, @NotNull String eventId, @NotNull String type, @NotNull String description) throws SQLException{
+		database.addPrediction(event.getStreamerId(), eventId, type, description, event.getInstant());
 	}
 	
 	@Override
