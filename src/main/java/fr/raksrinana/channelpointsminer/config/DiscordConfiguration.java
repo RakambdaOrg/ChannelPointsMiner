@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 
@@ -15,13 +14,14 @@ import java.net.URL;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Log4j2
 public class DiscordConfiguration{
 	@JsonProperty("webhookUrl")
 	@JsonDeserialize(using = URLDeserializer.class)
 	@Nullable
+	@Comment("URL of the webhook")
 	private URL url;
 	@JsonProperty("embeds")
 	@Builder.Default
+	@Comment("Use embeds in the messages or not")
 	private boolean embeds = false;
 }

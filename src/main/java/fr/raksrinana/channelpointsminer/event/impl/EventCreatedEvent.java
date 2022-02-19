@@ -1,23 +1,23 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class EventCreatedLogEvent extends AbstractStreamerLogEvent{
+public class EventCreatedEvent extends AbstractStreamerEvent{
 	private final Event event;
 	
-	public EventCreatedLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer, @NotNull Event event){
-		super(miner, streamer);
+	public EventCreatedEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Event event){
+		super(miner, streamer, event.getCreatedAt().toInstant());
 		this.event = event;
 	}
 	

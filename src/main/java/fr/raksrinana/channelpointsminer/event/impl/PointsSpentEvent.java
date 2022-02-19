@@ -1,10 +1,12 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,11 +15,12 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PointsSpentLogEvent extends AbstractStreamerLogEvent{
+public class PointsSpentEvent extends AbstractStreamerEvent{
+	@Getter
 	private final PointsSpentData pointsSpentData;
 	
-	public PointsSpentLogEvent(@NotNull IMiner miner, @Nullable Streamer streamer, @NotNull PointsSpentData pointsSpentData){
-		super(miner, streamer);
+	public PointsSpentEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PointsSpentData pointsSpentData){
+		super(miner, streamerId, streamerUsername, streamer, pointsSpentData.getTimestamp().toInstant());
 		this.pointsSpentData = pointsSpentData;
 	}
 	

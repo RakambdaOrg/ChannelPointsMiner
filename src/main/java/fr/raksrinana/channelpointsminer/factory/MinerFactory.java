@@ -1,11 +1,13 @@
 package fr.raksrinana.channelpointsminer.factory;
 
+import com.zaxxer.hikari.pool.HikariPool;
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
@@ -27,10 +29,24 @@ public class MinerFactory{
 		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
 		miner.addHandler(MessageHandlerFactory.createPointsHandler(miner));
 		
-		miner.addLogEventListener(LogEventListenerFactory.createLogger());
+		miner.addEventListener(LogEventListenerFactory.createLogger());
 		if(Objects.nonNull(config.getDiscord().getUrl())){
 			var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
-			miner.addLogEventListener(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord().isEmbeds()));
+			miner.addEventListener(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord().isEmbeds()));
+		}
+		
+		if(config.getAnalytics().isEnabled()){
+			var dbConfig = config.getAnalytics().getDatabase();
+			if(Objects.isNull(dbConfig)){
+				throw new IllegalStateException("Analytics is enabled but no database is defined");
+			}
+			try{
+				var database = DatabaseFactory.createDatabase(dbConfig);
+				miner.addEventListener(DatabaseFactory.createDatabaseHandler(database));
+			}
+			catch(SQLException | HikariPool.PoolInitializationException e){
+				throw new IllegalStateException("Failed to set up database", e);
+			}
 		}
 		
 		return miner;

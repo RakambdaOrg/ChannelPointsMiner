@@ -1,11 +1,13 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event;
 
+import fr.raksrinana.channelpointsminer.event.impl.MinerStartedEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
@@ -16,14 +18,14 @@ import static org.assertj.core.api.Assertions.fail;
 
 @ExtendWith(MockitoExtension.class)
 class AbstractLogEventTest{
-	private AbstractLogEvent tested;
+	private AbstractEvent tested;
 	
 	@Mock
 	private IMiner miner;
 	
 	@BeforeEach
 	void setUp(){
-		tested = new MinerStartedLogEvent(miner, "", "", "");
+		tested = new MinerStartedEvent(miner, "", "", "", Instant.now());
 	}
 	
 	@Test

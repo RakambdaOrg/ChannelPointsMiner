@@ -5,10 +5,10 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.eventupdated.EventUp
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.impl.EventCreatedEvent;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
-import fr.raksrinana.channelpointsminer.log.event.EventCreatedLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.prediction.delay.IDelayCalculator;
@@ -29,7 +29,14 @@ import java.util.concurrent.TimeUnit;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerEventUpdatedTest{
@@ -117,7 +124,7 @@ class PredictionsHandlerEventUpdatedTest{
 			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
-			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event2));
+			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event2));
 			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}

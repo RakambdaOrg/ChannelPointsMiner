@@ -1,34 +1,32 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event.impl;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Field;
-import fr.raksrinana.channelpointsminer.api.gql.data.types.TimeBasedDrop;
+import fr.raksrinana.channelpointsminer.event.AbstractStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class DropClaimLogEvent extends AbstractLogEvent{
-	private final TimeBasedDrop drop;
-	
-	public DropClaimLogEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop){
-		super(miner);
-		this.drop = drop;
+public class StreamerUnknownEvent extends AbstractStreamerEvent{
+	public StreamerUnknownEvent(@NotNull IMiner miner, @NotNull String streamerUsername, @NotNull Instant instant){
+		super(miner, "-1", streamerUsername, null, instant);
 	}
 	
 	@Override
 	@NotNull
 	public String getAsLog(){
-		return "Claiming drop [%s]".formatted(drop.getName());
+		return "Streamer unknown";
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
-		return "🎁";
+		return "❌";
 	}
 	
 	@Override
@@ -37,16 +35,14 @@ public class DropClaimLogEvent extends AbstractLogEvent{
 	}
 	
 	@Override
-	
 	@NotNull
 	protected String getEmbedDescription(){
-		return "Claiming drop";
+		return "Streamer unknown";
 	}
 	
-	@Override
 	@NotNull
+	@Override
 	protected Collection<? extends Field> getEmbedFields(){
-		return List.of(
-				Field.builder().name("Name").value(drop.getName()).build());
+		return List.of(Field.builder().name("Username").value(getStreamerUsername().orElseThrow()).build());
 	}
 }

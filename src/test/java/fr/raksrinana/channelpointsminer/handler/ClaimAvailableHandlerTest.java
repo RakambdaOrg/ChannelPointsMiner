@@ -5,7 +5,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Claim;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
-import fr.raksrinana.channelpointsminer.log.event.ClaimAvailableLogEvent;
+import fr.raksrinana.channelpointsminer.event.impl.ClaimAvailableEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.InjectMocks;
@@ -14,14 +14,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ClaimAvailableHandlerTest{
 	private static final String CLAIM_ID = "claim-id";
 	private static final String CHANNEL_ID = "channel-id";
+	private static final String CHANNEL_NAME = "channel-name";
+	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
+	private static final ZonedDateTime ZONED_NOW = ZonedDateTime.ofInstant(NOW, ZoneId.systemDefault());
 	
 	@InjectMocks
 	private ClaimAvailableHandler tested;
@@ -45,11 +53,13 @@ class ClaimAvailableHandlerTest{
 	void setUp(){
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getStreamerById(CHANNEL_ID)).thenReturn(Optional.of(streamer));
+		lenient().when(streamer.getUsername()).thenReturn(CHANNEL_NAME);
 	}
 	
 	@Test
 	void claim(){
 		when(claimAvailable.getData()).thenReturn(claimAvailableData);
+		when(claimAvailableData.getTimestamp()).thenReturn(ZonedDateTime.ofInstant(NOW, ZoneId.systemDefault()));
 		when(claimAvailableData.getClaim()).thenReturn(claim);
 		when(claim.getId()).thenReturn(CLAIM_ID);
 		when(claim.getChannelId()).thenReturn(CHANNEL_ID);
@@ -57,6 +67,22 @@ class ClaimAvailableHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, claimAvailable));
 		
 		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
-		verify(miner).onLogEvent(new ClaimAvailableLogEvent(miner, streamer));
+		verify(miner).onEvent(new ClaimAvailableEvent(miner, CHANNEL_ID, CHANNEL_NAME, streamer, NOW));
+	}
+	
+	@Test
+	void claimUnknownStreamer(){
+		when(miner.getStreamerById(CHANNEL_ID)).thenReturn(Optional.empty());
+		
+		when(claimAvailable.getData()).thenReturn(claimAvailableData);
+		when(claimAvailableData.getTimestamp()).thenReturn(ZONED_NOW);
+		when(claimAvailableData.getClaim()).thenReturn(claim);
+		when(claim.getId()).thenReturn(CLAIM_ID);
+		when(claim.getChannelId()).thenReturn(CHANNEL_ID);
+		
+		assertDoesNotThrow(() -> tested.handle(topic, claimAvailable));
+		
+		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
+		verify(miner).onEvent(new ClaimAvailableEvent(miner, CHANNEL_ID, null, null, NOW));
 	}
 }

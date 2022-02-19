@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.log.event;
+package fr.raksrinana.channelpointsminer.event;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.Author;
 import fr.raksrinana.channelpointsminer.api.discord.data.Embed;
@@ -6,7 +6,6 @@ import fr.raksrinana.channelpointsminer.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.api.discord.data.Footer;
 import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
-import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public abstract class AbstractLogEvent implements ILogEvent{
+public abstract class AbstractEvent implements IEvent, ILoggableEvent{
 	protected static final int COLOR_INFO = Color.CYAN.getRGB();
 	protected static final int COLOR_PREDICTION = Color.PINK.getRGB();
 	protected static final int COLOR_POINTS_WON = Color.GREEN.getRGB();
@@ -39,6 +38,9 @@ public abstract class AbstractLogEvent implements ILogEvent{
 	@Getter
 	@NotNull
 	private final IMiner miner;
+	@Getter
+	@NotNull
+	private final Instant instant;
 	
 	@NotNull
 	@Override
@@ -69,32 +71,9 @@ public abstract class AbstractLogEvent implements ILogEvent{
 				getWebhookMessage());
 	}
 	
-	@Override
-	@NotNull
-	public Optional<String> getStreamerUsername(){
-		return getStreamer().map(Streamer::getUsername);
-	}
-	
-	@NotNull
-	@Override
-	public Optional<Streamer> getStreamer(){
-		return Optional.empty();
-	}
-	
 	@Nullable
-	private Author getEmbedAuthor(){
-		var username = getStreamerUsername();
-		if(username.isEmpty()){
-			return null;
-		}
-		
-		var author = Author.builder().name(username.get());
-		
-		getStreamer().ifPresent(s -> author
-				.iconUrl(s.getProfileImage().orElse(null))
-				.url(s.getChannelUrl()));
-		
-		return author.build();
+	protected Author getEmbedAuthor(){
+		return null;
 	}
 	
 	@NotNull

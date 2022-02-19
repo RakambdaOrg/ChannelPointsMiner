@@ -20,6 +20,7 @@ class StreamerSettingsTest{
 				.participateCampaigns(true)
 				.followRaid(true)
 				.joinIrc(true)
+				.index(24)
 				.priorities(List.of(priority))
 				.build();
 		
@@ -30,6 +31,7 @@ class StreamerSettingsTest{
 		assertThat(copy.isParticipateCampaigns()).isEqualTo(tested.isParticipateCampaigns());
 		assertThat(copy.isFollowRaid()).isEqualTo(tested.isFollowRaid());
 		assertThat(copy.isJoinIrc()).isEqualTo(tested.isJoinIrc());
+		assertThat(copy.getIndex()).isEqualTo(tested.getIndex());
 		
 		assertThat(copy.getPriorities()).isNotSameAs(tested.getPriorities()).hasSize(1);
 		assertThat(copy.getPriorities().get(0)).isSameAs(priority);

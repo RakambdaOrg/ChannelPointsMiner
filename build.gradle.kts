@@ -25,6 +25,10 @@ dependencies {
     implementation(libs.websocket)
     implementation(libs.kittehIrc)
 
+    implementation(libs.hikaricp)
+    implementation(libs.mariadb)
+    implementation(libs.sqlite)
+
     compileOnly(libs.jetbrainsAnnotations)
 
     testImplementation(libs.bundles.junit)
