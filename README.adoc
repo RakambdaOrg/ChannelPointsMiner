@@ -245,8 +245,8 @@ You'll therefore have to ajust the settings for each mined account to poit point
 |jdbcUrl
 |link:https://www.baeldung.com/java-jdbc-url-format[JDBC url] for the database connection
 
-* MariaDB: `jdbc:mariadb://host:port/database`
-* SQLite: `jdbc:sqlite:/path/to/file`.
+* MariaDB: `jdbc:mariadb://host:port/database` (great if you have a DB available or running inside docker as you can set a mariadb container)
+* SQLite: `jdbc:sqlite:/path/to/file` (great running locally and want to store it to a file, however less resilient and more prone to corruption).
 
 |
 
