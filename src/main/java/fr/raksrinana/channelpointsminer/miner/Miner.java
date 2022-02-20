@@ -24,6 +24,7 @@ import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
+import fr.raksrinana.channelpointsminer.runnable.SyncInventory;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.AccessLevel;
@@ -44,12 +45,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
+import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
 import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
 import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
 import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.RAID;
 import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
 import static fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory.createSendMinutesWatched;
-import static fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory.createSyncInventory;
 import static fr.raksrinana.channelpointsminer.factory.MinerRunnableFactory.createWebSocketPing;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -79,6 +80,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	private final MinerData minerData;
 	
 	private UpdateStreamInfo updateStreamInfo;
+	private SyncInventory syncInventory;
 	
 	@Getter
 	private TwitchLogin twitchLogin;
@@ -123,7 +125,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
 			scheduledExecutor.scheduleWithFixedDelay(createSendMinutesWatched(this), 0, 1, MINUTES);
 			scheduledExecutor.scheduleAtFixedRate(createWebSocketPing(this), 25, 25, SECONDS);
-			scheduledExecutor.scheduleAtFixedRate(createSyncInventory(this), 1, 15, MINUTES);
+			scheduledExecutor.scheduleAtFixedRate(getSyncInventory(), 1, 15, MINUTES);
 			
 			var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, accountConfiguration.isLoadFollows());
 			if(accountConfiguration.getReloadEvery() > 0){
@@ -134,6 +136,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			}
 			
 			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
+			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId());
 		}
 	}
 	
@@ -257,9 +260,20 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		}
 	}
 	
-	@Override
-	public boolean containsStreamer(@NotNull Streamer streamer){
-		return streamers.containsKey(streamer.getId());
+	@NotNull
+	private UpdateStreamInfo getUpdateStreamInfo(){
+		if(Objects.isNull(updateStreamInfo)){
+			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
+		}
+		return updateStreamInfo;
+	}
+	
+	@NotNull
+	private SyncInventory getSyncInventory(){
+		if(Objects.isNull(syncInventory)){
+			syncInventory = MinerRunnableFactory.createSyncInventory(this);
+		}
+		return syncInventory;
 	}
 	
 	@Override
@@ -309,11 +323,14 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		}));
 	}
 	
-	private UpdateStreamInfo getUpdateStreamInfo(){
-		if(Objects.isNull(updateStreamInfo)){
-			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
-		}
-		return updateStreamInfo;
+	@Override
+	public void syncInventory(){
+		getSyncInventory().run();
+	}
+	
+	@Override
+	public boolean containsStreamer(@NotNull Streamer streamer){
+		return streamers.containsKey(streamer.getId());
 	}
 	
 	public void addHandler(@NotNull IMessageHandler handler){

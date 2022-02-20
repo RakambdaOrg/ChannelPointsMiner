@@ -55,6 +55,8 @@ public interface IMiner extends IEventListener{
 	
 	void updateStreamerInfos(@NotNull Streamer streamer);
 	
+	void syncInventory();
+	
 	boolean containsStreamer(@NotNull Streamer streamer);
 	
 	@NotNull

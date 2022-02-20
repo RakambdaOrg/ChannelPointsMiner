@@ -1,16 +1,40 @@
 package fr.raksrinana.channelpointsminer.api.ws;
 
 import fr.raksrinana.channelpointsminer.api.gql.data.types.MultiplierReasonCode;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.*;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimAvailable;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimClaimed;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.Commercial;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.CreateNotification;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PointsEarned;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PointsSpent;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionResult;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionUpdated;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidCancelV2;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidGoV2;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidUpdateV2;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimclaimed.ClaimClaimedData;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.CreateNotificationData;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.Notification;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.NotificationAction;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.NotificationDisplayType;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.NotificationRenderStyle;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.Summary;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionupdated.PredictionUpdatedData;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.*;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Claim;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.CommunityPointsMultiplier;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PointGain;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Raid;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageData;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
@@ -29,7 +53,11 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import static fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PointReasonCode.CLAIM;
-import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.*;
+import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
+import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
+import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
+import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.RAID;
+import static fr.raksrinana.channelpointsminer.api.ws.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
 import static fr.raksrinana.channelpointsminer.tests.TestUtils.getAllResourceContent;
 import static java.time.ZoneOffset.UTC;
 import static org.mockito.Mockito.timeout;
@@ -405,6 +433,58 @@ class TwitchWebSocketClientMessageTest{
 														.build())
 												.createdAt(ZonedDateTime.of(2021, 11, 15, 19, 0, 18, 0, UTC))
 												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onCreateNotification(WebsocketMockServer server) throws MalformedURLException{
+		server.send(getAllResourceContent("api/ws/createNotification.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(CreateNotification.builder()
+								.data(CreateNotificationData.builder()
+										.summary(Summary.builder()
+												.unseenViewCount(5)
+												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 280058797, UTC))
+												.viewerUnreadCount(8)
+												.creatorUnreadCount(1)
+												.build())
+										.notification(Notification.builder()
+												.userId("123456789")
+												.id("notification-id")
+												.body("notification-body")
+												.bodyMd("notification-body-md")
+												.type("user_drop_reward_reminder_notification")
+												.renderStyle(NotificationRenderStyle.DEFAULT)
+												.thumbnailUrl(new URL("https://thumbnail.com"))
+												.actions(List.of(NotificationAction.builder()
+														.id("CTA")
+														.type("click")
+														.url(new URL("https://www.twitch.tv/inventory"))
+														.modalId("")
+														.body("Open")
+														.label("CTA")
+														.build()))
+												.createdAt(ZonedDateTime.of(2022, 1, 15, 18, 45, 28, 412342347, UTC))
+												.updatedAt(ZonedDateTime.of(2022, 1, 16, 18, 45, 28, 412342347, UTC))
+												.read(false)
+												.displayType(NotificationDisplayType.VIEWER)
+												.category("transactional")
+												.mobileDestinationType("ExternalLink")
+												.mobileDestinationKey(new URL("https://www.twitch.tv/inventory"))
+												.build())
+										.persistent(true)
+										.toast(false)
+										.displayType(NotificationDisplayType.VIEWER)
 										.build())
 								.build())
 						.build())
