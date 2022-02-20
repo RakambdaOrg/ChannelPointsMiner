@@ -14,6 +14,7 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = PongResponse.class, name = "PONG"),
 		@JsonSubTypes.Type(value = ResponseResponse.class, name = "RESPONSE"),
 		@JsonSubTypes.Type(value = MessageResponse.class, name = "MESSAGE"),
+		@JsonSubTypes.Type(value = ReconnectResponse.class, name = "RECONNECT"),
 })
 @ToString
 @EqualsAndHashCode
