@@ -11,6 +11,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.ITwitchWebSocketResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.PongResponse;
+import fr.raksrinana.channelpointsminer.api.ws.data.response.ReconnectResponse;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.ResponseResponse;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
@@ -81,6 +82,9 @@ public class TwitchWebSocketClient extends WebSocketClient{
 			}
 			else if(message instanceof MessageResponse messageResponse){
 				logContext.withTopic(messageResponse.getData().getTopic());
+			}
+			else if(message instanceof ReconnectResponse){
+				close(GOING_AWAY);
 			}
 			listeners.forEach(listener -> listener.onWebSocketMessage(message));
 		}
