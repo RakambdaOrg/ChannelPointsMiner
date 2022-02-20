@@ -3,9 +3,10 @@ package fr.raksrinana.channelpointsminer.runnable;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerUnknownEvent;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.log.LogContext;
-import fr.raksrinana.channelpointsminer.log.event.StreamerUnknownLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.runnable.data.StreamerResult;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
@@ -58,13 +59,15 @@ public class StreamerConfigurationReload implements Runnable{
 						.map(result -> {
 							var settings = result.getStreamerSettingsSupplier().get();
 							var streamer = result.getStreamerSupplier().apply(settings);
-							return Map.entry(oldStreamer, streamer);
+							if(streamer.isEmpty()){
+								return null;
+							}
+							return Map.entry(oldStreamer, streamer.get());
 						}))
 				.flatMap(Optional::stream)
-				.filter(entry -> entry.getValue().isPresent())
 				.forEach(entry -> {
 					var old = entry.getKey();
-					var update = entry.getValue().get();
+					var update = entry.getValue();
 					
 					old.setSettings(update.getSettings());
 					miner.updateStreamer(old);
@@ -136,7 +139,7 @@ public class StreamerConfigurationReload implements Runnable{
 				.map(ReportMenuItemData::getUser)
 				.map(User::getId);
 		if(id.isEmpty()){
-			miner.onLogEvent(new StreamerUnknownLogEvent(miner, username));
+			miner.onEvent(new StreamerUnknownEvent(miner, username, TimeFactory.now()));
 		}
 		return id;
 	}

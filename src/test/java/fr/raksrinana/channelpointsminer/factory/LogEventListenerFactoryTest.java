@@ -1,8 +1,8 @@
 package fr.raksrinana.channelpointsminer.factory;
 
 import fr.raksrinana.channelpointsminer.api.discord.DiscordApi;
-import fr.raksrinana.channelpointsminer.log.DiscordLogEventListener;
-import fr.raksrinana.channelpointsminer.log.LoggerLogEventListener;
+import fr.raksrinana.channelpointsminer.log.DiscordEventListener;
+import fr.raksrinana.channelpointsminer.log.LoggerEventListener;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -16,11 +16,11 @@ class LogEventListenerFactoryTest{
 	
 	@Test
 	void createLogger(){
-		assertThat(LogEventListenerFactory.createLogger()).isNotNull().isInstanceOf(LoggerLogEventListener.class);
+		assertThat(LogEventListenerFactory.createLogger()).isNotNull().isInstanceOf(LoggerEventListener.class);
 	}
 	
 	@Test
 	void createDiscordLogger(){
-		assertThat(LogEventListenerFactory.createDiscordLogger(discordApi, true)).isNotNull().isInstanceOf(DiscordLogEventListener.class);
+		assertThat(LogEventListenerFactory.createDiscordLogger(discordApi, true)).isNotNull().isInstanceOf(DiscordEventListener.class);
 	}
 }

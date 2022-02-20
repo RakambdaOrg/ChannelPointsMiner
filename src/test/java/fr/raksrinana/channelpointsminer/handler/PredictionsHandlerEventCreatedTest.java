@@ -4,10 +4,10 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.EventCreated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.eventcreated.EventCreatedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.impl.EventCreatedEvent;
 import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.handler.data.PredictionState;
-import fr.raksrinana.channelpointsminer.log.event.EventCreatedLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.prediction.delay.IDelayCalculator;
@@ -30,7 +30,15 @@ import static fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerEventCreatedTest{
@@ -151,7 +159,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
-			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
+			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
 			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}
@@ -167,7 +175,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(5L), eq(TimeUnit.SECONDS));
-			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
+			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
 		}
 	}
 	
@@ -182,7 +190,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(WINDOW_SECONDS - 60L - 5L), eq(TimeUnit.SECONDS));
-			verify(miner).onLogEvent(new EventCreatedLogEvent(miner, streamer, event));
+			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
 		}
 	}
 	
@@ -197,7 +205,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).hasSize(1);
 			
 			verify(miner, never()).schedule(any(), anyLong(), any());
-			verify(miner, never()).onLogEvent(any());
+			verify(miner, never()).onEvent(any());
 		}
 	}
 }

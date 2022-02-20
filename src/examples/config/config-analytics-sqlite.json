@@ -1,0 +1,15 @@
+{
+  "accounts": [
+    {
+      "username": "username",
+      "password": "password",
+      "loadFollows": true,
+      "analytics": {
+        "enabled": true,
+        "database": {
+          "jdbcUrl": "jdbc:sqlite:miner.db"
+        }
+      }
+    }
+  ]
+}

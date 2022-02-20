@@ -21,7 +21,15 @@
         "webhookUrl": "https://discord-webhook",
         "embeds": true
       },
-      "reloadEvery": 15
+      "reloadEvery": 15,
+      "analytics": {
+        "enabled": true,
+        "database": {
+          "jdbcUrl": "jdbcUrl",
+          "username": "user",
+          "password": "pass"
+        }
+      }
     }
   ]
 }

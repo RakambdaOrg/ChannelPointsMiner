@@ -1,0 +1,28 @@
+{
+  "accounts": [
+    {
+      "username": "username",
+      "password": "password",
+      "use2FA": true,
+      "authenticationFolder": "/path/to/authentication",
+      "loadFollows": true,
+      "enabled": false,
+      "defaultStreamerSettings": {
+        "makePredictions": true,
+        "followRaid": true,
+        "participateCampaigns": true
+      },
+      "streamerConfigDirectories": [
+        {
+          "path": "streamers",
+          "recursive": true
+        }
+      ],
+      "discord": {
+        "webhookUrl": "https://discord-webhook",
+        "embeds": true
+      },
+      "reloadEvery": 15
+    }
+  ]
+}

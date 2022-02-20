@@ -4,8 +4,8 @@ import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.api.ws.TwitchWebSocketPool;
+import fr.raksrinana.channelpointsminer.event.IEventListener;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
-import fr.raksrinana.channelpointsminer.log.ILogEventListener;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public interface IMiner extends ILogEventListener{
+public interface IMiner extends IEventListener{
 	@NotNull
 	String getUsername();
 	

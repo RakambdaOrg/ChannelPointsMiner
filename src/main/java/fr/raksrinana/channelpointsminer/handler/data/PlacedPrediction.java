@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.time.Instant;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,4 +24,6 @@ public class PlacedPrediction{
 	private int amount;
 	@NotNull
 	private String outcomeId;
+	@NotNull
+	private Instant predictedAt;
 }

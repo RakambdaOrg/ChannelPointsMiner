@@ -114,7 +114,7 @@ Something like:
 }
 ----
 
-Examples can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/config[src/test/resources/config,window="_blank"].
+Examples can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
 
 === Account settings [[account_settings]]
 
@@ -135,6 +135,10 @@ Account settings define all the settings for a Twitch account that will be used 
 |use2FA
 |If you use 2-factor authentication enable this to ask the 2FA code directly when login in.
 |false
+
+|authenticationFolder
+|Path to the folder containing the authentication file
+|./authentication
 
 |loadFollows
 |If set to true link:https://www.twitch.tv/directory/following/[streamers followed,window="_blank"] on the account will be mined.
@@ -166,6 +170,10 @@ We recommend setting this value to something not too low as this is a rather int
 
 NOTE: Only <<streamer_settings,streamer settings>> are reloaded, not the <<global_settings,global settings>>.
 |0
+
+|analytics
+|<<analytics_settings,Analytics settings>>.
+|
 |===
 
 === Streamer directories [[streamer_directories]]
@@ -199,6 +207,60 @@ Leave it empty if you don't want the feature.
 |embeds
 |If true embeds will be sent in the chat.
 |false
+|===
+
+=== Analytics settings [[analytics_settings]]
+
+Analytics settings define a way to collect data on your twitch account as time passes.
+This includes:
+
+* Balance evolution
+* Predictions made & results
+
+These are store in an external database which allows any external software to access it and process it they wanted way.
+
+Several database types are supported and listed below.
+Each database (logical database for MariaDB, different file for H2/SQLite) will however represent one mined account.
+You'll therefore have to ajust the settings for each mined account to poit point to the same one.
+
+[cols="1,3,1"]
+|===
+|Name |Description |Default value
+
+|enabled
+|If set to true, data will be collected.
+|false
+
+|database
+|<<analytics_database_settings,Analytics database settings>>.
+|
+|===
+
+==== Analytics database [[analytics_database_settings]]
+
+[cols="1,3a,1"]
+|===
+|Name |Description |Default value
+
+|jdbcUrl
+|link:https://www.baeldung.com/java-jdbc-url-format[JDBC url] for the database connection
+
+* MariaDB: `jdbc:mariadb://host:port/database` (great if you have a DB available or running inside docker as you can set a mariadb container)
+* SQLite: `jdbc:sqlite:/path/to/file` (great running locally and want to store it to a file, however less resilient and more prone to corruption).
+
+|
+
+|username
+|Account username to access database.
+
+NOTE: Can be omitted if no account
+|
+
+|password
+|Account password to access database.
+
+NOTE: Can be omitted if no password
+|
 |===
 
 === Streamer settings [[streamer_settings]]

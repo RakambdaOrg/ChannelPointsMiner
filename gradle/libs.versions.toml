@@ -2,7 +2,7 @@
 slf4j-version = "2.0.0-alpha6"
 log4j2-version = "2.17.1"
 log4j2-slf4j-version = "2.17.1"
-unirest-version = "4.0.0-RC2"
+unirest-version = "4.0.0-RC4"
 picocli-version = "4.6.3"
 jackson-version = "2.13.1"
 httpclient-version = "4.5.13"
@@ -13,12 +13,15 @@ junit-version = "5.8.2"
 assertj-version = "3.22.0"
 mockito-version = "4.3.1"
 awaitility-version = "4.1.1"
-json-unit-version = "2.31.0"
+json-unit-version = "2.32.0"
 kitteh-irc-version = "8.0.0"
+hikari-cp-version = "5.0.1"
+mariadb-version = "3.0.3"
+sqlite-version = "3.36.0.3"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
-lombok-version = "6.4.0"
+lombok-version = "6.4.1"
 jib-version = "3.2.0"
 git-properties-version = "2.4.0"
 
@@ -26,7 +29,7 @@ git-properties-version = "2.4.0"
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2-version" }
 log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j18-impl", version.ref = "log4j2-slf4j-version" }
-unirest-java = { group = "com.konghq", name = "unirest-java", version.ref = "unirest-version" }
+unirest-java = { group = "com.konghq", name = "unirest-java-core", version.ref = "unirest-version" }
 unirest-objectmapper-jackson = { group = "com.konghq", name = "unirest-objectmapper-jackson", version.ref = "unirest-version" }
 unirestMocks = { group = "com.konghq", name = "unirest-mocks", version.ref = "unirest-version" }
 picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-version" }
@@ -38,6 +41,9 @@ lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "l
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
 websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version" }
 kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitteh-irc-version" }
+hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari-cp-version" }
+mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb-version" }
+sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-version" }
 
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }

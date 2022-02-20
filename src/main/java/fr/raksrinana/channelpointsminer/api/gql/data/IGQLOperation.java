@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.api.gql.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import kong.unirest.GenericType;
+import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

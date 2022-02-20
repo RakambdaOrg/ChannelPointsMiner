@@ -3,9 +3,9 @@ package fr.raksrinana.channelpointsminer.handler;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamDown;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamUp;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
+import fr.raksrinana.channelpointsminer.event.impl.StreamDownEvent;
+import fr.raksrinana.channelpointsminer.event.impl.StreamUpEvent;
 import fr.raksrinana.channelpointsminer.log.LogContext;
-import fr.raksrinana.channelpointsminer.log.event.StreamDownLogEvent;
-import fr.raksrinana.channelpointsminer.log.event.StreamUpLogEvent;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
@@ -23,23 +23,27 @@ public class StreamStartEndHandler extends HandlerAdapter{
 	
 	@Override
 	public void onStreamDown(@NotNull Topic topic, @NotNull StreamDown message){
-		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
+		var streamerId = topic.getTarget();
+		var streamer = miner.getStreamerById(streamerId).orElse(null);
+		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
 		updateStream(topic, streamer);
 		Optional.ofNullable(streamer)
 				.map(Streamer::getUsername)
 				.ifPresent(miner.getIrcClient()::leave);
-		miner.onLogEvent(new StreamDownLogEvent(miner, streamer));
+		miner.onEvent(new StreamDownEvent(miner, streamerId, username, streamer, message.getServerTime()));
 	}
 	
 	@Override
 	public void onStreamUp(@NotNull Topic topic, @NotNull StreamUp message){
-		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
+		var streamerId = topic.getTarget();
+		var streamer = miner.getStreamerById(streamerId).orElse(null);
+		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
 		updateStream(topic, streamer);
 		Optional.ofNullable(streamer)
 				.filter(s -> s.getSettings().isJoinIrc())
 				.map(Streamer::getUsername)
 				.ifPresent(miner.getIrcClient()::join);
-		miner.onLogEvent(new StreamUpLogEvent(miner, streamer));
+		miner.onEvent(new StreamUpEvent(miner, streamerId, username, streamer, message.getServerTime()));
 	}
 	
 	private void updateStream(@NotNull Topic topic, @Nullable Streamer streamer){

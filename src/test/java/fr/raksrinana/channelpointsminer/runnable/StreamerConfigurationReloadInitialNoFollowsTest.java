@@ -4,8 +4,9 @@ import fr.raksrinana.channelpointsminer.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.api.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.api.gql.data.types.User;
+import fr.raksrinana.channelpointsminer.event.impl.StreamerUnknownEvent;
 import fr.raksrinana.channelpointsminer.factory.StreamerSettingsFactory;
-import fr.raksrinana.channelpointsminer.log.event.StreamerUnknownLogEvent;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.IMiner;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -17,17 +18,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StreamerConfigurationReloadInitialNoFollowsTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-username";
+	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
 	
 	private StreamerConfigurationReload tested;
 	
@@ -77,7 +85,7 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		
 		verify(miner).addStreamer(expectedStreamer);
 		verify(gqlApi, never()).allChannelFollows();
-		verify(miner, never()).onLogEvent(any());
+		verify(miner, never()).onEvent(any());
 	}
 	
 	@SneakyThrows
@@ -91,14 +99,18 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 	
 	@Test
 	void loadFromConfigUnknown(){
-		when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
-		
-		setupStreamerConfig(STREAMER_USERNAME);
-		
-		assertDoesNotThrow(() -> tested.run());
-		
-		verify(miner, never()).addStreamer(any());
-		verify(gqlApi, never()).allChannelFollows();
-		verify(miner).onLogEvent(new StreamerUnknownLogEvent(miner, STREAMER_USERNAME));
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
+			
+			setupStreamerConfig(STREAMER_USERNAME);
+			
+			assertDoesNotThrow(() -> tested.run());
+			
+			verify(miner, never()).addStreamer(any());
+			verify(gqlApi, never()).allChannelFollows();
+			verify(miner).onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME, NOW));
+		}
 	}
 }

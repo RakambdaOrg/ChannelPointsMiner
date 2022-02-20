@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.api.twitch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.channelpointsminer.api.twitch.data.PlayerEvent;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;

@@ -2,14 +2,14 @@ package fr.raksrinana.channelpointsminer.api.discord;
 
 import fr.raksrinana.channelpointsminer.api.discord.data.DiscordResponse;
 import fr.raksrinana.channelpointsminer.api.discord.data.Webhook;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.net.URL;
-import static kong.unirest.ContentType.APPLICATION_JSON;
-import static kong.unirest.HeaderNames.CONTENT_TYPE;
+import static kong.unirest.core.ContentType.APPLICATION_JSON;
+import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 
 @RequiredArgsConstructor
 @Log4j2

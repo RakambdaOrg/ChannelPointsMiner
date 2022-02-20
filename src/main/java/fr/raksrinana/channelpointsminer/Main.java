@@ -2,13 +2,14 @@ package fr.raksrinana.channelpointsminer;
 
 import fr.raksrinana.channelpointsminer.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.cli.CLIParameters;
+import fr.raksrinana.channelpointsminer.event.impl.MinerStartedEvent;
 import fr.raksrinana.channelpointsminer.factory.ConfigurationFactory;
 import fr.raksrinana.channelpointsminer.factory.MinerFactory;
+import fr.raksrinana.channelpointsminer.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.log.UnirestLogger;
-import fr.raksrinana.channelpointsminer.log.event.MinerStartedLogEvent;
 import fr.raksrinana.channelpointsminer.util.GitProperties;
 import fr.raksrinana.channelpointsminer.util.json.JacksonUtils;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import static kong.unirest.HeaderNames.USER_AGENT;
+import static kong.unirest.core.HeaderNames.USER_AGENT;
 
 @Log4j2
 public class Main{
@@ -44,7 +45,7 @@ public class Main{
 			if(accountConfiguration.isEnabled()){
 				var miner = MinerFactory.create(accountConfiguration);
 				miner.start();
-				miner.onLogEvent(new MinerStartedLogEvent(miner, version, commitId, branch));
+				miner.onEvent(new MinerStartedEvent(miner, version, commitId, branch, TimeFactory.now()));
 			}
 			else{
 				log.info("Account {} is disabled, skipping it", accountConfiguration.getUsername());

@@ -1,0 +1,14 @@
+{
+  "accounts": [
+    {
+      "username": "username",
+      "password": "password",
+      "streamerConfigDirectories": [
+        {
+          "path": "streamers",
+          "recursive": true
+        }
+      ]
+    }
+  ]
+}

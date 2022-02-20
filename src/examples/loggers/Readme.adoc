@@ -3,10 +3,8 @@
 == console_only.xml [[console_only]]
 
 * Log into the console only.
-* Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
-* Logs from `org.kitteh.irc` will only be logged if the level is WARN or higher.
-* Logs from `io.netty` will only be logged if the level is WARN or higher.
-* All the other logs are logged if they have INFO level or higher.
+* Logs from `fr.raksrinana.channelpointsminer` will only be logged if the level is INFO or higher.
+* All the other logs are logged if they have WARN level or higher.
 
 [source,log]
 ----
@@ -31,10 +29,8 @@
 * Logs are logged into `./logs/miner.log` and then archived to `./logs/miner.log.2021-07-26.gz`.
 * One file represents a day.
 * Only the last 10 logs will be kept.
-* Logs from `org.java_websocket` will only be logged if the level is WARN or higher.
-* Logs from `org.kitteh.irc` will only be logged if the level is WARN or higher.
-* Logs from `io.netty` will only be logged if the level is WARN or higher.
-* All the other logs are logged if they have INFO level or higher.
+* Logs from `fr.raksrinana.channelpointsminer` will only be logged if the level is INFO or higher.
+* All the other logs are logged if they have WARN level or higher.
 
 Format of the logs is the same as <<console_only,console_only.xml>>.
 
