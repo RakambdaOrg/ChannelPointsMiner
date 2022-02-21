@@ -29,6 +29,7 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = PredictionMade.class, name = "prediction-made"),
 		@JsonSubTypes.Type(value = PredictionResult.class, name = "prediction-result"),
 		@JsonSubTypes.Type(value = PredictionUpdated.class, name = "prediction-updated"),
+		@JsonSubTypes.Type(value = CreateNotification.class, name = "create-notification"),
 })
 @EqualsAndHashCode
 @ToString

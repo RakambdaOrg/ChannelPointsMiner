@@ -23,6 +23,7 @@ import fr.raksrinana.channelpointsminer.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.runnable.StreamerConfigurationReload;
+import fr.raksrinana.channelpointsminer.runnable.SyncInventory;
 import fr.raksrinana.channelpointsminer.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.streamer.StreamerSettings;
@@ -93,6 +94,8 @@ class MinerTest{
 	private GQLApi gqlApi;
 	@Mock
 	private UpdateStreamInfo updateStreamInfo;
+	@Mock
+	private SyncInventory syncInventory;
 	@Mock
 	private Topic topic;
 	@Mock
@@ -712,5 +715,23 @@ class MinerTest{
 		verify(executorService, times(2)).submit(any(Runnable.class));
 		verify(listener1).onEvent(event);
 		verify(listener2).onEvent(event);
+	}
+	
+	@Test
+	void requestInventorySync(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var ircFactory = mockStatic(TwitchIrcFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			ircFactory.when(() -> TwitchIrcFactory.create(twitchLogin)).thenReturn(twitchIrcClient);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			runnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(tested)).thenReturn(syncInventory);
+			
+			assertDoesNotThrow(() -> tested.syncInventory());
+			
+			verify(syncInventory).run();
+		}
 	}
 }

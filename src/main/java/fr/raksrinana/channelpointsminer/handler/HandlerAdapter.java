@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.ChannelLastViewedCon
 import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimClaimed;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.Commercial;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.CreateNotification;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.EventCreated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.GlobalLastViewedContentUpdated;
@@ -68,6 +69,8 @@ public abstract class HandlerAdapter implements IMessageHandler{
 	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){}
 	
 	public void onPredictionUpdated(@NotNull Topic topic, @NotNull PredictionUpdated message){}
+	
+	public void onCreateNotification(@NotNull Topic topic, @NotNull CreateNotification message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IMessage message){

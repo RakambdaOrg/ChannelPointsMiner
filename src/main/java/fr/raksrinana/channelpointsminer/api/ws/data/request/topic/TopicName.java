@@ -13,7 +13,8 @@ public enum TopicName{
 	PREDICTIONS_USER_V1("predictions-user-v1", true),
 	VIDEO_PLAYBACK_BY_ID("video-playback-by-id", false),
 	RAID("raid", false),
-	PREDICTIONS_CHANNEL_V1("predictions-channel-v1", false);
+	PREDICTIONS_CHANNEL_V1("predictions-channel-v1", false),
+	ONSITE_NOTIFICATIONS("onsite-notifications", true);
 	
 	@Getter(onMethod_ = @JsonValue)
 	private final String value;
