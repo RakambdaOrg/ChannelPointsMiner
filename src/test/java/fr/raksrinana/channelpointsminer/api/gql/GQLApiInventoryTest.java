@@ -161,7 +161,7 @@ class GQLApiInventoryTest{
 														.isConnected(false)
 														.lastAwardedAt(ZonedDateTime.of(2021, 10, 31, 21, 41, 34, 0, UTC))
 														.name("ev reward name")
-														.requiredAccountLink(new URL("https://link-ev-account"))
+														.requiredAccountLink("https://link-ev-account")
 														.totalCount(1)
 														.build()
 										))

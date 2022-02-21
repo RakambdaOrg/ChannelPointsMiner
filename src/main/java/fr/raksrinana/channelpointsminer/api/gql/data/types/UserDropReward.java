@@ -43,9 +43,8 @@ public class UserDropReward extends GQLType{
 	@NotNull
 	private String name;
 	@JsonProperty("requiredAccountLink")
-	@JsonDeserialize(using = URLDeserializer.class)
 	@NotNull
-	private URL requiredAccountLink;
+	private String requiredAccountLink;
 	@JsonProperty("totalCount")
 	private int totalCount;
 }
