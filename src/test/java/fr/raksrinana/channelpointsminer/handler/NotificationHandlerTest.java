@@ -10,9 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,12 +17,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationHandlerTest{
-	private static final String CLAIM_ID = "claim-id";
-	private static final String CHANNEL_ID = "channel-id";
-	private static final String CHANNEL_NAME = "channel-name";
-	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
-	private static final ZonedDateTime ZONED_NOW = ZonedDateTime.ofInstant(NOW, ZoneId.systemDefault());
-	
 	@InjectMocks
 	private NotificationHandler tested;
 	
