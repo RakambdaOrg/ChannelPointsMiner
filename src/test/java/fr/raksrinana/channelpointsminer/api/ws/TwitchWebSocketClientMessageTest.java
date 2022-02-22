@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimClaimed;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.Commercial;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.CreateNotification;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.DeleteNotification;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.PointsEarned;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.PointsSpent;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionMade;
@@ -13,15 +14,15 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.PredictionUpdated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidCancelV2;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidGoV2;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidUpdateV2;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.UpdateSummary;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.claimclaimed.ClaimClaimedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.CreateNotificationData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.Notification;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.NotificationAction;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.NotificationDisplayType;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.NotificationRenderStyle;
-import fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification.Summary;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.deletenotification.DeleteNotificationData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.pointsspent.PointsSpentData;
@@ -30,11 +31,14 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionresult.Pre
 import fr.raksrinana.channelpointsminer.api.ws.data.message.predictionupdated.PredictionUpdatedData;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Claim;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.CommunityPointsMultiplier;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.NotificationDisplayType;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.NotificationSummary;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PointGain;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Prediction;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Raid;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.updatesummary.UpdateSummaryData;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageData;
 import fr.raksrinana.channelpointsminer.api.ws.data.response.MessageResponse;
@@ -452,7 +456,7 @@ class TwitchWebSocketClientMessageTest{
 								.build())
 						.message(CreateNotification.builder()
 								.data(CreateNotificationData.builder()
-										.summary(Summary.builder()
+										.summary(NotificationSummary.builder()
 												.unseenViewCount(5)
 												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 280058797, UTC))
 												.viewerUnreadCount(8)
@@ -485,6 +489,58 @@ class TwitchWebSocketClientMessageTest{
 										.persistent(true)
 										.toast(false)
 										.displayType(NotificationDisplayType.VIEWER)
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onDeleteNotification(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/deleteNotification.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(DeleteNotification.builder()
+								.data(DeleteNotificationData.builder()
+										.notificationId("notification-id")
+										.summary(NotificationSummary.builder()
+												.unseenViewCount(5)
+												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 957079333, UTC))
+												.viewerUnreadCount(8)
+												.creatorUnreadCount(1)
+												.build())
+										.displayType(NotificationDisplayType.VIEWER)
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onUpdateSummary(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/updateSummary.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(UpdateSummary.builder()
+								.data(UpdateSummaryData.builder()
+										.summary(NotificationSummary.builder()
+												.unseenViewCount(5)
+												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 957079333, UTC))
+												.viewerUnreadCount(8)
+												.creatorUnreadCount(1)
+												.build())
 										.build())
 								.build())
 						.build())

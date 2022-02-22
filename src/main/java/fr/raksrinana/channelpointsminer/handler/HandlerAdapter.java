@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.ClaimClaimed;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.Commercial;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.CreateNotification;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.DeleteNotification;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.EventCreated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.EventUpdated;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.GlobalLastViewedContentUpdated;
@@ -18,6 +19,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidGoV2;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.RaidUpdateV2;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamDown;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.StreamUp;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.UpdateSummary;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.util.ClassWalker;
@@ -71,6 +73,10 @@ public abstract class HandlerAdapter implements IMessageHandler{
 	public void onPredictionUpdated(@NotNull Topic topic, @NotNull PredictionUpdated message){}
 	
 	public void onCreateNotification(@NotNull Topic topic, @NotNull CreateNotification message){}
+	
+	public void onDeleteNotification(@NotNull Topic topic, @NotNull DeleteNotification message){}
+	
+	public void onUpdateSummary(@NotNull Topic topic, @NotNull UpdateSummary message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IMessage message){

@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification;
+package fr.raksrinana.channelpointsminer.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -18,7 +18,7 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 @ToString
 @Builder
-public class Summary{
+public class NotificationSummary{
 	@JsonProperty("unseen_view_count")
 	private int unseenViewCount;
 	@JsonProperty("last_seen_at")

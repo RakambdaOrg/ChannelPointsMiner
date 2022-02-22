@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.api.ws.data.message.createnotification;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.NotificationDisplayType;
 import fr.raksrinana.channelpointsminer.util.json.ISO8601ZonedDateTimeDeserializer;
 import fr.raksrinana.channelpointsminer.util.json.URLDeserializer;
 import lombok.AllArgsConstructor;
