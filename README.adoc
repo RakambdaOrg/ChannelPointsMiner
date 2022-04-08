@@ -468,6 +468,11 @@ However, if the two outcomes have a user count similar, choose the outcome with 
 Setting this to 0 will have the same effect as `leastPoints`.
 
 Setting this to 1 will have the same effect as `mostUsers`.
+
+|kelly
+|Chose the outcome following link:https://en.wikipedia.org/wiki/Kelly_criterion[Kelly criterion].
+|See link:https://en.wikipedia.org/wiki/Kelly_criterion#Gambling_formula[Kelly criterion].
+|
 |===
 
 ==== Amount calculators [[amount_calculator]]
@@ -492,6 +497,15 @@ The table below will list their `type` to be used in the JSON configuration as w
 |Place `percentage`% of your current points.
 If this values goes over `max` then `max` points will be placed instead.
 |* percentage: Percentage of your owned points to place, as a decimal value, between `0` and `1`.
+
+* max: Maximum number of points.
+
+|kelly
+|Place points following link:https://en.wikipedia.org/wiki/Kelly_criterion[Kelly criterion].
+|See link:https://en.wikipedia.org/wiki/Kelly_criterion#Gambling_formula[Kelly criterion].
+|* percentage: Percentage of Kelly criterion result to place, as a decimal value, between `0` and `1`.
+
+Example: If Kelly says we should place 500 points and you set the percentage to `0.5` then only 250 points will be placed.
 
 * max: Maximum number of points.
 |===
