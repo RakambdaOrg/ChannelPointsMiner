@@ -12,6 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @JsonSubTypes(value = {
 		@JsonSubTypes.Type(value = ConstantAmount.class, name = "constant"),
 		@JsonSubTypes.Type(value = PercentageAmount.class, name = "percentage"),
+		@JsonSubTypes.Type(value = KellyAmount.class, name = "kelly"),
 })
 public interface IAmountCalculator{
 	int calculateAmount(@NotNull BettingPrediction bettingPrediction, @NotNull Outcome outcome) throws BetPlacementException;
