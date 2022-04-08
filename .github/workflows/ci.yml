@@ -78,7 +78,7 @@ jobs:
           flags: unittests
           name: codecov-github-actions
       - name: Upload JUnit reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: junit-test-results
@@ -88,7 +88,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload JaCoCo reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: jacoco-test-results
