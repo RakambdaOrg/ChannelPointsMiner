@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetUtils;
 import fr.raksrinana.channelpointsminer.streamer.Streamer;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,25 +16,26 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class KellyAmountTest{
-    private static final int MAX = 20;
-    private static final float PERCENTAGE = 0.25F;
-    private static final int STREAMER_POINTS = 100;
-    
-    private final KellyAmount tested = KellyAmount.builder().percentage(PERCENTAGE).max(MAX).build();
-    
-    @Mock
-    private BettingPrediction bettingPrediction;
-    @Mock
-    private Event event;
-    @Mock
-    private Outcome outcome;
-    @Mock
-    private Outcome outcome2;
-    @Mock
+	private static final int MAX = 20;
+	private static final float PERCENTAGE = 0.25F;
+	private static final int STREAMER_POINTS = 100;
+	
+	private final KellyAmount tested = KellyAmount.builder().percentage(PERCENTAGE).max(MAX).build();
+	
+	@Mock
+	private BettingPrediction bettingPrediction;
+	@Mock
+	private Event event;
+	@Mock
+	private Outcome outcome;
+	@Mock
+	private Outcome outcome2;
+	@Mock
     private Streamer streamer;
     
     @BeforeEach
@@ -46,33 +48,20 @@ class KellyAmountTest{
     
     @Test
     void calculateUnderMax() throws BetPlacementException{
-        when(outcome.getTotalUsers()).thenReturn(150);
-        when(outcome.getTotalPoints()).thenReturn(50L);
-        when(outcome2.getTotalUsers()).thenReturn(50);
-        when(outcome2.getTotalPoints()).thenReturn(100L);
-        
-        assertThat(tested.calculateAmount(bettingPrediction, outcome)).isEqualTo(15);
+	    try(var betUtils = mockStatic(BetUtils.class)){
+		    betUtils.when(() -> BetUtils.getKellyValue(outcome, outcome2)).thenReturn(0.5F);
+		
+		    assertThat(tested.calculateAmount(bettingPrediction, outcome)).isEqualTo(12);
+	    }
     }
-    
-    @Test
-    void calculateUnderMax2() throws BetPlacementException{
-        when(outcome.getTotalUsers()).thenReturn(150);
-        when(outcome.getTotalPoints()).thenReturn(50L);
-        when(outcome2.getTotalUsers()).thenReturn(50);
-        when(outcome2.getTotalPoints()).thenReturn(100L);
-        
-        assertThat(tested.calculateAmount(bettingPrediction, outcome2)).isEqualTo(-31);
-    }
-    
     
     @Test
     void calculateOverMax() throws BetPlacementException{
-        when(outcome.getTotalUsers()).thenReturn(500);
-        when(outcome.getTotalPoints()).thenReturn(50L);
-        when(outcome2.getTotalUsers()).thenReturn(1);
-        when(outcome2.getTotalPoints()).thenReturn(150L);
-        
-        assertThat(tested.calculateAmount(bettingPrediction, outcome)).isEqualTo(MAX);
+	    try(var betUtils = mockStatic(BetUtils.class)){
+		    betUtils.when(() -> BetUtils.getKellyValue(outcome, outcome2)).thenReturn(1000F);
+		
+		    assertThat(tested.calculateAmount(bettingPrediction, outcome)).isEqualTo(MAX);
+	    }
     }
     
     @Test

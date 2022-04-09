@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.prediction.bet.BetUtils;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,22 +42,20 @@ class KellyOutcomePickerTest{
     
     @Test
     void chose() throws BetPlacementException{
-        when(blueOutcome.getTotalUsers()).thenReturn(150);
-        when(blueOutcome.getTotalPoints()).thenReturn(50L);
-        when(pinkOutcome.getTotalUsers()).thenReturn(50);
-        when(pinkOutcome.getTotalPoints()).thenReturn(100L);
-        
-        assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(blueOutcome);
+	    try(var betUtils = mockStatic(BetUtils.class)){
+		    betUtils.when(() -> BetUtils.getKellyValue(blueOutcome, pinkOutcome)).thenReturn(0.5F);
+		
+		    assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(blueOutcome);
+	    }
     }
     
     @Test
     void chose2() throws BetPlacementException{
-        when(blueOutcome.getTotalUsers()).thenReturn(150);
-        when(blueOutcome.getTotalPoints()).thenReturn(1000L);
-        when(pinkOutcome.getTotalUsers()).thenReturn(50);
-        when(pinkOutcome.getTotalPoints()).thenReturn(50L);
-        
-        assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(pinkOutcome);
+	    try(var betUtils = mockStatic(BetUtils.class)){
+		    betUtils.when(() -> BetUtils.getKellyValue(blueOutcome, pinkOutcome)).thenReturn(-0.5F);
+		
+		    assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(pinkOutcome);
+	    }
     }
     
     @ParameterizedTest
@@ -71,13 +71,6 @@ class KellyOutcomePickerTest{
             outcomes.add(mock(Outcome.class));
         }
         when(event.getOutcomes()).thenReturn(outcomes);
-        
-        assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
-    }
-    
-    @Test
-    void noBetsOnFirstOutcome(){
-        when(blueOutcome.getTotalPoints()).thenReturn(0L);
         
         assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
     }
