@@ -16,12 +16,19 @@ public class UnirestLogger implements Interceptor{
 	
 	@Override
 	public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config){
-		if(!response.isSuccess() && !(response.getParsingError().isPresent() && response.getStatus() == 204)){
+		if(response.isSuccess()){
+			log.trace("Received successful response for {} with statusCode `{}`", request.getUrl(), response.getStatus());
+			return;
+		}
+		
+		if(response.getStatus() == 429){
+			log.warn("Failed to request {} got statusCode `{}`", request.getUrl(), response.getStatus());
+			return;
+		}
+		
+		if(!(response.getParsingError().isPresent() && response.getStatus() == 204)){
 			log.error("Failed to request {} got statusCode `{}` and parsing error: {}", request.getUrl(), response.getStatus(), response.getParsingError());
 			response.getParsingError().ifPresent(ex -> log.error("Failed to parse body: {}", ex.getOriginalBody()));
-		}
-		else{
-			log.trace("Received successful response for {} with statusCode `{}`", request.getUrl(), response.getStatus());
 		}
 	}
 }
