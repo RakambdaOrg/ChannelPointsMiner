@@ -1,0 +1,17 @@
+open module fr.raksrinana.channelpointsminer.miner {
+	requires org.apache.commons.lang3;
+	requires unirest.java;
+	requires unirest.objectmapper.jackson;
+	requires com.fasterxml.jackson.core;
+	requires com.fasterxml.jackson.annotation;
+	requires com.fasterxml.jackson.databind;
+	requires info.picocli;
+	requires org.slf4j;
+	requires org.apache.logging.log4j;
+	requires org.apache.logging.log4j.core;
+	requires org.apache.logging.log4j.slf4j;
+	requires java.scripting;
+	
+	requires static lombok;
+	requires static org.jetbrains.annotations;
+}

@@ -3,7 +3,7 @@
 == console_only.xml [[console_only]]
 
 * Log into the console only.
-* Logs from `fr.raksrinana.channelpointsminer` will only be logged if the level is INFO or higher.
+* Logs from `fr.raksrinana.channelpointsminer.miner` will only be logged if the level is INFO or higher.
 * All the other logs are logged if they have WARN level or higher.
 
 [source,log]
@@ -29,7 +29,7 @@
 * Logs are logged into `./logs/miner.log` and then archived to `./logs/miner.log.2021-07-26.gz`.
 * One file represents a day.
 * Only the last 10 logs will be kept.
-* Logs from `fr.raksrinana.channelpointsminer` will only be logged if the level is INFO or higher.
+* Logs from `fr.raksrinana.channelpointsminer.miner` will only be logged if the level is INFO or higher.
 * All the other logs are logged if they have WARN level or higher.
 
 Format of the logs is the same as <<console_only,console_only.xml>>.

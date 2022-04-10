@@ -35,8 +35,8 @@ Java 17+ is required.
 2. Get into the cloned directory `cd ChannelPointsMiner`.
 3. Build the jar `./gradlew build`
 4. Run
-* Default: `java -jar build/libs/ChannelPointsMiner-shaded.jar --settings config.json`
-* With your own <<logs,logger>>: `java -Dlog4j.configurationFile=log4j2.xml -jar build/libs/ChannelPointsMiner-shaded.jar --settings config.json`
+* Default: `java -jar miner/build/libs/miner-shaded.jar --settings config.json`
+* With your own <<logs,logger>>: `java -Dlog4j.configurationFile=log4j2.xml -jar miner/build/libs/miner-shaded.jar --settings config.json`
 
 === Docker
 
@@ -77,7 +77,9 @@ services:
       - ./log4j2.xml:/usr/src/app/log4j2.xml:ro
 ----
 
-NOTE: If you have 2FA enabled you'll have to enter your token the first time in order to login. As Docker doesn't give an interractive shell by default you'll have to run the container in interractive mode yourself the first time. More can be read about it in link:https://github.com/RakSrinaNa/ChannelPointsMiner/issues/87[#87].
+NOTE: If you have 2FA enabled you'll have to enter your token the first time in order to login.
+As Docker doesn't give an interactive shell by default you'll have to run the container in interactive mode yourself the first time.
+More can be read about it in link:https://github.com/RakSrinaNa/ChannelPointsMiner/issues/87[#87].
 
 == How to mine streamers
 
@@ -269,7 +271,7 @@ Streamer settings define settings that will override the <<global_settings__defa
 
 Each streamer setting will be defined in a json file named with the username of the streamer (eg: `myusername.json`) and placed in the <<global_settings__streamer_config_directories,streamerConfigDirectory>> directory.
 
-An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/test/resources/factory/fullyOverridden.json[here,window="_blank"].
+An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/miner/src/test/resources/factory/fullyOverridden.json[here,window="_blank"].
 
 [cols="1,3,1"]
 |===
@@ -468,6 +470,11 @@ However, if the two outcomes have a user count similar, choose the outcome with 
 Setting this to 0 will have the same effect as `leastPoints`.
 
 Setting this to 1 will have the same effect as `mostUsers`.
+
+|kelly
+|Chose the outcome following link:https://en.wikipedia.org/wiki/Kelly_criterion[Kelly criterion].
+|See link:https://en.wikipedia.org/wiki/Kelly_criterion#Gambling_formula[Kelly criterion].
+|
 |===
 
 ==== Amount calculators [[amount_calculator]]
@@ -492,6 +499,15 @@ The table below will list their `type` to be used in the JSON configuration as w
 |Place `percentage`% of your current points.
 If this values goes over `max` then `max` points will be placed instead.
 |* percentage: Percentage of your owned points to place, as a decimal value, between `0` and `1`.
+
+* max: Maximum number of points.
+
+|kelly
+|Place points following link:https://en.wikipedia.org/wiki/Kelly_criterion[Kelly criterion].
+|See link:https://en.wikipedia.org/wiki/Kelly_criterion#Gambling_formula[Kelly criterion].
+|* percentage: Percentage of Kelly criterion result to place, as a decimal value, between `0` and `1`.
+
+Example: If Kelly says we should place 500 points and you set the percentage to `0.5` then only 250 points will be placed.
 
 * max: Maximum number of points.
 |===
