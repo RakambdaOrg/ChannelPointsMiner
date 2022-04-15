@@ -24,6 +24,8 @@ names-version = "0.42.0"
 lombok-version = "6.4.3"
 jib-version = "3.2.1"
 git-properties-version = "2.4.1"
+springboot-version = "2.6.6"
+springboot-dependencies-version = "1.0.11.RELEASE"
 
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
@@ -70,3 +72,5 @@ names = { id = "com.github.ben-manes.versions", version.ref = "names-version" }
 lombok = { id = "io.freefair.lombok", version.ref = "lombok-version" }
 jib = { id = "com.google.cloud.tools.jib", version.ref = "jib-version" }
 gitProperties = { id = "com.gorylenko.gradle-git-properties", version.ref = "git-properties-version" }
+springboot = { id = "org.springframework.boot", version.ref = "springboot-version" }
+springbootDependencies = { id = "io.spring.dependency-management", version.ref = "springboot-dependencies-version" }
