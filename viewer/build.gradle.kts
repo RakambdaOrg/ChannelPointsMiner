@@ -1,4 +1,5 @@
 plugins {
+    jacoco
     alias(libs.plugins.springboot)
     alias(libs.plugins.springbootDependencies)
     alias(libs.plugins.jib)
@@ -15,13 +16,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
+    testImplementation(libs.bundles.junit)
+    testRuntimeOnly(libs.junitEngine)
+
+    testImplementation(libs.assertj)
+    testImplementation(libs.bundles.mockito)
+    testImplementation(libs.awaitility)
+    testImplementation(libs.bundles.jsonUnit)
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
 
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     runtimeOnly("org.xerial:sqlite-jdbc")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -30,6 +39,18 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.required.set(true)
+        }
+    }
 }
 
 jib {
