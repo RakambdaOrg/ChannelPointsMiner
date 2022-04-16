@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" th:href="@{/styles/base.css}"/>
+    <link rel="icon" th:href="@{/favicon.svg}" type="image/svg"/>
+
+    <th:block th:replace="fragment/common.html::fontawesome"/>
+    <th:block th:replace="fragment/common.html::amcharts"/>
+
+    <link rel="stylesheet" th:href="@{/styles/chart.css}"/>
+</head>
+<body>
+<div th:replace="fragment/navbar.html::navbar"></div>
+<div id="chartdiv"></div>
+<script th:src="@{/js/chart.js}"></script>
+</body>
+</html>
