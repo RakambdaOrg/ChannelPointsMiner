@@ -78,7 +78,6 @@ public class Streamer{
 	@Setter
 	@Getter
 	private URL spadeUrl;
-	@Setter
 	@Getter
 	private boolean chatBanned;
 	
@@ -215,5 +214,12 @@ public class Streamer{
 	
 	public boolean isStreaming(){
 		return getStream().isPresent();
+	}
+	
+	public void setChatBanned(boolean chatBanned){
+		if(chatBanned && !this.chatBanned){
+			log.warn("Chat banned for streamer {}", this);
+		}
+		this.chatBanned = chatBanned;
 	}
 }
