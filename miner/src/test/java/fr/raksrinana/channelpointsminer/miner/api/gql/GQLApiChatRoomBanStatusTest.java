@@ -63,7 +63,7 @@ class GQLApiChatRoomBanStatusTest{
 				.thenReturn(TestUtils.getAllResourceContent("api/gql/channelRoomBanStatus_notBanned.json"))
 				.withStatus(200);
 		
-		assertThat(tested.chatBanStatus(CHANNEL, USERNAME)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.chatRoomBanStatus(CHANNEL, USERNAME)).isPresent().get().isEqualTo(expected);
 		
 		unirest.verifyAll();
 	}
@@ -100,7 +100,7 @@ class GQLApiChatRoomBanStatusTest{
 				.thenReturn(TestUtils.getAllResourceContent("api/gql/channelRoomBanStatus_banned.json"))
 				.withStatus(200);
 		
-		var actual = tested.chatBanStatus(CHANNEL, USERNAME);
+		var actual = tested.chatRoomBanStatus(CHANNEL, USERNAME);
 		assertThat(actual).isPresent().get().isEqualTo(expected);
 		
 		unirest.verifyAll();
@@ -114,7 +114,7 @@ class GQLApiChatRoomBanStatusTest{
 				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidAuth.json"))
 				.withStatus(401);
 		
-		assertThrows(RuntimeException.class, () -> tested.chatBanStatus(CHANNEL, USERNAME));
+		assertThrows(RuntimeException.class, () -> tested.chatRoomBanStatus(CHANNEL, USERNAME));
 		
 		unirest.verifyAll();
 	}
@@ -127,7 +127,7 @@ class GQLApiChatRoomBanStatusTest{
 				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidRequest.json"))
 				.withStatus(200);
 		
-		assertThat(tested.chatBanStatus(CHANNEL, USERNAME)).isEmpty();
+		assertThat(tested.chatRoomBanStatus(CHANNEL, USERNAME)).isEmpty();
 		
 		unirest.verifyAll();
 	}
@@ -140,7 +140,7 @@ class GQLApiChatRoomBanStatusTest{
 				.thenReturn()
 				.withStatus(500);
 		
-		assertThat(tested.chatBanStatus(CHANNEL, USERNAME)).isEmpty();
+		assertThat(tested.chatRoomBanStatus(CHANNEL, USERNAME)).isEmpty();
 		
 		unirest.verifyAll();
 	}

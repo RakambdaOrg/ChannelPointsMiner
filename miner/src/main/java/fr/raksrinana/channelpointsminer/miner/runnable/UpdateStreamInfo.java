@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.miner.api.gql.data.chatroombanstatus.ChatRoomBanStatusData;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
@@ -43,6 +44,7 @@ public class UpdateStreamInfo implements Runnable{
 			
 			updateVideoInfo(streamer);
 			updateSpadeUrl(streamer);
+			updateBanStatus(streamer);
 			updatePointsContext(streamer);
 			updateCampaigns(streamer);
 			
@@ -76,6 +78,17 @@ public class UpdateStreamInfo implements Runnable{
 		}
 		else{
 			streamer.setSpadeUrl(null);
+		}
+	}
+	
+	private void updateBanStatus(@NotNull Streamer streamer){
+		log.trace("Updating ban status");
+		if(streamer.isStreaming()){
+			var banned = miner.getGqlApi().chatRoomBanStatus(streamer.getId(), miner.getTwitchLogin().fetchUserId())
+					.map(GQLResponse::getData)
+					.map(ChatRoomBanStatusData::getChatRoomBanStatus)
+					.isPresent();
+			streamer.setChatBanned(banned);
 		}
 	}
 	

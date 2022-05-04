@@ -153,7 +153,7 @@ public class GQLApi{
 	}
 	
 	@NotNull
-	public Optional<GQLResponse<ChatRoomBanStatusData>> chatBanStatus(@NotNull String channelId, @NotNull String targetUserId){
+	public Optional<GQLResponse<ChatRoomBanStatusData>> chatRoomBanStatus(@NotNull String channelId, @NotNull String targetUserId){
 		return postRequest(new ChatRoomBanStatusOperation(channelId, targetUserId));
 	}
 }
