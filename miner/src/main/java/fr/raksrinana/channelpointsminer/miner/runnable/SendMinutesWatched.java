@@ -33,6 +33,7 @@ public class SendMinutesWatched implements Runnable{
 		try(var ignored = LogContext.with(miner)){
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
+					.filter(streamer -> !streamer.isChatBanned())
 					.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
 					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
 					.sorted(this::compare)
