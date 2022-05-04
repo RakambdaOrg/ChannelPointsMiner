@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -41,8 +40,8 @@ public class Notification{
 	@NotNull
 	private String type;
 	@JsonProperty("render_style")
-	@Nullable
-	private String renderStyle;
+	@NotNull
+	private NotificationRenderStyle renderStyle;
 	@JsonProperty("thumbnail_url")
 	@JsonDeserialize(using = URLDeserializer.class)
 	@NotNull

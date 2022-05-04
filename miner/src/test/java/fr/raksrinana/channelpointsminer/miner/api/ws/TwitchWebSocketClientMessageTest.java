@@ -21,6 +21,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimclaimed.C
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.CreateNotificationData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.Notification;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.NotificationAction;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.NotificationRenderStyle;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.deletenotification.DeleteNotificationData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
@@ -456,7 +457,7 @@ class TwitchWebSocketClientMessageTest{
 												.body("notification-body")
 												.bodyMd("notification-body-md")
 												.type("user_drop_reward_reminder_notification")
-												.renderStyle("DEFAULT")
+												.renderStyle(NotificationRenderStyle.DEFAULT)
 												.thumbnailUrl(new URL("https://thumbnail.com"))
 												.actions(List.of(NotificationAction.builder()
 														.id("CTA")
