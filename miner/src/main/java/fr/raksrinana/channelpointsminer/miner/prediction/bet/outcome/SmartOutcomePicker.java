@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @ToString
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Log4j2
 public class SmartOutcomePicker implements IOutcomePicker{
