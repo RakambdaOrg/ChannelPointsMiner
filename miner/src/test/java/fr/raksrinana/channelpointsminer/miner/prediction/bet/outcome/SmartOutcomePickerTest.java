@@ -28,6 +28,8 @@ class SmartOutcomePickerTest{
 	private Outcome blueOutcome;
 	@Mock
 	private Outcome pinkOutcome;
+	@Mock
+	private Outcome redOutcome;
 	
 	@BeforeEach
 	void setUp(){
@@ -40,13 +42,27 @@ class SmartOutcomePickerTest{
 	
 	@Test
 	void choseByPoints() throws BetPlacementException{
-		when(blueOutcome.getTotalUsers()).thenReturn(49);
+		when(blueOutcome.getTotalUsers()).thenReturn(52);
 		when(pinkOutcome.getTotalUsers()).thenReturn(51);
 		
 		when(blueOutcome.getTotalPoints()).thenReturn(10L);
 		when(pinkOutcome.getTotalPoints()).thenReturn(20L);
 		
 		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(blueOutcome);
+	}
+	
+	@Test
+	void choseByPointsMoreOutcomes() throws BetPlacementException{
+		when(event.getOutcomes()).thenReturn(List.of(blueOutcome, pinkOutcome, redOutcome));
+		
+		when(blueOutcome.getTotalUsers()).thenReturn(49);
+		when(pinkOutcome.getTotalUsers()).thenReturn(51);
+		when(redOutcome.getTotalUsers()).thenReturn(52);
+		
+		when(pinkOutcome.getTotalPoints()).thenReturn(20L);
+		when(redOutcome.getTotalPoints()).thenReturn(19L);
+		
+		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(redOutcome);
 	}
 	
 	@Test
@@ -60,6 +76,7 @@ class SmartOutcomePickerTest{
 	@Test
 	void missingBlue(){
 		when(event.getOutcomes()).thenReturn(List.of(pinkOutcome));
+		when(pinkOutcome.getTotalUsers()).thenReturn(1);
 		
 		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
 	}
@@ -67,6 +84,15 @@ class SmartOutcomePickerTest{
 	@Test
 	void missingPink(){
 		when(event.getOutcomes()).thenReturn(List.of(blueOutcome));
+		when(blueOutcome.getTotalUsers()).thenReturn(1);
+		
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+	}
+	
+	@Test
+	void noUsers() throws BetPlacementException{
+		when(blueOutcome.getTotalUsers()).thenReturn(0);
+		when(pinkOutcome.getTotalUsers()).thenReturn(0);
 		
 		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
 	}

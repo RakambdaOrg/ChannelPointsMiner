@@ -11,9 +11,9 @@ jetbrains-annotations-version = "23.0.0"
 websocket-version = "1.5.3"
 junit-version = "5.8.2"
 assertj-version = "3.22.0"
-mockito-version = "4.4.0"
+mockito-version = "4.5.1"
 awaitility-version = "4.2.0"
-json-unit-version = "2.33.0"
+json-unit-version = "2.34.0"
 kitteh-irc-version = "8.0.0"
 hikari-cp-version = "5.0.1"
 mariadb-version = "3.0.4"
@@ -21,9 +21,9 @@ sqlite-version = "3.36.0.3"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
-lombok-version = "6.4.2"
+lombok-version = "6.4.3"
 jib-version = "3.2.1"
-git-properties-version = "2.4.0"
+git-properties-version = "2.4.1"
 
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
