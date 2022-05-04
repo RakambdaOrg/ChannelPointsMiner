@@ -276,6 +276,16 @@ class SendMinutesWatchedTest{
 	}
 	
 	@Test
+	void sendingMinutesWatchedChatBanned(){
+		when(streamer.isChatBanned()).thenReturn(true);
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(twitchApi, never()).sendPlayerEvents(any(), any());
+		verify(streamer, never()).addWatchedDuration(any());
+	}
+	
+	@Test
 	void sendingMinutesWatchedSeveralStreamers() throws MalformedURLException{
 		var streamerId2 = "streamer-id-2";
 		var spadeUrl2 = new URL("https://google.com/2");

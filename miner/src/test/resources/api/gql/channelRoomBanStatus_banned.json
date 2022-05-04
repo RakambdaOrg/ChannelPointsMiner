@@ -1,0 +1,28 @@
+{
+  "data": {
+    "chatRoomBanStatus": {
+      "bannedUser": {
+        "id": "123456789",
+        "login": "target-username",
+        "displayName": "target-name",
+        "__typename": "User"
+      },
+      "createdAt": "2022-01-01T10:22:35Z",
+      "expiresAt": null,
+      "isPermanent": true,
+      "moderator": null,
+      "reason": "",
+      "__typename": "ChatRoomBanStatus"
+    },
+    "targetUser": {
+      "id": "123456789",
+      "login": "target-username",
+      "__typename": "User"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 21,
+    "operationName": "ChatRoomBanStatus",
+    "requestID": "request-id"
+  }
+}
