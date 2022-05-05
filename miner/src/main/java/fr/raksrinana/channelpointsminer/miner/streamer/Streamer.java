@@ -78,6 +78,8 @@ public class Streamer{
 	@Setter
 	@Getter
 	private URL spadeUrl;
+	@Getter
+	private boolean chatBanned;
 	
 	public void addWatchedDuration(@NotNull Duration duration){
 		watchedDuration = watchedDuration.plus(duration);
@@ -212,5 +214,12 @@ public class Streamer{
 	
 	public boolean isStreaming(){
 		return getStream().isPresent();
+	}
+	
+	public void setChatBanned(boolean chatBanned){
+		if(chatBanned && !this.chatBanned){
+			log.warn("Chat banned for streamer {}", this);
+		}
+		this.chatBanned = chatBanned;
 	}
 }

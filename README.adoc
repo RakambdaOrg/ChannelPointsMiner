@@ -390,6 +390,8 @@ Values can be defined per sub tier.
 |* score : Score to give.
 |===
 
+NOTE: If you're banned from the chat of a channel, it'll be skipped as you can't gather points there.
+
 ==== Prediction delays [[prediction_delay]]
 
 Prediction delays allow you to define when a bet should be placed.
