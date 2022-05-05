@@ -16,6 +16,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.RaidGoV2;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.UpdateSummary;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ViewCount;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.WatchPartyVod;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimclaimed.ClaimClaimedData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.CreateNotificationData;
@@ -38,6 +39,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Predic
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Raid;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.updatesummary.UpdateSummaryData;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.watchpartyvod.Vod;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.response.MessageData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.response.MessageResponse;
@@ -535,6 +537,32 @@ class TwitchWebSocketClientMessageTest{
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
+    
+    @Test
+    void onWatchPartyVod(WebsocketMockServer server) throws MalformedURLException{
+        server.send(getAllResourceContent("api/ws/watchPartyVod.json"));
+        
+        var expected = MessageResponse.builder()
+                .data(MessageData.builder()
+                        .topic(Topic.builder()
+                                .name(ONSITE_NOTIFICATIONS)
+                                .target("123456789")
+                                .build())
+                        .message(WatchPartyVod.builder()
+                                .vod(Vod.builder()
+                                        .wpId("")
+                                        .wpType("rerun")
+                                        .incrementUrl(new URL("https://increment_url"))
+                                        .vodId("123456")
+                                        .title("the title")
+                                        .broadcastType("highlight")
+                                        .viewable("public")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+    }
 	
 	@BeforeEach
 	void setUp(WebsocketMockServer server) throws InterruptedException{
