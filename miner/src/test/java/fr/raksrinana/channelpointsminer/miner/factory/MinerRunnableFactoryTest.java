@@ -6,12 +6,14 @@ import fr.raksrinana.channelpointsminer.miner.runnable.StreamerConfigurationRelo
 import fr.raksrinana.channelpointsminer.miner.runnable.SyncInventory;
 import fr.raksrinana.channelpointsminer.miner.runnable.UpdateStreamInfo;
 import fr.raksrinana.channelpointsminer.miner.runnable.WebSocketPing;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class MinerRunnableFactoryTest{
 	@Mock

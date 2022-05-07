@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.runnable;
 
 import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class WebSocketPingTest{
 	@InjectMocks

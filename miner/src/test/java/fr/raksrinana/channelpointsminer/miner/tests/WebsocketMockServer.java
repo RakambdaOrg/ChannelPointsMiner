@@ -30,6 +30,8 @@ public class WebsocketMockServer extends WebSocketServer{
 		super(new InetSocketAddress(port));
 		setReuseAddr(true);
 		
+		log.debug("Starting websocket mock server on port {}", port);
+		
 		this.port = port;
 		
 		receivedMessages = new ArrayList<>();
@@ -39,7 +41,6 @@ public class WebsocketMockServer extends WebSocketServer{
 	
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake){
-	
 	}
 	
 	@Override
@@ -63,7 +64,6 @@ public class WebsocketMockServer extends WebSocketServer{
 	
 	@Override
 	public void onStart(){
-	
 	}
 	
 	public void reset(){

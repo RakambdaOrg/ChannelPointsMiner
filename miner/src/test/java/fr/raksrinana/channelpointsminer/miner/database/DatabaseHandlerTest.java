@@ -15,6 +15,7 @@ import fr.raksrinana.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamerAddedEvent;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PlacedPrediction;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class DatabaseHandlerTest{
 	private static final String CHANNEL_ID = "channel-id";

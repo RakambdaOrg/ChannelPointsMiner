@@ -10,6 +10,7 @@ import fr.raksrinana.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacer;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerPredictionUpdatedTest{
 	private static final String STREAMER_ID = "streamer-id";

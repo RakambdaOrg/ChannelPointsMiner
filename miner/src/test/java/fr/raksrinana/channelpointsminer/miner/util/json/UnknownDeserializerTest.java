@@ -1,11 +1,13 @@
 package fr.raksrinana.channelpointsminer.miner.util.json;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParallelizableTest
 class UnknownDeserializerTest extends DeserializerTest<String>{
 	@ParameterizedTest
 	@ValueSource(strings = {

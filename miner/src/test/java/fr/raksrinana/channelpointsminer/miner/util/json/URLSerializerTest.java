@@ -1,11 +1,13 @@
 package fr.raksrinana.channelpointsminer.miner.util.json;
 
 import com.fasterxml.jackson.databind.JsonSerializer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.junit.jupiter.api.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParallelizableTest
 class URLSerializerTest extends SerializerTest<URL>{
 	@Test
 	void stringValue() throws MalformedURLException{

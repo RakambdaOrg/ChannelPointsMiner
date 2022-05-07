@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.irc;
 
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class TwitchIrcEventListenerTest{
 	private static final String USERNAME = "username";

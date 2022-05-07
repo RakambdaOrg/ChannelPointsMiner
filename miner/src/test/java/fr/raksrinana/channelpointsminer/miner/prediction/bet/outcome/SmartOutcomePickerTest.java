@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcom
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.OutcomeColor;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class SmartOutcomePickerTest{
 	private final SmartOutcomePicker tested = SmartOutcomePicker.builder().percentageGap(.1F).build();

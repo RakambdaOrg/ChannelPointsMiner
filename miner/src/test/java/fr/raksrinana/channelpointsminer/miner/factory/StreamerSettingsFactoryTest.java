@@ -15,6 +15,7 @@ import fr.raksrinana.channelpointsminer.miner.priority.SubscribedPriority;
 import fr.raksrinana.channelpointsminer.miner.priority.WatchStreakPriority;
 import fr.raksrinana.channelpointsminer.miner.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
 import org.mockito.InjectMocks;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class StreamerSettingsFactoryTest{
 	private static final StreamerSettings DEFAULT = StreamerSettings.builder().build();

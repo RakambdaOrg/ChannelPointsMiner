@@ -1,13 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.tests;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-@Log4j2
 public class TestUtils{
 	private static final String LF = "\n";
 	

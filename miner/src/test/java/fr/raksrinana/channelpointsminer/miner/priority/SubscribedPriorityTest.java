@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.priority;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.CommunityPointsMultiplier;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,6 +17,7 @@ import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Multipli
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class SubscribedPriorityTest{
 	private static final int SCORE_T1 = 50;

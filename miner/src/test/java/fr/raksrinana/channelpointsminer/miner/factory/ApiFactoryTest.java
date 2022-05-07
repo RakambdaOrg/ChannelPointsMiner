@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class ApiFactoryTest{
 	@Mock

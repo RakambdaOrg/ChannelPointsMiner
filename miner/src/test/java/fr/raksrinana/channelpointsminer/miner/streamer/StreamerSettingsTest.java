@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.streamer;
 
 import fr.raksrinana.channelpointsminer.miner.priority.IStreamerPriority;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class StreamerSettingsTest{
 	@Mock

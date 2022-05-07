@@ -1,9 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.util;
 
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.junit.jupiter.api.RepeatedTest;
 import java.time.Duration;
 import static org.awaitility.Awaitility.await;
 
+@ParallelizableTest
 class CommonUtilsTest{
 	@RepeatedTest(5)
 	void sleepInRange(){

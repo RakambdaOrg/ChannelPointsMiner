@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.util.json;
 
 import com.fasterxml.jackson.databind.JsonSerializer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import kong.unirest.core.Cookie;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@ParallelizableTest
 class CookieSerializerTest extends SerializerTest<Cookie>{
 	public static Stream<Arguments> generateCases(){
 		return Stream.of(
