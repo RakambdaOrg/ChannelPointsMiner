@@ -52,4 +52,11 @@ spring:
     url: "jdbc:mariadb://127.0.0.1:3306/ChannelPointsMiner"
     username: "user"
     password: "pass"
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 ----
