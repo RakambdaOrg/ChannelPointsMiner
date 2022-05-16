@@ -20,7 +20,9 @@ dependencies {
     testRuntimeOnly(libs.junitEngine)
 
     testImplementation(libs.assertj)
-    testImplementation(libs.bundles.mockito)
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito:mockito-inline")
+    testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation(libs.awaitility)
     testImplementation(libs.bundles.jsonUnit)
 
