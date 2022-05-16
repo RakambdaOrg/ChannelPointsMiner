@@ -79,5 +79,7 @@ jib {
     }
     container {
         creationTime = "USE_CURRENT_TIMESTAMP"
+
+        setPorts(listOf("8080"))
     }
 }
