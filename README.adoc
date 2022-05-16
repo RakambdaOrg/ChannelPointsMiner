@@ -223,7 +223,7 @@ These are store in an external database which allows any external software to ac
 
 Several database types are supported and listed below.
 Each database (logical database for MariaDB, different file for H2/SQLite) will however represent one mined account.
-You'll therefore have to ajust the settings for each mined account to poit point to the same one.
+You'll therefore have to adjust the settings for each mined account to not point to the same one.
 
 [cols="1,3,1"]
 |===
@@ -542,6 +542,10 @@ These keys are listed below:
 |event_id
 |Event id of a prediction.
 |===
+
+== Viewer
+
+Another module is available to display analytics data, see link:viewer/README.adoc[viewer module].
 
 == Disclaimer
 
