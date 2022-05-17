@@ -31,6 +31,7 @@ public class BalanceService{
 		return BalanceData.builder()
 				.date(entity.getBalanceDate())
 				.balance(entity.getBalance())
+				.reason(entity.getReason())
 				.build();
 	}
 }

@@ -82,7 +82,7 @@ function makeChart(channelData) {
                     minBulletDistance: 20,
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
-                        labelText: "[bold]{name}[/]\n{valueX.formatDate()}: {valueY}"
+                        labelText: "[bold]{name}[/]\n{valueX.formatDate()}: {valueY} - {reason}"
                     })
                 })
         );
@@ -112,11 +112,9 @@ function makeChart(channelData) {
 
     let currentDate = new Date();
 
-// initially load 50 days
     let min = currentDate.getTime() - am5.time.getDuration("day", 1);
     let max = currentDate.getTime();
 
-// will hold first/last dates of each series
     let seriesFirst = {};
     let seriesLast = {};
 
@@ -127,7 +125,6 @@ function makeChart(channelData) {
 
         let series = createSeries(id, name);
 
-        // Process data (convert dates and values)
         let processor = am5.DataProcessor.new(root, {
             dateFields: ["date"],
             dateFormat: "i", //ISO 8601
