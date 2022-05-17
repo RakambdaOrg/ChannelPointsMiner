@@ -51,22 +51,23 @@ class ApiControllerTest{
         var channelId = "CID1";
         
         when(balanceService.getAllBalance(channelId)).thenReturn(List.of(
-                BalanceData.builder().date(Instant.parse("2022-04-15T19:14:20.000Z")).balance(100).build(),
-                BalanceData.builder().date(Instant.parse("2022-04-15T19:16:20.000Z")).balance(200).build()
+		        BalanceData.builder().date(Instant.parse("2022-04-15T19:14:20.000Z")).balance(100).reason("R1").build(),
+		        BalanceData.builder().date(Instant.parse("2022-04-15T19:16:20.000Z")).balance(200).build()
         ));
         
         mockMvc.perform(get("/api/balance/{channelId}/all", channelId))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                    [
-                        {
-                            "date": "2022-04-15T19:14:20Z",
-                            "balance": 100
-                        },
-                        {
-                            "date": "2022-04-15T19:16:20Z",
-                            "balance": 200
-                        }
-                    ]"""));
+		                [
+		                    {
+		                        "date": "2022-04-15T19:14:20Z",
+		                        "balance": 100,
+		                        "reason": "R1"
+		                    },
+		                    {
+		                        "date": "2022-04-15T19:16:20Z",
+		                        "balance": 200
+		                    }
+		                ]"""));
     }
 }
