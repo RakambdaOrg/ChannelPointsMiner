@@ -22,7 +22,7 @@ public class MariaDBDatabase extends BaseDatabase{
 						CREATE TABLE IF NOT EXISTS `Balance` (
 							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
-						    `BalanceDate` DATETIME NOT NULL,
+						    `BalanceDate` DATETIME(3) NOT NULL,
 						    `Balance` INT NOT NULL,
 						    `Reason` VARCHAR(16) NULL,
 						    INDEX `PointsDateIdx`(`BalanceDate`)
