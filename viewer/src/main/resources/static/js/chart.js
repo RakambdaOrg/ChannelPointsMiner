@@ -82,7 +82,7 @@ function makeChart(channelData) {
                     minBulletDistance: 20,
                     tooltip: am5.Tooltip.new(root, {
                         pointerOrientation: "horizontal",
-                        labelText: "[bold]{name}[/]\n{valueX.formatDate()}: {valueY}"
+                        labelText: "[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss')}: {valueY}"
                     })
                 })
         );
