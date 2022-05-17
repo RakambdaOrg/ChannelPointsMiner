@@ -13,4 +13,5 @@ import java.time.Instant;
 public class BalanceData{
     private Instant date;
     private int balance;
+	private String reason;
 }
