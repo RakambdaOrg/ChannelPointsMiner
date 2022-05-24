@@ -59,31 +59,8 @@ function makeChart(channelData) {
         width: am5.percent(100),
         verticalScrollbar: am5.Scrollbar.new(root, {
             orientation: "vertical"
-        }),
-        layout: am5.GridLayout.new(root, {
-            fixedWidthGrid: true
-        }),
-        centerX: am5.p50,
-        x: am5.p50,
-        useDefaultMarker: true
+        })
     }));
-
-    legend.markers.template.setup = function (marker) {
-        let check = am5.Graphics.new(root, {
-            fill: am5.color(0x000000),
-            fillOpacity: 1,
-            width: 20,
-            height: 20,
-            layer: 50,
-            svgPath: "M15.75 2.527c-.61-.468-1.46-.328-1.902.32l-6.325 9.255L4.04 8.328a1.3 1.3 0 0 0-1.922-.062 1.505 1.505 0 0 0-.062 2.043s4.234 4.695 4.843 5.168c.61.468 1.457.328 1.903-.32L16.05 4.55c.445-.653.308-1.555-.301-2.024Zm0 0"
-        });
-
-        check.states.create("disabled", {
-            fillOpacity: 0
-        });
-
-        marker.children.push(check);
-    }
 
 ////////////////////////////////////////////////// SERIES
 
