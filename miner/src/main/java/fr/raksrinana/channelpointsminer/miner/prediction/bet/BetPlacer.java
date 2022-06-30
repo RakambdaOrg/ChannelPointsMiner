@@ -10,6 +10,8 @@ import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.NotEnoughUsersBetPlacementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +74,12 @@ public class BetPlacer{
 					});
 		}
 		catch(BetPlacementException e){
-			log.error("Failed to place bet", e);
+			if(e instanceof NotEnoughUsersBetPlacementException){
+				log.warn("Failed to place bet", e);
+			}
+			else{
+				log.error("Failed to place bet", e);
+			}
 			bettingPrediction.setState(PredictionState.BET_ERROR);
 		}
 	}

@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
-import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

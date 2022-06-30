@@ -15,6 +15,8 @@ import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.action.IPredictionAction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.amount.IAmountCalculator;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.NotEnoughUsersBetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome.IOutcomePicker;
 import fr.raksrinana.channelpointsminer.miner.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
@@ -118,6 +120,16 @@ class BetPlacerTest{
 	@Test
 	void outcomeException() throws BetPlacementException{
 		when(outcomePicker.chooseOutcome(bettingPrediction)).thenThrow(new BetPlacementException("For tests"));
+		
+		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
+		
+		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
+		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
+	}
+	
+	@Test
+	void outcomeException2() throws BetPlacementException{
+		when(outcomePicker.chooseOutcome(bettingPrediction)).thenThrow(new NotEnoughUsersBetPlacementException(0));
 		
 		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 		

@@ -2,8 +2,8 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.action;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.Placement;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import org.jetbrains.annotations.NotNull;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 

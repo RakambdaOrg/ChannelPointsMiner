@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Predictor;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
-import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
