@@ -25,7 +25,7 @@ lombok-version = "6.5.0.2"
 jib-version = "3.2.1"
 git-properties-version = "2.4.1"
 springboot-version = "2.7.1"
-springboot-dependencies-version = "1.0.11.RELEASE"
+springboot-dependencies-version = "1.0.12.RELEASE"
 
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
