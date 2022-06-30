@@ -51,7 +51,7 @@ class ApiControllerTest{
         var channelId = "CID1";
         
         when(balanceService.getAllBalance(channelId)).thenReturn(List.of(
-		        BalanceData.builder().date(Instant.parse("2022-04-15T19:14:20.000Z")).balance(100).reason("R1").build(),
+		        BalanceData.builder().date(Instant.parse("2022-04-15T19:14:20.123Z")).balance(100).reason("R1").build(),
 		        BalanceData.builder().date(Instant.parse("2022-04-15T19:16:20.000Z")).balance(200).build()
         ));
         
@@ -60,7 +60,7 @@ class ApiControllerTest{
                 .andExpect(content().json("""
 		                [
 		                    {
-		                        "date": "2022-04-15T19:14:20Z",
+		                        "date": "2022-04-15T19:14:20.123Z",
 		                        "balance": 100,
 		                        "reason": "R1"
 		                    },

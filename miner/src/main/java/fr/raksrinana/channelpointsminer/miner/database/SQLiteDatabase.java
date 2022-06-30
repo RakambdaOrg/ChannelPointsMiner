@@ -23,7 +23,7 @@ public class SQLiteDatabase extends BaseDatabase{
 						CREATE TABLE IF NOT EXISTS `Balance` (
 							`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
-						    `BalanceDate` DATETIME NOT NULL,
+						    `BalanceDate` DATETIME(3) NOT NULL,
 						    `Balance` INTEGER NOT NULL,
 						    `Reason` VARCHAR(16) NULL
 						);""",
