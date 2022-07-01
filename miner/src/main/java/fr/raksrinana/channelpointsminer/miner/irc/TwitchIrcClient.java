@@ -50,7 +50,7 @@ public class TwitchIrcClient implements AutoCloseable{
 	
 	public void leave(@NotNull String channel){
 		if(Objects.isNull(ircClient)){
-			log.debug("Didn't leave irc channel #{channel} as no connection has been made");
+			log.debug("Didn't leave irc channel #{} as no connection has been made", channel);
 			return;
 		}
 		
