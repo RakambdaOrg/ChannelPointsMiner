@@ -41,6 +41,8 @@ public class MinerApplication{
 		preSetup();
 		
 		var accountConfigurations = ConfigurationFactory.getInstance();
+		log.info("Picked up configuration: {}", accountConfigurations);
+		
 		for(var accountConfiguration : accountConfigurations.getAccounts()){
 			if(accountConfiguration.isEnabled()){
 				var miner = MinerFactory.create(accountConfiguration);

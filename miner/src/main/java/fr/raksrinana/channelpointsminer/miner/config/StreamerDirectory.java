@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class StreamerDirectory{
 	@JsonProperty("path")
 	@NotNull

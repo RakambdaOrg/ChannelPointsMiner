@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class DatabaseConfiguration{
 	@JsonProperty("jdbcUrl")
 	@Comment(value = "JDBC connection URL")
@@ -24,5 +26,6 @@ public class DatabaseConfiguration{
 	@JsonProperty("password")
 	@Comment(value = "Database password")
 	@Nullable
+	@ToString.Exclude
 	private String password;
 }
