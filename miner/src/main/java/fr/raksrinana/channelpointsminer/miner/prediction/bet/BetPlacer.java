@@ -38,7 +38,7 @@ public class BetPlacer{
 			
 			var amountCalculator = bettingPrediction.getStreamer().getSettings().getPredictions().getAmountCalculator();
 			var amount = amountCalculator.calculateAmount(bettingPrediction, outcome);
-			if(amount <= 10){
+			if(amount < MINIMUM_BET_AMOUNT){
 				log.warn("Cannot place a bet with less than {} points (was {})", MINIMUM_BET_AMOUNT, amount);
 				bettingPrediction.setState(PredictionState.BET_ERROR);
 				return;

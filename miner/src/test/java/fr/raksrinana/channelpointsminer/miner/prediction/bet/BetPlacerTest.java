@@ -28,6 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -147,7 +149,14 @@ class BetPlacerTest{
 		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 	}
 	
-	@Test
+	@ParameterizedTest
+	@ValueSource(ints = {
+			5,
+			6,
+			7,
+			8,
+			9
+	})
 	void amountTooLow() throws BetPlacementException{
 		when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(5);
 		
@@ -155,6 +164,22 @@ class BetPlacerTest{
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
 		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
+	}
+	
+	@Test
+	void nominalOnLimit() throws BetPlacementException{
+		var amount = 10;
+		
+		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
+			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+			when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(amount);
+			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, amount, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
+			
+			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
+			
+			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, amount, TRANSACTION_ID);
+			verify(bettingPrediction, never()).setState(any());
+		}
 	}
 	
 	@Test
