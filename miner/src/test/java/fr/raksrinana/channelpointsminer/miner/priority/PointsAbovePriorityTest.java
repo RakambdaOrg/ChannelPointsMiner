@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.priority;
 
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class PointsAbovePriorityTest{
 	private static final int SCORE = 50;

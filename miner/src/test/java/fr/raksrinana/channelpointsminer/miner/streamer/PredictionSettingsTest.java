@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.miner.prediction.bet.action.IPredictionA
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.amount.IAmountCalculator;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome.IOutcomePicker;
 import fr.raksrinana.channelpointsminer.miner.prediction.delay.IDelayCalculator;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class PredictionSettingsTest{
 	@Mock

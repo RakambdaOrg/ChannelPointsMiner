@@ -44,7 +44,7 @@ public class UnirestMockExtension implements Extension, BeforeAllCallback, Befor
 	}
 	
 	@Override
-	public void beforeEach(ExtensionContext context) throws Exception{
+	public void beforeEach(ExtensionContext context){
 		Unirest.config().clearDefaultHeaders();
 		unirest = MockClient.register();
 	}

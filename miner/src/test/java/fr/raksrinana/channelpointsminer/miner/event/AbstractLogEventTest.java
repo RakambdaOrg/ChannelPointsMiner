@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.event;
 
 import fr.raksrinana.channelpointsminer.miner.event.impl.MinerStartedEvent;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class AbstractLogEventTest{
 	private AbstractEvent tested;

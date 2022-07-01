@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Raid;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class FollowRaidHandlerTest{
 	private static final String RAID_ID = "raid-id";

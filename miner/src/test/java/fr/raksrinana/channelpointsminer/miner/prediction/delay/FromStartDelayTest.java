@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.delay;
 
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class FromStartDelayTest{
 	private static final ZonedDateTime EVENT_DATE = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);

@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.prediction.bet;
+package fr.raksrinana.channelpointsminer.miner.prediction.bet.exception;
 
 import org.jetbrains.annotations.NotNull;
 

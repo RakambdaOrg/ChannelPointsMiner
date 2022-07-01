@@ -3,7 +3,8 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
-import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.NotEnoughUsersBetPlacementException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -33,7 +34,7 @@ public class SmartOutcomePicker implements IOutcomePicker{
 		
 		var totalUsers = (double) bettingPrediction.getEvent().getOutcomes().stream().mapToInt(Outcome::getTotalUsers).sum();
 		if(Double.compare(0D, totalUsers) == 0){
-			throw new BetPlacementException("0 user participated, can't decide which side to place the bet onto");
+			throw new NotEnoughUsersBetPlacementException(0);
 		}
 		
 		var percentages = bettingPrediction.getEvent().getOutcomes().stream().collect(Collectors.toMap(o -> o, o -> o.getTotalUsers() / totalUsers));

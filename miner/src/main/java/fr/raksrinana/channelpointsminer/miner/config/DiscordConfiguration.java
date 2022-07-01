@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 
@@ -14,6 +15,7 @@ import java.net.URL;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class DiscordConfiguration{
 	@JsonProperty("webhookUrl")
 	@JsonDeserialize(using = URLDeserializer.class)

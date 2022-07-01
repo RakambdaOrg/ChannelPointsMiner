@@ -89,7 +89,7 @@ public class TwitchWebSocketClient extends WebSocketClient{
 			listeners.forEach(listener -> listener.onWebSocketMessage(message));
 		}
 		catch(Exception e){
-			log.error("Failed to handle WebSocket message", e);
+			log.error("Failed to handle WebSocket message {}", messageStr, e);
 		}
 	}
 	

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class AccountConfiguration{
 	@NotNull
 	@JsonProperty("username")
@@ -24,6 +26,7 @@ public class AccountConfiguration{
 	@NotNull
 	@JsonProperty("password")
 	@Comment(value = "Password of your Twitch account.")
+	@ToString.Exclude
 	private String password;
 	@JsonProperty("use2FA")
 	@Comment(value = "If this account uses 2FA set this to true to directly ask for it.", defaultValue = "false")

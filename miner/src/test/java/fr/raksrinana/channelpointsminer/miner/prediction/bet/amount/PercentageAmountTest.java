@@ -2,8 +2,9 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.amount;
 
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
-import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class PercentageAmountTest{
 	private static final int MAX = 50;

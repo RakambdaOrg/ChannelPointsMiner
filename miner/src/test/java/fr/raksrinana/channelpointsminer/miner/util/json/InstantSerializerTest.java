@@ -1,10 +1,12 @@
 package fr.raksrinana.channelpointsminer.miner.util.json;
 
 import com.fasterxml.jackson.databind.JsonSerializer;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ParallelizableTest
 class InstantSerializerTest extends SerializerTest<Instant>{
 	@Test
 	void stringValue(){

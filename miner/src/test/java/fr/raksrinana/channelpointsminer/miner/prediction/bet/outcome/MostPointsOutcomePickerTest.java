@@ -3,7 +3,8 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
-import fr.raksrinana.channelpointsminer.miner.prediction.bet.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class MostPointsOutcomePickerTest{
 	private final MostPointsOutcomePicker tested = MostPointsOutcomePicker.builder().build();

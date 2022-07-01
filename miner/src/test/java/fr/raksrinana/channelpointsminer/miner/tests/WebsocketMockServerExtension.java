@@ -1,7 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.tests;
 
 import io.netty.util.internal.ThreadLocalRandom;
-import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import java.util.Objects;
 
-@Log4j2
 public class WebsocketMockServerExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterAllCallback, ParameterResolver{
 	private final WebsocketMockServer server;
 	
@@ -30,7 +28,7 @@ public class WebsocketMockServerExtension implements Extension, BeforeAllCallbac
 	}
 	
 	@Override
-	public void beforeEach(ExtensionContext context) throws Exception{
+	public void beforeEach(ExtensionContext context){
 		server.reset();
 	}
 	

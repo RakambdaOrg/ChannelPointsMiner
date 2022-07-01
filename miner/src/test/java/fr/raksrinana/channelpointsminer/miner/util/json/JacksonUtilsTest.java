@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.util.json;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ParallelizableTest
 class JacksonUtilsTest{
 	@NoArgsConstructor
 	@AllArgsConstructor

@@ -15,6 +15,7 @@ import fr.raksrinana.channelpointsminer.miner.handler.PredictionsHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.StreamStartEndHandler;
 import fr.raksrinana.channelpointsminer.miner.log.DiscordEventListener;
 import fr.raksrinana.channelpointsminer.miner.log.LoggerEventListener;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class MinerFactoryTest{
 	private static final String USERNAME = "username";

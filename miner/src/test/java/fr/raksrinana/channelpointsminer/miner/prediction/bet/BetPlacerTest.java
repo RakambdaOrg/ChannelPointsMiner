@@ -15,16 +15,21 @@ import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.action.IPredictionAction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.amount.IAmountCalculator;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.NotEnoughUsersBetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome.IOutcomePicker;
 import fr.raksrinana.channelpointsminer.miner.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -39,6 +44,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class BetPlacerTest{
 	private static final int AMOUNT = 50;
@@ -124,6 +130,16 @@ class BetPlacerTest{
 	}
 	
 	@Test
+	void outcomeException2() throws BetPlacementException{
+		when(outcomePicker.chooseOutcome(bettingPrediction)).thenThrow(new NotEnoughUsersBetPlacementException(0));
+		
+		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
+		
+		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
+		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
+	}
+	
+	@Test
 	void amountException() throws BetPlacementException{
 		when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenThrow(new BetPlacementException("For tests"));
 		
@@ -133,7 +149,14 @@ class BetPlacerTest{
 		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
 	}
 	
-	@Test
+	@ParameterizedTest
+	@ValueSource(ints = {
+			5,
+			6,
+			7,
+			8,
+			9
+	})
 	void amountTooLow() throws BetPlacementException{
 		when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(5);
 		
@@ -141,6 +164,22 @@ class BetPlacerTest{
 		
 		verify(gqlApi, never()).makePrediction(any(), any(), anyInt(), any());
 		verify(bettingPrediction).setState(PredictionState.BET_ERROR);
+	}
+	
+	@Test
+	void nominalOnLimit() throws BetPlacementException{
+		var amount = 10;
+		
+		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
+			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+			when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(amount);
+			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, amount, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
+			
+			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
+			
+			verify(gqlApi).makePrediction(EVENT_ID, OUTCOME_ID, amount, TRANSACTION_ID);
+			verify(bettingPrediction, never()).setState(any());
+		}
 	}
 	
 	@Test
