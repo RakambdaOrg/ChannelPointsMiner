@@ -116,3 +116,7 @@ jib {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
 }
+
+gitProperties {
+    failOnNoGitDirectory = false
+}
