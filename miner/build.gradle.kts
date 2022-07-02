@@ -79,7 +79,7 @@ application {
     val moduleName: String by project
     val className: String by project
 
-    mainModule.set(moduleName)
+//    mainModule.set(moduleName)
     mainClass.set(className)
 }
 
