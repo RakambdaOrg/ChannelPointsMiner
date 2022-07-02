@@ -33,7 +33,7 @@ Java 17+ is required.
 
 1. Clone this repository `git clone git@github.com:RakSrinaNa/ChannelPointsMiner.git`.
 2. Get into the cloned directory `cd ChannelPointsMiner`.
-3. Build the jar `./gradlew build`
+3. Build the jar `./gradlew build -x test`
 4. Run
 * Default: `java -jar miner/build/libs/miner-shaded.jar --settings config.json`
 * With your own <<logs,logger>>: `java -Dlog4j.configurationFile=log4j2.xml -jar miner/build/libs/miner-shaded.jar --settings config.json`
