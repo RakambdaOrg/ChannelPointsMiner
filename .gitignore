@@ -5,6 +5,7 @@
 /out
 /streamers
 /target
+bin/
 
 *.iml
 /analytics.db

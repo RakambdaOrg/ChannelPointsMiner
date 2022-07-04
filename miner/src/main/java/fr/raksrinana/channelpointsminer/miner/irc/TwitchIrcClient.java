@@ -41,6 +41,8 @@ public class TwitchIrcClient implements AutoCloseable{
 			ircClient.setExceptionListener(e -> log.error("Error from irc", e));
 			
 			ircClient.getEventManager().registerEventListener(TwitchIrcFactory.createListener(twitchLogin.getUsername()));
+
+			ircClient.commands().capabilityRequest().enable("twitch.tv/tags").execute();
 			
 			log.info("IRC Client created");
 		}
