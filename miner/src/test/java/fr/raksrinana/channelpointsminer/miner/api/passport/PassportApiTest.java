@@ -85,6 +85,33 @@ class PassportApiTest{
 	}
 	
 	@Test
+	void newAuthWithObscuredEmail(MockClient unirest) throws LoginException, IOException{
+		unirest.expect(POST, "https://passport.twitch.tv/login")
+				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
+				.header("Client-Id", CLIENT_ID)
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
+				.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).obscuredEmail("t**t@t****.com").build())
+				.withHeader("Set-Cookie", "yummy_cookie=choco")
+				.withHeader("Set-Cookie", "yummy_cake=vanilla")
+				.withStatus(200);
+		
+		var expected = TwitchLogin.builder()
+				.username(USERNAME)
+				.accessToken(ACCESS_TOKEN)
+				.cookies(List.of(
+						new Cookie("yummy_cookie=choco"),
+						new Cookie("yummy_cake=vanilla")
+				))
+				.build();
+		
+		assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(authFile).exists().isNotEmptyFile();
+		assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
+		
+		unirest.verifyAll();
+	}
+	
+	@Test
 	void newAuthWith2FA(MockClient unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
