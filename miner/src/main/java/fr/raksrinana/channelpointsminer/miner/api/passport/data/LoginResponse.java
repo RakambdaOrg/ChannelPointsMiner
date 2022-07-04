@@ -33,4 +33,7 @@ public class LoginResponse{
 	@JsonProperty("sms_proof")
 	@Nullable
 	private String smsProof;
+	@JsonProperty("obscured_email")
+	@Nullable
+	private String obscuredEmail;
 }
