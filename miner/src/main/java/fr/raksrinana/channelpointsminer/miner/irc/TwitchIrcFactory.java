@@ -1,6 +1,9 @@
 package fr.raksrinana.channelpointsminer.miner.irc;
 
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
+import fr.raksrinana.channelpointsminer.miner.irc.listeners.TwitchIrcConnectionEventListener;
+import fr.raksrinana.channelpointsminer.miner.irc.listeners.TwitchIrcMessageEventListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -12,10 +15,15 @@ import static org.kitteh.irc.client.library.Client.Builder.Server.SecurityType.S
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TwitchIrcFactory{
 	private static final String TWITCH_IRC_HOST = "irc.chat.twitch.tv";
+    
+    @NotNull
+    public static TwitchIrcClientPrototype createPrototype(){
+        return new TwitchIrcClientPrototype();
+    }
 	
 	@NotNull
-	public static TwitchIrcClient create(@NotNull TwitchLogin twitchLogin){
-		return new TwitchIrcClient(twitchLogin);
+	public static TwitchIrcClient create(TwitchIrcClientPrototype prototype, TwitchLogin twitchLogin){
+		return new TwitchIrcClient(prototype, twitchLogin);
 	}
 	
 	@NotNull
@@ -36,7 +44,13 @@ public class TwitchIrcFactory{
 	}
 	
 	@NotNull
-	public static TwitchIrcEventListener createListener(@NotNull String accountName){
-		return new TwitchIrcEventListener(accountName);
+	public static TwitchIrcConnectionEventListener createConnectionListener(@NotNull String accountName){
+		return new TwitchIrcConnectionEventListener(accountName);
 	}
+	
+	@NotNull
+    public static TwitchIrcMessageEventListener createMessageListener(@NotNull String accountName, IDatabase database){
+	    return new TwitchIrcMessageEventListener(database, accountName);
+    }
+	
 }

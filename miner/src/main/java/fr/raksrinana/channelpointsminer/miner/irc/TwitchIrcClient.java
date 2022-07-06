@@ -13,10 +13,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class TwitchIrcClient implements AutoCloseable{
-	
-	@NotNull
-	private final TwitchLogin twitchLogin;
-	
+    
+    @NotNull
+    private final TwitchIrcClientPrototype twitchIrcClientPrototype;
+    @NotNull
+    private final TwitchLogin twitchLogin;
+    
 	@Nullable
 	private Client ircClient;
 	
@@ -40,10 +42,15 @@ public class TwitchIrcClient implements AutoCloseable{
 			ircClient.connect();
 			ircClient.setExceptionListener(e -> log.error("Error from irc", e));
 			
-			ircClient.getEventManager().registerEventListener(TwitchIrcFactory.createListener(twitchLogin.getUsername()));
-
-			ircClient.commands().capabilityRequest().enable("twitch.tv/tags").execute();
-			
+			var eventManager = ircClient.getEventManager();
+            twitchIrcClientPrototype.getHandlers()
+                    .forEach(eventManager::registerEventListener);
+            
+            var capabilityRequest = ircClient.commands().capabilityRequest();
+            twitchIrcClientPrototype.getCapabilities()
+                    .forEach(capabilityRequest::enable);
+            capabilityRequest.execute();
+            
 			log.info("IRC Client created");
 		}
 		
@@ -66,6 +73,7 @@ public class TwitchIrcClient implements AutoCloseable{
 		ircClient.removeChannel(ircChannelName);
 	}
 	
+	@Override
 	public void close(){
 		Optional.ofNullable(ircClient).ifPresent(Client::shutdown);
 	}

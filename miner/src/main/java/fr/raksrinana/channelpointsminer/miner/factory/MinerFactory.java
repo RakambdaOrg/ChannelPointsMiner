@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.factory;
 import com.zaxxer.hikari.pool.HikariPool;
 import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.miner.config.AccountConfiguration;
+import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.miner.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -15,13 +16,18 @@ import java.util.concurrent.Executors;
 public class MinerFactory{
 	@NotNull
 	public static Miner create(@NotNull AccountConfiguration config){
+     
+	    var ircClientPrototype = TwitchIrcFactory.createPrototype()
+	            .addIrcHandler(TwitchIrcFactory.createConnectionListener(config.getUsername()));
+	    
 		var miner = new Miner(
 				config,
 				ApiFactory.createPassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
 				new StreamerSettingsFactory(config),
 				new TwitchWebSocketPool(50),
 				Executors.newScheduledThreadPool(4),
-				Executors.newCachedThreadPool());
+				Executors.newCachedThreadPool(),
+                ircClientPrototype);
 		
 		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
@@ -43,6 +49,11 @@ public class MinerFactory{
 			try{
 				var database = DatabaseFactory.createDatabase(dbConfig);
 				miner.addEventListener(DatabaseFactory.createDatabaseHandler(database));
+				if(config.getAnalytics().isRecordChatsPredictions()){
+				    ircClientPrototype
+                            .addCapability("twitch.tv/tags")
+                            .addIrcHandler(TwitchIrcFactory.createMessageListener(config.getUsername(), database));
+                }
 			}
 			catch(SQLException | HikariPool.PoolInitializationException e){
 				throw new IllegalStateException("Failed to set up database", e);

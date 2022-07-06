@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.irc;
 
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.irc.listeners.TwitchIrcConnectionEventListener;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.kitteh.irc.client.library.Client;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,6 @@ class TwitchIrcFactoryTest{
 	
 	@Test
 	void createListener(){
-		assertThat(TwitchIrcFactory.createListener("username")).isNotNull().isInstanceOf(TwitchIrcEventListener.class);
+		assertThat(TwitchIrcFactory.createConnectionListener("username")).isNotNull().isInstanceOf(TwitchIrcConnectionEventListener.class);
 	}
 }

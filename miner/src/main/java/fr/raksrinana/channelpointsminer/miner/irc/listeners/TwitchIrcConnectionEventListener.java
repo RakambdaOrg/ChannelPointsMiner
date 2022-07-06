@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.irc;
+package fr.raksrinana.channelpointsminer.miner.irc.listeners;
 
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import org.kitteh.irc.client.library.event.channel.RequestedChannelJoinCompleteEvent;
 import org.kitteh.irc.client.library.event.client.ClientNegotiationCompleteEvent;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
-import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 @RequiredArgsConstructor
 @Log4j2
-public class TwitchIrcEventListener{
+public class TwitchIrcConnectionEventListener{
+ 
 	private final String accountName;
 
 	@Handler
@@ -39,18 +39,6 @@ public class TwitchIrcEventListener{
 	public void onChannelJoinEvent(@NotNull RequestedChannelJoinCompleteEvent event){
 		try(var ignored = LogContext.with(accountName)){
 			log.info("Joined IRC channel {}", event.getChannel().getName());
-		}
-	}
-
-	@Handler
-	public void onMessageEvent(@NotNull ChannelMessageEvent event) {
-		try  (var ignored = LogCont ext.with(accountName)) {
-			log.info("Message: {}", event.getMessage());
-
-			if(badgesTag.isPresent()){
-				var badges = badgesTag.ifPresentOrElse("");
-				log.debug(badges);
-			}
 		}
 	}
 }

@@ -22,6 +22,7 @@ import fr.raksrinana.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.IMessageHandler;
 import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcClient;
+import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcClientPrototype;
 import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.runnable.SyncInventory;
@@ -79,6 +80,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	
 	private UpdateStreamInfo updateStreamInfo;
 	private SyncInventory syncInventory;
+	private TwitchIrcClientPrototype ircClientPrototype;
 	
 	@Getter
 	private TwitchLogin twitchLogin;
@@ -94,13 +96,15 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchWebSocketPool webSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
-			@NotNull ExecutorService handlerExecutor){
+			@NotNull ExecutorService handlerExecutor,
+            @NotNull TwitchIrcClientPrototype ircClientPrototype){
 		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
 		this.webSocketPool = webSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
+		this.ircClientPrototype = ircClientPrototype;
 		
 		streamers = new ConcurrentHashMap<>();
 		messageHandlers = new LinkedList<>();
@@ -148,7 +152,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			twitchLogin = passportApi.login();
 			gqlApi = ApiFactory.createGqlApi(twitchLogin);
 			twitchApi = ApiFactory.createTwitchApi();
-			ircClient = TwitchIrcFactory.create(twitchLogin);
+			ircClient = TwitchIrcFactory.create(ircClientPrototype, twitchLogin);
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");
