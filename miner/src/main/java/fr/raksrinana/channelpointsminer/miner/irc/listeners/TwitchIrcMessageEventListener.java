@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import net.engio.mbassy.listener.Handler;
 import org.jetbrains.annotations.NotNull;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -23,8 +24,19 @@ public class TwitchIrcMessageEventListener{
     @Handler
     public void onMessageEvent(@NotNull ChannelMessageEvent event) {
         try  (var ignored = LogContext.with(accountName)) {
-            log.info("Message: {}", event.getMessage());
+            log.trace("Received Chat Message");
+            event.getTag("badges").ifPresent((b) -> {
+                var m = predPatt.matcher(b.getAsString());
+                if(m.find()){
+                    try{
+                        log.debug("Read user prediction from chat. User {}, Badge: {}", event.getActor().getMessagingName(), m.group(1));
+                        database.addUserPrediction(event.getActor().getMessagingName(), event.getChannel().getName().substring(1), m.group(1));
+                    }
+                    catch(SQLException e){
+                        log.error("SQL Exception while adding user prediction: {}", e.getMessage());
+                    }
+                }
+            });
         }
     }
-    
 }

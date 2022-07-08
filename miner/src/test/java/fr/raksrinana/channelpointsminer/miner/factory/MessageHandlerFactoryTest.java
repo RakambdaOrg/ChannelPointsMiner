@@ -39,7 +39,7 @@ class MessageHandlerFactoryTest{
 	
 	@Test
 	void createPredictionsHandler(){
-		assertThat(MessageHandlerFactory.createPredictionsHandler(miner, betPlacer)).isNotNull().isInstanceOf(PredictionsHandler.class);
+		assertThat(MessageHandlerFactory.createPredictionsHandler(miner, betPlacer, false)).isNotNull().isInstanceOf(PredictionsHandler.class);
 	}
 	
 	@Test

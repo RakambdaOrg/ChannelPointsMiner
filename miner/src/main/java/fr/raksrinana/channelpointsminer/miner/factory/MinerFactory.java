@@ -8,6 +8,7 @@ import fr.raksrinana.channelpointsminer.miner.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.kitteh.irc.client.library.defaults.element.messagetag.DefaultMessageTagLabel;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -29,11 +30,13 @@ public class MinerFactory{
 				Executors.newScheduledThreadPool(4),
 				Executors.newCachedThreadPool(),
                 ircClientPrototype);
+        
+        boolean recordPredictions = config.getAnalytics().isEnabled() && config.getAnalytics().isRecordChatsPredictions();
 		
 		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
 		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
+		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner), recordPredictions));
 		miner.addHandler(MessageHandlerFactory.createPointsHandler(miner));
 		
 		miner.addEventListener(LogEventListenerFactory.createLogger());
@@ -50,10 +53,11 @@ public class MinerFactory{
 			try{
 				var database = DatabaseFactory.createDatabase(dbConfig);
 				miner.addEventListener(DatabaseFactory.createDatabaseHandler(database));
-				if(config.getAnalytics().isRecordChatsPredictions()){
+				if(recordPredictions){
 				    ircClientPrototype
                             .addCapability("twitch.tv/tags")
                             .addIrcHandler(TwitchIrcFactory.createMessageListener(config.getUsername(), database));
+                    database.deleteUnresolvedUserPredictions();
                 }
 			}
 			catch(SQLException | HikariPool.PoolInitializationException e){

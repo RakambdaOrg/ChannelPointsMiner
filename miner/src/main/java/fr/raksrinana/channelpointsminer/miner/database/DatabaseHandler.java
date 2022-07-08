@@ -1,9 +1,13 @@
 package fr.raksrinana.channelpointsminer.miner.database;
 
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.event.IEvent;
 import fr.raksrinana.channelpointsminer.miner.event.IEventListener;
 import fr.raksrinana.channelpointsminer.miner.event.IStreamerEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PointsEarnedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PointsSpentEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PredictionMadeEvent;
@@ -16,6 +20,9 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.chrono.ChronoZonedDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -50,7 +57,10 @@ public class DatabaseHandler implements IEventListener{
 			else if(event instanceof PredictionResultEvent e){
 				addPrediction(e, e.getPredictionResultData().getPrediction().getEventId(), "RESULT", e.getGain());
 			}
-		}
+            else if(event instanceof EventUpdatedEvent e){
+                handlePredictionUpdate(e.getEvent(), e.getStreamerUsername().orElseThrow());
+            }
+        }
 		catch(Exception e){
 			log.error("Failed to process database event", e);
 		}
@@ -71,6 +81,40 @@ public class DatabaseHandler implements IEventListener{
 	private void addPrediction(@NotNull IStreamerEvent event, @NotNull String eventId, @NotNull String type, @NotNull String description) throws SQLException{
 		database.addPrediction(event.getStreamerId(), eventId, type, description, event.getInstant());
 	}
+    
+    private void handlePredictionUpdate(@NotNull Event event, @NotNull String streamerUsername) throws SQLException{
+        if(event.getStatus() == EventStatus.ACTIVE){
+            log.debug("Prediction-Update: Event ACTIVE. Streamer: {}, Title: {}", streamerUsername, event.getTitle());
+            for(var outcome: event.getOutcomes()){
+                String badge = outcome.getBadge().getVersion();
+                for(var predictor: outcome.getTopPredictors()){
+                    database.addUserPrediction(predictor.getUserDisplayName(), streamerUsername, badge);
+                }
+            }
+        }
+        else if(event.getStatus() == EventStatus.CANCELED){
+            log.debug("Prediction-Update: Event CANCELED. Streamer: {}, Title: {}", streamerUsername, event.getTitle());
+            
+            Instant ended = Optional.ofNullable(event.getEndedAt()).map(ChronoZonedDateTime::toInstant).orElse(Instant.now());
+            database.cancelPrediction(event.getId(), event.getChannelId(), event.getTitle(), event.getCreatedAt().toInstant(), ended);
+        }
+        else if(event.getStatus() == EventStatus.RESOLVED){
+            String winningOutcomeId = event.getWinningOutcomeId();
+            Outcome winningOutcome = event.getOutcomes().stream()
+                    .filter(e -> e.getId().equals(winningOutcomeId))
+                    .findAny()
+                    .orElseThrow();
+            String winningOutcomeBadge = winningOutcome.getBadge().getVersion();
+            
+            log.debug("Prediction-Update: Event RESOLVED. Streamer: {}, Title: {}, Outcome: {}",
+                    streamerUsername, event.getTitle(), winningOutcome.getTitle());
+            
+            Instant ended = Optional.ofNullable(event.getEndedAt()).map(ChronoZonedDateTime::toInstant).orElse(Instant.now());
+            
+            database.resolvePrediction(event.getId(), event.getChannelId(), event.getTitle(),
+                    event.getCreatedAt().toInstant(), ended, winningOutcome.getTitle(), winningOutcomeBadge);
+        }
+    }
 	
 	@Override
 	public void close(){

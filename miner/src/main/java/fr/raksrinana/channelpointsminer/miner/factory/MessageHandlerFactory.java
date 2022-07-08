@@ -30,8 +30,8 @@ public class MessageHandlerFactory{
 	}
 	
 	@NotNull
-	public static IMessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer){
-		return new PredictionsHandler(miner, betPlacer);
+	public static IMessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer, boolean recordPlacedPredictions){
+		return new PredictionsHandler(miner, betPlacer, recordPlacedPredictions);
 	}
 	
 	@NotNull

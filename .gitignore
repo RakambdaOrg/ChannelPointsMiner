@@ -10,3 +10,4 @@ bin/
 *.iml
 /analytics.db
 /config.json
+/log4j2.xml
