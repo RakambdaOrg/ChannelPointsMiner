@@ -18,7 +18,8 @@ public class MinerFactory{
 	public static Miner create(@NotNull AccountConfiguration config){
      
 	    var ircClientPrototype = TwitchIrcFactory.createPrototype()
-	            .addIrcHandler(TwitchIrcFactory.createConnectionListener(config.getUsername()));
+	            .addIrcHandler(TwitchIrcFactory.createConnectionListener(config.getUsername()))
+                .addTagCreator("twitch.tv/tags", "emote-sets", DefaultMessageTagLabel.FUNCTION);
 	    
 		var miner = new Miner(
 				config,

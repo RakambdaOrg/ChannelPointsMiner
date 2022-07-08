@@ -46,6 +46,10 @@ public class TwitchIrcClient implements AutoCloseable{
             twitchIrcClientPrototype.getHandlers()
                     .forEach(eventManager::registerEventListener);
             
+            var tagManager = ircClient.getMessageTagManager();
+            twitchIrcClientPrototype.getTagCreators().forEach(tagCreator ->
+                    tagManager.registerTagCreator(tagCreator.getCapability(), tagCreator.getTagName(), tagCreator.getTagCreator()));
+            
             var capabilityRequest = ircClient.commands().capabilityRequest();
             twitchIrcClientPrototype.getCapabilities()
                     .forEach(capabilityRequest::enable);
