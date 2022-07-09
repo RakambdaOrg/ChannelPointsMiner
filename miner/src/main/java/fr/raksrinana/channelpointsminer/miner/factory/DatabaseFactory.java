@@ -9,9 +9,13 @@ import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.database.MariaDBDatabase;
 import fr.raksrinana.channelpointsminer.miner.database.SQLiteDatabase;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
 
 public class DatabaseFactory{
+    
+    private static IDatabase instance;
+    
 	@NotNull
 	public static IDatabase createDatabase(@NotNull DatabaseConfiguration configuration) throws SQLException, HikariPool.PoolInitializationException{
 		var jdbcUrl = configuration.getJdbcUrl();
@@ -28,8 +32,14 @@ public class DatabaseFactory{
 		};
 		
 		database.initDatabase();
+        instance = database;
 		return database;
 	}
+    
+    @Nullable
+    public static IDatabase getInstance(){
+        return instance;
+    }
 	
 	@NotNull
 	private static HikariDataSource createDatasource(@NotNull DatabaseConfiguration configuration, @NotNull String driver){

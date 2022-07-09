@@ -7,6 +7,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcom
 import fr.raksrinana.channelpointsminer.miner.event.IEvent;
 import fr.raksrinana.channelpointsminer.miner.event.IEventListener;
 import fr.raksrinana.channelpointsminer.miner.event.IStreamerEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PointsEarnedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PointsSpentEvent;
@@ -60,6 +61,9 @@ public class DatabaseHandler implements IEventListener{
             else if(event instanceof EventUpdatedEvent e){
                 handlePredictionUpdate(e.getEvent(), e.getStreamerUsername().orElseThrow());
             }
+            else if(event instanceof EventCreatedEvent e){
+                database.deleteUnresolvedUserPredictionsForChannel(e.getStreamerUsername().orElseThrow());
+            }
         }
 		catch(Exception e){
 			log.error("Failed to process database event", e);
@@ -110,9 +114,10 @@ public class DatabaseHandler implements IEventListener{
                     streamerUsername, event.getTitle(), winningOutcome.getTitle());
             
             Instant ended = Optional.ofNullable(event.getEndedAt()).map(ChronoZonedDateTime::toInstant).orElse(Instant.now());
-            
+            double totalPoints = event.getOutcomes().stream().mapToDouble(Outcome::getTotalPoints).sum();
+            double returnRatio = (winningOutcome.getTotalPoints() / totalPoints) + 1;
             database.resolvePrediction(event.getId(), event.getChannelId(), event.getTitle(),
-                    event.getCreatedAt().toInstant(), ended, winningOutcome.getTitle(), winningOutcomeBadge);
+                    event.getCreatedAt().toInstant(), ended, winningOutcome.getTitle(), winningOutcomeBadge, returnRatio);
         }
     }
 	

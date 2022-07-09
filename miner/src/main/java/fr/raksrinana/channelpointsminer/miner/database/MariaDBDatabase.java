@@ -2,6 +2,8 @@ package fr.raksrinana.channelpointsminer.miner.database;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class MariaDBDatabase extends BaseDatabase{
@@ -51,6 +53,7 @@ public class MariaDBDatabase extends BaseDatabase{
 							`Canceled` BOOLEAN NOT NULL,
 							`Outcome` VARCHAR(32) NULL,
 							`Badge` VARCHAR(32) NULL,
+							`ReturnRatioForWin` DOUBLE NULL,
 							INDEX `ChannelIDIdx`(`ChannelID`)
 						)
 						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
@@ -60,6 +63,8 @@ public class MariaDBDatabase extends BaseDatabase{
 							`Username` VARCHAR(128) NOT NULL,
 							`PredictionCnt` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 							`WinCnt` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+							`WinRate` DECIMAL(8,7) NOT NULL DEFAULT 0,
+							`ReturnOnInvestment` DOUBLE NOT NULL DEFAULT 0,
 							UNIQUE (`Username`),
 							INDEX `UsernameIdx`(`Username`)
 						)
@@ -92,4 +97,20 @@ public class MariaDBDatabase extends BaseDatabase{
 			statement.executeUpdate();
 		}
 	}
+    
+    @Override
+    protected PreparedStatement getPredictionStatement(Connection conn) throws SQLException{
+        return conn.prepareStatement("""
+						INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
+						SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""
+        );
+    }
+    
+    @Override
+    protected PreparedStatement getUpdatePredictionUserStmt(Connection conn) throws SQLException{
+        return conn.prepareStatement("""
+						UPDATE `PredictionUser`
+						SET `PredictionCnt`=`PredictionCnt`+1, `WinCnt`=`WinCnt`+?, `WinRate`=`WinCnt`/`PredictionCnt`,
+						`ReturnOnInvestment`=`ReturnOnInvestment`+? WHERE `ID`=?""");
+    }
 }

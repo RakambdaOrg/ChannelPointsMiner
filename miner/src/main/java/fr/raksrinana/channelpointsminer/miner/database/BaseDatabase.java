@@ -2,15 +2,19 @@ package fr.raksrinana.channelpointsminer.miner.database;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.raksrinana.channelpointsminer.miner.database.converter.Converters;
+import fr.raksrinana.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import static java.time.ZoneOffset.UTC;
 
@@ -77,11 +81,7 @@ public abstract class BaseDatabase implements IDatabase{
 		
 		try(var conn = getConnection(); var selectUserStatement = conn.prepareStatement("""
 						SELECT `ID` FROM `PredictionUser` WHERE `Username`=?""");
-				
-			var predictionStatement = conn.prepareStatement("""
-						INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
-						SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""
-				)){
+			var predictionStatement = getPredictionStatement(conn)){
 			conn.setAutoCommit(false);
 			
 			username = username.toLowerCase(Locale.ROOT);
@@ -111,6 +111,8 @@ public abstract class BaseDatabase implements IDatabase{
 			conn.commit();
 		}
 	}
+    
+    protected abstract PreparedStatement getPredictionStatement(Connection conn) throws SQLException;
 	
 	@Override
 	public void cancelPrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated,
@@ -150,31 +152,37 @@ public abstract class BaseDatabase implements IDatabase{
 	
 	@Override
 	public void resolvePrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated,
-			@NotNull Instant eventEnded, @NotNull String outcome, @NotNull String badge) throws SQLException{
+			@NotNull Instant eventEnded, @NotNull String outcome, @NotNull String badge, double returnRatioForWin) throws SQLException{
 		try(var conn = getConnection();
 				var getOpenPredictionStmt = conn.prepareStatement("""
 						SELECT * FROM `UserPrediction` WHERE `ResolvedPredictionID`='' AND `ChannelID`=?""");
-				var updatePredictionUserStmt = conn.prepareStatement("""
-						UPDATE `PredictionUser`
-						SET `PredictionCnt`=`PredictionCnt`+1, `WinCnt`=`WinCnt`+? WHERE `ID`=?""");
+				var updatePredictionUserStmt = getUpdatePredictionUserStmt(conn);
 				var addResolvedPredictionStmt = conn.prepareStatement("""
-						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`,`Outcome`,`Badge`)
-						VALUES (?,?,?,?,?,false,?,?)""");
+						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`,`Outcome`,`Badge`,`ReturnRatioForWin`)
+						VALUES (?,?,?,?,?,false,?,?,?)""");
 				var updateUserPredictionsStmt = conn.prepareStatement("""
 						UPDATE `UserPrediction`
 						SET `ResolvedPredictionID`=?
 						WHERE `ResolvedPredictionID`='' AND `ChannelID`=?""")
 		){
 			conn.setAutoCommit(false);
-		
+		 
 			try{
 				//Get user predictions, determine win/lose and update
+                double returnOnInvestment = returnRatioForWin - 1;
 				getOpenPredictionStmt.setString(1, channelId);
 				try(ResultSet result = getOpenPredictionStmt.executeQuery()){
 					while(result.next()){
 						var userPrediction = Converters.convertUserPrediction(result);
-						updatePredictionUserStmt.setInt(1, badge.equals(userPrediction.getBadge()) ? 1 : 0);
-						updatePredictionUserStmt.setInt(2, userPrediction.getUserId());
+                        if(badge.equals(userPrediction.getBadge())){
+                            updatePredictionUserStmt.setInt(1, 1);
+                            updatePredictionUserStmt.setDouble(2, returnOnInvestment);
+                        }
+                        else {
+                            updatePredictionUserStmt.setInt(1, 0);
+                            updatePredictionUserStmt.setDouble(2, -1);
+                        }
+						updatePredictionUserStmt.setInt(3, userPrediction.getUserId());
 						updatePredictionUserStmt.addBatch();
 					}
 					updatePredictionUserStmt.executeBatch();
@@ -188,6 +196,7 @@ public abstract class BaseDatabase implements IDatabase{
 				addResolvedPredictionStmt.setObject(5, LocalDateTime.ofInstant(eventEnded, UTC));
 				addResolvedPredictionStmt.setString(6, outcome);
 				addResolvedPredictionStmt.setString(7, badge);
+				addResolvedPredictionStmt.setDouble(8, returnRatioForWin);
 				addResolvedPredictionStmt.executeUpdate();
 	
 				//Update made predictions with event-id
@@ -202,7 +211,8 @@ public abstract class BaseDatabase implements IDatabase{
 			conn.commit();
 		}
 	}
-	
+    
+    protected abstract PreparedStatement getUpdatePredictionUserStmt(Connection conn)  throws SQLException;
 	@Override
 	public void deleteUnresolvedUserPredictions() throws SQLException{
 		log.debug("Removing all unresolved user predictions.");
@@ -224,6 +234,33 @@ public abstract class BaseDatabase implements IDatabase{
 			statement.setString(1, channelId);
 			
 			statement.executeUpdate();
+		}
+	}
+	
+	@Override
+	@NotNull
+	public List<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser) throws SQLException{
+		log.debug("Getting most trusted prediction from already placed bets.");
+		try(var conn = getConnection(); var statement = conn.prepareStatement("""
+						SELECT `Badge`,
+							COUNT(`UserID`) AS UserCnt,
+							AVG(`WinRate`) AS AvgWinRate,
+							AVG(`PredictionCnt`) AS AvgUserBetsPlaced,
+							AVG(`WinCnt`) AS AvgUserWins,
+							AVG(`ReturnOnInvestment`) AS AvgReturnOnInvestment
+						FROM `UserPrediction` AS up INNER JOIN `PredictionUser` AS pu ON up.`UserID`=pu.`ID`
+						WHERE `ChannelID`=? AND `ResolvedPredictionID`='' AND `PredictionCnt`>? GROUP BY `Badge`"""
+		)){
+			statement.setString(1, channelId);
+			statement.setInt(2, minBetsPlacedByUser);
+			
+			List<OutcomeStatistic> outcomeStatistics = new LinkedList<>();
+			try(ResultSet result = statement.executeQuery()){
+				while(result.next())
+					outcomeStatistics.add(Converters.convertOutcomeTrust(result));
+			}
+			
+			return outcomeStatistics;
 		}
 	}
 	
