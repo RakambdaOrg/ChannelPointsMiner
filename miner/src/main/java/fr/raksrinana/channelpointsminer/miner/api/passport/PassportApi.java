@@ -113,7 +113,8 @@ public class PassportApi{
 	 */
 	@NotNull
 	private HttpResponse<LoginResponse> twoFactorLogin() throws LoginException{
-		return login(LoginRequest.builder().username(username).password(password).authyToken(getUserInput("Enter 2FA token:")).build());
+		var authToken = getUserInput("Enter 2FA token for user " + username + ":");
+		return login(LoginRequest.builder().username(username).password(password).authyToken(authToken).build());
 	}
 	
 	/**
