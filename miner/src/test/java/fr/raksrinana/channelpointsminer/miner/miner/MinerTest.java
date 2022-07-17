@@ -44,6 +44,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
@@ -372,6 +373,41 @@ class MinerTest{
 	}
 	
 	@Test
+	void addStreamerWithMoments(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class)){
+			apiFactory.when(ApiFactory::createTwitchApi).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin)).thenReturn(gqlApi);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(streamerSettings.isClaimMoments()).thenReturn(true);
+			
+			tested.addEventListener(eventListener);
+			tested.start();
+			
+			var streamer = mock(Streamer.class);
+			when(streamer.getId()).thenReturn(STREAMER_ID);
+			when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
+			when(streamer.getSettings()).thenReturn(streamerSettings);
+			when(streamer.isStreaming()).thenReturn(false);
+			
+			assertDoesNotThrow(() -> tested.addStreamer(streamer));
+			
+			Assertions.assertThat(tested.getStreamers()).hasSize(1)
+					.first().usingRecursiveComparison().isEqualTo(streamer);
+			
+			verify(updateStreamInfo).run(streamer);
+			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_MOMENTS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
+			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+		}
+	}
+	
+	@Test
 	void addStreamerWithRaid(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
@@ -590,6 +626,7 @@ class MinerTest{
 			
 			verify(webSocketPool).removeTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(webSocketPool).removeTopic(Topic.builder().name(COMMUNITY_MOMENTS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchChatClient).leave(STREAMER_USERNAME);
 			verify(eventHandler).onEvent(new StreamerRemovedEvent(tested, streamer, NOW));

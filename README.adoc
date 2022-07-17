@@ -16,6 +16,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
 * Join IRC chat.
 * Participate in predictions and record peoples predictions.
+* Claim link:https://help.twitch.tv/s/article/moments[moments].
 
 Limits:
 
@@ -309,6 +310,10 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 
 |participateCampaigns
 |If set to true, progression towards campaigns will be made, and completed rewards will be claimed.
+|false
+
+|claimMoments
+|If set to true, link:https://help.twitch.tv/s/article/moments[moments] will be claimed when available.
 |false
 
 |joinIrc
