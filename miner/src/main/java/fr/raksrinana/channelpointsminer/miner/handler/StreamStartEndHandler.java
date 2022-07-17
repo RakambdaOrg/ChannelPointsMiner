@@ -29,7 +29,7 @@ public class StreamStartEndHandler extends HandlerAdapter{
 		updateStream(topic, streamer);
 		Optional.ofNullable(streamer)
 				.map(Streamer::getUsername)
-				.ifPresent(miner.getIrcClient()::leave);
+				.ifPresent(miner.getChatClient()::leave);
 		miner.onEvent(new StreamDownEvent(miner, streamerId, username, streamer, message.getServerTime()));
 	}
 	
@@ -42,7 +42,7 @@ public class StreamStartEndHandler extends HandlerAdapter{
 		Optional.ofNullable(streamer)
 				.filter(s -> s.getSettings().isJoinIrc())
 				.map(Streamer::getUsername)
-				.ifPresent(miner.getIrcClient()::join);
+				.ifPresent(miner.getChatClient()::join);
 		miner.onEvent(new StreamUpEvent(miner, streamerId, username, streamer, message.getServerTime()));
 	}
 	

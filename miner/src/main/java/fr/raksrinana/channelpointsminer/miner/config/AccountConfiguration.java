@@ -68,4 +68,9 @@ public class AccountConfiguration{
 	@Comment(value = "Analytics settings")
 	@Builder.Default
 	private AnalyticsConfiguration analytics = new AnalyticsConfiguration();
+	@JsonProperty("chatMode")
+	@NotNull
+	@Comment(value = "Method used to join chat")
+	@Builder.Default
+	private ChatMode chatMode = ChatMode.WS;
 }

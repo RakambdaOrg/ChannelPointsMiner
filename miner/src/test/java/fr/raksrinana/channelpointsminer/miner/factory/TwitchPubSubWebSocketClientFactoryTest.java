@@ -5,9 +5,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @ParallelizableTest
-class TwitchWebSocketClientFactoryTest{
+class TwitchPubSubWebSocketClientFactoryTest{
 	@Test
 	void create(){
-		Assertions.assertThat(TwitchWebSocketClientFactory.createClient()).isNotNull();
+		Assertions.assertThat(TwitchWebSocketClientFactory.createPubSubClient()).isNotNull();
 	}
 }
