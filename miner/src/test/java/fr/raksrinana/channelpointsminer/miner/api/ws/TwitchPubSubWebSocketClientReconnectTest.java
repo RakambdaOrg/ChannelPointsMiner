@@ -1,7 +1,5 @@
 package fr.raksrinana.channelpointsminer.miner.api.ws;
 
-import fr.raksrinana.channelpointsminer.miner.api.ws.data.response.PongResponse;
-import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServerExtension;
 import org.mockito.Mock;
@@ -11,24 +9,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
-import java.time.Instant;
 import static fr.raksrinana.channelpointsminer.miner.tests.TestUtils.getAllResourceContent;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-class TwitchWebSocketClientPongTest{
-	private static final Instant NOW = Instant.parse("2021-02-25T15:25:36Z");
+class TwitchPubSubWebSocketClientReconnectTest{
 	private static final int MESSAGE_TIMEOUT = 15000;
 	
-	private TwitchWebSocketClient tested;
+	private TwitchPubSubWebSocketClient tested;
 	
 	@Mock
-	private ITwitchWebSocketListener listener;
+	private ITwitchPubSubWebSocketListener listener;
 	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
@@ -37,30 +33,18 @@ class TwitchWebSocketClientPongTest{
 	}
 	
 	@Test
-	void onPongUpdatesLastPong(){
-		try(var timeFactory = mockStatic(TimeFactory.class)){
-			timeFactory.when(TimeFactory::now).thenReturn(NOW);
-			
-			tested.onMessage(getAllResourceContent("api/ws/pong.json"));
-			
-			assertThat(tested.getLastPong()).isEqualTo(NOW);
-		}
-	}
-	
-	@Test
-	void onPong(WebsocketMockServer server) throws InterruptedException{
+	void onReconnectClosesClient() throws InterruptedException{
 		tested.connectBlocking();
-		server.awaitMessage();
 		
-		server.send(getAllResourceContent("api/ws/pong.json"));
+		tested.onMessage(getAllResourceContent("api/ws/reconnect.json"));
 		
-		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(any(PongResponse.class));
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketClosed(eq(tested), eq(1001), anyString(), anyBoolean());
 	}
 	
 	@BeforeEach
 	void setUp(WebsocketMockServer server){
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchWebSocketClient(uri);
+		tested = new TwitchPubSubWebSocketClient(uri);
 		tested.setReuseAddr(true);
 		tested.addListener(listener);
 	}
