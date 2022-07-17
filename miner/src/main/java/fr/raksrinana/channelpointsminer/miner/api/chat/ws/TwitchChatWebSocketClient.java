@@ -5,7 +5,6 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
@@ -32,7 +31,6 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	@Getter
 	private Instant lastPing;
 	
-	@SneakyThrows
 	public TwitchChatWebSocketClient(@NotNull URI uri, @NotNull TwitchLogin twitchLogin){
 		super(uri);
 		this.twitchLogin = twitchLogin;
