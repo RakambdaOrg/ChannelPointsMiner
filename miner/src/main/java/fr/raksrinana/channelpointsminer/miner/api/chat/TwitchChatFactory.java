@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TwitchChatFactory{
-	private static final String TWITCH_IRC_HOST = "irc.chat.twitch.tv";
-	
 	@NotNull
 	public static ITwitchChatClient createChat(@NotNull ChatMode chatMode, @NotNull TwitchLogin twitchLogin){
 		return switch(chatMode){
