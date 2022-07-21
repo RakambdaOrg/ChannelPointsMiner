@@ -95,7 +95,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	@Override
 	public void join(@NotNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			if(this.channels.add(channel)){
+			if(channels.add(channel)){
 				sendMessage("JOIN #" + channel);
 			}
 		}
@@ -105,12 +105,12 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	public void leave(@NotNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			sendMessage("PART #" + channel);
-			this.channels.remove(channel);
+			channels.remove(channel);
 		}
 	}
 	
 	public boolean isChannelJoined(@NotNull String channel){
-		return this.channels.contains(channel);
+		return channels.contains(channel);
 	}
 	
 	public void addListener(ITwitchChatWebSocketListener listener){

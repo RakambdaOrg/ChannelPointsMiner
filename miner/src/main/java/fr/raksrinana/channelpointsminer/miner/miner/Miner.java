@@ -60,7 +60,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	
 	private final Map<String, Streamer> streamers;
 	@Getter
-	private final TwitchPubSubWebSocketPool webSocketPool;
+	private final TwitchPubSubWebSocketPool pubSubWebSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
 	private final ExecutorService handlerExecutor;
 	private final StreamerSettingsFactory streamerSettingsFactory;
@@ -92,13 +92,13 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	public Miner(@NotNull AccountConfiguration accountConfiguration,
 			@NotNull PassportApi passportApi,
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
-			@NotNull TwitchPubSubWebSocketPool webSocketPool,
+			@NotNull TwitchPubSubWebSocketPool pubSubWebSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
 			@NotNull ExecutorService handlerExecutor){
 		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
-		this.webSocketPool = webSocketPool;
+		this.pubSubWebSocketPool = pubSubWebSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
 		
@@ -116,7 +116,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	public void start(){
 		try(var ignored = LogContext.with(this)){
 			log.info("Starting miner");
-			webSocketPool.addListener(this);
+			pubSubWebSocketPool.addListener(this);
 			
 			login();
 			
@@ -175,7 +175,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
-		webSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
+		pubSubWebSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
 	}
 	
 	@Override
@@ -309,7 +309,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	private void removeTopic(@NotNull TopicName name, @NotNull String target){
-		webSocketPool.removeTopic(Topic.builder().name(name).target(target).build());
+		pubSubWebSocketPool.removeTopic(Topic.builder().name(name).target(target).build());
 	}
 	
 	@Override
@@ -336,7 +336,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	public void close(){
 		scheduledExecutor.shutdown();
 		handlerExecutor.shutdown();
-		webSocketPool.close();
+		pubSubWebSocketPool.close();
 		if(!Objects.isNull(chatClient)){
 			chatClient.close();
 		}

@@ -26,7 +26,7 @@ class WebSocketPingTest{
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(miner.getWebSocketPool()).thenReturn(pool);
+		lenient().when(miner.getPubSubWebSocketPool()).thenReturn(pool);
 	}
 	
 	@Test

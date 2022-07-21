@@ -28,7 +28,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 		clients = new ArrayList<>();
 	}
 	
-	public void ping(){
+	public void checkStaleConnection(){
 		clients.stream()
 				.filter(client -> TimeFactory.now().isAfter(client.getLastPing().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
 				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
@@ -76,7 +76,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	@NotNull
 	private TwitchChatWebSocketClient createNewClient(){
 		try{
-			var client = TwitchWebSocketClientFactory.createIrcClient(twitchLogin);
+			var client = TwitchWebSocketClientFactory.createChatClient(twitchLogin);
 			log.debug("Created websocket client with uuid {}", client.getUuid());
 			client.addListener(this);
 			client.connectBlocking();
