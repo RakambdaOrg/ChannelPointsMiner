@@ -1,6 +1,5 @@
-package fr.raksrinana.channelpointsminer.miner.api.chat.irc;
+package fr.raksrinana.channelpointsminer.miner.irc;
 
-import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Log4j2
-public class TwitchIrcChatClient implements ITwitchChatClient{
+public class TwitchIrcClient implements AutoCloseable{
 	
 	@NotNull
 	private final TwitchLogin twitchLogin;
@@ -21,7 +20,6 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 	@Nullable
 	private Client ircClient;
 	
-	@Override
 	public void join(@NotNull String channel){
 		var client = getIrcClient();
 		var ircChannelName = "#%s".formatted(channel.toLowerCase(Locale.ROOT));
@@ -38,11 +36,11 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 		if(Objects.isNull(ircClient)){
 			log.info("Creating new Twitch IRC client");
 			
-			ircClient = TwitchIrcFactory.createIrcClient(twitchLogin);
+			ircClient = TwitchIrcFactory.createClient(twitchLogin);
 			ircClient.connect();
 			ircClient.setExceptionListener(e -> log.error("Error from irc", e));
 			
-			ircClient.getEventManager().registerEventListener(TwitchIrcFactory.createIrcListener(twitchLogin.getUsername()));
+			ircClient.getEventManager().registerEventListener(TwitchIrcFactory.createListener(twitchLogin.getUsername()));
 			
 			log.info("IRC Client created");
 		}
@@ -50,7 +48,6 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 		return ircClient;
 	}
 	
-	@Override
 	public void leave(@NotNull String channel){
 		if(Objects.isNull(ircClient)){
 			log.debug("Didn't leave irc channel #{} as no connection has been made", channel);
@@ -67,7 +64,6 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 		ircClient.removeChannel(ircChannelName);
 	}
 	
-	@Override
 	public void close(){
 		Optional.ofNullable(ircClient).ifPresent(Client::shutdown);
 	}

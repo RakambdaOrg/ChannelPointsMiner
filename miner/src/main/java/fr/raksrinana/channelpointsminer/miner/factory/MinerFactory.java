@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.factory;
 
 import com.zaxxer.hikari.pool.HikariPool;
-import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
+import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchWebSocketPool;
 import fr.raksrinana.channelpointsminer.miner.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.miner.Miner;
 import lombok.AccessLevel;
@@ -19,7 +19,7 @@ public class MinerFactory{
 				config,
 				ApiFactory.createPassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
 				new StreamerSettingsFactory(config),
-				new TwitchPubSubWebSocketPool(50),
+				new TwitchWebSocketPool(50),
 				Executors.newScheduledThreadPool(4),
 				Executors.newCachedThreadPool());
 		

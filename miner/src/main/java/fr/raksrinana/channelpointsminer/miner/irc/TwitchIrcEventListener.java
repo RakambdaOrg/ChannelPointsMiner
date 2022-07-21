@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.api.chat.irc;
+package fr.raksrinana.channelpointsminer.miner.irc;
 
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import lombok.RequiredArgsConstructor;

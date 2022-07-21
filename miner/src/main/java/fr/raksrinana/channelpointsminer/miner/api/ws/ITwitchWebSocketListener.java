@@ -4,8 +4,8 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.response.ITwitchWebSoc
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ITwitchPubSubWebSocketListener{
+public interface ITwitchWebSocketListener{
 	void onWebSocketMessage(@NotNull ITwitchWebSocketResponse message);
 	
-	void onWebSocketClosed(@NotNull TwitchPubSubWebSocketClient client, int code, @Nullable String reason, boolean remote);
+	void onWebSocketClosed(@NotNull TwitchWebSocketClient client, int code, @Nullable String reason, boolean remote);
 }

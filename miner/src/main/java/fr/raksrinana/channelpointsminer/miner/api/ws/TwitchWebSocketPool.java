@@ -18,14 +18,14 @@ import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
-public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWebSocketListener{
+public class TwitchWebSocketPool implements AutoCloseable, ITwitchWebSocketListener{
 	private static final int SOCKET_TIMEOUT_MINUTES = 5;
 	
-	private final Collection<TwitchPubSubWebSocketClient> clients;
-	private final List<ITwitchPubSubMessageListener> listeners;
+	private final Collection<TwitchWebSocketClient> clients;
+	private final List<ITwitchMessageListener> listeners;
 	private final int maxTopicPerClient;
 	
-	public TwitchPubSubWebSocketPool(int maxTopicPerClient){
+	public TwitchWebSocketPool(int maxTopicPerClient){
 		this.maxTopicPerClient = maxTopicPerClient;
 		clients = new ArrayList<>();
 		listeners = new ArrayList<>();
@@ -39,7 +39,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 		clients.stream()
 				.filter(WebSocketClient::isOpen)
 				.filter(client -> !client.isClosing())
-				.forEach(TwitchPubSubWebSocketClient::ping);
+				.forEach(TwitchWebSocketClient::ping);
 	}
 	
 	public void removeTopic(@NotNull Topic topic){
@@ -48,7 +48,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 				.forEach(client -> client.removeTopic(topic));
 	}
 	
-	public void addListener(@NotNull ITwitchPubSubMessageListener listener){
+	public void addListener(@NotNull ITwitchMessageListener listener){
 		listeners.add(listener);
 	}
 	
@@ -62,7 +62,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	}
 	
 	@Override
-	public void onWebSocketClosed(@NotNull TwitchPubSubWebSocketClient client, int code, @Nullable String reason, boolean remote){
+	public void onWebSocketClosed(@NotNull TwitchWebSocketClient client, int code, @Nullable String reason, boolean remote){
 		clients.remove(client);
 		if(code != NORMAL){
 			client.getTopics().forEach(this::listenTopic);
@@ -83,7 +83,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	}
 	
 	@NotNull
-	private TwitchPubSubWebSocketClient getAvailableClient(){
+	private TwitchWebSocketClient getAvailableClient(){
 		return clients.stream()
 				.filter(client -> client.getTopicCount() < maxTopicPerClient)
 				.findAny()
@@ -91,17 +91,17 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	}
 	
 	@NotNull
-	private TwitchPubSubWebSocketClient createNewClient(){
+	private TwitchWebSocketClient createNewClient(){
 		try{
-			var client = TwitchWebSocketClientFactory.createPubSubClient();
-			log.debug("Created pubsub websocket client with uuid {}", client.getUuid());
+			var client = TwitchWebSocketClientFactory.createClient();
+			log.debug("Created websocket client with uuid {}", client.getUuid());
 			client.addListener(this);
 			client.connectBlocking();
 			clients.add(client);
 			return client;
 		}
 		catch(Exception e){
-			log.error("Failed to create new pubsub websocket");
+			log.error("Failed to create new websocket");
 			throw new RuntimeException(e);
 		}
 	}

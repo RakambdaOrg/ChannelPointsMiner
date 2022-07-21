@@ -565,15 +565,4 @@ class StreamerTest{
 		
 		assertThat(tested.getProfileImage()).isEmpty();
 	}
-	
-	@ParameterizedTest
-	@ValueSource(booleans = {
-			true,
-			false
-	})
-	void chatBanned(boolean state){
-		tested.setChatBanned(state);
-		
-		assertThat(tested.isChatBanned()).isEqualTo(state);
-	}
 }

@@ -13,7 +13,9 @@ public class CommonUtils{
 	@SneakyThrows
 	public static void randomSleep(long delay, long delta){
 		long actualDelay = delay - delta / 2 + ThreadLocalRandom.current().nextLong(delta);
-		SleepHandler.sleep(actualDelay);
+		if(actualDelay > 0){
+			Thread.sleep(actualDelay);
+		}
 	}
 	
 	/**

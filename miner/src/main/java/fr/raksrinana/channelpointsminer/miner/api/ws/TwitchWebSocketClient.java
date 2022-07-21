@@ -34,17 +34,17 @@ import java.util.UUID;
 import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 
 @Log4j2
-public class TwitchPubSubWebSocketClient extends WebSocketClient{
+public class TwitchWebSocketClient extends WebSocketClient{
 	@Getter
 	private final Set<Topics> topics;
-	private final List<ITwitchPubSubWebSocketListener> listeners;
+	private final List<ITwitchWebSocketListener> listeners;
 	@Getter
 	private final String uuid;
 	
 	@Getter
 	private Instant lastPong;
 	
-	public TwitchPubSubWebSocketClient(@NotNull URI uri){
+	public TwitchWebSocketClient(@NotNull URI uri){
 		super(uri);
 		uuid = UUID.randomUUID().toString();
 		
@@ -130,7 +130,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 		onPong();
 	}
 	
-	public void addListener(@NotNull ITwitchPubSubWebSocketListener listener){
+	public void addListener(@NotNull ITwitchWebSocketListener listener){
 		listeners.add(listener);
 	}
 	

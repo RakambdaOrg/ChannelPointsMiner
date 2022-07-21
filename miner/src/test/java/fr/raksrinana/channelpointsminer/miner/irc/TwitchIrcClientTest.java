@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.api.chat.irc;
+package fr.raksrinana.channelpointsminer.miner.irc;
 
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
@@ -24,14 +24,14 @@ import static org.mockito.Mockito.when;
 
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
-class TwitchIrcChatClientTest{
+class TwitchIrcClientTest{
 	private static final String USERNAME = "username";
 	private static final String ACCESS_TOKEN = "password";
 	private static final String STREAMER = "streamer";
 	private static final String STREAMER_CHANNEL = "#streamer";
 	
 	@InjectMocks
-	private TwitchIrcChatClient tested;
+	private TwitchIrcClient tested;
 	
 	@Mock
 	private TwitchLogin twitchLogin;
@@ -53,12 +53,12 @@ class TwitchIrcChatClientTest{
 	@Test
 	void joinChannelCreatesClient(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
-			factory.when(() -> TwitchIrcFactory.createIrcClient(twitchLogin)).thenReturn(client);
-			factory.when(() -> TwitchIrcFactory.createIrcListener(USERNAME)).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			
-			factory.verify(() -> TwitchIrcFactory.createIrcClient(twitchLogin));
+			factory.verify(() -> TwitchIrcFactory.createClient(twitchLogin));
 			verify(client).connect();
 			verify(eventManager).registerEventListener(listener);
 			verify(client).addChannel(STREAMER_CHANNEL);
@@ -68,13 +68,13 @@ class TwitchIrcChatClientTest{
 	@Test
 	void joinChannelCreatesClientOnlyOnce(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
-			factory.when(() -> TwitchIrcFactory.createIrcClient(twitchLogin)).thenReturn(client);
-			factory.when(() -> TwitchIrcFactory.createIrcListener(USERNAME)).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			
-			factory.verify(() -> TwitchIrcFactory.createIrcClient(twitchLogin));
+			factory.verify(() -> TwitchIrcFactory.createClient(twitchLogin));
 			verify(client).connect();
 			verify(client, times(2)).addChannel(STREAMER_CHANNEL);
 		}
@@ -83,15 +83,15 @@ class TwitchIrcChatClientTest{
 	@Test
 	void joinChannelAlreadyJoined(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
-			factory.when(() -> TwitchIrcFactory.createIrcClient(twitchLogin)).thenReturn(client);
-			factory.when(() -> TwitchIrcFactory.createIrcListener(USERNAME)).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			var channel = mock(Channel.class);
 			when(client.getChannel(STREAMER_CHANNEL)).thenReturn(Optional.of(channel));
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			
-			factory.verify(() -> TwitchIrcFactory.createIrcClient(twitchLogin));
+			factory.verify(() -> TwitchIrcFactory.createClient(twitchLogin));
 			verify(client).connect();
 			verify(eventManager).registerEventListener(listener);
 			verify(client, never()).addChannel(any());
@@ -106,8 +106,8 @@ class TwitchIrcChatClientTest{
 	@Test
 	void leaveChannel(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
-			factory.when(() -> TwitchIrcFactory.createIrcClient(twitchLogin)).thenReturn(client);
-			factory.when(() -> TwitchIrcFactory.createIrcListener(USERNAME)).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			var channel = mock(Channel.class);
 			when(client.getChannel(STREAMER_CHANNEL)).thenReturn(Optional.of(channel));
@@ -123,8 +123,8 @@ class TwitchIrcChatClientTest{
 	@Test
 	void leaveNotJoinedChannel(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
-			factory.when(() -> TwitchIrcFactory.createIrcClient(twitchLogin)).thenReturn(client);
-			factory.when(() -> TwitchIrcFactory.createIrcListener(USERNAME)).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			when(client.getChannel(STREAMER_CHANNEL)).thenReturn(Optional.empty());
 			
@@ -139,8 +139,8 @@ class TwitchIrcChatClientTest{
 	@Test
 	void close(){
 		try(var factory = mockStatic(TwitchIrcFactory.class)){
-			factory.when(() -> TwitchIrcFactory.createIrcClient(twitchLogin)).thenReturn(client);
-			factory.when(() -> TwitchIrcFactory.createIrcListener(USERNAME)).thenReturn(listener);
+			factory.when(() -> TwitchIrcFactory.createClient(twitchLogin)).thenReturn(client);
+			factory.when(() -> TwitchIrcFactory.createListener(USERNAME)).thenReturn(listener);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertDoesNotThrow(() -> tested.close());

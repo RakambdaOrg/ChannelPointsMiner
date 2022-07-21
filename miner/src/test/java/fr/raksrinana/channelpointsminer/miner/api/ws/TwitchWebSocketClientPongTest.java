@@ -21,14 +21,14 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-class TwitchPubSubWebSocketClientPongTest{
+class TwitchWebSocketClientPongTest{
 	private static final Instant NOW = Instant.parse("2021-02-25T15:25:36Z");
 	private static final int MESSAGE_TIMEOUT = 15000;
 	
-	private TwitchPubSubWebSocketClient tested;
+	private TwitchWebSocketClient tested;
 	
 	@Mock
-	private ITwitchPubSubWebSocketListener listener;
+	private ITwitchWebSocketListener listener;
 	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
@@ -60,7 +60,7 @@ class TwitchPubSubWebSocketClientPongTest{
 	@BeforeEach
 	void setUp(WebsocketMockServer server){
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchPubSubWebSocketClient(uri);
+		tested = new TwitchWebSocketClient(uri);
 		tested.setReuseAddr(true);
 		tested.addListener(listener);
 	}

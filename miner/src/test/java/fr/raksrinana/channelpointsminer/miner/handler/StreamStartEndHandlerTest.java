@@ -1,11 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.handler;
 
-import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.StreamDown;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.StreamUp;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamUpEvent;
+import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcClient;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
@@ -49,7 +49,7 @@ class StreamStartEndHandlerTest{
 	@Mock
 	private StreamDown streamDownMessage;
 	@Mock
-	private ITwitchChatClient chatClient;
+	private TwitchIrcClient ircClient;
 	
 	@BeforeEach
 	void setUp(){
@@ -57,7 +57,7 @@ class StreamStartEndHandlerTest{
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_NAME);
 		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
 		lenient().when(streamerSettings.isJoinIrc()).thenReturn(false);
-		lenient().when(miner.getChatClient()).thenReturn(chatClient);
+		lenient().when(miner.getIrcClient()).thenReturn(ircClient);
 		lenient().when(streamUpMessage.getServerTime()).thenReturn(NOW);
 		lenient().when(streamDownMessage.getServerTime()).thenReturn(NOW);
 	}
@@ -76,7 +76,7 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner).updateStreamerInfos(streamer);
 		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_NAME, streamer, NOW));
-		verify(chatClient, never()).join(any());
+		verify(ircClient, never()).join(any());
 	}
 	
 	@Test
@@ -94,7 +94,7 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner).updateStreamerInfos(streamer);
 		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_NAME, streamer, NOW));
-		verify(chatClient).join(STREAMER_NAME);
+		verify(ircClient).join(STREAMER_NAME);
 	}
 	
 	@Test
@@ -105,7 +105,7 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
 		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null, NOW));
-		verify(chatClient, never()).join(any());
+		verify(ircClient, never()).join(any());
 	}
 	
 	@Test
@@ -122,7 +122,7 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner).updateStreamerInfos(streamer);
 		verify(miner).onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_NAME, streamer, NOW));
-		verify(chatClient).leave(STREAMER_NAME);
+		verify(ircClient).leave(STREAMER_NAME);
 	}
 	
 	@Test
@@ -133,6 +133,6 @@ class StreamStartEndHandlerTest{
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
 		verify(miner).onEvent(new StreamDownEvent(miner, STREAMER_ID, null, null, NOW));
-		verify(chatClient, never()).leave(any());
+		verify(ircClient, never()).leave(any());
 	}
 }

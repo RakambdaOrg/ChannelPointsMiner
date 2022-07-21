@@ -3,8 +3,6 @@ package fr.raksrinana.channelpointsminer.miner.api.ws;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.response.ResponseResponse;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServerExtension;
-import io.github.artsok.RepeatedIfExceptionsTest;
-import org.awaitility.core.ConditionTimeoutException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.AfterEach;
@@ -23,12 +21,12 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-class TwitchPubSubWebSocketClientResponseTest{
+class TwitchWebSocketClientResponseTest{
 	private static final int MESSAGE_TIMEOUT = 15000;
-	private TwitchPubSubWebSocketClient tested;
+	private TwitchWebSocketClient tested;
 	
 	@Mock
-	private ITwitchPubSubWebSocketListener listener;
+	private ITwitchWebSocketListener listener;
 	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
@@ -47,7 +45,7 @@ class TwitchPubSubWebSocketClientResponseTest{
 		assertThat(server.isReceivedClose()).isTrue();
 	}
 	
-	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)
+	@Test
 	void onResponse(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
 		server.awaitMessage();
@@ -64,7 +62,7 @@ class TwitchPubSubWebSocketClientResponseTest{
 	@BeforeEach
 	void setUp(WebsocketMockServer server){
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchPubSubWebSocketClient(uri);
+		tested = new TwitchWebSocketClient(uri);
 		tested.setReuseAddr(true);
 		tested.addListener(listener);
 	}

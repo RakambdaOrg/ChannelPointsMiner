@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.api.chat.irc;
+package fr.raksrinana.channelpointsminer.miner.irc;
 
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
