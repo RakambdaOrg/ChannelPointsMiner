@@ -1,5 +1,6 @@
-package fr.raksrinana.channelpointsminer.miner.irc;
+package fr.raksrinana.channelpointsminer.miner.api.chat.irc;
 
+import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Log4j2
-public class TwitchIrcClient implements AutoCloseable{
+public class TwitchIrcChatClient implements ITwitchChatClient{
 	
 	@NotNull
 	private final TwitchLogin twitchLogin;
@@ -20,6 +21,7 @@ public class TwitchIrcClient implements AutoCloseable{
 	@Nullable
 	private Client ircClient;
 	
+	@Override
 	public void join(@NotNull String channel){
 		var client = getIrcClient();
 		var ircChannelName = "#%s".formatted(channel.toLowerCase(Locale.ROOT));
@@ -36,11 +38,11 @@ public class TwitchIrcClient implements AutoCloseable{
 		if(Objects.isNull(ircClient)){
 			log.info("Creating new Twitch IRC client");
 			
-			ircClient = TwitchIrcFactory.createClient(twitchLogin);
+			ircClient = TwitchIrcFactory.createIrcClient(twitchLogin);
 			ircClient.connect();
 			ircClient.setExceptionListener(e -> log.error("Error from irc", e));
 			
-			ircClient.getEventManager().registerEventListener(TwitchIrcFactory.createListener(twitchLogin.getUsername()));
+			ircClient.getEventManager().registerEventListener(TwitchIrcFactory.createIrcListener(twitchLogin.getUsername()));
 			
 			log.info("IRC Client created");
 		}
@@ -48,6 +50,7 @@ public class TwitchIrcClient implements AutoCloseable{
 		return ircClient;
 	}
 	
+	@Override
 	public void leave(@NotNull String channel){
 		if(Objects.isNull(ircClient)){
 			log.debug("Didn't leave irc channel #{} as no connection has been made", channel);
@@ -64,6 +67,7 @@ public class TwitchIrcClient implements AutoCloseable{
 		ircClient.removeChannel(ircChannelName);
 	}
 	
+	@Override
 	public void close(){
 		Optional.ofNullable(ircClient).ifPresent(Client::shutdown);
 	}

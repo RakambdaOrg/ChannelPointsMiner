@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;
+import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
@@ -66,6 +67,18 @@ public class WebsocketMockServer extends WebSocketServer{
 	public void onStart(){
 	}
 	
+	@Override
+	public void onWebsocketPing(WebSocket conn, Framedata f){
+		super.onWebsocketPing(conn, f);
+		receivedMessages.add("PING");
+	}
+	
+	@Override
+	public void onWebsocketPong(WebSocket conn, Framedata f){
+		super.onWebsocketPong(conn, f);
+		receivedMessages.add("PONG");
+	}
+	
 	public void reset(){
 		receivedMessages.clear();
 		answers.clear();
@@ -80,8 +93,16 @@ public class WebsocketMockServer extends WebSocketServer{
 		broadcast(message);
 	}
 	
+	public void sendPing(){
+		getConnections().forEach(WebSocket::sendPing);
+	}
+	
 	public void awaitMessage(){
-		await("Message await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> !getReceivedMessages().isEmpty());
+		awaitMessage(1);
+	}
+	
+	public void awaitMessage(int count){
+		await("Message await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> getReceivedMessages().size() >= count);
 	}
 	
 	public void awaitNothing(){

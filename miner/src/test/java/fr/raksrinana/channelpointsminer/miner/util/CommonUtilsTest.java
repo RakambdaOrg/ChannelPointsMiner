@@ -1,25 +1,40 @@
 package fr.raksrinana.channelpointsminer.miner.util;
 
-import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
+import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.RepeatedTest;
-import java.time.Duration;
-import static org.awaitility.Awaitility.await;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mockStatic;
 
-@ParallelizableTest
+@ExtendWith(MockitoExtension.class)
 class CommonUtilsTest{
-	@RepeatedTest(5)
+	@Captor
+	private ArgumentCaptor<Long> captor;
+	
+	@RepeatedTest(500)
 	void sleepInRange(){
-		await().atLeast(Duration.ofMillis(200)).atMost(Duration.ofMillis(800)).until(() -> {
+		try(var sleepHandler = mockStatic(SleepHandler.class)){
+			sleepHandler.when(() -> SleepHandler.sleep(captor.capture())).then(Answers.RETURNS_DEFAULTS);
+			
 			CommonUtils.randomSleep(500, 200);
-			return true;
-		});
+			
+			var delay = captor.getValue();
+			assertThat(delay).isNotNull().isBetween(300L, 700L);
+		}
 	}
 	
-	@RepeatedTest(5)
+	@RepeatedTest(50)
 	void sleepInRangeNegative(){
-		await().pollDelay(Duration.ofMillis(10)).atMost(Duration.ofMillis(50)).until(() -> {
+		try(var sleepHandler = mockStatic(SleepHandler.class)){
+			sleepHandler.when(() -> SleepHandler.sleep(captor.capture())).then(Answers.RETURNS_DEFAULTS);
+			
 			CommonUtils.randomSleep(-5, 1);
-			return true;
-		});
+			
+			var delay = captor.getValue();
+			assertThat(delay).isNotNull().isBetween(-6L, -4L);
+		}
 	}
 }

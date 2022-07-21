@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchWebSocketPool;
+import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
@@ -22,11 +22,11 @@ class WebSocketPingTest{
 	@Mock
 	private IMiner miner;
 	@Mock
-	private TwitchWebSocketPool pool;
+	private TwitchPubSubWebSocketPool pool;
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(miner.getWebSocketPool()).thenReturn(pool);
+		lenient().when(miner.getPubSubWebSocketPool()).thenReturn(pool);
 	}
 	
 	@Test

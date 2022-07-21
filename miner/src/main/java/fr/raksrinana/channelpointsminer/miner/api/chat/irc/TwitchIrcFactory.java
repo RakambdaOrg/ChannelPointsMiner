@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.irc;
+package fr.raksrinana.channelpointsminer.miner.api.chat.irc;
 
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import lombok.AccessLevel;
@@ -14,17 +14,12 @@ public class TwitchIrcFactory{
 	private static final String TWITCH_IRC_HOST = "irc.chat.twitch.tv";
 	
 	@NotNull
-	public static TwitchIrcClient create(@NotNull TwitchLogin twitchLogin){
-		return new TwitchIrcClient(twitchLogin);
+	public static Client createIrcClient(@NotNull TwitchLogin twitchLogin){
+		return createIrcClient(twitchLogin.getUsername(), "oauth:%s".formatted(twitchLogin.getAccessToken()));
 	}
 	
 	@NotNull
-	public static Client createClient(@NotNull TwitchLogin twitchLogin){
-		return createClient(twitchLogin.getUsername(), "oauth:%s".formatted(twitchLogin.getAccessToken()));
-	}
-	
-	@NotNull
-	private static Client createClient(@NotNull String username, @Nullable String password){
+	private static Client createIrcClient(@NotNull String username, @Nullable String password){
 		var client = Client.builder()
 				.server()
 				.host(TWITCH_IRC_HOST).port(443, SECURE)
@@ -36,7 +31,7 @@ public class TwitchIrcFactory{
 	}
 	
 	@NotNull
-	public static TwitchIrcEventListener createListener(@NotNull String accountName){
+	public static TwitchIrcEventListener createIrcListener(@NotNull String accountName){
 		return new TwitchIrcEventListener(accountName);
 	}
 }

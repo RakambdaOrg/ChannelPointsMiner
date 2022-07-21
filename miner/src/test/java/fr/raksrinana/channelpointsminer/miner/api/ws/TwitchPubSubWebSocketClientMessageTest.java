@@ -70,13 +70,13 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
-class TwitchWebSocketClientMessageTest{
+class TwitchPubSubWebSocketClientMessageTest{
 	private static final int MESSAGE_TIMEOUT = 15000;
 	
-	private TwitchWebSocketClient tested;
+	private TwitchPubSubWebSocketClient tested;
 	
 	@Mock
-	private ITwitchWebSocketListener listener;
+	private ITwitchPubSubWebSocketListener listener;
 	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
@@ -567,7 +567,7 @@ class TwitchWebSocketClientMessageTest{
 	@BeforeEach
 	void setUp(WebsocketMockServer server) throws InterruptedException{
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchWebSocketClient(uri);
+		tested = new TwitchPubSubWebSocketClient(uri);
 		tested.setReuseAddr(true);
 		tested.addListener(listener);
 		tested.connectBlocking();
