@@ -3,6 +3,8 @@ package fr.raksrinana.channelpointsminer.miner.api.ws;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.response.ResponseResponse;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServerExtension;
+import io.github.artsok.RepeatedIfExceptionsTest;
+import org.awaitility.core.ConditionTimeoutException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.AfterEach;
@@ -45,7 +47,7 @@ class TwitchPubSubWebSocketClientResponseTest{
 		assertThat(server.isReceivedClose()).isTrue();
 	}
 	
-	@Test
+	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)
 	void onResponse(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
 		server.awaitMessage();

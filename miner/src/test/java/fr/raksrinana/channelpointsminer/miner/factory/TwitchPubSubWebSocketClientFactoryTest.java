@@ -19,7 +19,7 @@ class TwitchPubSubWebSocketClientFactoryTest{
 	}
 	
 	@Test
-	void createIrc(){
-		Assertions.assertThat(TwitchWebSocketClientFactory.createIrcClient(twitchLogin)).isNotNull().isInstanceOf(TwitchChatWebSocketClient.class);
+	void createChat(){
+		Assertions.assertThat(TwitchWebSocketClientFactory.createChatClient(twitchLogin)).isNotNull().isInstanceOf(TwitchChatWebSocketClient.class);
 	}
 }

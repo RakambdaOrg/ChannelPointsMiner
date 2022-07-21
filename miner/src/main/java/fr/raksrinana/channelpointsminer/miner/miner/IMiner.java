@@ -60,5 +60,5 @@ public interface IMiner extends IEventListener{
 	String getUsername();
 	
 	@NotNull
-	TwitchPubSubWebSocketPool getWebSocketPool();
+	TwitchPubSubWebSocketPool getPubSubWebSocketPool();
 }
