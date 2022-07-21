@@ -45,7 +45,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	@Override
 	public void onOpen(ServerHandshake serverHandshake){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			log.info("IRC WebSocket opened");
+			log.info("Chat WebSocket opened");
 			onPing();
 			sendMessage("CAP REQ :twitch.tv/tags twitch.tv/commands");
 			send("PASS oauth:%s".formatted(twitchLogin.getAccessToken()));
@@ -96,6 +96,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	public void join(@NotNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			if(channels.add(channel)){
+				log.info("Joining IRC channel {}", channel);
 				sendMessage("JOIN #" + channel);
 			}
 		}
@@ -104,6 +105,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	@Override
 	public void leave(@NotNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
+			log.info("Leaving IRC channel {}", channel);
 			sendMessage("PART #" + channel);
 			channels.remove(channel);
 		}

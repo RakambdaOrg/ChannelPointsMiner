@@ -57,7 +57,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	@Override
 	public void onOpen(ServerHandshake serverHandshake){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			log.info("WebSocket opened");
+			log.info("PubSub WebSocket opened");
 			ping();
 		}
 	}
