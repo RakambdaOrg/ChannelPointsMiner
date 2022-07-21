@@ -33,21 +33,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TwitchWebSocketPoolTest{
+class TwitchPubSubWebSocketPoolTest{
 	private static final Instant NOW = Instant.parse("2021-10-10T10:10:10Z");
 	
-	private final TwitchWebSocketPool tested = new TwitchWebSocketPool(50);
+	private final TwitchPubSubWebSocketPool tested = new TwitchPubSubWebSocketPool(50);
 	
 	@Mock
 	private Topics topics;
 	@Mock
 	private Topic topic;
 	@Mock
-	private TwitchWebSocketClient client;
+	private TwitchPubSubWebSocketClient client;
 	@Mock
 	private ITwitchWebSocketResponse twitchWebSocketResponse;
 	@Mock
-	private ITwitchMessageListener twitchMessageListener;
+	private ITwitchPubSubMessageListener twitchMessageListener;
 	
 	@BeforeEach
 	void setUp(){
@@ -57,7 +57,7 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void addTopicCreatesNewClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			
 			assertDoesNotThrow(() -> tested.listenTopic(topics));
 			
@@ -72,7 +72,7 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void addNewTopicToExistingClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			
 			when(client.isTopicListened(topic)).thenReturn(false);
 			
@@ -90,7 +90,7 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void addExistingTopicToExistingClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			
 			when(client.isTopicListened(topic)).thenReturn(true);
 			
@@ -108,8 +108,8 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void manyTopicsAreSplitOnSeveralClients(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			var client2 = mock(TwitchWebSocketClient.class);
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client).thenReturn(client2);
+			var client2 = mock(TwitchPubSubWebSocketClient.class);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client).thenReturn(client2);
 			
 			when(client.isTopicListened(any())).thenReturn(false);
 			when(client.getTopicCount()).thenReturn(0);
@@ -128,7 +128,7 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void clientError() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			
 			doThrow(new RuntimeException("For tests")).when(client).connectBlocking();
 			
@@ -141,8 +141,8 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void closesAllClients(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			var client2 = mock(TwitchWebSocketClient.class);
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client).thenReturn(client2);
+			var client2 = mock(TwitchPubSubWebSocketClient.class);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client).thenReturn(client2);
 			
 			when(client.isTopicListened(any())).thenReturn(false);
 			when(client.getTopicCount()).thenReturn(0);
@@ -162,7 +162,7 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void normalClientCloseRemovesClient(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			
 			assertDoesNotThrow(() -> tested.listenTopic(topics));
 			assertThat(tested.getClientCount()).isEqualTo(1);
@@ -175,8 +175,8 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void abnormalClientCloseRecreatesClient(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			var client2 = mock(TwitchWebSocketClient.class);
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client).thenReturn(client2);
+			var client2 = mock(TwitchPubSubWebSocketClient.class);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client).thenReturn(client2);
 			
 			var topics = new Topics(topic);
 			
@@ -213,7 +213,7 @@ class TwitchWebSocketPoolTest{
 	void pingSendsPing(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastPong()).thenReturn(NOW.minusSeconds(10));
@@ -231,7 +231,7 @@ class TwitchWebSocketPoolTest{
 	void pingTimedOutClosing(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
@@ -251,7 +251,7 @@ class TwitchWebSocketPoolTest{
 	void pingTimedOutClosed(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
@@ -269,7 +269,7 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void removeTopic(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			
 			when(client.isTopicListened(topic)).thenReturn(true);
 			tested.listenTopic(topics);
@@ -282,7 +282,7 @@ class TwitchWebSocketPoolTest{
 	@Test
 	void removeUnknownTopic(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createClient).thenReturn(client);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client);
 			
 			when(client.isTopicListened(topic)).thenReturn(false);
 			tested.listenTopic(topics);

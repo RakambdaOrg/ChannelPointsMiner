@@ -15,7 +15,7 @@ public class WebSocketPing implements Runnable{
 	@Override
 	public void run(){
 		try(var ignored = LogContext.with(miner)){
-			miner.getWebSocketPool().ping();
+			miner.getPubSubWebSocketPool().ping();
 		}
 	}
 }
