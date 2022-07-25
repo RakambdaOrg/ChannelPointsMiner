@@ -68,6 +68,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	@NotNull
 	private TwitchChatWebSocketClient getAvailableClient(){
 		return clients.stream()
+				.filter(client -> !client.isClosing() && !client.isClosed())
 				.filter(client -> client.getChannelCount() < maxTopicPerClient)
 				.findAny()
 				.orElseGet(this::createNewClient);

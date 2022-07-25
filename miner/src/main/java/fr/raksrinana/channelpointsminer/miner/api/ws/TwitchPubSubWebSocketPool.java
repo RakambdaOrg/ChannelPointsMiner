@@ -85,6 +85,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	@NotNull
 	private TwitchPubSubWebSocketClient getAvailableClient(){
 		return clients.stream()
+				.filter(client -> !client.isClosing() && !client.isClosed())
 				.filter(client -> client.getTopicCount() < maxTopicPerClient)
 				.findAny()
 				.orElseGet(this::createNewClient);
