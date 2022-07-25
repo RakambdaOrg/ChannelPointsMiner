@@ -8,8 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 import static org.java_websocket.framing.CloseFrame.NORMAL;
@@ -25,7 +25,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	public TwitchChatWebSocketPool(int maxTopicPerClient, @NotNull TwitchLogin twitchLogin){
 		this.maxTopicPerClient = maxTopicPerClient;
 		this.twitchLogin = twitchLogin;
-		clients = new ArrayList<>();
+		clients = new ConcurrentLinkedQueue<>();
 	}
 	
 	public void checkStaleConnection(){

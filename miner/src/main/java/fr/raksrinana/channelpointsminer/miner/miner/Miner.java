@@ -35,11 +35,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import org.jetbrains.annotations.VisibleForTesting;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -103,8 +103,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		this.handlerExecutor = handlerExecutor;
 		
 		streamers = new ConcurrentHashMap<>();
-		messageHandlers = new LinkedList<>();
-		eventListeners = new LinkedList<>();
+		messageHandlers = new ConcurrentLinkedQueue<>();
+		eventListeners = new ConcurrentLinkedQueue<>();
 		minerData = new MinerData();
 	}
 	

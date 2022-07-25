@@ -10,9 +10,8 @@ import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 import static org.java_websocket.framing.CloseFrame.NORMAL;
@@ -22,13 +21,13 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	private static final int SOCKET_TIMEOUT_MINUTES = 5;
 	
 	private final Collection<TwitchPubSubWebSocketClient> clients;
-	private final List<ITwitchPubSubMessageListener> listeners;
+	private final Collection<ITwitchPubSubMessageListener> listeners;
 	private final int maxTopicPerClient;
 	
 	public TwitchPubSubWebSocketPool(int maxTopicPerClient){
 		this.maxTopicPerClient = maxTopicPerClient;
-		clients = new ArrayList<>();
-		listeners = new ArrayList<>();
+		clients = new ConcurrentLinkedQueue<>();
+		listeners = new ConcurrentLinkedQueue<>();
 	}
 	
 	public void ping(){

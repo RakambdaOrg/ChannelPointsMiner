@@ -13,17 +13,17 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 import java.net.URI;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Log4j2
 public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitchChatClient{
 	@Getter
 	private final Set<String> channels;
-	private final List<ITwitchChatWebSocketListener> listeners;
+	private final Collection<ITwitchChatWebSocketListener> listeners;
 	@Getter
 	private final String uuid;
 	private final TwitchLogin twitchLogin;
@@ -38,7 +38,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 		
 		setConnectionLostTimeout(0);
 		channels = new HashSet<>();
-		listeners = new ArrayList<>();
+		listeners = new ConcurrentLinkedQueue<>();
 		lastPing = Instant.EPOCH;
 	}
 	

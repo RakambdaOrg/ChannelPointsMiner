@@ -25,19 +25,19 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 import java.net.URI;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 
 @Log4j2
 public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	@Getter
 	private final Set<Topics> topics;
-	private final List<ITwitchPubSubWebSocketListener> listeners;
+	private final Collection<ITwitchPubSubWebSocketListener> listeners;
 	@Getter
 	private final String uuid;
 	
@@ -50,7 +50,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 		
 		setConnectionLostTimeout(0);
 		topics = new HashSet<>();
-		listeners = new ArrayList<>();
+		listeners = new ConcurrentLinkedQueue<>();
 		lastPong = Instant.EPOCH;
 	}
 	
