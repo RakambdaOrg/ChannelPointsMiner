@@ -30,6 +30,7 @@ class StreamerSettingsTest{
 		var copy = new StreamerSettings(tested);
 		
 		assertThat(copy).isNotSameAs(tested);
+		assertThat(copy.isEnabled()).isEqualTo(tested.isEnabled());
 		assertThat(copy.isMakePredictions()).isEqualTo(tested.isMakePredictions());
 		assertThat(copy.isParticipateCampaigns()).isEqualTo(tested.isParticipateCampaigns());
 		assertThat(copy.isFollowRaid()).isEqualTo(tested.isFollowRaid());

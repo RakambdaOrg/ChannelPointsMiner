@@ -23,6 +23,9 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 public class StreamerSettings{
+	@JsonProperty("enabled")
+	@Builder.Default
+	private boolean enabled = true;
 	@JsonProperty("makePredictions")
 	@Builder.Default
 	private boolean makePredictions = false;
@@ -49,6 +52,7 @@ public class StreamerSettings{
 	
 	public StreamerSettings(@NotNull StreamerSettings origin){
 		this();
+		enabled = origin.enabled;
 		makePredictions = origin.makePredictions;
 		followRaid = origin.followRaid;
 		participateCampaigns = origin.participateCampaigns;

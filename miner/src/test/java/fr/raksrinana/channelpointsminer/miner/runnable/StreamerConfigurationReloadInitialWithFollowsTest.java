@@ -57,6 +57,7 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
+		lenient().when(streamerSettings.isEnabled()).thenReturn(true);
 		
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getStreamers()).thenReturn(List.of());

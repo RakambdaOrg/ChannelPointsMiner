@@ -56,6 +56,19 @@ public class StreamerConfigurationReload implements Runnable{
 		miner.getStreamers().stream()
 				.filter(oldStreamer -> !newStreamers.containsKey(oldStreamer.getUsername().toLowerCase(Locale.ROOT)))
 				.forEach(miner::removeStreamer);
+		newStreamers.values().stream()
+				.map(this::getIfDisabled)
+				.flatMap(Optional::stream)
+				.forEach(miner::removeStreamer);
+	}
+	
+	@NotNull
+	private Optional<Streamer> getIfDisabled(@NotNull StreamerResult streamerResult){
+		var settings = streamerResult.getStreamerSettingsSupplier().get();
+		if(settings.isEnabled()){
+			return Optional.empty();
+		}
+		return streamerResult.getStreamerSupplier().apply(settings);
 	}
 	
 	private void updateStreamers(@NotNull Map<String, StreamerResult> newStreamers){
@@ -66,12 +79,16 @@ public class StreamerConfigurationReload implements Runnable{
 						.map(Map.Entry::getValue)
 						.map(result -> {
 							var settings = result.getStreamerSettingsSupplier().get();
+							if(!settings.isEnabled()){
+								return null;
+							}
 							var streamer = result.getStreamerSupplier().apply(settings);
 							if(streamer.isEmpty()){
 								return null;
 							}
 							return Map.entry(oldStreamer, streamer.get());
-						}))
+						})
+				)
 				.flatMap(Optional::stream)
 				.forEach(entry -> {
 					var old = entry.getKey();
@@ -92,6 +109,9 @@ public class StreamerConfigurationReload implements Runnable{
 				.map(Map.Entry::getValue)
 				.map(result -> {
 					var settings = result.getStreamerSettingsSupplier().get();
+					if(!settings.isEnabled()){
+						return Optional.<Streamer> empty();
+					}
 					return result.getStreamerSupplier().apply(settings);
 				})
 				.flatMap(Optional::stream)
