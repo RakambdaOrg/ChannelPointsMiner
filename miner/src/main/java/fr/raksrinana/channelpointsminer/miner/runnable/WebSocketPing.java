@@ -17,6 +17,8 @@ public class WebSocketPing implements Runnable{
 		try(var ignored = LogContext.with(miner)){
 			miner.getPubSubWebSocketPool().ping();
 			miner.getChatClient().ping();
+			
+			miner.getChatClient().joinPending();
 		}
 	}
 }

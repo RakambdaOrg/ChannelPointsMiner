@@ -108,6 +108,10 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	}
 	
 	@Override
+	public void joinPending(){
+	}
+	
+	@Override
 	public void leave(@NotNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			log.info("Leaving Chat channel {}", channel);

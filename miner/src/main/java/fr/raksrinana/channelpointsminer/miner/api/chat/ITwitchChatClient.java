@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 public interface ITwitchChatClient extends AutoCloseable{
 	void join(@NotNull String channel);
 	
+	void joinPending();
+	
 	void leave(@NotNull String channel);
 	
 	void ping();

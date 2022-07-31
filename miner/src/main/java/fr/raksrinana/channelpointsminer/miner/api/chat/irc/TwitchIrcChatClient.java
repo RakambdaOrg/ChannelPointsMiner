@@ -34,6 +34,10 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 		client.addChannel(ircChannelName);
 	}
 	
+	@Override
+	public void joinPending(){
+	}
+	
 	private synchronized Client getIrcClient(){
 		if(Objects.isNull(ircClient)){
 			log.info("Creating new Twitch IRC client");
