@@ -9,10 +9,9 @@ import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
-import java.util.NavigableSet;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 import static org.java_websocket.framing.CloseFrame.NORMAL;
@@ -24,13 +23,13 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	private final Collection<TwitchChatWebSocketClient> clients;
 	private final int maxTopicPerClient;
 	private final TwitchLogin twitchLogin;
-	private final NavigableSet<String> pendingJoin;
+	private final Queue<String> pendingJoin;
 	
 	public TwitchChatWebSocketPool(int maxTopicPerClient, @NotNull TwitchLogin twitchLogin){
 		this.maxTopicPerClient = maxTopicPerClient;
 		this.twitchLogin = twitchLogin;
 		clients = new ConcurrentLinkedQueue<>();
-		pendingJoin = new ConcurrentSkipListSet<>();
+		pendingJoin = new ConcurrentLinkedQueue<>();
 	}
 	
 	@Override
@@ -79,7 +78,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	public void joinPending(){
 		try{
 			String channel;
-			while(Objects.nonNull(channel = pendingJoin.pollFirst())){
+			while(Objects.nonNull(channel = pendingJoin.poll())){
 				join(channel);
 			}
 		}

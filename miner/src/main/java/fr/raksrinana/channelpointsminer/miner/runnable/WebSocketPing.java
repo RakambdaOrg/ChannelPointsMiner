@@ -18,6 +18,7 @@ public class WebSocketPing implements Runnable{
 			miner.getPubSubWebSocketPool().ping();
 			miner.getChatClient().ping();
 			
+			miner.getPubSubWebSocketPool().listenPendingTopics();
 			miner.getChatClient().joinPending();
 		}
 	}

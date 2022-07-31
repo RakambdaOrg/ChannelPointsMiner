@@ -186,8 +186,30 @@ class TwitchPubSubWebSocketPoolTest{
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
 			assertDoesNotThrow(() -> tested.onWebSocketClosed(client, ABNORMAL_CLOSE, "test", true));
+			assertThat(tested.getClientCount()).isEqualTo(0);
+			verify(client2, never()).listenTopic(topics);
+		}
+	}
+	
+	@Test
+	void abnormalClientCloseRecreatesClient2(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			var client2 = mock(TwitchPubSubWebSocketClient.class);
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createPubSubClient).thenReturn(client).thenReturn(client2);
+			
+			var topics = new Topics(topic);
+			
+			when(client.getTopics()).thenReturn(Set.of(topics));
+			
+			assertDoesNotThrow(() -> tested.listenTopic(topics));
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
+			assertDoesNotThrow(() -> tested.onWebSocketClosed(client, ABNORMAL_CLOSE, "test", true));
+			assertThat(tested.getClientCount()).isEqualTo(0);
+			verify(client2, never()).listenTopic(topics);
+			
+			tested.listenPendingTopics();
+			assertThat(tested.getClientCount()).isEqualTo(1);
 			verify(client2).listenTopic(topics);
 		}
 	}

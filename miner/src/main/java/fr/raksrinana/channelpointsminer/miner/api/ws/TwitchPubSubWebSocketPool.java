@@ -11,6 +11,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
@@ -22,23 +24,29 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	
 	private final Collection<TwitchPubSubWebSocketClient> clients;
 	private final Collection<ITwitchPubSubMessageListener> listeners;
+	private final Queue<Topics> pendingTopics;
 	private final int maxTopicPerClient;
 	
 	public TwitchPubSubWebSocketPool(int maxTopicPerClient){
 		this.maxTopicPerClient = maxTopicPerClient;
 		clients = new ConcurrentLinkedQueue<>();
 		listeners = new ConcurrentLinkedQueue<>();
+		pendingTopics = new ConcurrentLinkedQueue<>();
 	}
 	
 	public void ping(){
-		clients.stream()
-				.filter(client -> TimeFactory.now().isAfter(client.getLastPong().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
-				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
+		checkStaleConnection();
 		
 		clients.stream()
 				.filter(WebSocketClient::isOpen)
 				.filter(client -> !client.isClosing())
 				.forEach(TwitchPubSubWebSocketClient::ping);
+	}
+	
+	public void checkStaleConnection(){
+		clients.stream()
+				.filter(client -> TimeFactory.now().isAfter(client.getLastPong().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
+				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
 	}
 	
 	public void removeTopic(@NotNull Topic topic){
@@ -64,7 +72,19 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	public void onWebSocketClosed(@NotNull TwitchPubSubWebSocketClient client, int code, @Nullable String reason, boolean remote){
 		clients.remove(client);
 		if(code != NORMAL){
-			client.getTopics().forEach(this::listenTopic);
+			pendingTopics.addAll(client.getTopics());
+		}
+	}
+	
+	public void listenPendingTopics(){
+		try{
+			Topics topic;
+			while(Objects.nonNull(topic = pendingTopics.poll())){
+				listenTopic(topic);
+			}
+		}
+		catch(RuntimeException e){
+			log.error("Failed to join pending chats", e);
 		}
 	}
 	
@@ -74,7 +94,14 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 			log.debug("Topic {} is already being listened", topics);
 			return;
 		}
-		getAvailableClient().listenTopic(topics);
+		
+		try{
+			getAvailableClient().listenTopic(topics);
+		}
+		catch(RuntimeException e){
+			pendingTopics.add(topics);
+			throw e;
+		}
 	}
 	
 	private boolean isTopicListened(@NotNull Topic topic){
