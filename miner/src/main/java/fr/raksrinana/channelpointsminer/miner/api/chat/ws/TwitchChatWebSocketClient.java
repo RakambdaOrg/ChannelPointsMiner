@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
+import org.java_websocket.framing.PongFrame;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 import java.net.URI;
@@ -57,6 +58,9 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	public void onMessage(String messageStr){
 		try(var logContext = LogContext.empty().withSocketId(uuid)){
 			log.trace("Received Chat Websocket message: {}", messageStr.strip());
+			if(messageStr.startsWith("PONG :tmi.twitch.tv")){
+				onWebsocketPong(this, new PongFrame());
+			}
 		}
 		catch(Exception e){
 			log.error("Failed to handle Chat WebSocket message {}", messageStr, e);

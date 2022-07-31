@@ -11,8 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
+import java.time.Duration;
 import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -93,6 +95,20 @@ class TwitchChatWebSocketClientTest{
 		tested.onWebsocketPong(tested, mock(Framedata.class));
 		
 		assertThat(tested.getLastHeartbeat()).isAfter(now);
+	}
+	
+	@Test
+	void pongUpdatesHeartbeat2(WebsocketMockServer server) throws InterruptedException{
+		tested.connectBlocking();
+		server.awaitMessage(3);
+		server.reset();
+		
+		var now = Instant.now();
+		Thread.sleep(100);
+		
+		server.send("PONG :tmi.twitch.tv");
+		
+		await().atMost(Duration.ofSeconds(30)).until(() -> tested.getLastHeartbeat().isAfter(now));
 	}
 	
 	@Test
