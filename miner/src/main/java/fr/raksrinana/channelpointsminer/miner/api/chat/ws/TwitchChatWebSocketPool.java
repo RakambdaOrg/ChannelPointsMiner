@@ -54,7 +54,6 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 		clients.remove(client);
 		if(code != NORMAL){
 			pendingJoin.addAll(client.getChannels());
-			joinPending();
 		}
 	}
 	

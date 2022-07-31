@@ -159,6 +159,7 @@ class TwitchChatWebSocketPoolTest{
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
 			assertDoesNotThrow(() -> tested.onWebSocketClosed(client, ABNORMAL_CLOSE, "test", true));
+			tested.joinPending();
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
 			verify(client2).join(STREAMER_LOWER);
