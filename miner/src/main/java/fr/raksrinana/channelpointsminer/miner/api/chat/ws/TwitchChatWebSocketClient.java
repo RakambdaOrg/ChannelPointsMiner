@@ -29,7 +29,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	private final TwitchLogin twitchLogin;
 	
 	@Getter
-	private Instant lastPing;
+	private Instant lastHeartbeat;
 	
 	public TwitchChatWebSocketClient(@NotNull URI uri, @NotNull TwitchLogin twitchLogin){
 		super(uri);
@@ -39,14 +39,14 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 		setConnectionLostTimeout(0);
 		channels = new HashSet<>();
 		listeners = new ConcurrentLinkedQueue<>();
-		lastPing = Instant.EPOCH;
+		lastHeartbeat = Instant.EPOCH;
 	}
 	
 	@Override
 	public void onOpen(ServerHandshake serverHandshake){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			log.info("Chat WebSocket opened");
-			onPing();
+			onHeartbeat();
 			sendMessage("CAP REQ :twitch.tv/tags twitch.tv/commands");
 			send("PASS oauth:%s".formatted(twitchLogin.getAccessToken()));
 			sendMessage("NICK %s".formatted(twitchLogin.getUsername().toLowerCase()));
@@ -56,47 +56,52 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	@Override
 	public void onMessage(String messageStr){
 		try(var logContext = LogContext.empty().withSocketId(uuid)){
-			log.trace("Received IRC Websocket message: {}", messageStr.strip());
+			log.trace("Received Chat Websocket message: {}", messageStr.strip());
 		}
 		catch(Exception e){
-			log.error("Failed to handle IRC WebSocket message {}", messageStr, e);
+			log.error("Failed to handle Chat WebSocket message {}", messageStr, e);
 		}
 	}
 	
 	@Override
 	public void onClose(int code, String reason, boolean remote){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			log.info("IRC WebSocket closed with code {}, from host {}, reason {}", code, remote, reason);
+			log.info("Chat WebSocket closed with code {}, from host {}, reason {}", code, remote, reason);
 			listeners.forEach(l -> l.onWebSocketClosed(this, code, reason, remote));
 		}
 	}
 	
 	@Override
 	public void onError(Exception e){
-		log.error("Error from IRC WebSocket", e);
+		log.error("Error from Chat WebSocket", e);
 	}
 	
-	private void onPing(){
-		lastPing = TimeFactory.now();
-		log.debug("Received IRC Ping request");
+	private void onHeartbeat(){
+		lastHeartbeat = TimeFactory.now();
+		log.debug("Received WS Chat heartbeat");
 	}
 	
 	private void sendMessage(@NotNull String message){
-		log.trace("Sending IRC message {}", message);
+		log.trace("Sending Chat message {}", message);
 		send(message);
 	}
 	
 	@Override
 	public void onWebsocketPing(WebSocket conn, Framedata f){
-		onPing();
+		onHeartbeat();
 		sendMessage("PONG");
+	}
+	
+	@Override
+	public void onWebsocketPong(WebSocket conn, Framedata f){
+		onHeartbeat();
 	}
 	
 	@Override
 	public void join(@NotNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			if(channels.add(channel)){
-				log.info("Joining IRC channel {}", channel);
+				log.info("Joining Chat channel {}", channel);
 				sendMessage("JOIN #" + channel);
 			}
 		}
@@ -105,10 +110,15 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	@Override
 	public void leave(@NotNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			log.info("Leaving IRC channel {}", channel);
+			log.info("Leaving Chat channel {}", channel);
 			sendMessage("PART #" + channel);
 			channels.remove(channel);
 		}
+	}
+	
+	@Override
+	public void ping(){
+		send("PING");
 	}
 	
 	public boolean isChannelJoined(@NotNull String channel){

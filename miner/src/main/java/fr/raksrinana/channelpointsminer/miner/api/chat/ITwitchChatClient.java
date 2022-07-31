@@ -7,6 +7,8 @@ public interface ITwitchChatClient extends AutoCloseable{
 	
 	void leave(@NotNull String channel);
 	
+	void ping();
+	
 	@Override
 	void close();
 }

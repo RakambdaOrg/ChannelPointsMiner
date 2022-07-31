@@ -28,9 +28,19 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 		clients = new ConcurrentLinkedQueue<>();
 	}
 	
+	@Override
+	public void ping(){
+		checkStaleConnection();
+		
+		clients.stream()
+				.filter(WebSocketClient::isOpen)
+				.filter(client -> !client.isClosing())
+				.forEach(TwitchChatWebSocketClient::ping);
+	}
+	
 	public void checkStaleConnection(){
 		clients.stream()
-				.filter(client -> TimeFactory.now().isAfter(client.getLastPing().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
+				.filter(client -> TimeFactory.now().isAfter(client.getLastHeartbeat().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
 				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
 	}
 	

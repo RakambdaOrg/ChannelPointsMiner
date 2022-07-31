@@ -68,6 +68,10 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 	}
 	
 	@Override
+	public void ping(){
+	}
+	
+	@Override
 	public void close(){
 		Optional.ofNullable(ircClient).ifPresent(Client::shutdown);
 	}

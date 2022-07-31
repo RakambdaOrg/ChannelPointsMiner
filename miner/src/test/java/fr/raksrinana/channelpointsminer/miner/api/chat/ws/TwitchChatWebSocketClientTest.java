@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.api.chat.ws;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServerExtension;
+import org.java_websocket.framing.Framedata;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,7 +67,7 @@ class TwitchChatWebSocketClientTest{
 	}
 	
 	@Test
-	void replyOnPing(WebsocketMockServer server) throws InterruptedException{
+	void pingUpdatesHeartbeat(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
 		server.awaitMessage(3);
 		server.reset();
@@ -76,7 +78,33 @@ class TwitchChatWebSocketClientTest{
 		server.awaitMessage();
 		
 		assertThat(server.getReceivedMessages()).contains("PONG");
-		assertThat(tested.getLastPing()).isAfter(now);
+		assertThat(tested.getLastHeartbeat()).isAfter(now);
+	}
+	
+	@Test
+	void pongUpdatesHeartbeat(WebsocketMockServer server) throws InterruptedException{
+		tested.connectBlocking();
+		server.awaitMessage(3);
+		server.reset();
+		
+		var now = Instant.now();
+		Thread.sleep(100);
+		
+		tested.onWebsocketPong(tested, mock(Framedata.class));
+		
+		assertThat(tested.getLastHeartbeat()).isAfter(now);
+	}
+	
+	@Test
+	void sendPing(WebsocketMockServer server) throws InterruptedException{
+		tested.connectBlocking();
+		server.awaitMessage(3);
+		server.reset();
+		
+		tested.ping();
+		server.awaitMessage();
+		
+		assertThat(server.getReceivedMessages()).contains("PING");
 	}
 	
 	@BeforeEach

@@ -142,13 +142,33 @@ class TwitchChatWebSocketPoolTest{
 	}
 	
 	@Test
+	void pingSendsPing(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
+				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(client.getLastHeartbeat()).thenReturn(NOW.minusSeconds(10));
+			when(client.isOpen()).thenReturn(true);
+			when(client.isClosing()).thenReturn(false);
+			
+			assertDoesNotThrow(() -> tested.join("test"));
+			assertThat(tested.getClientCount()).isEqualTo(1);
+			
+			assertDoesNotThrow(tested::ping);
+			
+			verify(client).ping();
+		}
+	}
+	
+	@Test
 	void closeTimedOut(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
 			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastPing()).thenReturn(NOW.minusSeconds(600));
+			when(client.getLastHeartbeat()).thenReturn(NOW.minusSeconds(600));
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertThat(tested.getClientCount()).isEqualTo(1);
@@ -166,7 +186,7 @@ class TwitchChatWebSocketPoolTest{
 			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastPing()).thenReturn(NOW.minusSeconds(300));
+			when(client.getLastHeartbeat()).thenReturn(NOW.minusSeconds(300));
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertThat(tested.getClientCount()).isEqualTo(1);

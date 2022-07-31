@@ -224,6 +224,8 @@ class TwitchPubSubWebSocketPoolTest{
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
 			assertDoesNotThrow(tested::ping);
+			
+			verify(client).ping();
 		}
 	}
 	
