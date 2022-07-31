@@ -70,7 +70,7 @@ public class GQLApi{
 		
 		var body = response.getBody();
 		if(body.isError()){
-			log.error("Received GQL error response: {}", body);
+			log.error("Received GQL error response: {}", body.getErrors());
 			return Optional.empty();
 		}
 		
