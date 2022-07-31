@@ -17,8 +17,10 @@ import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 import static org.java_websocket.framing.CloseFrame.NORMAL;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Answers.RETURNS_DEFAULTS;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -107,6 +109,28 @@ class TwitchChatWebSocketPoolTest{
 			assertThrows(RuntimeException.class, () -> tested.join(STREAMER));
 			
 			assertThat(tested.getClientCount()).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void clientErrorJoinPending() throws InterruptedException{
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			
+			doThrow(new RuntimeException("For tests")).when(client).connectBlocking();
+			
+			assertThrows(RuntimeException.class, () -> tested.join(STREAMER));
+			
+			assertThat(tested.getClientCount()).isEqualTo(0);
+			
+			doAnswer(RETURNS_DEFAULTS).when(client).connectBlocking();
+			assertDoesNotThrow(() -> tested.join(STREAMER));
+			
+			assertThat(tested.getClientCount()).isEqualTo(1);
+			
+			verify(client, times(2)).addListener(tested);
+			verify(client, times(2)).connectBlocking();
+			verify(client).join(STREAMER_LOWER);
 		}
 	}
 	

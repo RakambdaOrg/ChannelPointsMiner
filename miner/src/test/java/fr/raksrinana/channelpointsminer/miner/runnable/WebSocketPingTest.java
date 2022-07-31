@@ -40,4 +40,11 @@ class WebSocketPingTest{
 		verify(pool).ping();
 		verify(chat).ping();
 	}
+	
+	@Test
+	void joinPendingIsCalled(){
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(chat).joinPending();
+	}
 }
