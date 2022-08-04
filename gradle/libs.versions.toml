@@ -17,7 +17,7 @@ json-unit-version = "2.35.0"
 kitteh-irc-version = "8.0.0"
 hikari-cp-version = "5.0.1"
 mariadb-version = "3.0.6"
-sqlite-version = "3.36.0.3"
+sqlite-version = "3.39.2.0"
 rerunner-jupiter-version = "2.1.6"
 
 shadow-version = "7.1.2"
