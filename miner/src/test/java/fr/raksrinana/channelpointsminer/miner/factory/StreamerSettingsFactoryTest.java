@@ -229,6 +229,7 @@ class StreamerSettingsFactoryTest{
 				.build());
 		
 		var expected = StreamerSettings.builder()
+				.enabled(false)
 				.makePredictions(true)
 				.followRaid(true)
 				.participateCampaigns(true)

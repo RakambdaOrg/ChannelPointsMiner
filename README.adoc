@@ -284,6 +284,10 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 |===
 |Name |Description |Default value
 
+|enabled
+|If set to false, this streamer won't be mined nor will join chat.
+|true
+
 |makePredictions
 |If set to true, predictions will be made for this streamer.
 |false
