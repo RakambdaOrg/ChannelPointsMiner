@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.miner.config.StreamerDirectory;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.action.StealthPredictionAction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.amount.ConstantAmount;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome.LeastPointsOutcomePicker;
+import fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome.SmartOutcomePicker;
 import fr.raksrinana.channelpointsminer.miner.prediction.delay.FromStartDelay;
 import fr.raksrinana.channelpointsminer.miner.priority.ConstantPriority;
 import fr.raksrinana.channelpointsminer.miner.priority.DropsPriority;
@@ -39,7 +40,12 @@ import static org.mockito.Mockito.when;
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class StreamerSettingsFactoryTest{
-	private static final StreamerSettings DEFAULT = StreamerSettings.builder().build();
+	private static final StreamerSettings DEFAULT = StreamerSettings.builder()
+			.predictions(PredictionSettings.builder()
+					.amountCalculator(ConstantAmount.builder().amount(50).build())
+					.outcomePicker(LeastPointsOutcomePicker.builder().build())
+					.build())
+			.build();
 	private static final String STREAMER_USERNAME = "streamer-name";
 	
 	@TempDir
@@ -136,6 +142,10 @@ class StreamerSettingsFactoryTest{
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
 						.followRaid(true)
+						.predictions(PredictionSettings.builder()
+								.outcomePicker(SmartOutcomePicker.builder().percentageGap(0.05f).build())
+								.amountCalculator(ConstantAmount.builder().amount(50).build())
+								.build())
 						.build());
 	}
 	
