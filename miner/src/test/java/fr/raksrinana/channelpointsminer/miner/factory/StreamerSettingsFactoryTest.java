@@ -171,6 +171,10 @@ class StreamerSettingsFactoryTest{
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
 						.followRaid(true)
+						.predictions(PredictionSettings.builder()
+								.outcomePicker(SmartOutcomePicker.builder().percentageGap(0.05f).build())
+								.amountCalculator(ConstantAmount.builder().amount(50).build())
+								.build())
 						.build());
 	}
 	
@@ -191,6 +195,10 @@ class StreamerSettingsFactoryTest{
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
 						.followRaid(true)
+						.predictions(PredictionSettings.builder()
+								.outcomePicker(SmartOutcomePicker.builder().percentageGap(0.05f).build())
+								.amountCalculator(ConstantAmount.builder().amount(50).build())
+								.build())
 						.build());
 	}
 	
@@ -201,6 +209,10 @@ class StreamerSettingsFactoryTest{
 		assertThat(tested.createStreamerSettings(STREAMER_USERNAME)).isNotSameAs(DEFAULT)
 				.usingRecursiveComparison().isEqualTo(StreamerSettings.builder()
 						.followRaid(true)
+						.predictions(PredictionSettings.builder()
+								.outcomePicker(SmartOutcomePicker.builder().percentageGap(0.05f).build())
+								.amountCalculator(ConstantAmount.builder().amount(50).build())
+								.build())
 						.build());
 	}
 	
