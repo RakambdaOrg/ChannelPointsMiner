@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.gql;
 
+import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLError;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.IGQLOperation;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.channelfollows.ChannelFollowsData;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @Log4j2
@@ -46,6 +48,7 @@ import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 public class GQLApi{
 	private static final String ENDPOINT = "https://gql.twitch.tv/gql";
 	private static final String ORDER_DESC = "DESC";
+	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error");
 	
 	private final TwitchLogin twitchLogin;
 	
@@ -70,11 +73,26 @@ public class GQLApi{
 		
 		var body = response.getBody();
 		if(body.isError()){
-			log.error("Received GQL error response: {}", body);
+			var errors = body.getErrors();
+			
+			if(isErrorExpected(errors)){
+				log.warn("Received GQL error response: {}", errors);
+			}
+			else{
+				log.error("Received GQL error response: {}", errors);
+			}
 			return Optional.empty();
 		}
 		
 		return Optional.ofNullable(response.getBody());
+	}
+	
+	private boolean isErrorExpected(@NotNull Collection<GQLError> errors){
+		return errors.stream().allMatch(this::isErrorExpected);
+	}
+	
+	private boolean isErrorExpected(@NotNull GQLError error){
+		return EXPECTED_ERROR_MESSAGES.contains(error.getMessage());
 	}
 	
 	@NotNull

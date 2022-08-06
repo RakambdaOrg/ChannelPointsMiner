@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class GQLResponse<T>{
 	@JsonProperty("errors")
 	@NotNull
 	@Builder.Default
-	private List<GQLError> errors = new LinkedList<>();
+	private List<GQLError> errors = new ArrayList<>();
 	@JsonProperty("extensions")
 	@NotNull
 	@Builder.Default

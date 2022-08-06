@@ -33,6 +33,7 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.unirestMocks)
     testImplementation(libs.bundles.jsonUnit)
+    testImplementation(libs.rerunnerJupiter)
 }
 
 tasks {

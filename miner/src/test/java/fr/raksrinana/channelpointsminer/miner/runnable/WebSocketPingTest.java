@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchWebSocketPool;
+import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
+import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
@@ -22,11 +23,14 @@ class WebSocketPingTest{
 	@Mock
 	private IMiner miner;
 	@Mock
-	private TwitchWebSocketPool pool;
+	private TwitchPubSubWebSocketPool pool;
+	@Mock
+	private ITwitchChatClient chat;
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(miner.getWebSocketPool()).thenReturn(pool);
+		lenient().when(miner.getPubSubWebSocketPool()).thenReturn(pool);
+		lenient().when(miner.getChatClient()).thenReturn(chat);
 	}
 	
 	@Test
@@ -34,5 +38,14 @@ class WebSocketPingTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(pool).ping();
+		verify(chat).ping();
+	}
+	
+	@Test
+	void joinPendingIsCalled(){
+		assertDoesNotThrow(() -> tested.run());
+		
+		verify(pool).listenPendingTopics();
+		verify(chat).joinPending();
 	}
 }

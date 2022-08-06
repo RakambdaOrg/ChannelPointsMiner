@@ -4,13 +4,15 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;
+import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 
@@ -21,7 +23,7 @@ public class WebsocketMockServer extends WebSocketServer{
 	@Getter
 	private final int port;
 	@Getter
-	private final ArrayList<String> receivedMessages;
+	private final Collection<String> receivedMessages;
 	private final Map<String, String> answers;
 	@Getter
 	private boolean receivedClose;
@@ -34,8 +36,8 @@ public class WebsocketMockServer extends WebSocketServer{
 		
 		this.port = port;
 		
-		receivedMessages = new ArrayList<>();
-		answers = new HashMap<>();
+		receivedMessages = new ConcurrentLinkedQueue<>();
+		answers = new ConcurrentHashMap<>();
 		receivedClose = false;
 	}
 	
@@ -66,6 +68,18 @@ public class WebsocketMockServer extends WebSocketServer{
 	public void onStart(){
 	}
 	
+	@Override
+	public void onWebsocketPing(WebSocket conn, Framedata f){
+		super.onWebsocketPing(conn, f);
+		receivedMessages.add("PING");
+	}
+	
+	@Override
+	public void onWebsocketPong(WebSocket conn, Framedata f){
+		super.onWebsocketPong(conn, f);
+		receivedMessages.add("PONG");
+	}
+	
 	public void reset(){
 		receivedMessages.clear();
 		answers.clear();
@@ -80,8 +94,16 @@ public class WebsocketMockServer extends WebSocketServer{
 		broadcast(message);
 	}
 	
+	public void sendPing(){
+		getConnections().forEach(WebSocket::sendPing);
+	}
+	
 	public void awaitMessage(){
-		await("Message await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> !getReceivedMessages().isEmpty());
+		awaitMessage(1);
+	}
+	
+	public void awaitMessage(int count){
+		await("Message await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> getReceivedMessages().size() >= count);
 	}
 	
 	public void awaitNothing(){

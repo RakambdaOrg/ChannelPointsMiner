@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,9 +24,9 @@ public class GQLError{
 	@JsonProperty("locations")
 	@NotNull
 	@Builder.Default
-	private List<Location> locations = new LinkedList<>();
+	private List<Location> locations = new ArrayList<>();
 	@JsonProperty("path")
 	@NotNull
 	@Builder.Default
-	private List<String> path = new LinkedList<>();
+	private List<String> path = new ArrayList<>();
 }

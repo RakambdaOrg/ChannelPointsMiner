@@ -51,6 +51,7 @@ class StreamerConfigurationReloadUpdateTest{
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);
+		lenient().when(streamerSettings.isEnabled()).thenReturn(true);
 		
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getStreamers()).thenReturn(List.of(existingStreamer));
@@ -71,6 +72,20 @@ class StreamerConfigurationReloadUpdateTest{
 		
 		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 		verify(miner).addStreamer(expectedStreamer);
+		verify(gqlApi, never()).reportMenuItem(anyString());
+	}
+	
+	@Test
+	void notAddedIfNotEnabled(){
+		when(existingStreamer.getUsername()).thenReturn(STREAMER_USERNAME + "Old");
+		when(streamerSettings.isEnabled()).thenReturn(false);
+		when(gqlApi.allChannelFollows()).thenReturn(List.of(user));
+		
+		assertDoesNotThrow(() -> tested.run());
+		
+		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+		verify(miner, never()).addStreamer(expectedStreamer);
+		verify(miner).removeStreamer(expectedStreamer);
 		verify(gqlApi, never()).reportMenuItem(anyString());
 	}
 	
