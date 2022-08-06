@@ -1,3 +1,9 @@
 {
-  "followRaid": true
+  "followRaid" : true,
+  "predictions" : {
+    "outcomePicker" : {
+      "type" : "smart",
+      "percentageGap" : 0.05
+    }
+  }
 }

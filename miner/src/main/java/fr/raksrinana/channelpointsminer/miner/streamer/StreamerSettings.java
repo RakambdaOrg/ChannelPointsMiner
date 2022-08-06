@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.streamer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.channelpointsminer.miner.priority.IStreamerPriority;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,7 @@ public class StreamerSettings{
 	@JsonProperty("predictions")
 	@NotNull
 	@Builder.Default
+	@JsonMerge
 	private PredictionSettings predictions = new PredictionSettings();
 	@JsonProperty("priorities")
 	@Builder.Default
