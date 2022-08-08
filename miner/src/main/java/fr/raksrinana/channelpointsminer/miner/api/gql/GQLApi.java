@@ -48,7 +48,7 @@ import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 public class GQLApi{
 	private static final String ENDPOINT = "https://gql.twitch.tv/gql";
 	private static final String ORDER_DESC = "DESC";
-	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error");
+	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error", "server error");
 	
 	private final TwitchLogin twitchLogin;
 	
