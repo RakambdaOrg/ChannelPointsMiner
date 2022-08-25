@@ -26,8 +26,8 @@ public class DatabaseFactory{
 		}
 		
 		var database = switch(parts[1]){
-			case "mariadb" -> new MariaDBDatabase(createDatasource(configuration, "org.mariadb.jdbc.Driver"));
-			case "sqlite" -> new SQLiteDatabase(createDatasource(configuration, "org.sqlite.JDBC"));
+			case "mariadb" -> new MariaDBDatabase(createDatasource(configuration, "org.mariadb.jdbc.Driver", 10));
+			case "sqlite" -> new SQLiteDatabase(createDatasource(configuration, "org.sqlite.JDBC", 1));
 			default -> throw new IllegalStateException("Unknown JDBC type " + parts[1]);
 		};
 		
@@ -42,12 +42,13 @@ public class DatabaseFactory{
     }
 	
 	@NotNull
-	private static HikariDataSource createDatasource(@NotNull DatabaseConfiguration configuration, @NotNull String driver){
+	private static HikariDataSource createDatasource(@NotNull DatabaseConfiguration configuration, @NotNull String driver, int maxPoolSize){
 		var poolConfiguration = new HikariConfig();
 		poolConfiguration.setJdbcUrl(configuration.getJdbcUrl());
 		poolConfiguration.setUsername(configuration.getUsername());
 		poolConfiguration.setPassword(configuration.getPassword());
 		poolConfiguration.setDriverClassName(driver);
+        poolConfiguration.setMaximumPoolSize(maxPoolSize);
 		
 		return new HikariDataSource(poolConfiguration);
 	}
