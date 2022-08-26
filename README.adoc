@@ -1,4 +1,22 @@
 = Channel Points Miner
+
+=== About this Fork:
+
+This fork adds two capabilities:
+
+1. Record other users predictions (Requires analytics enabled).
+2. Make predictions based on other peoples predictions.An average Return On Investment (ROI) is calculated based on past predictions and outcomes (Requires at least a couple predictions recorded).
+
+==== Additions to the config:
+* Add `recordChatsPredictions` to the `analytics` config object.Default: false
+* Add outcome picker `mostTrusted` to the available options.
+
+==== Notes:
+* Currently, the outcome picker requires at least 5 predictions made per user, at least 10 placed bets on this prediction overall and at least 5 users betting on the chosen outcome.
+* The calculated ROI for any user is only an approximation as the points spent on each prediction aren't public. It assumes equal points on each prediction.
+
+
+=== Original Readme
 :toc:
 :toclevels: 4
 :toc: preamble
