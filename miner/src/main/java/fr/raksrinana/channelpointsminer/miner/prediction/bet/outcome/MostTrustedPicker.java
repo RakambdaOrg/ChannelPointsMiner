@@ -40,9 +40,11 @@ public class MostTrustedPicker implements IOutcomePicker{
             var outcomes = bettingPrediction.getEvent().getOutcomes();
             var title = bettingPrediction.getEvent().getTitle();
             
-            var outcomeStatistics = database.getOutcomeStatisticsForChannel(bettingPrediction.getEvent().getChannelId(), minTotalBetsPlacedByUser);
+            var outcomeStatistics = database
+                    .getOutcomeStatisticsForChannel(bettingPrediction.getEvent().getChannelId(), minTotalBetsPlacedByUser);
             
-            var mostTrusted = outcomeStatistics.stream().max((Comparator.comparingDouble(OutcomeStatistic::getAverageReturnOnInvestment)))
+            var mostTrusted = outcomeStatistics.stream()
+                    .max((Comparator.comparingDouble(OutcomeStatistic::getAverageReturnOnInvestment)))
                     .orElseThrow(() -> new BetPlacementException("No outcome statistics found. Maybe not enough data gathered yet."));
     
             for(var outcomeStats : outcomeStatistics)
@@ -50,17 +52,22 @@ public class MostTrustedPicker implements IOutcomePicker{
     
             int totalBetsPlaced = outcomeStatistics.stream().mapToInt(OutcomeStatistic::getUserCnt).sum();
             if(totalBetsPlaced < minTotalBetsPlacedOnPrediction)
-                throw new BetPlacementException("Not enough bets placed for prediction %s. Minimum is %d. Was %d".formatted(title, minTotalBetsPlacedOnPrediction, totalBetsPlaced));
+                throw new BetPlacementException("Not enough bets placed for prediction %s. Minimum is %d. Was %d"
+                        .formatted(title, minTotalBetsPlacedOnPrediction, totalBetsPlaced));
             
             var chosenOutcome = outcomes.stream()
                     .filter(o -> o.getBadge().getVersion().equalsIgnoreCase(mostTrusted.getBadge()))
                     .findAny()
-                    .orElseThrow(() -> new BetPlacementException("Outcome badge not found: %s".formatted(mostTrusted.getBadge())));
+                    .orElseThrow(() -> new BetPlacementException("Outcome badge not found: %s"
+                            .formatted(mostTrusted.getBadge())));
             
             if(mostTrusted.getUserCnt() < minTotalBetsPlacedOnOutcome)
-                throw new BetPlacementException("Not enough bets placed on chosen outcome: '%s'. Minimum is %d. Was %d".formatted(chosenOutcome.getTitle(), minTotalBetsPlacedOnOutcome, mostTrusted.getUserCnt()));
+                throw new BetPlacementException(
+                        "Not enough bets placed on chosen outcome: '%s'. Minimum is %d. Was %d"
+                                .formatted(chosenOutcome.getTitle(), minTotalBetsPlacedOnOutcome, mostTrusted.getUserCnt()));
             
-            log.info("Prediction: '{}'. Most trusted outcome (highest average return of investment of other bettors): '{}'", title, chosenOutcome.getTitle());
+            log.info("Prediction: '{}'. Most trusted outcome (highest average return of investment of other bettors): '{}'",
+                    title, chosenOutcome.getTitle());
             
             return chosenOutcome;
         }

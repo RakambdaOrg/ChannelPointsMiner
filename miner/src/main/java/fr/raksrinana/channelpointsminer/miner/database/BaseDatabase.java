@@ -77,7 +77,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void addUserPrediction(@NotNull String username, @NotNull String channelName, @NotNull String badge) throws SQLException{
+	public void addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge) throws SQLException{
 		
 		try(var conn = getConnection(); var selectUserStatement = conn.prepareStatement("""
 						SELECT `ID` FROM `PredictionUser` WHERE `Username`=?""");
@@ -105,7 +105,7 @@ public abstract class BaseDatabase implements IDatabase{
 	
 			predictionStatement.setInt(1, userId);
 			predictionStatement.setString(2, badge);
-			predictionStatement.setString(3, channelName);
+			predictionStatement.setString(3, streamerName);
 		
 			predictionStatement.executeUpdate();
 			conn.commit();
