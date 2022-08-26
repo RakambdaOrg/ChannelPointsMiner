@@ -13,10 +13,10 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class SendMinutesWatched implements Runnable{
 	
 	@NotNull
 	private final IMiner miner;
-	private final Map<String, Instant> lastSend = new HashMap<>();
+	private final Map<String, Instant> lastSend = new ConcurrentHashMap<>();
 	
 	@Override
 	public void run(){

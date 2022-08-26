@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.streamer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.channelpointsminer.miner.priority.IStreamerPriority;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,9 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 public class StreamerSettings{
+	@JsonProperty("enabled")
+	@Builder.Default
+	private boolean enabled = true;
 	@JsonProperty("makePredictions")
 	@Builder.Default
 	private boolean makePredictions = false;
@@ -41,6 +45,7 @@ public class StreamerSettings{
 	@JsonProperty("predictions")
 	@NotNull
 	@Builder.Default
+	@JsonMerge
 	private PredictionSettings predictions = new PredictionSettings();
 	@JsonProperty("priorities")
 	@Builder.Default
@@ -49,6 +54,7 @@ public class StreamerSettings{
 	
 	public StreamerSettings(@NotNull StreamerSettings origin){
 		this();
+		enabled = origin.enabled;
 		makePredictions = origin.makePredictions;
 		followRaid = origin.followRaid;
 		participateCampaigns = origin.participateCampaigns;

@@ -1,12 +1,14 @@
 package fr.raksrinana.channelpointsminer.miner.miner;
 
+import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
+import fr.raksrinana.channelpointsminer.miner.api.chat.TwitchChatFactory;
 import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
-import fr.raksrinana.channelpointsminer.miner.api.ws.ITwitchMessageListener;
-import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchWebSocketPool;
+import fr.raksrinana.channelpointsminer.miner.api.ws.ITwitchPubSubMessageListener;
+import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IMessage;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName;
@@ -21,9 +23,6 @@ import fr.raksrinana.channelpointsminer.miner.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.IMessageHandler;
-import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcClient;
-import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcClientPrototype;
-import fr.raksrinana.channelpointsminer.miner.irc.TwitchIrcFactory;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.runnable.SyncInventory;
 import fr.raksrinana.channelpointsminer.miner.runnable.UpdateStreamInfo;
@@ -36,11 +35,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import org.jetbrains.annotations.VisibleForTesting;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -55,16 +55,18 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Log4j2
-public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
+public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListener{
 	private final AccountConfiguration accountConfiguration;
 	private final PassportApi passportApi;
 	
 	private final Map<String, Streamer> streamers;
 	@Getter
-	private final TwitchWebSocketPool webSocketPool;
+	private final TwitchPubSubWebSocketPool pubSubWebSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
 	private final ExecutorService handlerExecutor;
 	private final StreamerSettingsFactory streamerSettingsFactory;
+    private final TwitchChatFactory twitchChatFactory;
+    
 	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
 			@TestOnly,
 			@VisibleForTesting
@@ -80,7 +82,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	
 	private UpdateStreamInfo updateStreamInfo;
 	private SyncInventory syncInventory;
-	private TwitchIrcClientPrototype ircClientPrototype;
 	
 	@Getter
 	private TwitchLogin twitchLogin;
@@ -89,26 +90,28 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	@Getter
 	private TwitchApi twitchApi;
 	@Getter
-	private TwitchIrcClient ircClient;
+	private ITwitchChatClient chatClient;
 	
 	public Miner(@NotNull AccountConfiguration accountConfiguration,
 			@NotNull PassportApi passportApi,
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
-			@NotNull TwitchWebSocketPool webSocketPool,
+			@NotNull TwitchPubSubWebSocketPool pubSubWebSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
 			@NotNull ExecutorService handlerExecutor,
-            @NotNull TwitchIrcClientPrototype ircClientPrototype){
+            @NotNull TwitchChatFactory twitchChatFactory,
+            @NotNull List<IEventListener> eventListeners){
 		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
-		this.webSocketPool = webSocketPool;
+		this.pubSubWebSocketPool = pubSubWebSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
-		this.ircClientPrototype = ircClientPrototype;
+        this.twitchChatFactory = twitchChatFactory;
 		
 		streamers = new ConcurrentHashMap<>();
-		messageHandlers = new LinkedList<>();
-		eventListeners = new LinkedList<>();
+		messageHandlers = new ConcurrentLinkedQueue<>();
+		this.eventListeners = new ConcurrentLinkedQueue<>();
+        this.eventListeners.addAll(eventListeners);
 		minerData = new MinerData();
 	}
 	
@@ -120,7 +123,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	public void start(){
 		try(var ignored = LogContext.with(this)){
 			log.info("Starting miner");
-			webSocketPool.addListener(this);
+			pubSubWebSocketPool.addListener(this);
 			
 			login();
 			
@@ -152,7 +155,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			twitchLogin = passportApi.login();
 			gqlApi = ApiFactory.createGqlApi(twitchLogin);
 			twitchApi = ApiFactory.createTwitchApi();
-			ircClient = TwitchIrcFactory.create(ircClientPrototype, twitchLogin);
+            chatClient = twitchChatFactory.createChat(accountConfiguration.getChatMode(), twitchLogin);
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");
@@ -179,7 +182,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	}
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
-		webSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
+		pubSubWebSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
 	}
 	
 	@Override
@@ -230,10 +233,10 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			}
 			
 			if(streamer.isStreaming() && streamer.getSettings().isJoinIrc()){
-				getIrcClient().join(streamer.getUsername());
+				getChatClient().join(streamer.getUsername());
 			}
 			else{
-				getIrcClient().leave(streamer.getUsername());
+				getChatClient().leave(streamer.getUsername());
 			}
 		}
 	}
@@ -249,7 +252,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 			removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
-			ircClient.leave(streamer.getUsername());
+			chatClient.leave(streamer.getUsername());
 			
 			onEvent(new StreamerRemovedEvent(this, streamer, TimeFactory.now()));
 			return streamers.remove(streamer.getId()) != null;
@@ -313,7 +316,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 	}
 	
 	private void removeTopic(@NotNull TopicName name, @NotNull String target){
-		webSocketPool.removeTopic(Topic.builder().name(name).target(target).build());
+		pubSubWebSocketPool.removeTopic(Topic.builder().name(name).target(target).build());
 	}
 	
 	@Override
@@ -332,17 +335,13 @@ public class Miner implements AutoCloseable, IMiner, ITwitchMessageListener{
 		messageHandlers.add(handler);
 	}
 	
-	public void addEventListener(@NotNull IEventListener listener){
-		eventListeners.add(listener);
-	}
-	
 	@Override
 	public void close(){
 		scheduledExecutor.shutdown();
 		handlerExecutor.shutdown();
-		webSocketPool.close();
-		if(!Objects.isNull(ircClient)){
-			ircClient.close();
+		pubSubWebSocketPool.close();
+		if(!Objects.isNull(chatClient)){
+			chatClient.close();
 		}
 		for(var listener : eventListeners){
 			listener.close();

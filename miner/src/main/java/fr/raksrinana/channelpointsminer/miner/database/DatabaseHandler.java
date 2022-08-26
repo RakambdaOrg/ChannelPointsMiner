@@ -110,14 +110,14 @@ public class DatabaseHandler implements IEventListener{
                     .orElseThrow();
             String winningOutcomeBadge = winningOutcome.getBadge().getVersion();
             
-            log.debug("Prediction-Update: Event RESOLVED. Streamer: {}, Title: {}, Outcome: {}",
-                    streamerUsername, event.getTitle(), winningOutcome.getTitle());
-            
             Instant ended = Optional.ofNullable(event.getEndedAt()).map(ChronoZonedDateTime::toInstant).orElse(Instant.now());
             double totalPoints = event.getOutcomes().stream().mapToDouble(Outcome::getTotalPoints).sum();
             double returnRatio = (winningOutcome.getTotalPoints() / totalPoints) + 1;
             database.resolvePrediction(event.getId(), event.getChannelId(), event.getTitle(),
                     event.getCreatedAt().toInstant(), ended, winningOutcome.getTitle(), winningOutcomeBadge, returnRatio);
+    
+            log.debug("Prediction-Update: Event RESOLVED. Streamer: {}, Title: {}, Outcome: {}",
+                    streamerUsername, event.getTitle(), winningOutcome.getTitle());
         }
     }
 	

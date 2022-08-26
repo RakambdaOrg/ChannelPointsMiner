@@ -41,7 +41,6 @@ class PredictionsHandlerPredictionResultTest{
 	private static final Instant RESULT_DATE = Instant.parse("2020-05-17T12:14:20.000Z");
 	private static final ZonedDateTime ZONED_RESULT_DATE = ZonedDateTime.ofInstant(RESULT_DATE, ZoneId.systemDefault());
 	
-	@InjectMocks
 	private PredictionsHandler tested;
 	
 	@Mock
@@ -63,6 +62,8 @@ class PredictionsHandlerPredictionResultTest{
 	
 	@BeforeEach
 	void setUp(){
+        tested = new PredictionsHandler(miner, betPlacer, false);
+        
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		

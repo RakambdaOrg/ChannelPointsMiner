@@ -40,7 +40,6 @@ class PredictionsHandlerPredictionUpdatedTest{
 	private static final ZonedDateTime EVENT_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 0, 0, UTC);
 	private static final int AMOUNT = 50;
 	
-	@InjectMocks
 	private PredictionsHandler tested;
 	
 	@Mock
@@ -62,6 +61,8 @@ class PredictionsHandlerPredictionUpdatedTest{
 	
 	@BeforeEach
 	void setUp(){
+        tested = new PredictionsHandler(miner, betPlacer, false);
+        
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		
 		lenient().when(predictionUpdated.getData()).thenReturn(predictionUpdatedData);

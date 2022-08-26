@@ -1,10 +1,13 @@
 package fr.raksrinana.channelpointsminer.miner.handler;
 
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.EventCreated;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.EventUpdated;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.eventcreated.EventCreatedData;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.eventupdated.EventUpdatedData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.event.impl.EventCreatedEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
@@ -15,7 +18,6 @@ import fr.raksrinana.channelpointsminer.miner.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +40,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +48,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerEventCreatedTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String NON_EXISTENT_STREAMER_ID = "streamer-id2";
 	private static final String EVENT_ID = "event-id";
 	private static final int MINIMUM_REQUIRED = 50;
 	private static final int WINDOW_SECONDS = 300;
@@ -52,7 +56,6 @@ class PredictionsHandlerEventCreatedTest{
 	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
 	private static final ZonedDateTime SCHEDULE_DATE = ZonedDateTime.of(2021, 10, 10, 12, 1, 0, 0, UTC);
 	
-	@InjectMocks
 	private PredictionsHandler tested;
 	
 	@Mock
@@ -63,6 +66,10 @@ class PredictionsHandlerEventCreatedTest{
 	private EventCreated eventCreated;
 	@Mock
 	private EventCreatedData eventCreatedData;
+    @Mock
+    private EventUpdated eventUpdated;
+    @Mock
+    private EventUpdatedData eventUpdatedData;
 	@Mock
 	private Event event;
 	@Mock
@@ -78,12 +85,19 @@ class PredictionsHandlerEventCreatedTest{
 	
 	@BeforeEach
 	void setUp(){
+        
+        tested = new PredictionsHandler(miner, betPlacer, false);
+        
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		
 		lenient().when(eventCreated.getData()).thenReturn(eventCreatedData);
 		lenient().when(eventCreatedData.getEvent()).thenReturn(event);
-		
+        
+        lenient().when(eventUpdated.getData()).thenReturn(eventUpdatedData);
+        lenient().when(eventUpdatedData.getEvent()).thenReturn(event);
+        lenient().when(eventUpdatedData.getTimestamp()).thenReturn(TimeFactory.nowZoned());
+        
 		lenient().when(event.getId()).thenReturn(EVENT_ID);
 		lenient().when(event.getStatus()).thenReturn(ACTIVE);
 		lenient().when(event.getCreatedAt()).thenReturn(EVENT_DATE);
@@ -117,6 +131,8 @@ class PredictionsHandlerEventCreatedTest{
 		assertThat(tested.getPredictions()).isEmpty();
 		
 		verify(miner, never()).schedule(any(), anyLong(), any());
+        
+        assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 	}
 	
 	@Test

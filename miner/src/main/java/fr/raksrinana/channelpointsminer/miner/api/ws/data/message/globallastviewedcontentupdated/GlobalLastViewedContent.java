@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,5 +17,5 @@ public class GlobalLastViewedContent{
 	@JsonProperty("user_id")
 	private String userId;
 	@JsonProperty("last_viewed_content")
-	private List<LastViewedContent> lastViewedContent = new LinkedList<>();
+	private List<LastViewedContent> lastViewedContent = new ArrayList<>();
 }

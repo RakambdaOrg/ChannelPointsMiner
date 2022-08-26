@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.event.impl.EventCreatedEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
@@ -16,6 +17,8 @@ import fr.raksrinana.channelpointsminer.miner.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,6 +39,8 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +56,6 @@ class PredictionsHandlerEventUpdatedTest{
 	private static final ZonedDateTime SCHEDULE_DATE = ZonedDateTime.of(2021, 10, 10, 12, 1, 0, 0, UTC);
 	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
 	
-	@InjectMocks
 	private PredictionsHandler tested;
 	
 	@Mock
@@ -77,9 +81,14 @@ class PredictionsHandlerEventUpdatedTest{
 	private PredictionSettings predictionSettings;
 	@Mock
 	private IDelayCalculator delayCalculator;
+    
+    @Captor
+    private ArgumentCaptor<EventUpdatedEvent>  eventUpdatedEventCaptor;
 	
 	@BeforeEach
 	void setUp(){
+        tested = new PredictionsHandler(miner, betPlacer, false);
+        
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		
@@ -174,4 +183,17 @@ class PredictionsHandlerEventUpdatedTest{
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, createDefaultPrediction()));
 	}
+    
+    @Test
+    void eventUpdatedEvent(){
+        assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
+        assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
+        verify(miner, never()).onEvent(new EventUpdatedEvent(miner, streamer, event2));
+        
+        var testedWithPredictionRecording = new PredictionsHandler(miner, betPlacer, true);
+        assertDoesNotThrow(() -> testedWithPredictionRecording.handle(topic, eventUpdated));
+        assertDoesNotThrow(() -> testedWithPredictionRecording.handle(topic, eventUpdated));
+        
+        verify(miner, times(2)).onEvent(new EventUpdatedEvent(miner, streamer, event2));
+    }
 }

@@ -54,7 +54,7 @@ public class SQLiteDatabase extends BaseDatabase{
 							`Canceled` BOOLEAN NOT NULL,
 							`Outcome` VARCHAR(32) NULL,
 							`Badge` VARCHAR(32) NULL,
-							`ReturnRatioForWin` REAL NULL,
+							`ReturnRatioForWin` REAL NULL
 						);""",
                 """
                         CREATE INDEX IF NOT EXISTS `ChannelIDIdx` ON `ResolvedPrediction`(`ChannelID`);""",
