@@ -66,8 +66,8 @@ public class MostTrustedPicker implements IOutcomePicker{
                         "Not enough bets placed on chosen outcome: '%s'. Minimum is %d. Was %d"
                                 .formatted(chosenOutcome.getTitle(), minTotalBetsPlacedOnOutcome, mostTrusted.getUserCnt()));
             
-            log.info("Prediction: '{}'. Most trusted outcome (highest average return of investment of other bettors): '{}'",
-                    title, chosenOutcome.getTitle());
+            log.info("Prediction: '{}'. Most trusted outcome (highest average return of investment of other bettors): Title: '{}', Badge: {}.",
+                    title, chosenOutcome.getTitle(), chosenOutcome.getBadge().getVersion());
             
             return chosenOutcome;
         }

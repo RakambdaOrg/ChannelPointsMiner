@@ -54,6 +54,14 @@ public class DatabaseHandler implements IEventListener{
 			else if(event instanceof PredictionMadeEvent e){
 				var placedPrediction = e.getPlacedPrediction();
 				addPrediction(e, placedPrediction.getEventId(), "PREDICTED", Integer.toString(placedPrediction.getAmount()));
+                var outcomeId = e.getPlacedPrediction().getOutcomeId();
+                if(e.getPlacedPrediction().getBettingPrediction() != null && e.getStreamerUsername().isPresent()){
+                    var placedOutcome = e.getPlacedPrediction().getBettingPrediction()
+                            .getEvent().getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst();
+                    if(placedOutcome.isPresent()){
+                        database.addUserPrediction(e.getMiner().getUsername(), e.getStreamerUsername().get(), placedOutcome.get().getBadge().getVersion());
+                    }
+                }
 			}
 			else if(event instanceof PredictionResultEvent e){
 				addPrediction(e, e.getPredictionResultData().getPrediction().getEventId(), "RESULT", e.getGain());
@@ -97,7 +105,7 @@ public class DatabaseHandler implements IEventListener{
             }
         }
         else if(event.getStatus() == EventStatus.CANCELED){
-            log.debug("Prediction-Update: Event CANCELED. Streamer: {}, Title: {}", streamerUsername, event.getTitle());
+            log.info("Prediction-Update: Event CANCELED. Streamer: {}, Title: {}", streamerUsername, event.getTitle());
             
             Instant ended = Optional.ofNullable(event.getEndedAt()).map(ChronoZonedDateTime::toInstant).orElse(Instant.now());
             database.cancelPrediction(event.getId(), event.getChannelId(), event.getTitle(), event.getCreatedAt().toInstant(), ended);
@@ -116,7 +124,7 @@ public class DatabaseHandler implements IEventListener{
             database.resolvePrediction(event.getId(), event.getChannelId(), event.getTitle(),
                     event.getCreatedAt().toInstant(), ended, winningOutcome.getTitle(), winningOutcomeBadge, returnRatio);
     
-            log.debug("Prediction-Update: Event RESOLVED. Streamer: {}, Title: {}, Outcome: {}",
+            log.info("Prediction-Update: Event RESOLVED. Streamer: {}, Title: {}, Outcome: {}",
                     streamerUsername, event.getTitle(), winningOutcome.getTitle());
         }
     }
