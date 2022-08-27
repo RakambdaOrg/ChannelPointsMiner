@@ -20,6 +20,7 @@ import java.util.Optional;
 public class TwitchIrcChatClient implements ITwitchChatClient{
 	
 	public static final String TAGS_CAPABILITY = "twitch.tv/tags";
+    public static final String EMOTE_SETS_TAG_NAME = "emote-sets";
 	
 	@NotNull
 	private final TwitchLogin twitchLogin;
@@ -101,7 +102,7 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 				capabilityRequest.execute();
 				
 				var tagManager = ircClient.getMessageTagManager();
-				tagManager.registerTagCreator(TAGS_CAPABILITY, "emote-sets", DefaultMessageTagLabel.FUNCTION);
+				tagManager.registerTagCreator(TAGS_CAPABILITY, EMOTE_SETS_TAG_NAME, DefaultMessageTagLabel.FUNCTION);
 			}
 			
 			log.info("IRC Client created");
