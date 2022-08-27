@@ -70,7 +70,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 			
 			var ended = Optional.ofNullable(predictionEvent.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
 			var totalPoints = predictionEvent.getOutcomes().stream().mapToDouble(Outcome::getTotalPoints).sum();
-			var returnRatio = (winningOutcome.getTotalPoints() / totalPoints) + 1;
+			var returnRatio = totalPoints / winningOutcome.getTotalPoints();
 			database.resolvePrediction(predictionEvent.getId(), predictionEvent.getChannelId(), predictionEvent.getTitle(), predictionEvent.getCreatedAt().toInstant(), ended, winningOutcome.getTitle(), winningOutcomeBadge, returnRatio);
 		}
 	}

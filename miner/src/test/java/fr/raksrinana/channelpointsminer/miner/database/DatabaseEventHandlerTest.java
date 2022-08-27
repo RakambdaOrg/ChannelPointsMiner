@@ -442,7 +442,7 @@ class DatabaseEventHandlerTest{
 		
 		assertDoesNotThrow(() -> tested.onEvent(event));
 		
-		var returnRatio = (((double) BLUE_POINTS) / (BLUE_POINTS + PINK_POINTS)) + 1;
+		var returnRatio = (double)(BLUE_POINTS + PINK_POINTS) / BLUE_POINTS;
 		
 		verify(database).resolvePrediction(EVENT_ID, CHANNEL_ID, EVENT_TITLE, CREATED_AT, ENDED_AT, BLUE_TITLE, BADGE_1, returnRatio);
 	}
@@ -461,7 +461,7 @@ class DatabaseEventHandlerTest{
 			
 			assertDoesNotThrow(() -> tested.onEvent(event));
 			
-			var returnRatio = (((double) BLUE_POINTS) / (BLUE_POINTS + PINK_POINTS)) + 1;
+			var returnRatio = (double)(BLUE_POINTS + PINK_POINTS) / BLUE_POINTS;
 			
 			verify(database).resolvePrediction(EVENT_ID, CHANNEL_ID, EVENT_TITLE, CREATED_AT, NOW, BLUE_TITLE, BADGE_1, returnRatio);
 		}
