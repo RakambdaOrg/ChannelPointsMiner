@@ -1,22 +1,4 @@
 = Channel Points Miner
-
-=== About this Fork:
-
-This fork adds two capabilities:
-
-1. Record other users predictions (Requires analytics enabled).
-2. Make predictions based on other peoples predictions.An average Return On Investment (ROI) is calculated based on past predictions and outcomes (Requires at least a couple predictions recorded).
-
-==== Additions to the config:
-* Add `recordChatsPredictions` to the `analytics` config object.Default: false
-* Add outcome picker `mostTrusted` to the available options.
-
-==== Notes:
-* Currently, the outcome picker requires at least 5 predictions made per user, at least 10 placed bets on this prediction overall and at least 5 users betting on the chosen outcome.
-* The calculated ROI for any user is only an approximation as the points spent on each prediction aren't public. It assumes equal points on each prediction.
-
-
-=== Original Readme
 :toc:
 :toclevels: 4
 :toc: preamble
@@ -33,7 +15,7 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Follow raids.
 * Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
 * Join IRC chat.
-* Participate in predictions.
+* Participate in predictions and record peoples predictions.
 
 Limits:
 
@@ -242,9 +224,10 @@ Analytics settings define a way to collect data on your twitch account as time p
 This includes:
 
 * Balance evolution
-* Predictions made & results
+* Your own Predictions made & results
+* Predictions from other chat participants and their return-on-investment (only approximate as the bet amount is mostly anonymous).
 
-These are store in an external database which allows any external software to access it and process it they wanted way.
+These are stored in an external database which allows any external software to access it and process it the wanted way.
 
 Several database types are supported and listed below.
 Each database (logical database for MariaDB, different file for H2/SQLite) will however represent one mined account.
@@ -261,6 +244,10 @@ You'll therefore have to adjust the settings for each mined account to not point
 |database
 |<<analytics_database_settings,Analytics database settings>>.
 |
+
+|recordChatsPredictions
+|If set to true, other peoples predictions will be recorded. This is done from two sources, from the top-predictors list and from chat messages (via their badge). Reading from chat, requires the joinIrc setting to be set to true.
+|false
 |===
 
 ==== Analytics database [[analytics_database_settings]]
@@ -488,6 +475,11 @@ This is the same as "the outcome with higher odds".
 |biggestPredictor
 |Choose the outcome with the biggest predictor.
 |Outcome with the person that placed the biggest prediction overall.
+|
+
+|mostTrusted
+|Choose the outcome that's backed by other users with the highest average return-on-investment. *Requires at least some data gathered beforehand via the 'recordChatsPredictions' setting!* E.g. only users with at least 5 made predictions are taken into account.
+|Take the return-on-investment from people who already placed a prediction, calculate the average per outcome, then pick the highest.
 |
 
 |smart
