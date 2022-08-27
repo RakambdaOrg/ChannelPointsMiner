@@ -105,6 +105,7 @@ class ConfigurationFactoryTest{
 						.reloadEvery(15)
 						.analytics(AnalyticsConfiguration.builder()
 								.enabled(true)
+								.recordChatsPredictions(true)
 								.database(DatabaseConfiguration.builder()
 										.jdbcUrl("jdbcUrl")
 										.username("user")

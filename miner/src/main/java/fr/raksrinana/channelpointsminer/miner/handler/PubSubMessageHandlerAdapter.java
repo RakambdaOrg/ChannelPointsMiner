@@ -24,6 +24,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.util.ClassWalker;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -105,7 +106,8 @@ public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandl
 		}
 	}
 	
-	private static MethodHandle findMethod(Class<?> clazz){
+	@Nullable
+	private static MethodHandle findMethod(@NotNull Class<?> clazz){
 		var name = clazz.getSimpleName();
 		var type = MethodType.methodType(Void.TYPE, Topic.class, clazz);
 		try{
