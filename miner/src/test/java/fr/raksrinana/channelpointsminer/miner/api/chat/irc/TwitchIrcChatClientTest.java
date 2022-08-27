@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.chat.irc;
 
+import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatMessageListener;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.kitteh.irc.client.library.Client;
@@ -52,6 +53,8 @@ class TwitchIrcChatClientTest{
 	private Client.Commands commands;
 	@Mock
 	private CapabilityRequestCommand capabilityRequestCommand;
+	@Mock
+	private ITwitchChatMessageListener chatMessageListener;
 	
 	@BeforeEach
 	void setUp(){
@@ -93,6 +96,8 @@ class TwitchIrcChatClientTest{
 			factory.when(() -> TwitchIrcFactory.createIrcConnectionHandler(USERNAME)).thenReturn(twitchIrcConnectionHandler);
 			factory.when(() -> TwitchIrcFactory.createIrcMessageHandler(USERNAME)).thenReturn(twitchIrcMessageHandler);
 			
+			tested.addChatMessageListener(chatMessageListener);
+			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			
 			factory.verify(() -> TwitchIrcFactory.createIrcClient(twitchLogin));
@@ -105,6 +110,25 @@ class TwitchIrcChatClientTest{
 			verify(tagManager).registerTagCreator("twitch.tv/tags", "emote-sets", DefaultMessageTagLabel.FUNCTION);
 			
 			verify(client).addChannel(STREAMER_CHANNEL);
+			verify(twitchIrcMessageHandler).addListener(chatMessageListener);
+		}
+	}
+	
+	@Test
+	void addMessageListenerPropagatesListener(){
+		tested = new TwitchIrcChatClient(twitchLogin, true);
+		
+		try(var factory = mockStatic(TwitchIrcFactory.class)){
+			factory.when(() -> TwitchIrcFactory.createIrcClient(twitchLogin)).thenReturn(client);
+			factory.when(() -> TwitchIrcFactory.createIrcConnectionHandler(USERNAME)).thenReturn(twitchIrcConnectionHandler);
+			factory.when(() -> TwitchIrcFactory.createIrcMessageHandler(USERNAME)).thenReturn(twitchIrcMessageHandler);
+			
+			assertDoesNotThrow(() -> tested.join(STREAMER));
+			
+			verify(twitchIrcMessageHandler, never()).addListener(chatMessageListener);
+			
+			tested.addChatMessageListener(chatMessageListener);
+			verify(twitchIrcMessageHandler).addListener(chatMessageListener);
 		}
 	}
 	
