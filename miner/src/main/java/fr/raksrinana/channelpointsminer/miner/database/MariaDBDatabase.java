@@ -47,11 +47,11 @@ public class MariaDBDatabase extends BaseDatabase{
 						CREATE TABLE IF NOT EXISTS `ResolvedPrediction` (
 							`EventID` VARCHAR(36) NOT NULL PRIMARY KEY,
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
-							`Title` VARCHAR(64) NOT NULL,
+							`Title` VARCHAR(64) CHARACTER SET utf8mb4 NOT NULL,
 							`EventCreated` DATETIME NOT NULL,
 							`EventEnded` DATETIME NULL,
 							`Canceled` BOOLEAN NOT NULL,
-							`Outcome` VARCHAR(32) NULL,
+							`Outcome` VARCHAR(32) CHARACTER SET utf8mb4 NULL,
 							`Badge` VARCHAR(32) NULL,
 							`ReturnRatioForWin` DOUBLE NULL,
 							INDEX `ChannelIDIdx`(`ChannelID`)
