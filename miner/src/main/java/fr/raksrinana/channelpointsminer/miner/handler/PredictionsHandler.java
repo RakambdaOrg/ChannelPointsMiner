@@ -37,7 +37,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @RequiredArgsConstructor
 @Log4j2
-public class PredictionsHandler extends TwitchWsEventHandlerAdapter{
+public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 	private static final int OFFSET = 5;
 	
 	private final IMiner miner;

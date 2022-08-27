@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings("unused")
-public abstract class TwitchWsEventHandlerAdapter implements IPubSubMessageHandler{
+public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandler{
 	private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 	private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
 	private static final Set<Class<?>> unresolved;
@@ -84,7 +84,7 @@ public abstract class TwitchWsEventHandlerAdapter implements IPubSubMessageHandl
 			if(unresolved.contains(clazz)){
 				continue;
 			}
-			var methodHandle = methods.computeIfAbsent(clazz, TwitchWsEventHandlerAdapter::findMethod);
+			var methodHandle = methods.computeIfAbsent(clazz, PubSubMessageHandlerAdapter::findMethod);
 			if(methodHandle == null){
 				unresolved.add(clazz);
 				continue;
@@ -110,7 +110,7 @@ public abstract class TwitchWsEventHandlerAdapter implements IPubSubMessageHandl
 		var type = MethodType.methodType(Void.TYPE, Topic.class, clazz);
 		try{
 			name = "on" + name;
-			return lookup.findVirtual(TwitchWsEventHandlerAdapter.class, name, type);
+			return lookup.findVirtual(PubSubMessageHandlerAdapter.class, name, type);
 		}
 		catch(NoSuchMethodException | IllegalAccessException ignored){
 		} // this means this is probably a custom event!

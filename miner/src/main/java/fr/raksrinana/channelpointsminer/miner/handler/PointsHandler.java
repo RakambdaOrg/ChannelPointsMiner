@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public class PointsHandler extends TwitchWsEventHandlerAdapter{
+public class PointsHandler extends PubSubMessageHandlerAdapter{
 	private final IMiner miner;
 	
 	@Override

@@ -18,7 +18,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @RequiredArgsConstructor
 @Log4j2
-public class StreamStartEndHandler extends TwitchWsEventHandlerAdapter{
+public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 	private final IMiner miner;
 	
 	@Override

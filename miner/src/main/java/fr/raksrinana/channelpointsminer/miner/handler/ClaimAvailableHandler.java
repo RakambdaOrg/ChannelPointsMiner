@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public class ClaimAvailableHandler extends TwitchWsEventHandlerAdapter{
+public class ClaimAvailableHandler extends PubSubMessageHandlerAdapter{
 	private final IMiner miner;
 	
 	@Override

@@ -75,6 +75,8 @@ class TwitchChatWebSocketClientTest{
 				"PASS oauth:%s".formatted(ACCESS_TOKEN),
 				"NICK %s".formatted(USERNAME.toLowerCase())
 		);
+		
+		assertThat(tested.getUuid()).isNotNull();
 	}
 	
 	@Test
@@ -152,6 +154,11 @@ class TwitchChatWebSocketClientTest{
 		tested.onMessage(MESSAGE_PAYLOAD);
 		
 		verify(chatMessageListener).onChatMessage(STREAMER, USERNAME, MESSAGE, BADGE_INFO);
+	}
+	
+	@Test
+	void onMessageException(){
+		assertDoesNotThrow(() -> tested.onMessage((String) null)); //This is theoretically impossible
 	}
 	
 	@BeforeEach
