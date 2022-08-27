@@ -44,7 +44,7 @@ public class SQLiteDatabase extends BaseDatabase{
 						CREATE INDEX IF NOT EXISTS `EventDateIdx` ON `Prediction`(`EventDate`);""",
 				"""
 						CREATE INDEX IF NOT EXISTS `EventTypeIdx` ON `Prediction`(`Type`);""",
-                """
+				"""
 						CREATE TABLE IF NOT EXISTS `ResolvedPrediction` (
 							`EventID` VARCHAR(36) NOT NULL PRIMARY KEY,
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
@@ -56,9 +56,9 @@ public class SQLiteDatabase extends BaseDatabase{
 							`Badge` VARCHAR(32) NULL,
 							`ReturnRatioForWin` REAL NULL
 						);""",
-                """
-                        CREATE INDEX IF NOT EXISTS `ChannelIDIdx` ON `ResolvedPrediction`(`ChannelID`);""",
-                """
+				"""
+						CREATE INDEX IF NOT EXISTS `ChannelIDIdx` ON `ResolvedPrediction`(`ChannelID`);""",
+				"""
 						CREATE TABLE IF NOT EXISTS `PredictionUser` (
 							`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 							`Username` VARCHAR(128) NOT NULL,
@@ -68,22 +68,22 @@ public class SQLiteDatabase extends BaseDatabase{
 							`ReturnOnInvestment` REAL NOT NULL DEFAULT 0,
 							UNIQUE (`Username`)
 						);""",
-                """
-                        CREATE INDEX IF NOT EXISTS `UsernameIdx` ON `PredictionUser`(`Username`);""",
-                """
-                        CREATE TABLE IF NOT EXISTS `UserPrediction` (
-                             `ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
-                             `UserID` INTEGER NOT NULL REFERENCES `PredictionUser`(`ID`),
-                             `ResolvedPredictionID` VARCHAR(36) NOT NULL DEFAULT '',
-                             `Badge` VARCHAR(32) NOT NULL,
-                             PRIMARY KEY (`ChannelID`, `UserID`, `ResolvedPredictionID`)
-                        );""",
-                """
-                        CREATE INDEX IF NOT EXISTS `ChannelIDIdx` ON `UserPrediction`(`ChannelID`);""",
-                """
-                        CREATE INDEX IF NOT EXISTS `UserIDIdx` ON `UserPrediction`(`UserID`);""",
-                """
-                        CREATE INDEX IF NOT EXISTS `ResolvedPredictionIDIdx` ON `UserPrediction`(`ResolvedPredictionID`);""");
+				"""
+						CREATE INDEX IF NOT EXISTS `UsernameIdx` ON `PredictionUser`(`Username`);""",
+				"""
+						CREATE TABLE IF NOT EXISTS `UserPrediction` (
+						     `ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
+						     `UserID` INTEGER NOT NULL REFERENCES `PredictionUser`(`ID`),
+						     `ResolvedPredictionID` VARCHAR(36) NOT NULL DEFAULT '',
+						     `Badge` VARCHAR(32) NOT NULL,
+						     PRIMARY KEY (`ChannelID`, `UserID`, `ResolvedPredictionID`)
+						);""",
+				"""
+						CREATE INDEX IF NOT EXISTS `ChannelIDIdx` ON `UserPrediction`(`ChannelID`);""",
+				"""
+						CREATE INDEX IF NOT EXISTS `UserIDIdx` ON `UserPrediction`(`UserID`);""",
+				"""
+						CREATE INDEX IF NOT EXISTS `ResolvedPredictionIDIdx` ON `UserPrediction`(`ResolvedPredictionID`);""");
 	}
 	
 	@Override
@@ -103,21 +103,23 @@ public class SQLiteDatabase extends BaseDatabase{
 			statement.executeUpdate();
 		}
 	}
-    
-    @Override
-    protected PreparedStatement getPredictionStatement(Connection conn) throws SQLException{
-        return conn.prepareStatement("""
-						INSERT OR IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
-						SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""
-        );
-    }
-    
-    @Override
-    protected PreparedStatement getUpdatePredictionUserStmt(Connection conn) throws SQLException{
-        return conn.prepareStatement("""
-                        WITH wi AS (SELECT ? AS n)
-                        UPDATE `PredictionUser`
-                        SET `PredictionCnt`=`PredictionCnt`+1, `WinCnt`=`WinCnt`+wi.n,
-                        `WinRate`=CAST((`WinCnt`+wi.n) AS REAL)/(`PredictionCnt`+1), `ReturnOnInvestment`=`ReturnOnInvestment`+? FROM wi WHERE `ID`=?""");
-    }
+	
+	@NotNull
+	@Override
+	protected PreparedStatement getPredictionStatement(@NotNull Connection conn) throws SQLException{
+		return conn.prepareStatement("""
+				INSERT OR IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
+				SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""
+		);
+	}
+	
+	@NotNull
+	@Override
+	protected PreparedStatement getUpdatePredictionUserStmt(@NotNull Connection conn) throws SQLException{
+		return conn.prepareStatement("""
+				WITH wi AS (SELECT ? AS n)
+				UPDATE `PredictionUser`
+				SET `PredictionCnt`=`PredictionCnt`+1, `WinCnt`=`WinCnt`+wi.n,
+				`WinRate`=CAST((`WinCnt`+wi.n) AS REAL)/(`PredictionCnt`+1), `ReturnOnInvestment`=`ReturnOnInvestment`+? FROM wi WHERE `ID`=?""");
+	}
 }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class TwitchChatEventProducer implements ITwitchChatMessageListener{
+	@NotNull
 	private final IMiner miner;
 	
 	@Override

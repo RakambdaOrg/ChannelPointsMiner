@@ -18,6 +18,7 @@ import fr.raksrinana.channelpointsminer.miner.event.impl.StreamerUnknownEvent;
 import fr.raksrinana.channelpointsminer.miner.util.ClassWalker;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -86,7 +87,8 @@ public abstract class EventHandlerAdapter implements IEventHandler{
 		}
 	}
 	
-	private static MethodHandle findMethod(Class<?> clazz){
+	@Nullable
+	private static MethodHandle findMethod(@NotNull Class<?> clazz){
 		var name = clazz.getSimpleName();
 		var type = MethodType.methodType(Void.TYPE, clazz);
 		try{

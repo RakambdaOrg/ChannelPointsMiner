@@ -19,8 +19,8 @@ import java.util.Optional;
 @Log4j2
 public class TwitchIrcChatClient implements ITwitchChatClient{
 	
-	public static final String TAGS_CAPABILITY = "twitch.tv/tags";
-    public static final String EMOTE_SETS_TAG_NAME = "emote-sets";
+	private static final String TAGS_CAPABILITY = "twitch.tv/tags";
+	private static final String EMOTE_SETS_TAG_NAME = "emote-sets";
 	
 	@NotNull
 	private final TwitchLogin twitchLogin;
@@ -81,6 +81,7 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 		Optional.ofNullable(ircClient).ifPresent(Client::shutdown);
 	}
 	
+	@NotNull
 	private synchronized Client getIrcClient(){
 		if(Objects.isNull(ircClient)){
 			log.info("Creating new Twitch IRC client");

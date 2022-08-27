@@ -86,7 +86,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 			}
 		}
 		catch(Exception e){
-			log.error("Failed to handle Chat WebSocket message {}, Exception: {}", messageStr, e.getMessage());
+			log.error("Failed to handle Chat WebSocket message {}", messageStr, e);
 		}
 	}
 	
@@ -161,7 +161,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 		return channels.contains(channel);
 	}
 	
-	public void addWebSocketClosedListener(ITwitchChatWebSocketClosedListener listener){
+	public void addWebSocketClosedListener(@NotNull ITwitchChatWebSocketClosedListener listener){
 		socketClosedListeners.add(listener);
 	}
 	

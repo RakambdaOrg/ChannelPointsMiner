@@ -97,20 +97,22 @@ public class MariaDBDatabase extends BaseDatabase{
 			statement.executeUpdate();
 		}
 	}
-    
-    @Override
-    protected PreparedStatement getPredictionStatement(Connection conn) throws SQLException{
-        return conn.prepareStatement("""
-						INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
-						SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""
-        );
-    }
-    
-    @Override
-    protected PreparedStatement getUpdatePredictionUserStmt(Connection conn) throws SQLException{
-        return conn.prepareStatement("""
-						UPDATE `PredictionUser`
-						SET `PredictionCnt`=`PredictionCnt`+1, `WinCnt`=`WinCnt`+?, `WinRate`=`WinCnt`/`PredictionCnt`,
-						`ReturnOnInvestment`=`ReturnOnInvestment`+? WHERE `ID`=?""");
-    }
+	
+	@NotNull
+	@Override
+	protected PreparedStatement getPredictionStatement(@NotNull Connection conn) throws SQLException{
+		return conn.prepareStatement("""
+				INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
+				SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""
+		);
+	}
+	
+	@NotNull
+	@Override
+	protected PreparedStatement getUpdatePredictionUserStmt(@NotNull Connection conn) throws SQLException{
+		return conn.prepareStatement("""
+				UPDATE `PredictionUser`
+				SET `PredictionCnt`=`PredictionCnt`+1, `WinCnt`=`WinCnt`+?, `WinRate`=`WinCnt`/`PredictionCnt`,
+				`ReturnOnInvestment`=`ReturnOnInvestment`+? WHERE `ID`=?""");
+	}
 }
