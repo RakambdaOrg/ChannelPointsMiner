@@ -4,20 +4,24 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
 import fr.raksrinana.channelpointsminer.miner.config.DatabaseConfiguration;
-import fr.raksrinana.channelpointsminer.miner.database.DatabaseHandler;
+import fr.raksrinana.channelpointsminer.miner.database.DatabaseEventHandler;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.database.MariaDBDatabase;
+import fr.raksrinana.channelpointsminer.miner.database.NoOpDatabase;
 import fr.raksrinana.channelpointsminer.miner.database.SQLiteDatabase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class DatabaseFactory{
-    
-    private static IDatabase instance;
-    
+	
 	@NotNull
-	public static IDatabase createDatabase(@NotNull DatabaseConfiguration configuration) throws SQLException, HikariPool.PoolInitializationException{
+	public static IDatabase createDatabase(@Nullable DatabaseConfiguration configuration) throws SQLException, HikariPool.PoolInitializationException{
+		if(Objects.isNull(configuration)){
+			return new NoOpDatabase();
+		}
+		
 		var jdbcUrl = configuration.getJdbcUrl();
 		
 		var parts = jdbcUrl.split(":");
@@ -26,21 +30,15 @@ public class DatabaseFactory{
 		}
 		
 		var database = switch(parts[1]){
-			case "mariadb" -> new MariaDBDatabase(createDatasource(configuration, "org.mariadb.jdbc.Driver", 10));
+			case "mariadb" -> new MariaDBDatabase(createDatasource(configuration, "org.mariadb.jdbc.Driver", configuration.getMaxPoolSize()));
 			case "sqlite" -> new SQLiteDatabase(createDatasource(configuration, "org.sqlite.JDBC", 1));
 			default -> throw new IllegalStateException("Unknown JDBC type " + parts[1]);
 		};
 		
 		database.initDatabase();
-        instance = database;
 		return database;
 	}
     
-    @Nullable
-    public static IDatabase getInstance(){
-        return instance;
-    }
-	
 	@NotNull
 	private static HikariDataSource createDatasource(@NotNull DatabaseConfiguration configuration, @NotNull String driver, int maxPoolSize){
 		var poolConfiguration = new HikariConfig();
@@ -54,7 +52,7 @@ public class DatabaseFactory{
 	}
 	
 	@NotNull
-	public static DatabaseHandler createDatabaseHandler(@NotNull IDatabase database){
-		return new DatabaseHandler(database);
+	public static DatabaseEventHandler createDatabaseHandler(@NotNull IDatabase database){
+		return new DatabaseEventHandler(database);
 	}
 }

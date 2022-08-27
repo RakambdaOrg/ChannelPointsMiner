@@ -9,11 +9,11 @@ import fr.raksrinana.channelpointsminer.miner.factory.DatabaseFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -30,31 +30,32 @@ import static org.mockito.Mockito.when;
 class MostTrustedPickerTest{
     
     private final static int MIN_TOTAL_BETS_PLACED_BY_USER = 5;
-    private final static int MIN_TOTAL_BETS_PLACED_ON_PREDICTION = 10;
-    private final static int MIN_TOTAL_BETS_PLACED_ON_OUTCOME = 5;
-    private final static String BADGE_1 = "blue-1";
-    private final static String BADGE_2 = "pink-2";
-    
-    private final static String CHANNEL_ID = "channelid";
-    
-    private final MostTrustedPicker tested = MostTrustedPicker.builder()
-            .minTotalBetsPlacedByUser(MIN_TOTAL_BETS_PLACED_BY_USER)
-            .minTotalBetsPlacedOnPrediction(MIN_TOTAL_BETS_PLACED_ON_PREDICTION)
-            .minTotalBetsPlacedOnOutcome(MIN_TOTAL_BETS_PLACED_ON_OUTCOME).build();
-    
-    @Mock
-    private BettingPrediction bettingPrediction;
-    @Mock
-    private Event event;
-    @Mock
-    private IDatabase database;
-    @Mock
-    private Outcome blueOutcome;
-    @Mock
-    private Outcome pinkOutcome;
-    @Mock
-    private Badge blueBadge;
-    @Mock
+	private final static int MIN_TOTAL_BETS_PLACED_ON_PREDICTION = 10;
+	private final static int MIN_TOTAL_BETS_PLACED_ON_OUTCOME = 5;
+	private final static String BADGE_1 = "blue-1";
+	private final static String BADGE_2 = "pink-2";
+	
+	private final static String CHANNEL_ID = "channelid";
+	
+	private final MostTrustedPicker tested = MostTrustedPicker.builder()
+			.minTotalBetsPlacedByUser(MIN_TOTAL_BETS_PLACED_BY_USER)
+			.minTotalBetsPlacedOnPrediction(MIN_TOTAL_BETS_PLACED_ON_PREDICTION)
+			.minTotalBetsPlacedOnOutcome(MIN_TOTAL_BETS_PLACED_ON_OUTCOME)
+			.build();
+	
+	@Mock
+	private IDatabase database;
+	@Mock
+	private BettingPrediction bettingPrediction;
+	@Mock
+	private Event event;
+	@Mock
+	private Outcome blueOutcome;
+	@Mock
+	private Outcome pinkOutcome;
+	@Mock
+	private Badge blueBadge;
+	@Mock
     private Badge pinkBadge;
     @Mock
     private OutcomeStatistic outcomeStatisticBlue;
@@ -91,9 +92,7 @@ class MostTrustedPickerTest{
     @Test
     void chooseOutcome(){
         try(var databaseFactory = mockStatic(DatabaseFactory.class)){
-            databaseFactory.when(DatabaseFactory::getInstance).thenReturn(database);
-            
-            Outcome outcome =  assertDoesNotThrow(() -> tested.chooseOutcome(bettingPrediction));
+	        Outcome outcome = assertDoesNotThrow(() -> tested.chooseOutcome(bettingPrediction, database));
             
             assertEquals(BADGE_1, outcome.getBadge().getVersion());
         }
@@ -102,46 +101,38 @@ class MostTrustedPickerTest{
     @Test
     void notEnoughTotalBetsPlaced(){
         try(var databaseFactory = mockStatic(DatabaseFactory.class)){
-            databaseFactory.when(DatabaseFactory::getInstance).thenReturn(database);
-    
             lenient().when(outcomeStatisticBlue.getUserCnt()).thenReturn(6);
             lenient().when(outcomeStatisticPink.getUserCnt()).thenReturn(2);
-            
-            assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+	
+	        assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
         }
     }
     
     @Test
     void notEnoughBetsPlacedOnOutcome(){
         try(var databaseFactory = mockStatic(DatabaseFactory.class)){
-            databaseFactory.when(DatabaseFactory::getInstance).thenReturn(database);
-    
             lenient().when(outcomeStatisticBlue.getUserCnt()).thenReturn(2);
             lenient().when(outcomeStatisticPink.getUserCnt()).thenReturn(20);
-    
-            assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+	
+	        assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
         }
     }
     
     @Test
     void databaseThrowsException() throws SQLException{
         try(var databaseFactory = mockStatic(DatabaseFactory.class)){
-            databaseFactory.when(DatabaseFactory::getInstance).thenReturn(database);
-    
             when(database.getOutcomeStatisticsForChannel(CHANNEL_ID, MIN_TOTAL_BETS_PLACED_BY_USER)).thenThrow(new SQLException(""));
-    
-            assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+	
+	        assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
         }
     }
     
     @Test
     void emptyStatistics() throws SQLException{
         try(var databaseFactory = mockStatic(DatabaseFactory.class)){
-            databaseFactory.when(DatabaseFactory::getInstance).thenReturn(database);
-        
             when(database.getOutcomeStatisticsForChannel(CHANNEL_ID, MIN_TOTAL_BETS_PLACED_BY_USER)).thenReturn(Collections.emptyList());
-        
-            assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+	
+	        assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
         }
     }
 }

@@ -1,6 +1,5 @@
 package fr.raksrinana.channelpointsminer.miner.api.chat.ws;
 
-import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatMessageListener;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.raksrinana.channelpointsminer.miner.tests.WebsocketMockServerExtension;
@@ -11,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -28,10 +25,7 @@ class TwitchChatWebSocketClientLeaveJoinTest{
 	private ITwitchChatWebSocketClosedListener listener;
 	@Mock
 	private TwitchLogin twitchLogin;
-    @Mock
-    private ITwitchChatMessageListener chatMessageListener;
-    private final List<ITwitchChatMessageListener> chatMessageListeners = Arrays.asList(chatMessageListener, chatMessageListener);
-    
+	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
 		tested.close();
@@ -83,7 +77,7 @@ class TwitchChatWebSocketClientLeaveJoinTest{
 		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchChatWebSocketClient(uri, twitchLogin, chatMessageListeners);
+		tested = new TwitchChatWebSocketClient(uri, twitchLogin, false);
 		tested.setReuseAddr(true);
 		tested.addWebSocketClosedListener(listener);
 		tested.connectBlocking();

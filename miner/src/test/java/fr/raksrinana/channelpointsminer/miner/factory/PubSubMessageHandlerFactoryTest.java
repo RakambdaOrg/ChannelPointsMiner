@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
-class MessageHandlerFactoryTest{
+class PubSubMessageHandlerFactoryTest{
 	@Mock
 	private IMiner miner;
 	@Mock
@@ -24,26 +24,26 @@ class MessageHandlerFactoryTest{
 	
 	@Test
 	void createClaimAvailable(){
-		assertThat(MessageHandlerFactory.createClaimAvailableHandler(miner)).isNotNull().isInstanceOf(ClaimAvailableHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createClaimAvailableHandler(miner)).isNotNull().isInstanceOf(ClaimAvailableHandler.class);
 	}
 	
 	@Test
 	void createStreamStartEndHandler(){
-		assertThat(MessageHandlerFactory.createStreamStartEndHandler(miner)).isNotNull().isInstanceOf(StreamStartEndHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createStreamStartEndHandler(miner)).isNotNull().isInstanceOf(StreamStartEndHandler.class);
 	}
 	
 	@Test
 	void createFollowRaidHandler(){
-		assertThat(MessageHandlerFactory.createFollowRaidHandler(miner)).isNotNull().isInstanceOf(FollowRaidHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createFollowRaidHandler(miner)).isNotNull().isInstanceOf(FollowRaidHandler.class);
 	}
 	
 	@Test
 	void createPredictionsHandler(){
-		assertThat(MessageHandlerFactory.createPredictionsHandler(miner, betPlacer, false)).isNotNull().isInstanceOf(PredictionsHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createPredictionsHandler(miner, betPlacer)).isNotNull().isInstanceOf(PredictionsHandler.class);
 	}
 	
 	@Test
 	void createPointsHandler(){
-		assertThat(MessageHandlerFactory.createPointsHandler(miner)).isNotNull().isInstanceOf(PointsHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createPointsHandler(miner)).isNotNull().isInstanceOf(PointsHandler.class);
 	}
 }

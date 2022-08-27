@@ -1,58 +1,26 @@
 package fr.raksrinana.channelpointsminer.miner.event.impl;
 
-import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
-import fr.raksrinana.channelpointsminer.miner.event.AbstractStreamerEvent;
+import fr.raksrinana.channelpointsminer.miner.event.IEvent;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
-import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import java.util.Collection;
-import java.util.List;
+import java.time.Instant;
 
-@EqualsAndHashCode(callSuper = true)
+@RequiredArgsConstructor
+@EqualsAndHashCode
 @ToString
-public class EventUpdatedEvent extends AbstractStreamerEvent{
-    
-    @Getter
-    private final Event event;
-	
-	public EventUpdatedEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Event event){
-        super(miner, streamer, event.getCreatedAt().toInstant());
-        this.event = event;
-	}
- 
-	@Override
+@Getter
+public class EventUpdatedEvent implements IEvent{
 	@NotNull
-	public String getAsLog(){
-		return "Prediction update [%s]".formatted(event.getTitle());
-	}
-	
-	@Override
+	private final IMiner miner;
 	@NotNull
-	protected String getEmoji(){
-		return "📑";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_PREDICTION;
-	}
-	
-	@Override
+	private final Instant instant;
 	@NotNull
-	protected String getEmbedDescription(){
-		return "Prediction update";
-	}
-	
-	@Override
+	private final String streamerUsername;
 	@NotNull
-	protected Collection<? extends Field> getEmbedFields(){
-		return List.of(Field.builder()
-				.name("Title")
-				.value(event.getTitle())
-				.build());
-	}
+	private final Event event;
 }

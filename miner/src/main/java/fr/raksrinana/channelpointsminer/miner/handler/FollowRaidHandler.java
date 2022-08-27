@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 @Log4j2
-public class FollowRaidHandler extends HandlerAdapter{
+public class FollowRaidHandler extends TwitchWsEventHandlerAdapter{
 	private final IMiner miner;
 	
 	@Override

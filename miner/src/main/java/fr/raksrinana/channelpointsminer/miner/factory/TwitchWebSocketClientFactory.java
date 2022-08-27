@@ -1,13 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.factory;
 
-import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatMessageListener;
 import fr.raksrinana.channelpointsminer.miner.api.chat.ws.TwitchChatWebSocketClient;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketClient;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import java.net.URI;
-import java.util.List;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -21,7 +19,7 @@ public class TwitchWebSocketClientFactory{
 	}
 	
 	@NotNull
-	public static TwitchChatWebSocketClient createChatClient(@NotNull TwitchLogin twitchLogin, List<ITwitchChatMessageListener> chatMessageListeners){
-		return new TwitchChatWebSocketClient(IRC_URI, twitchLogin, chatMessageListeners);
+	public static TwitchChatWebSocketClient createChatClient(@NotNull TwitchLogin twitchLogin, boolean listenMessages){
+		return new TwitchChatWebSocketClient(IRC_URI, twitchLogin, listenMessages);
 	}
 }

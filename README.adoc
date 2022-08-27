@@ -275,6 +275,12 @@ NOTE: Can be omitted if no account
 
 NOTE: Can be omitted if no password
 |
+
+|maxPoolSize
+|Maximum number of connections to the database.
+
+NOTE: For SQLite connection, value 1 will be forced.
+|10
 |===
 
 === Streamer settings [[streamer_settings]]
@@ -480,7 +486,11 @@ This is the same as "the outcome with higher odds".
 |mostTrusted
 |Choose the outcome that's backed by other users with the highest average return-on-investment. *Requires at least some data gathered beforehand via the 'recordChatsPredictions' setting!* E.g. only users with at least 5 made predictions are taken into account.
 |Take the return-on-investment from people who already placed a prediction, calculate the average per outcome, then pick the highest.
-|
+|* minTotalBetsPlacedByUser:
+
+* minTotalBetsPlacedOnPrediction:
+
+* minTotalBetsPlacedOnOutcome:
 
 |smart
 |Choose the outcome with the most users.

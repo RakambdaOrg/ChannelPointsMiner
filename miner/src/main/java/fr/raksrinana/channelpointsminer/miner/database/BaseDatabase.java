@@ -242,14 +242,18 @@ public abstract class BaseDatabase implements IDatabase{
 	public List<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser) throws SQLException{
 		log.debug("Getting most trusted prediction from already placed bets.");
 		try(var conn = getConnection(); var statement = conn.prepareStatement("""
-						SELECT `Badge`,
-							COUNT(`UserID`) AS UserCnt,
-							AVG(`WinRate`) AS AvgWinRate,
-							AVG(`PredictionCnt`) AS AvgUserBetsPlaced,
-							AVG(`WinCnt`) AS AvgUserWins,
-							AVG(`ReturnOnInvestment`) AS AvgReturnOnInvestment
-						FROM `UserPrediction` AS up INNER JOIN `PredictionUser` AS pu ON up.`UserID`=pu.`ID`
-						WHERE `ChannelID`=? AND `ResolvedPredictionID`='' AND `PredictionCnt`>? GROUP BY `Badge`"""
+				SELECT `Badge`,
+					COUNT(`UserID`) AS UserCnt,
+					AVG(`WinRate`) AS AvgWinRate,
+					AVG(`PredictionCnt`) AS AvgUserBetsPlaced,
+					AVG(`WinCnt`) AS AvgUserWins,
+					AVG(`ReturnOnInvestment`) AS AvgReturnOnInvestment
+				FROM `UserPrediction` AS up
+				INNER JOIN `PredictionUser` AS pu ON up.`UserID`=pu.`ID`
+				WHERE `ChannelID`=?
+				AND `ResolvedPredictionID`=''
+				AND `PredictionCnt`>?
+				GROUP BY `Badge`"""
 		)){
 			statement.setString(1, channelId);
 			statement.setInt(2, minBetsPlacedByUser);
@@ -270,8 +274,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@NotNull
-	@Override
-	public Connection getConnection() throws SQLException{
+	protected Connection getConnection() throws SQLException{
 		return dataSource.getConnection();
 	}
 	

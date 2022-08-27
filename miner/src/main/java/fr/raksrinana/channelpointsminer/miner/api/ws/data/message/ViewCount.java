@@ -19,7 +19,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ViewCount extends IMessage{
+public class ViewCount extends IPubSubMessage{
 	@JsonProperty("server_time")
 	@JsonDeserialize(using = TwitchTimestampDeserializer.class)
 	private Instant serverTime;

@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.OutcomeColor;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.NotEnoughUsersBetPlacementException;
@@ -23,6 +24,8 @@ import static org.mockito.Mockito.when;
 class SmartOutcomePickerTest{
 	private final SmartOutcomePicker tested = SmartOutcomePicker.builder().percentageGap(.1F).build();
 	
+	@Mock
+	private IDatabase database;
 	@Mock
 	private BettingPrediction bettingPrediction;
 	@Mock
@@ -51,7 +54,7 @@ class SmartOutcomePickerTest{
 		when(blueOutcome.getTotalPoints()).thenReturn(10L);
 		when(pinkOutcome.getTotalPoints()).thenReturn(20L);
 		
-		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(blueOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction, database)).isEqualTo(blueOutcome);
 	}
 	
 	@Test
@@ -65,7 +68,7 @@ class SmartOutcomePickerTest{
 		when(pinkOutcome.getTotalPoints()).thenReturn(20L);
 		when(redOutcome.getTotalPoints()).thenReturn(19L);
 		
-		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(redOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction, database)).isEqualTo(redOutcome);
 	}
 	
 	@Test
@@ -73,7 +76,7 @@ class SmartOutcomePickerTest{
 		when(blueOutcome.getTotalUsers()).thenReturn(40);
 		when(pinkOutcome.getTotalUsers()).thenReturn(60);
 		
-		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(pinkOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction, database)).isEqualTo(pinkOutcome);
 	}
 	
 	@Test
@@ -81,7 +84,7 @@ class SmartOutcomePickerTest{
 		when(event.getOutcomes()).thenReturn(List.of(pinkOutcome));
 		when(pinkOutcome.getTotalUsers()).thenReturn(1);
 		
-		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
 	}
 	
 	@Test
@@ -89,7 +92,7 @@ class SmartOutcomePickerTest{
 		when(event.getOutcomes()).thenReturn(List.of(blueOutcome));
 		when(blueOutcome.getTotalUsers()).thenReturn(1);
 		
-		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
 	}
 	
 	@Test
@@ -97,6 +100,6 @@ class SmartOutcomePickerTest{
 		when(blueOutcome.getTotalUsers()).thenReturn(0);
 		when(pinkOutcome.getTotalUsers()).thenReturn(0);
 		
-		assertThrows(NotEnoughUsersBetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+		assertThrows(NotEnoughUsersBetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
 	}
 }

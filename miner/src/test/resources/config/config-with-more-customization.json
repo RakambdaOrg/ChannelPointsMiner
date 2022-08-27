@@ -25,9 +25,10 @@
       "analytics": {
         "enabled": true,
         "database": {
-          "jdbcUrl": "jdbcUrl",
-          "username": "user",
-          "password": "pass"
+          "jdbcUrl" : "jdbcUrl",
+          "username" : "user",
+          "password" : "pass",
+          "maxPoolSize" : 15
         }
       }
     }

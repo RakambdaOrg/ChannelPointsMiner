@@ -29,4 +29,14 @@ public class TwitchIrcFactory{
 		TwitchSupport.addSupport(client);
 		return client;
 	}
+	
+	@NotNull
+	public static TwitchIrcConnectionHandler createIrcConnectionHandler(@NotNull String accountName){
+		return new TwitchIrcConnectionHandler(accountName);
+	}
+	
+	@NotNull
+	public static TwitchIrcMessageHandler createIrcMessageHandler(@NotNull String accountName){
+		return new TwitchIrcMessageHandler(accountName);
+	}
 }

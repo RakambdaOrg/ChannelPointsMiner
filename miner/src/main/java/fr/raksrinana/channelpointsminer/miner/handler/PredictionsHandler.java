@@ -37,13 +37,11 @@ import static lombok.AccessLevel.PROTECTED;
 
 @RequiredArgsConstructor
 @Log4j2
-public class PredictionsHandler extends HandlerAdapter{
+public class PredictionsHandler extends TwitchWsEventHandlerAdapter{
 	private static final int OFFSET = 5;
 	
 	private final IMiner miner;
 	private final BetPlacer betPlacer;
-    
-    private final boolean recordPlacedPredictions;
 	
 	@Getter(value = PROTECTED, onMethod_ = {
 			@TestOnly,
@@ -75,28 +73,28 @@ public class PredictionsHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
 		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
-            var prediction = predictions.get(event.getId());
-            
-            if(Objects.isNull(streamer)){
-                log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
-                return;
-            }
-            
-            if(recordPlacedPredictions){
-                log.debug("Sending an event update event.");
-                miner.onEvent(new EventUpdatedEvent(miner, streamer, event));
-            }
-            
+			var prediction = predictions.get(event.getId());
+			
 			if(Objects.isNull(prediction)){
 				log.debug("Event update on unknown prediction, creating it");
+				
+				if(Objects.isNull(streamer)){
+					log.warn("Couldn't find associated streamer with target {}", topic.getTarget());
+					return;
+				}
+				
 				onNewPrediction(streamer, event);
 				return;
 			}
-   
+			
 			var eventDate = message.getData().getTimestamp();
 			if(eventDate.isBefore(prediction.getLastUpdate())){
 				log.debug("Event update from the past");
 				return;
+			}
+			
+			if(Objects.nonNull(streamer)){
+				miner.onEvent(new EventUpdatedEvent(miner, TimeFactory.now(), streamer.getUsername(), event));
 			}
 			
 			prediction.setLastUpdate(eventDate);

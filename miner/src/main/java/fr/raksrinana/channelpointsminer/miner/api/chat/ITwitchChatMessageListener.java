@@ -1,8 +1,10 @@
 package fr.raksrinana.channelpointsminer.miner.api.chat;
 
-public interface ITwitchChatMessageListener{
+import org.jetbrains.annotations.NotNull;
 
-    void processMessage(String streamer, String actor, String message);
-    
-    void processMessage(String streamer, String actor, String message, String badges);
+public interface ITwitchChatMessageListener{
+	
+	void onChatMessage(@NotNull String streamer, @NotNull String actor, @NotNull String message);
+	
+	void onChatMessage(@NotNull String streamer, @NotNull String actor, @NotNull String message, @NotNull String badges);
 }

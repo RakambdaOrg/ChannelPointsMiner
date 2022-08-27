@@ -109,6 +109,7 @@ class ConfigurationFactoryTest{
 										.jdbcUrl("jdbcUrl")
 										.username("user")
 										.password("pass")
+										.maxPoolSize(15)
 										.build())
 								.build())
 						.build()))

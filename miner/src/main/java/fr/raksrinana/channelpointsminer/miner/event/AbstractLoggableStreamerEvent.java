@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public abstract class AbstractStreamerEvent extends AbstractEvent implements IStreamerEvent{
+public abstract class AbstractLoggableStreamerEvent extends AbstractLoggableEvent implements IStreamerEvent{
 	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
 	
 	@Getter
@@ -21,11 +21,11 @@ public abstract class AbstractStreamerEvent extends AbstractEvent implements ISt
 	private final String streamerUsername;
 	private final Streamer streamer;
 	
-	public AbstractStreamerEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Instant instant){
+	public AbstractLoggableStreamerEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Instant instant){
 		this(miner, streamer.getId(), streamer.getUsername(), streamer, instant);
 	}
 	
-	public AbstractStreamerEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant){
+	public AbstractLoggableStreamerEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant){
 		super(miner, instant);
 		this.streamerId = streamerId;
 		this.streamerUsername = streamerUsername;

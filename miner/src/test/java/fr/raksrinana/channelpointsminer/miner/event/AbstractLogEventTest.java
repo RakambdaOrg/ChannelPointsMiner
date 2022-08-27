@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.fail;
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class AbstractLogEventTest{
-	private AbstractEvent tested;
+	private AbstractLoggableEvent tested;
 	
 	@Mock
 	private IMiner miner;

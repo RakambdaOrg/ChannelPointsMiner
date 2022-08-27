@@ -14,9 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -26,24 +23,24 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(WebsocketMockServerExtension.class)
 class TwitchChatWebSocketClientTest{
-	private static final int MESSAGE_TIMEOUT = 15000;
 	private static final String USERNAME = "USERNAME";
 	private static final String ACCESS_TOKEN = "token";
-    private static final String STREAMER = "streamer";
-    private static final String STREAMER_CHANNEL = "#streamer";
-    private static final String BADGE_INFO = "badge/info";
-    private static final String MESSAGE = "message";
-    
-    private static final String MESSAGE_PAYLOAD =
-            "@badge-info=;badges=" + BADGE_INFO + ";client-nonce=0;color=0;display-name=" + USERNAME + ";" +
-            "emotes=0;first-msg=0;flags=;id=id;mod=0;returning-chatter=0;room-id=room;subscriber=0;tmi-sent-ts=0;turbo=0;" +
-            "user-id=userid;user-type= :usertype.tmi.twitch.tv PRIVMSG " +
-            STREAMER_CHANNEL + " :" + MESSAGE;
+	private static final String STREAMER = "streamer";
+	private static final String STREAMER_CHANNEL = "#streamer";
+	private static final String BADGE_INFO = "badge/info";
+	private static final String MESSAGE = "message";
+	
+	private static final String MESSAGE_PAYLOAD =
+			"@badge-info=;badges=" + BADGE_INFO + ";client-nonce=0;color=0;display-name=" + USERNAME + ";" +
+					"emotes=0;first-msg=0;flags=;id=id;mod=0;returning-chatter=0;room-id=room;subscriber=0;tmi-sent-ts=0;turbo=0;" +
+					"user-id=userid;user-type= :usertype.tmi.twitch.tv PRIVMSG " +
+					STREAMER_CHANNEL + " :" + MESSAGE;
 	
 	private TwitchChatWebSocketClient tested;
 	
@@ -51,9 +48,16 @@ class TwitchChatWebSocketClientTest{
 	private ITwitchChatWebSocketClosedListener listener;
 	@Mock
 	private TwitchLogin twitchLogin;
-    @Mock
-    private ITwitchChatMessageListener chatMessageListener;
-    private final List<ITwitchChatMessageListener> chatMessageListeners = new LinkedList<>();
+	@Mock
+	private ITwitchChatMessageListener chatMessageListener;
+	
+	@Test
+	void onMessageChatMessageWithoutChatMonitored(){
+		tested.onMessage(MESSAGE_PAYLOAD);
+		
+		verify(chatMessageListener, never()).onChatMessage(any(), any(), any());
+		verify(chatMessageListener, never()).onChatMessage(any(), any(), any(), any());
+	}
 	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
@@ -139,23 +143,24 @@ class TwitchChatWebSocketClientTest{
 		
 		assertThat(server.getReceivedMessages()).contains("PING");
 	}
-    
-    @Test
-    void onMessageChatMessageListenerCalled(){
-        tested.onMessage(MESSAGE_PAYLOAD);
-        
-        verify(chatMessageListener).processMessage(STREAMER, USERNAME, MESSAGE, BADGE_INFO);
-    }
+	
+	@Test
+	void onMessageChatMessageListenerCalled(){
+		tested.setListenMessages(true);
+		tested.addChatMessageListener(chatMessageListener);
+		
+		tested.onMessage(MESSAGE_PAYLOAD);
+		
+		verify(chatMessageListener).onChatMessage(STREAMER, USERNAME, MESSAGE, BADGE_INFO);
+	}
 	
 	@BeforeEach
-	void setUp(WebsocketMockServer server) throws InterruptedException{
+	void setUp(WebsocketMockServer server){
 		lenient().when(twitchLogin.getUsername()).thenReturn(USERNAME);
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        
-        chatMessageListeners.add(chatMessageListener);
-        
+		
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchChatWebSocketClient(uri, twitchLogin, chatMessageListeners);
+		tested = new TwitchChatWebSocketClient(uri, twitchLogin, false);
 		tested.setReuseAddr(true);
 		tested.addWebSocketClosedListener(listener);
 	}

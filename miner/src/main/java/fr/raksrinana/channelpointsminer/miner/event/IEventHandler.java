@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.event;
 
-public interface IEventListener extends AutoCloseable{
+public interface IEventHandler extends AutoCloseable{
 	void onEvent(IEvent event);
 	
 	@Override

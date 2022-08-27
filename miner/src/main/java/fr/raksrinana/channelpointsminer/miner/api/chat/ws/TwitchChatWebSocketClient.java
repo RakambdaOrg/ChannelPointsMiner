@@ -5,7 +5,9 @@ import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatMessageListene
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
@@ -13,41 +15,44 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.PongFrame;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Log4j2
 public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitchChatClient{
+	private final static Pattern MESSAGE_PATTERN = Pattern.compile("badges=([^;]*);.*display-name=([^;]*);.*PRIVMSG #([^ ]*) :(.*)");
+	
 	@Getter
 	private final Set<String> channels;
 	private final Collection<ITwitchChatWebSocketClosedListener> socketClosedListeners;
 	@Getter
 	private final String uuid;
 	private final TwitchLogin twitchLogin;
-    private final List<ITwitchChatMessageListener> chatMessageListeners;
-    
-    private final static Pattern messagePattern = Pattern.compile("badges=([^;]*);.*display-name=([^;]*);.*PRIVMSG #([^ ]*) :(.*)");
+	private final Collection<ITwitchChatMessageListener> chatMessageListeners;
+	@Setter(onMethod_ = {@TestOnly}, value = AccessLevel.PROTECTED)
+	private boolean listenMessages;
 	
 	@Getter
 	private Instant lastHeartbeat;
 	
-	public TwitchChatWebSocketClient(@NotNull URI uri, @NotNull TwitchLogin twitchLogin, List<ITwitchChatMessageListener> chatMessageListeners){
+	public TwitchChatWebSocketClient(@NotNull URI uri, @NotNull TwitchLogin twitchLogin, boolean listenMessages){
 		super(uri);
 		this.twitchLogin = twitchLogin;
-        this.chatMessageListeners = chatMessageListeners;
+		this.listenMessages = listenMessages;
 		uuid = UUID.randomUUID().toString();
 		
 		setConnectionLostTimeout(0);
 		channels = new HashSet<>();
 		socketClosedListeners = new ConcurrentLinkedQueue<>();
+		chatMessageListeners = new LinkedList<>();
 		lastHeartbeat = Instant.EPOCH;
 	}
 	
@@ -61,20 +66,24 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 			sendMessage("NICK %s".formatted(twitchLogin.getUsername().toLowerCase()));
 		}
 	}
-    
-    @Override
+	
+	@Override
 	public void onMessage(String messageStr){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			log.trace("Received Chat Websocket message: {}", messageStr.strip());
 			if(messageStr.startsWith("PONG :tmi.twitch.tv")){
 				onWebsocketPong(this, new PongFrame());
 			}
-            else {
-                Matcher messageMatch = messagePattern.matcher(messageStr);
-                if(messageMatch.find()){
-                    chatMessageListeners.forEach(l -> l.processMessage(messageMatch.group(3), messageMatch.group(2), messageMatch.group(4), messageMatch.group(1)));
-                }
-            }
+			else if(listenMessages){
+				var messageMatch = MESSAGE_PATTERN.matcher(messageStr);
+				if(messageMatch.find()){
+					var badges = messageMatch.group(1);
+					var actor = messageMatch.group(2);
+					var streamer = messageMatch.group(3);
+					var message = messageMatch.group(4);
+					chatMessageListeners.forEach(l -> l.onChatMessage(streamer, actor, message, badges));
+				}
+			}
 		}
 		catch(Exception e){
 			log.error("Failed to handle Chat WebSocket message {}, Exception: {}", messageStr, e.getMessage());
@@ -141,6 +150,11 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	@Override
 	public void ping(){
 		send("PING");
+	}
+	
+	@Override
+	public void addChatMessageListener(@NotNull ITwitchChatMessageListener listener){
+		chatMessageListeners.add(listener);
 	}
 	
 	public boolean isChannelJoined(@NotNull String channel){

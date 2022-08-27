@@ -9,6 +9,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MakePredictionP
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.factory.TransactionIdFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
@@ -60,6 +61,8 @@ class BetPlacerTest{
 	@Mock
 	private GQLApi gqlApi;
 	@Mock
+	private IDatabase database;
+	@Mock
 	private BettingPrediction bettingPrediction;
 	@Mock
 	private Event event;
@@ -87,6 +90,7 @@ class BetPlacerTest{
 	@BeforeEach
 	void setUp() throws BetPlacementException{
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
+		lenient().when(miner.getDatabase()).thenReturn(database);
 		lenient().when(bettingPrediction.getEvent()).thenReturn(event);
 		lenient().when(bettingPrediction.getStreamer()).thenReturn(streamer);
 		
@@ -101,7 +105,7 @@ class BetPlacerTest{
 		
 		lenient().when(outcome.getId()).thenReturn(OUTCOME_ID);
 		
-		lenient().when(outcomePicker.chooseOutcome(bettingPrediction)).thenReturn(outcome);
+		lenient().when(outcomePicker.chooseOutcome(bettingPrediction, database)).thenReturn(outcome);
 		lenient().when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(AMOUNT);
 		
 		lenient().when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
@@ -121,7 +125,7 @@ class BetPlacerTest{
 	
 	@Test
 	void outcomeException() throws BetPlacementException{
-		when(outcomePicker.chooseOutcome(bettingPrediction)).thenThrow(new BetPlacementException("For tests"));
+		when(outcomePicker.chooseOutcome(bettingPrediction, database)).thenThrow(new BetPlacementException("For tests"));
 		
 		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 		
@@ -131,7 +135,7 @@ class BetPlacerTest{
 	
 	@Test
 	void outcomeException2() throws BetPlacementException{
-		when(outcomePicker.chooseOutcome(bettingPrediction)).thenThrow(new NotEnoughUsersBetPlacementException(0));
+		when(outcomePicker.chooseOutcome(bettingPrediction, database)).thenThrow(new NotEnoughUsersBetPlacementException(0));
 		
 		assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 		
