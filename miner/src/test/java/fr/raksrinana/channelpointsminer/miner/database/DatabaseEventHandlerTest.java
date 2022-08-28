@@ -21,7 +21,6 @@ import fr.raksrinana.channelpointsminer.miner.event.impl.PredictionResultEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamerAddedEvent;
-import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
@@ -34,10 +33,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -45,7 +42,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,12 +52,7 @@ class DatabaseEventHandlerTest{
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CHANNEL_NAME = "channel-name";
 	private static final String EVENT_ID = "event-id";
-	private static final String EVENT_TITLE = "event-title";
 	private static final Instant NOW = Instant.parse("2020-02-18T12:47:52.000Z");
-	private static final Instant CREATED_AT = Instant.parse("2020-02-18T13:47:52.000Z");
-	private static final ZonedDateTime CREATED_AT_ZONED = ZonedDateTime.ofInstant(CREATED_AT, UTC);
-	private static final Instant ENDED_AT = Instant.parse("2020-02-18T14:47:52.000Z");
-	private static final ZonedDateTime ENDED_AT_ZONED = ZonedDateTime.ofInstant(ENDED_AT, UTC);
 	private static final int BALANCE = 12324;
 	private static final String BADGE_1 = "blue-1";
 	private static final String BADGE_2 = "pink-2";
@@ -74,10 +65,9 @@ class DatabaseEventHandlerTest{
 	private static final String BLUE_TITLE = "blue";
 	private static final String PINK_TITLE = "pink";
 	private final static String ACTOR = "username";
-	private final static String MESSAGE = "message";
+	private final static String PREDICTION = "color";
 	private final static String BADGE_PREDICTION_INFO = "badges=predictions/color,sub";
 	private final static String BADGE_NO_PREDICTION_INFO = "badges=sub";
-	private final static String PREDICTION = "color";
 	
 	@InjectMocks
 	private DatabaseEventHandler tested;
@@ -94,10 +84,7 @@ class DatabaseEventHandlerTest{
 	@BeforeEach
 	void setUp(){
 		lenient().when(eventData.getOutcomes()).thenReturn(List.of(blueOutcome, pinkOutcome));
-		lenient().when(eventData.getTitle()).thenReturn(EVENT_TITLE);
 		lenient().when(eventData.getChannelId()).thenReturn(CHANNEL_ID);
-		lenient().when(eventData.getCreatedAt()).thenReturn(CREATED_AT_ZONED);
-		lenient().when(eventData.getEndedAt()).thenReturn(ENDED_AT_ZONED);
 		lenient().when(eventData.getId()).thenReturn(EVENT_ID);
 		lenient().when(eventData.getWinningOutcomeId()).thenReturn("blue-id");
 		
@@ -409,26 +396,7 @@ class DatabaseEventHandlerTest{
 		
 		assertDoesNotThrow(() -> tested.onEvent(event));
 		
-		verify(database).cancelPrediction(EVENT_ID, CHANNEL_ID, EVENT_TITLE, CREATED_AT, ENDED_AT);
-	}
-	
-	@Test
-	void onCancelledPredictionUpdateWithNoEndDate() throws SQLException{
-		try(var factory = mockStatic(TimeFactory.class)){
-			factory.when(TimeFactory::now).thenReturn(NOW);
-			
-			var event = mock(EventUpdatedEvent.class);
-			
-			when(event.getEvent()).thenReturn(eventData);
-			when(event.getStreamerUsername()).thenReturn(CHANNEL_NAME);
-			
-			when(eventData.getStatus()).thenReturn(EventStatus.CANCELED);
-			when(eventData.getEndedAt()).thenReturn(null);
-			
-			assertDoesNotThrow(() -> tested.onEvent(event));
-			
-			verify(database).cancelPrediction(EVENT_ID, CHANNEL_ID, EVENT_TITLE, CREATED_AT, NOW);
-		}
+		verify(database).cancelPrediction(eventData);
 	}
 	
 	@Test
@@ -442,29 +410,9 @@ class DatabaseEventHandlerTest{
 		
 		assertDoesNotThrow(() -> tested.onEvent(event));
 		
-		var returnRatio = (double)(BLUE_POINTS + PINK_POINTS) / BLUE_POINTS;
+		var returnRatio = (double) (BLUE_POINTS + PINK_POINTS) / BLUE_POINTS;
 		
-		verify(database).resolvePrediction(EVENT_ID, CHANNEL_ID, EVENT_TITLE, CREATED_AT, ENDED_AT, BLUE_TITLE, BADGE_1, returnRatio);
-	}
-	
-	@Test
-	void onResolvedPredictionUpdateAndNoEndDate() throws SQLException{
-		try(var factory = mockStatic(TimeFactory.class)){
-			factory.when(TimeFactory::now).thenReturn(NOW);
-			var event = mock(EventUpdatedEvent.class);
-			
-			when(event.getEvent()).thenReturn(eventData);
-			when(event.getStreamerUsername()).thenReturn(CHANNEL_NAME);
-			
-			when(eventData.getStatus()).thenReturn(EventStatus.RESOLVED);
-			when(eventData.getEndedAt()).thenReturn(null);
-			
-			assertDoesNotThrow(() -> tested.onEvent(event));
-			
-			var returnRatio = (double)(BLUE_POINTS + PINK_POINTS) / BLUE_POINTS;
-			
-			verify(database).resolvePrediction(EVENT_ID, CHANNEL_ID, EVENT_TITLE, CREATED_AT, NOW, BLUE_TITLE, BADGE_1, returnRatio);
-		}
+		verify(database).resolvePrediction(eventData, BLUE_TITLE, BADGE_1, returnRatio);
 	}
 	
 	@Test
