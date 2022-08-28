@@ -20,7 +20,7 @@ public class MariaDBDatabase extends BaseDatabase{
 							`LastStatusChange` DATETIME NOT NULL,
 							INDEX `UsernameIdx`(`Username`)
 						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+						ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;""",
 				"""
 						CREATE TABLE IF NOT EXISTS `Balance` (
 							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -30,7 +30,7 @@ public class MariaDBDatabase extends BaseDatabase{
 							`Reason` VARCHAR(16) NULL,
 							INDEX `PointsDateIdx`(`BalanceDate`)
 						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+						ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;""",
 				"""
 						CREATE TABLE IF NOT EXISTS `Prediction` (
 							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -42,21 +42,21 @@ public class MariaDBDatabase extends BaseDatabase{
 							INDEX `EventDateIdx`(`EventDate`),
 							INDEX `EventTypeIdx`(`Type`)
 						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+						ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;""",
 				"""
 						CREATE TABLE IF NOT EXISTS `ResolvedPrediction` (
 							`EventID` VARCHAR(36) NOT NULL PRIMARY KEY,
 							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
-							`Title` VARCHAR(64) CHARACTER SET utf8mb4 NOT NULL,
+							`Title` VARCHAR(64) NOT NULL,
 							`EventCreated` DATETIME NOT NULL,
 							`EventEnded` DATETIME NULL,
 							`Canceled` BOOLEAN NOT NULL,
-							`Outcome` VARCHAR(32) CHARACTER SET utf8mb4 NULL,
+							`Outcome` VARCHAR(32) NULL,
 							`Badge` VARCHAR(32) NULL,
 							`ReturnRatioForWin` DOUBLE NULL,
 							INDEX `ChannelIDIdx`(`ChannelID`)
 						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+						ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;""",
 				"""
 						CREATE TABLE IF NOT EXISTS `PredictionUser` (
 							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -68,7 +68,7 @@ public class MariaDBDatabase extends BaseDatabase{
 							UNIQUE (`Username`),
 							INDEX `UsernameIdx`(`Username`)
 						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""",
+						ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;""",
 				"""
 						CREATE TABLE IF NOT EXISTS `UserPrediction` (
 							 `ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
@@ -80,7 +80,7 @@ public class MariaDBDatabase extends BaseDatabase{
 							 INDEX `UserIDIdx`(`UserID`),
 							 INDEX `ResolvedPredictionIDIdx`(`ResolvedPredictionID`)
 						)
-						ENGINE=InnoDB DEFAULT CHARSET=utf8;""");
+						ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;""");
 	}
 	
 	@Override
