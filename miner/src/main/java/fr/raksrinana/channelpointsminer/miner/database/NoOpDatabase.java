@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.database;
 
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,11 +34,11 @@ public class NoOpDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void cancelPrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated, @NotNull Instant eventEnded){
+	public void cancelPrediction(@NotNull Event event){
 	}
 	
 	@Override
-	public void resolvePrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated, @NotNull Instant eventEnded, @NotNull String outcome, @NotNull String badge, double returnOnInvestment){
+	public void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnOnInvestment){
 	}
 	
 	@Override

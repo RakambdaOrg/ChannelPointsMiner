@@ -1,8 +1,10 @@
 package fr.raksrinana.channelpointsminer.miner.database;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.database.converter.Converters;
 import fr.raksrinana.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
+import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -12,9 +14,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Optional;
 import static java.time.ZoneOffset.UTC;
 
 @RequiredArgsConstructor
@@ -116,7 +120,9 @@ public abstract class BaseDatabase implements IDatabase{
 	protected abstract PreparedStatement getPredictionStatement(@NotNull Connection conn) throws SQLException;
 	
 	@Override
-	public void cancelPrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated, @NotNull Instant eventEnded) throws SQLException{
+	public void cancelPrediction(@NotNull Event event) throws SQLException{
+		var ended = Optional.ofNullable(event.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
+		
 		try(var conn = getConnection();
 				var addCanceledPredictionStmt = conn.prepareStatement("""
 						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`)
@@ -129,16 +135,16 @@ public abstract class BaseDatabase implements IDatabase{
 			conn.setAutoCommit(false);
 			try{
 				//Add canceled prediction
-				addCanceledPredictionStmt.setString(1, eventId);
-				addCanceledPredictionStmt.setString(2, channelId);
-				addCanceledPredictionStmt.setString(3, title);
-				addCanceledPredictionStmt.setObject(4, LocalDateTime.ofInstant(eventCreated, UTC));
-				addCanceledPredictionStmt.setObject(5, LocalDateTime.ofInstant(eventEnded, UTC));
+				addCanceledPredictionStmt.setString(1, event.getId());
+				addCanceledPredictionStmt.setString(2, event.getChannelId());
+				addCanceledPredictionStmt.setString(3, event.getTitle());
+				addCanceledPredictionStmt.setObject(4, event.getCreatedAt().withZoneSameInstant(UTC).toLocalDateTime());
+				addCanceledPredictionStmt.setObject(5, LocalDateTime.ofInstant(ended, UTC));
 				addCanceledPredictionStmt.executeUpdate();
 				
 				//Update made predictions with event-id
-				updateUserPredictionsStmt.setString(1, eventId);
-				updateUserPredictionsStmt.setString(2, channelId);
+				updateUserPredictionsStmt.setString(1, event.getId());
+				updateUserPredictionsStmt.setString(2, event.getChannelId());
 				updateUserPredictionsStmt.executeUpdate();
 				
 				conn.commit();
@@ -151,7 +157,9 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void resolvePrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated, @NotNull Instant eventEnded, @NotNull String outcome, @NotNull String badge, double returnRatioForWin) throws SQLException{
+	public void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnRatioForWin) throws SQLException{
+		var ended = Optional.ofNullable(event.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
+		
 		try(var conn = getConnection();
 				var getOpenPredictionStmt = conn.prepareStatement("""
 						SELECT * FROM `UserPrediction` WHERE `ResolvedPredictionID`='' AND `ChannelID`=?""");
@@ -169,7 +177,7 @@ public abstract class BaseDatabase implements IDatabase{
 			try{
 				//Get user predictions, determine win/lose and update
 				double returnOnInvestment = returnRatioForWin - 1;
-				getOpenPredictionStmt.setString(1, channelId);
+				getOpenPredictionStmt.setString(1, event.getChannelId());
 				try(var result = getOpenPredictionStmt.executeQuery()){
 					while(result.next()){
 						var userPrediction = Converters.convertUserPrediction(result);
@@ -188,19 +196,19 @@ public abstract class BaseDatabase implements IDatabase{
 				}
 				
 				//Add the resolved prediction
-				addResolvedPredictionStmt.setString(1, eventId);
-				addResolvedPredictionStmt.setString(2, channelId);
-				addResolvedPredictionStmt.setString(3, title);
-				addResolvedPredictionStmt.setObject(4, LocalDateTime.ofInstant(eventCreated, UTC));
-				addResolvedPredictionStmt.setObject(5, LocalDateTime.ofInstant(eventEnded, UTC));
+				addResolvedPredictionStmt.setString(1, event.getId());
+				addResolvedPredictionStmt.setString(2, event.getChannelId());
+				addResolvedPredictionStmt.setString(3, event.getTitle());
+				addResolvedPredictionStmt.setObject(4, event.getCreatedAt().withZoneSameInstant(UTC).toLocalDateTime());
+				addResolvedPredictionStmt.setObject(5, LocalDateTime.ofInstant(ended, UTC));
 				addResolvedPredictionStmt.setString(6, outcome);
 				addResolvedPredictionStmt.setString(7, badge);
 				addResolvedPredictionStmt.setDouble(8, returnRatioForWin);
 				addResolvedPredictionStmt.executeUpdate();
 				
 				//Update made predictions with event-id
-				updateUserPredictionsStmt.setString(1, eventId);
-				updateUserPredictionsStmt.setString(2, channelId);
+				updateUserPredictionsStmt.setString(1, event.getId());
+				updateUserPredictionsStmt.setString(2, event.getChannelId());
 				updateUserPredictionsStmt.executeUpdate();
 				
 				conn.commit();

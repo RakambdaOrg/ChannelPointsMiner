@@ -15,14 +15,11 @@ import fr.raksrinana.channelpointsminer.miner.event.impl.PredictionResultEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamerAddedEvent;
-import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
-import java.time.ZonedDateTime;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -55,9 +52,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 		}
 		else if(predictionEvent.getStatus() == EventStatus.CANCELED){
 			log.info("Prediction-Update: Event CANCELED. Streamer: {}, Title: {}", streamerUsername, predictionEvent.getTitle());
-			
-			var ended = Optional.ofNullable(predictionEvent.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
-			database.cancelPrediction(predictionEvent.getId(), predictionEvent.getChannelId(), predictionEvent.getTitle(), predictionEvent.getCreatedAt().toInstant(), ended);
+			database.cancelPrediction(predictionEvent);
 		}
 		else if(predictionEvent.getStatus() == EventStatus.RESOLVED){
 			var winningOutcomeId = predictionEvent.getWinningOutcomeId();
@@ -68,10 +63,9 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 			
 			log.info("Prediction-Update: Event RESOLVED. Streamer: {}, Title: {}, Outcome: {}", streamerUsername, predictionEvent.getTitle(), winningOutcome.getTitle());
 			
-			var ended = Optional.ofNullable(predictionEvent.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
 			var totalPoints = predictionEvent.getOutcomes().stream().mapToDouble(Outcome::getTotalPoints).sum();
-			var returnRatio = (winningOutcome.getTotalPoints() / totalPoints) + 1;
-			database.resolvePrediction(predictionEvent.getId(), predictionEvent.getChannelId(), predictionEvent.getTitle(), predictionEvent.getCreatedAt().toInstant(), ended, winningOutcome.getTitle(), winningOutcomeBadge, returnRatio);
+			var returnRatio = totalPoints / winningOutcome.getTotalPoints();
+			database.resolvePrediction(predictionEvent, winningOutcome.getTitle(), winningOutcomeBadge, returnRatio);
 		}
 	}
 	
@@ -91,10 +85,12 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	public void onPredictionMadeEvent(@NotNull PredictionMadeEvent event) throws SQLException{
 		var placedPrediction = event.getPlacedPrediction();
 		addPrediction(event, placedPrediction.getEventId(), "PREDICTED", Integer.toString(placedPrediction.getAmount()));
-		var outcomeId = event.getPlacedPrediction().getOutcomeId();
-		if(event.getPlacedPrediction().getBettingPrediction() != null && event.getStreamerUsername().isPresent()){
-			var placedOutcome = event.getPlacedPrediction().getBettingPrediction()
-					.getEvent().getOutcomes().stream().filter(o -> o.getId().equals(outcomeId)).findFirst();
+		
+		if(placedPrediction.getBettingPrediction() != null && event.getStreamerUsername().isPresent()){
+			var outcomeId = placedPrediction.getOutcomeId();
+			var placedOutcome = placedPrediction.getBettingPrediction().getEvent().getOutcomes().stream()
+					.filter(o -> o.getId().equals(outcomeId))
+					.findFirst();
 			if(placedOutcome.isPresent()){
 				database.addUserPrediction(event.getMiner().getUsername(), event.getStreamerUsername().get(), placedOutcome.get().getBadge().getVersion());
 			}

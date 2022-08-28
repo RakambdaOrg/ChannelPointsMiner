@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.database;
 
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,9 +21,9 @@ public interface IDatabase extends AutoCloseable{
 	
 	void addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge) throws SQLException;
 	
-	void cancelPrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated, @NotNull Instant eventEnded) throws SQLException;
+	void cancelPrediction(@NotNull Event event) throws SQLException;
 	
-	void resolvePrediction(@NotNull String eventId, @NotNull String channelId, @NotNull String title, @NotNull Instant eventCreated, @NotNull Instant eventEnded, @NotNull String outcome, @NotNull String badge, double returnOnInvestment) throws SQLException;
+	void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnOnInvestment) throws SQLException;
 	
 	void deleteUnresolvedUserPredictions() throws SQLException;
 	
