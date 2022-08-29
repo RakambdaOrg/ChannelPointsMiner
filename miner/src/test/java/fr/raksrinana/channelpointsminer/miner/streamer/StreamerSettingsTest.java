@@ -25,6 +25,7 @@ class StreamerSettingsTest{
 				.joinIrc(true)
 				.index(24)
 				.priorities(List.of(priority))
+				.claimMoments(true)
 				.build();
 		
 		var copy = new StreamerSettings(tested);
@@ -36,6 +37,7 @@ class StreamerSettingsTest{
 		assertThat(copy.isFollowRaid()).isEqualTo(tested.isFollowRaid());
 		assertThat(copy.isJoinIrc()).isEqualTo(tested.isJoinIrc());
 		assertThat(copy.getIndex()).isEqualTo(tested.getIndex());
+		assertThat(copy.isClaimMoments()).isEqualTo(tested.isClaimMoments());
 		
 		Assertions.assertThat(copy.getPriorities()).isNotSameAs(tested.getPriorities()).hasSize(1);
 		Assertions.assertThat(copy.getPriorities().get(0)).isSameAs(priority);

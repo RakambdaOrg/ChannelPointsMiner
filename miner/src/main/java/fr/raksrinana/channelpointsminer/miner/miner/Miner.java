@@ -46,6 +46,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
@@ -228,6 +229,13 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 				removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			}
 			
+			if(streamer.getSettings().isClaimMoments()){
+				listenTopic(COMMUNITY_MOMENTS_CHANNEL_V1, streamer.getId());
+			}
+			else{
+				removeTopic(COMMUNITY_MOMENTS_CHANNEL_V1, streamer.getId());
+			}
+			
 			if(streamer.getSettings().isFollowRaid()){
 				listenTopic(RAID, streamer.getId());
 			}
@@ -254,6 +262,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			log.info("Removing streamer from the mining list");
 			removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
+			removeTopic(COMMUNITY_MOMENTS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
 			chatClient.leave(streamer.getUsername());
 			

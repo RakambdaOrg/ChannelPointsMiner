@@ -56,6 +56,8 @@ import lombok.Getter;
 		@JsonSubTypes.Type(value = FollowEdge.class, name = "FollowEdge"),
 		@JsonSubTypes.Type(value = FollowerEdge.class, name = "FollowerEdge"),
 		@JsonSubTypes.Type(value = ChatRoomBanStatus.class, name = "ChatRoomBanStatus"),
+		@JsonSubTypes.Type(value = ClaimCommunityMomentPayload.class, name = "ClaimCommunityMomentPayload"),
+		@JsonSubTypes.Type(value = CommunityMoment.class, name = "CommunityMoment"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

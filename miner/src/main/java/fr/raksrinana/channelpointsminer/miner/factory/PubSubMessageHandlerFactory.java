@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.factory;
 
 import fr.raksrinana.channelpointsminer.miner.handler.ClaimAvailableHandler;
+import fr.raksrinana.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.FollowRaidHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.IPubSubMessageHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.PointsHandler;
@@ -37,5 +38,10 @@ public class PubSubMessageHandlerFactory{
 	@NotNull
 	public static IPubSubMessageHandler createPointsHandler(@NotNull IMiner miner){
 		return new PointsHandler(miner);
+	}
+	
+	@NotNull
+	public static IPubSubMessageHandler createClaimMomentHandler(@NotNull IMiner miner){
+		return new ClaimMomentHandler(miner);
 	}
 }

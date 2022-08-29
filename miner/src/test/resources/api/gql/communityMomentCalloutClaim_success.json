@@ -1,0 +1,17 @@
+{
+  "data" : {
+    "claimCommunityMoment" : {
+      "moment" : {
+        "id" : "moment-id",
+        "__typename" : "CommunityMoment"
+      },
+      "error" : null,
+      "__typename" : "ClaimCommunityMomentPayload"
+    }
+  },
+  "extensions" : {
+    "durationMilliseconds" : 9,
+    "operationName" : "CommunityMomentCallout_Claim",
+    "requestID" : "request-id"
+  }
+}

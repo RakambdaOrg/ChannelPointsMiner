@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.factory;
 
 import fr.raksrinana.channelpointsminer.miner.handler.ClaimAvailableHandler;
+import fr.raksrinana.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.FollowRaidHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.PointsHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.PredictionsHandler;
@@ -45,5 +46,10 @@ class PubSubMessageHandlerFactoryTest{
 	@Test
 	void createPointsHandler(){
 		assertThat(PubSubMessageHandlerFactory.createPointsHandler(miner)).isNotNull().isInstanceOf(PointsHandler.class);
+	}
+	
+	@Test
+	void createClaimMomentHandler(){
+		assertThat(PubSubMessageHandlerFactory.createClaimMomentHandler(miner)).isNotNull().isInstanceOf(ClaimMomentHandler.class);
 	}
 }

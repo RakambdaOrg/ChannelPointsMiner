@@ -9,6 +9,7 @@ import fr.raksrinana.channelpointsminer.miner.config.DiscordConfiguration;
 import fr.raksrinana.channelpointsminer.miner.database.DatabaseEventHandler;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.handler.ClaimAvailableHandler;
+import fr.raksrinana.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.FollowRaidHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.PointsHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.PredictionsHandler;
@@ -76,12 +77,13 @@ class MinerFactoryTest{
 			var miner = MinerFactory.create(accountConfiguration);
 			
 			Assertions.assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(5)
+					.hasSize(6)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
-					.hasAtLeastOneElementOfType(PointsHandler.class);
+					.hasAtLeastOneElementOfType(PointsHandler.class)
+					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
 			
 			Assertions.assertThat(miner.getEventHandlers())
 					.hasSize(1)
@@ -104,12 +106,13 @@ class MinerFactoryTest{
 			var miner = MinerFactory.create(accountConfiguration);
 			
 			Assertions.assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(5)
+					.hasSize(6)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
-					.hasAtLeastOneElementOfType(PointsHandler.class);
+					.hasAtLeastOneElementOfType(PointsHandler.class)
+					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
 			
 			Assertions.assertThat(miner.getEventHandlers())
 					.hasSize(2)
@@ -134,12 +137,13 @@ class MinerFactoryTest{
 			var miner = MinerFactory.create(accountConfiguration);
 			
 			Assertions.assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(5)
+					.hasSize(6)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
-					.hasAtLeastOneElementOfType(PointsHandler.class);
+					.hasAtLeastOneElementOfType(PointsHandler.class)
+					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
 			
 			Assertions.assertThat(miner.getEventHandlers())
 					.hasSize(2)

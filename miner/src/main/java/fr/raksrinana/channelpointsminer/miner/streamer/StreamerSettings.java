@@ -36,6 +36,9 @@ public class StreamerSettings{
 	@JsonProperty("participateCampaigns")
 	@Builder.Default
 	private boolean participateCampaigns = false;
+	@JsonProperty("claimMoments")
+	@Builder.Default
+	private boolean claimMoments = false;
 	@JsonProperty("joinIrc")
 	@Builder.Default
 	private boolean joinIrc = false;
@@ -62,5 +65,6 @@ public class StreamerSettings{
 		index = origin.index;
 		predictions = new PredictionSettings(origin.predictions);
 		priorities.addAll(origin.priorities);
+		claimMoments = origin.claimMoments;
 	}
 }
