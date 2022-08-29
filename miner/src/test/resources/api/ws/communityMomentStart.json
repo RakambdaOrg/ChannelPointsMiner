@@ -2,6 +2,6 @@
   "type" : "MESSAGE",
   "data" : {
     "topic" : "community-moments-channel-v1.123456789",
-    "message" : "{\"type\":\"community-moment-start\",\"data\":{\"moment_id\":\"moment-id\"}}"
+    "message" : "{\"type\":\"active\",\"data\":{\"moment_id\":\"moment-id\"}}"
   }
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
-@JsonTypeName("community-moment-start")
+@JsonTypeName("active")
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
