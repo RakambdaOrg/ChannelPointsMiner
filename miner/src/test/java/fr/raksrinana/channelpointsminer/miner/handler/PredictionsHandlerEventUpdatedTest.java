@@ -117,7 +117,8 @@ class PredictionsHandlerEventUpdatedTest{
 	void unknownEvent(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW_ZONED);
-			
+            timeFactory.when(TimeFactory::now).thenReturn(NOW);
+            
 			var expectedPrediction = BettingPrediction.builder()
 					.event(event)
 					.streamer(streamer)
@@ -130,7 +131,7 @@ class PredictionsHandlerEventUpdatedTest{
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
 			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
-			verify(miner, never()).onEvent(any(EventUpdatedEvent.class));
+			verify(miner).onEvent(new EventUpdatedEvent(miner, NOW, STREAMER_USERNAME, event));
 			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}
@@ -177,7 +178,6 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, createDefaultPrediction()));
-		verify(miner, never()).onEvent(any(EventUpdatedEvent.class));
 	}
 	
 	@Test

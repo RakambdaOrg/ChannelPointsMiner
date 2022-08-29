@@ -73,7 +73,12 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
 		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
-			var prediction = predictions.get(event.getId());
+            
+            if(Objects.nonNull(streamer)){
+                miner.onEvent(new EventUpdatedEvent(miner, TimeFactory.now(), streamer.getUsername(), event));
+            }
+            
+            var prediction = predictions.get(event.getId());
 			
 			if(Objects.isNull(prediction)){
 				log.debug("Event update on unknown prediction, creating it");
@@ -91,10 +96,6 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 			if(eventDate.isBefore(prediction.getLastUpdate())){
 				log.debug("Event update from the past");
 				return;
-			}
-			
-			if(Objects.nonNull(streamer)){
-				miner.onEvent(new EventUpdatedEvent(miner, TimeFactory.now(), streamer.getUsername(), event));
 			}
 			
 			prediction.setLastUpdate(eventDate);
