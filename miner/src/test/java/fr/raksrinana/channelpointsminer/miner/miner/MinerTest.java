@@ -386,7 +386,7 @@ class MinerTest{
 			
 			when(streamerSettings.isClaimMoments()).thenReturn(true);
 			
-			tested.addEventListener(eventListener);
+			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			var streamer = mock(Streamer.class);
@@ -403,7 +403,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_MOMENTS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventListener).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+			verify(eventHandler).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
 		}
 	}
 	
