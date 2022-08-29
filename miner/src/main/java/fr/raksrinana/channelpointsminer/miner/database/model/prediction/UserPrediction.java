@@ -16,8 +16,6 @@ public class UserPrediction{
     @NotNull
     private String channelId;
     private int userId;
-    @Nullable
-    private String resolvedPredictionId;
     @NotNull
     private String badge;
 }

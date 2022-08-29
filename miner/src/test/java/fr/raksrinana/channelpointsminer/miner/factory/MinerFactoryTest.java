@@ -146,7 +146,7 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(LoggerEventListener.class)
 					.hasAtLeastOneElementOfType(DatabaseEventHandler.class);
 			
-			verify(database).deleteUnresolvedUserPredictions();
+			verify(database).deleteUserPredictions();
 			
 			miner.close();
 		}

@@ -33,7 +33,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	
 	@Override
 	public void onEventCreatedEvent(@NotNull EventCreatedEvent event) throws Exception{
-		database.deleteUnresolvedUserPredictionsForChannel(event.getStreamerUsername().orElseThrow());
+		database.deleteUserPredictionsForChannel(event.getStreamerUsername().orElseThrow());
 	}
 	
 	@Override
@@ -118,7 +118,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	}
 	
 	@Override
-	public void onChatMessageEvent(@NotNull ChatMessageEvent event) throws Exception{
+	public void onChatMessageEvent(@NotNull ChatMessageEvent event){
 		var matcher = CHAT_PREDICTION_BADGE_PATTERN.matcher(event.getBadges());
 		if(matcher.find()){
 			try{

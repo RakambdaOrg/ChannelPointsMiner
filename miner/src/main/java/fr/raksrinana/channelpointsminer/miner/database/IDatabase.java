@@ -25,9 +25,9 @@ public interface IDatabase extends AutoCloseable{
 	
 	void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnOnInvestment) throws SQLException;
 	
-	void deleteUnresolvedUserPredictions() throws SQLException;
+	void deleteUserPredictions() throws SQLException;
 	
-	void deleteUnresolvedUserPredictionsForChannel(@NotNull String channelId) throws SQLException;
+	void deleteUserPredictionsForChannel(@NotNull String channelId) throws SQLException;
 	
 	@NotNull
 	Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser) throws SQLException;

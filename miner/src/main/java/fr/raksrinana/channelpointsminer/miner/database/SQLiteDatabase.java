@@ -74,16 +74,13 @@ public class SQLiteDatabase extends BaseDatabase{
 						CREATE TABLE IF NOT EXISTS `UserPrediction` (
 						     `ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 						     `UserID` INTEGER NOT NULL REFERENCES `PredictionUser`(`ID`),
-						     `ResolvedPredictionID` VARCHAR(36) NOT NULL DEFAULT '',
 						     `Badge` VARCHAR(32) NOT NULL,
-						     PRIMARY KEY (`ChannelID`, `UserID`, `ResolvedPredictionID`)
+						     PRIMARY KEY (`ChannelID`, `UserID`)
 						);""",
 				"""
 						CREATE INDEX IF NOT EXISTS `ChannelIDIdx` ON `UserPrediction`(`ChannelID`);""",
 				"""
-						CREATE INDEX IF NOT EXISTS `UserIDIdx` ON `UserPrediction`(`UserID`);""",
-				"""
-						CREATE INDEX IF NOT EXISTS `ResolvedPredictionIDIdx` ON `UserPrediction`(`ResolvedPredictionID`);""");
+						CREATE INDEX IF NOT EXISTS `UserIDIdx` ON `UserPrediction`(`UserID`);""");
 	}
 	
 	@Override
@@ -106,7 +103,7 @@ public class SQLiteDatabase extends BaseDatabase{
 	
 	@NotNull
 	@Override
-	protected PreparedStatement getPredictionStatement(@NotNull Connection conn) throws SQLException{
+	protected PreparedStatement getPredictionStmt(@NotNull Connection conn) throws SQLException{
 		return conn.prepareStatement("""
 				INSERT OR IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
 				SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""

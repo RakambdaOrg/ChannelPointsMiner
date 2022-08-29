@@ -42,11 +42,11 @@ public class NoOpDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void deleteUnresolvedUserPredictions(){
+	public void deleteUserPredictions(){
 	}
 	
 	@Override
-	public void deleteUnresolvedUserPredictionsForChannel(@NotNull String channelId){
+	public void deleteUserPredictionsForChannel(@NotNull String channelId){
 	}
 	
 	@Override

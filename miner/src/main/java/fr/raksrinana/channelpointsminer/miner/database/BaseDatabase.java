@@ -85,7 +85,7 @@ public abstract class BaseDatabase implements IDatabase{
 		try(var conn = getConnection();
 				var selectUserStatement = conn.prepareStatement("""
 						SELECT `ID` FROM `PredictionUser` WHERE `Username`=?""");
-				var predictionStatement = getPredictionStatement(conn)){
+				var predictionStatement = getPredictionStmt(conn)){
 			conn.setAutoCommit(false);
 			
 			username = username.toLowerCase(Locale.ROOT);
@@ -117,7 +117,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@NotNull
-	protected abstract PreparedStatement getPredictionStatement(@NotNull Connection conn) throws SQLException;
+	protected abstract PreparedStatement getPredictionStmt(@NotNull Connection conn) throws SQLException;
 	
 	@Override
 	public void cancelPrediction(@NotNull Event event) throws SQLException{
@@ -127,10 +127,7 @@ public abstract class BaseDatabase implements IDatabase{
 				var addCanceledPredictionStmt = conn.prepareStatement("""
 						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`)
 						VALUES (?,?,?,?,?,true)""");
-				var updateUserPredictionsStmt = conn.prepareStatement("""
-						UPDATE `UserPrediction`
-						SET `ResolvedPredictionID`=?
-						WHERE `ResolvedPredictionID`='' AND `ChannelID`=?""")
+                var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
 		){
 			conn.setAutoCommit(false);
 			try{
@@ -142,11 +139,10 @@ public abstract class BaseDatabase implements IDatabase{
 				addCanceledPredictionStmt.setObject(5, LocalDateTime.ofInstant(ended, UTC));
 				addCanceledPredictionStmt.executeUpdate();
 				
-				//Update made predictions with event-id
-				updateUserPredictionsStmt.setString(1, event.getId());
-				updateUserPredictionsStmt.setString(2, event.getChannelId());
-				updateUserPredictionsStmt.executeUpdate();
-				
+				//Remove made predictions
+                removePredictionsStmt.setString(1, event.getChannelId());
+                removePredictionsStmt.executeUpdate();
+                
 				conn.commit();
 			}
 			catch(SQLException e){
@@ -162,15 +158,12 @@ public abstract class BaseDatabase implements IDatabase{
 		
 		try(var conn = getConnection();
 				var getOpenPredictionStmt = conn.prepareStatement("""
-						SELECT * FROM `UserPrediction` WHERE `ResolvedPredictionID`='' AND `ChannelID`=?""");
+						SELECT * FROM `UserPrediction` WHERE `ChannelID`=?""");
 				var updatePredictionUserStmt = getUpdatePredictionUserStmt(conn);
 				var addResolvedPredictionStmt = conn.prepareStatement("""
 						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`,`Outcome`,`Badge`,`ReturnRatioForWin`)
 						VALUES (?,?,?,?,?,false,?,?,?)""");
-				var updateUserPredictionsStmt = conn.prepareStatement("""
-						UPDATE `UserPrediction`
-						SET `ResolvedPredictionID`=?
-						WHERE `ResolvedPredictionID`='' AND `ChannelID`=?""")
+                var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
 		){
 			conn.setAutoCommit(false);
 			
@@ -206,11 +199,10 @@ public abstract class BaseDatabase implements IDatabase{
 				addResolvedPredictionStmt.setDouble(8, returnRatioForWin);
 				addResolvedPredictionStmt.executeUpdate();
 				
-				//Update made predictions with event-id
-				updateUserPredictionsStmt.setString(1, event.getId());
-				updateUserPredictionsStmt.setString(2, event.getChannelId());
-				updateUserPredictionsStmt.executeUpdate();
-				
+				//Remove Predictions
+                removePredictionsStmt.setString(1, event.getChannelId());
+                removePredictionsStmt.executeUpdate();
+                
 				conn.commit();
 			}
 			catch(SQLException e){
@@ -224,24 +216,28 @@ public abstract class BaseDatabase implements IDatabase{
 	protected abstract PreparedStatement getUpdatePredictionUserStmt(@NotNull Connection conn) throws SQLException;
 	
 	@Override
-	public void deleteUnresolvedUserPredictions() throws SQLException{
-		log.debug("Removing all unresolved user predictions.");
+	public void deleteUserPredictions() throws SQLException{
+		log.debug("Removing all user predictions.");
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
-						DELETE FROM `UserPrediction`
-						WHERE `ResolvedPredictionID`=''"""
+						DELETE FROM `UserPrediction`"""
 				)){
 			statement.executeUpdate();
 		}
 	}
+    
+    @NotNull
+    private PreparedStatement getDeleteUserPredictionsForChannelStmt(@NotNull Connection conn) throws SQLException{
+        return conn.prepareStatement("""
+				DELETE FROM `UserPrediction`
+				WHERE `ChannelID`=?"""
+        );
+    }
 	
 	@Override
-	public void deleteUnresolvedUserPredictionsForChannel(@NotNull String channelId) throws SQLException{
-		log.debug("Removing unresolved user predictions for channelId '{}'.", channelId);
-		try(var conn = getConnection(); var statement = conn.prepareStatement("""
-				DELETE FROM `UserPrediction`
-				WHERE `ResolvedPredictionID`='' AND `ChannelID`=?"""
-		)){
+	public void deleteUserPredictionsForChannel(@NotNull String channelId) throws SQLException{
+		log.debug("Removing user predictions for channelId '{}'.", channelId);
+		try(var conn = getConnection(); var statement = getDeleteUserPredictionsForChannelStmt(conn)){
 			statement.setString(1, channelId);
 			
 			statement.executeUpdate();
@@ -263,7 +259,6 @@ public abstract class BaseDatabase implements IDatabase{
 						FROM `UserPrediction` AS up
 						INNER JOIN `PredictionUser` AS pu ON up.`UserID`=pu.`ID`
 						WHERE `ChannelID`=?
-						AND `ResolvedPredictionID`=''
 						AND `PredictionCnt`>?
 						GROUP BY `Badge`"""
 				)){

@@ -73,12 +73,10 @@ public class MariaDBDatabase extends BaseDatabase{
 						CREATE TABLE IF NOT EXISTS `UserPrediction` (
 							 `ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 							 `UserID` INT NOT NULL REFERENCES `PredictionUser`(`ID`),
-							 `ResolvedPredictionID` VARCHAR(36) NOT NULL DEFAULT '',
 							 `Badge` VARCHAR(32) NOT NULL,
-							 PRIMARY KEY (`ChannelID`, `UserID`, `ResolvedPredictionID`),
+							 PRIMARY KEY (`ChannelID`, `UserID`),
 							 INDEX `ChannelIDIdx`(`ChannelID`),
-							 INDEX `UserIDIdx`(`UserID`),
-							 INDEX `ResolvedPredictionIDIdx`(`ResolvedPredictionID`)
+							 INDEX `UserIDIdx`(`UserID`)
 						)
 						ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;""");
 	}
@@ -100,7 +98,7 @@ public class MariaDBDatabase extends BaseDatabase{
 	
 	@NotNull
 	@Override
-	protected PreparedStatement getPredictionStatement(@NotNull Connection conn) throws SQLException{
+	protected PreparedStatement getPredictionStmt(@NotNull Connection conn) throws SQLException{
 		return conn.prepareStatement("""
 				INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
 				SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""

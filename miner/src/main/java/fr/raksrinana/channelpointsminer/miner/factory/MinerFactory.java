@@ -45,7 +45,7 @@ public class MinerFactory{
 					throw new IllegalStateException("Analytics is enabled but no database is defined");
 				}
 				
-				database.deleteUnresolvedUserPredictions();
+				database.deleteUserPredictions();
 				miner.addEventHandler(DatabaseFactory.createDatabaseHandler(database));
 			}
 			

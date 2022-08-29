@@ -12,7 +12,6 @@ public class Converters{
 		return UserPrediction.builder()
 				.userId(rs.getInt("UserID"))
 				.channelId(rs.getString("ChannelID"))
-				.resolvedPredictionId(rs.getString("ResolvedPredictionID"))
 				.badge(rs.getString("Badge"))
 				.build();
 	}
