@@ -9,7 +9,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.DeleteNotifica
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.EventCreated;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.EventUpdated;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.GlobalLastViewedContentUpdated;
-import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IMessage;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IPubSubMessage;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.PointsEarned;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.PointsSpent;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.PredictionMade;
@@ -24,6 +24,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.util.ClassWalker;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -33,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings("unused")
-public abstract class HandlerAdapter implements IMessageHandler{
+public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandler{
 	private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 	private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
 	private static final Set<Class<?>> unresolved;
@@ -79,12 +80,12 @@ public abstract class HandlerAdapter implements IMessageHandler{
 	public void onUpdateSummary(@NotNull Topic topic, @NotNull UpdateSummary message){}
 	
 	@Override
-	public void handle(@NotNull Topic topic, @NotNull IMessage message){
-		for(var clazz : ClassWalker.range(message.getClass(), IMessage.class)){
+	public void handle(@NotNull Topic topic, @NotNull IPubSubMessage message){
+		for(var clazz : ClassWalker.range(message.getClass(), IPubSubMessage.class)){
 			if(unresolved.contains(clazz)){
 				continue;
 			}
-			var methodHandle = methods.computeIfAbsent(clazz, HandlerAdapter::findMethod);
+			var methodHandle = methods.computeIfAbsent(clazz, PubSubMessageHandlerAdapter::findMethod);
 			if(methodHandle == null){
 				unresolved.add(clazz);
 				continue;
@@ -105,12 +106,13 @@ public abstract class HandlerAdapter implements IMessageHandler{
 		}
 	}
 	
-	private static MethodHandle findMethod(Class<?> clazz){
+	@Nullable
+	private static MethodHandle findMethod(@NotNull Class<?> clazz){
 		var name = clazz.getSimpleName();
 		var type = MethodType.methodType(Void.TYPE, Topic.class, clazz);
 		try{
 			name = "on" + name;
-			return lookup.findVirtual(HandlerAdapter.class, name, type);
+			return lookup.findVirtual(PubSubMessageHandlerAdapter.class, name, type);
 		}
 		catch(NoSuchMethodException | IllegalAccessException ignored){
 		} // this means this is probably a custom event!

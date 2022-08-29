@@ -19,7 +19,7 @@ public class TwitchWebSocketClientFactory{
 	}
 	
 	@NotNull
-	public static TwitchChatWebSocketClient createChatClient(@NotNull TwitchLogin twitchLogin){
-		return new TwitchChatWebSocketClient(IRC_URI, twitchLogin);
+	public static TwitchChatWebSocketClient createChatClient(@NotNull TwitchLogin twitchLogin, boolean listenMessages){
+		return new TwitchChatWebSocketClient(IRC_URI, twitchLogin, listenMessages);
 	}
 }

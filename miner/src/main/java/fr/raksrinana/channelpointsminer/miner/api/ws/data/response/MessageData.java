@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.api.ws.data.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
-import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IMessage;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IPubSubMessage;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class MessageData{
 	private Topic topic;
 	
 	@JsonIgnore
-	private IMessage message;
+	private IPubSubMessage message;
 	
 	@JsonProperty("message")
 	public void setMessage(String value) throws IOException{

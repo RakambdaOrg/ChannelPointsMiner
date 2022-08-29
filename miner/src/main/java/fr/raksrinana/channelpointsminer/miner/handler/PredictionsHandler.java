@@ -10,6 +10,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.EventS
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.event.impl.EventCreatedEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PredictionMadeEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PredictionResultEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
@@ -36,7 +37,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @RequiredArgsConstructor
 @Log4j2
-public class PredictionsHandler extends HandlerAdapter{
+public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 	private static final int OFFSET = 5;
 	
 	private final IMiner miner;
@@ -72,7 +73,12 @@ public class PredictionsHandler extends HandlerAdapter{
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
 		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
-			var prediction = predictions.get(event.getId());
+            
+            if(Objects.nonNull(streamer)){
+                miner.onEvent(new EventUpdatedEvent(miner, TimeFactory.now(), streamer.getUsername(), event));
+            }
+            
+            var prediction = predictions.get(event.getId());
 			
 			if(Objects.isNull(prediction)){
 				log.debug("Event update on unknown prediction, creating it");

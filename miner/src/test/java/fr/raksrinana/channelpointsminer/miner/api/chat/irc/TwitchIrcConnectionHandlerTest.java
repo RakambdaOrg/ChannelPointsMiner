@@ -14,10 +14,10 @@ import static org.mockito.Mockito.when;
 
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
-class TwitchIrcEventListenerTest{
+class TwitchIrcConnectionHandlerTest{
 	private static final String USERNAME = "username";
 	
-	private final TwitchIrcEventListener tested = new TwitchIrcEventListener(USERNAME);
+	private final TwitchIrcConnectionHandler tested = new TwitchIrcConnectionHandler(USERNAME);
 	
 	@Mock
 	private ClientConnectionClosedEvent clientConnectionClosedEvent;

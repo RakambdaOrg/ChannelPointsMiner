@@ -5,7 +5,8 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
-import fr.raksrinana.channelpointsminer.miner.event.IEventListener;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
+import fr.raksrinana.channelpointsminer.miner.event.IEventHandler;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public interface IMiner extends IEventListener{
+public interface IMiner extends IEventHandler{
 	@NotNull
 	Optional<Streamer> getStreamerById(@NotNull String id);
 	
@@ -61,4 +62,7 @@ public interface IMiner extends IEventListener{
 	
 	@NotNull
 	TwitchPubSubWebSocketPool getPubSubWebSocketPool();
+	
+	@NotNull
+	IDatabase getDatabase();
 }

@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.ws;
 
-import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IMessage;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IPubSubMessage;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.response.ITwitchWebSocketResponse;
@@ -218,7 +218,7 @@ class TwitchPubSubWebSocketPoolTest{
 	void messagesAreRedirected(){
 		var response = mock(MessageResponse.class);
 		var data = mock(MessageData.class);
-		var message = mock(IMessage.class);
+		var message = mock(IPubSubMessage.class);
 		
 		when(response.getData()).thenReturn(data);
 		when(data.getMessage()).thenReturn(message);

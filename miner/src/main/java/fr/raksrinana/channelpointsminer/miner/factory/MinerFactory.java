@@ -15,40 +15,44 @@ import java.util.concurrent.Executors;
 public class MinerFactory{
 	@NotNull
 	public static Miner create(@NotNull AccountConfiguration config){
-		var miner = new Miner(
-				config,
-				ApiFactory.createPassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
-				new StreamerSettingsFactory(config),
-				new TwitchPubSubWebSocketPool(50),
-				Executors.newScheduledThreadPool(4),
-				Executors.newCachedThreadPool());
-		
-		miner.addHandler(MessageHandlerFactory.createClaimAvailableHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createStreamStartEndHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createFollowRaidHandler(miner));
-		miner.addHandler(MessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
-		miner.addHandler(MessageHandlerFactory.createPointsHandler(miner));
-		
-		miner.addEventListener(LogEventListenerFactory.createLogger());
-		if(Objects.nonNull(config.getDiscord().getUrl())){
-			var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
-			miner.addEventListener(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord().isEmbeds()));
-		}
-		
-		if(config.getAnalytics().isEnabled()){
+		try{
 			var dbConfig = config.getAnalytics().getDatabase();
-			if(Objects.isNull(dbConfig)){
-				throw new IllegalStateException("Analytics is enabled but no database is defined");
+			var database = DatabaseFactory.createDatabase(dbConfig);
+			
+			var miner = new Miner(
+					config,
+					ApiFactory.createPassportApi(config.getUsername(), config.getPassword(), config.getAuthenticationFolder(), config.isUse2Fa()),
+					new StreamerSettingsFactory(config),
+					new TwitchPubSubWebSocketPool(50),
+					Executors.newScheduledThreadPool(4),
+					Executors.newCachedThreadPool(),
+					database);
+			
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimAvailableHandler(miner));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createStreamStartEndHandler(miner));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createFollowRaidHandler(miner));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPointsHandler(miner));
+			
+			miner.addEventHandler(LogEventListenerFactory.createLogger());
+			if(Objects.nonNull(config.getDiscord().getUrl())){
+				var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
+				miner.addEventHandler(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord().isEmbeds()));
 			}
-			try{
-				var database = DatabaseFactory.createDatabase(dbConfig);
-				miner.addEventListener(DatabaseFactory.createDatabaseHandler(database));
+			
+			if(config.getAnalytics().isEnabled()){
+				if(Objects.isNull(dbConfig)){
+					throw new IllegalStateException("Analytics is enabled but no database is defined");
+				}
+				
+				database.deleteUserPredictions();
+				miner.addEventHandler(DatabaseFactory.createDatabaseHandler(database));
 			}
-			catch(SQLException | HikariPool.PoolInitializationException e){
-				throw new IllegalStateException("Failed to set up database", e);
-			}
+			
+			return miner;
 		}
-		
-		return miner;
+		catch(SQLException | HikariPool.PoolInitializationException e){
+			throw new IllegalStateException("Failed to set up database", e);
+		}
 	}
 }

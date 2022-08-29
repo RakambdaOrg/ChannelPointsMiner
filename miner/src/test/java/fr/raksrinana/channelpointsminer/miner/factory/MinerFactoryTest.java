@@ -6,7 +6,7 @@ import fr.raksrinana.channelpointsminer.miner.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.AnalyticsConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.DatabaseConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.DiscordConfiguration;
-import fr.raksrinana.channelpointsminer.miner.database.DatabaseHandler;
+import fr.raksrinana.channelpointsminer.miner.database.DatabaseEventHandler;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.handler.ClaimAvailableHandler;
 import fr.raksrinana.channelpointsminer.miner.handler.FollowRaidHandler;
@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ParallelizableTest
@@ -55,7 +56,7 @@ class MinerFactoryTest{
 	@Mock
 	private IDatabase database;
 	@Mock
-	private DatabaseHandler databaseHandler;
+	private DatabaseEventHandler databaseEventHandler;
 	
 	@BeforeEach
 	void setUp(){
@@ -65,7 +66,6 @@ class MinerFactoryTest{
 		lenient().when(accountConfiguration.isUse2Fa()).thenReturn(USE_2FA);
 		lenient().when(accountConfiguration.getDiscord()).thenReturn(discordConfiguration);
 		lenient().when(accountConfiguration.getAnalytics()).thenReturn(analyticsConfiguration);
-		lenient().when(analyticsConfiguration.getDatabase()).thenReturn(databaseConfiguration);
 	}
 	
 	@Test
@@ -75,7 +75,7 @@ class MinerFactoryTest{
 			
 			var miner = MinerFactory.create(accountConfiguration);
 			
-			Assertions.assertThat(miner.getMessageHandlers())
+			Assertions.assertThat(miner.getPubSubMessageHandlers())
 					.hasSize(5)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
@@ -83,7 +83,7 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class);
 			
-			Assertions.assertThat(miner.getEventListeners())
+			Assertions.assertThat(miner.getEventHandlers())
 					.hasSize(1)
 					.hasAtLeastOneElementOfType(LoggerEventListener.class);
 			
@@ -103,7 +103,7 @@ class MinerFactoryTest{
 			
 			var miner = MinerFactory.create(accountConfiguration);
 			
-			Assertions.assertThat(miner.getMessageHandlers())
+			Assertions.assertThat(miner.getPubSubMessageHandlers())
 					.hasSize(5)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
@@ -111,7 +111,7 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class);
 			
-			Assertions.assertThat(miner.getEventListeners())
+			Assertions.assertThat(miner.getEventHandlers())
 					.hasSize(2)
 					.hasAtLeastOneElementOfType(LoggerEventListener.class)
 					.hasAtLeastOneElementOfType(DiscordEventListener.class);
@@ -121,18 +121,19 @@ class MinerFactoryTest{
 	}
 	
 	@Test
-	void nominalWithAnalytics(){
+	void nominalWithAnalytics() throws SQLException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var databaseFactory = mockStatic(DatabaseFactory.class)){
 			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, PASSWORD, AUTH_FOLDER, USE_2FA)).thenReturn(passportApi);
 			databaseFactory.when(() -> DatabaseFactory.createDatabase(databaseConfiguration)).thenReturn(database);
-			databaseFactory.when(() -> DatabaseFactory.createDatabaseHandler(database)).thenReturn(databaseHandler);
+			databaseFactory.when(() -> DatabaseFactory.createDatabaseHandler(database)).thenReturn(databaseEventHandler);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
+			when(analyticsConfiguration.getDatabase()).thenReturn(databaseConfiguration);
 			
 			var miner = MinerFactory.create(accountConfiguration);
 			
-			Assertions.assertThat(miner.getMessageHandlers())
+			Assertions.assertThat(miner.getPubSubMessageHandlers())
 					.hasSize(5)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
@@ -140,10 +141,12 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class);
 			
-			Assertions.assertThat(miner.getEventListeners())
+			Assertions.assertThat(miner.getEventHandlers())
 					.hasSize(2)
 					.hasAtLeastOneElementOfType(LoggerEventListener.class)
-					.hasAtLeastOneElementOfType(DatabaseHandler.class);
+					.hasAtLeastOneElementOfType(DatabaseEventHandler.class);
+			
+			verify(database).deleteUserPredictions();
 			
 			miner.close();
 		}
@@ -154,9 +157,7 @@ class MinerFactoryTest{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var databaseFactory = mockStatic(DatabaseFactory.class)){
 			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, PASSWORD, AUTH_FOLDER, USE_2FA)).thenReturn(passportApi);
-			databaseFactory.when(() -> DatabaseFactory.createDatabase(databaseConfiguration)).thenThrow(new SQLException("For tests"));
-			
-			when(analyticsConfiguration.isEnabled()).thenReturn(true);
+			databaseFactory.when(() -> DatabaseFactory.createDatabase(null)).thenThrow(new SQLException("For tests"));
 			
 			assertThrows(IllegalStateException.class, () -> MinerFactory.create(accountConfiguration));
 		}

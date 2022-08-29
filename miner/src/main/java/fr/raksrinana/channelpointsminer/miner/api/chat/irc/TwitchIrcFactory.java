@@ -12,12 +12,12 @@ import static org.kitteh.irc.client.library.Client.Builder.Server.SecurityType.S
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TwitchIrcFactory{
 	private static final String TWITCH_IRC_HOST = "irc.chat.twitch.tv";
-	
-	@NotNull
-	public static Client createIrcClient(@NotNull TwitchLogin twitchLogin){
-		return createIrcClient(twitchLogin.getUsername(), "oauth:%s".formatted(twitchLogin.getAccessToken()));
-	}
-	
+    
+    @NotNull
+    public static Client createIrcClient(@NotNull TwitchLogin twitchLogin){
+        return createIrcClient(twitchLogin.getUsername(), "oauth:%s".formatted(twitchLogin.getAccessToken()));
+    }
+    
 	@NotNull
 	private static Client createIrcClient(@NotNull String username, @Nullable String password){
 		var client = Client.builder()
@@ -31,7 +31,12 @@ public class TwitchIrcFactory{
 	}
 	
 	@NotNull
-	public static TwitchIrcEventListener createIrcListener(@NotNull String accountName){
-		return new TwitchIrcEventListener(accountName);
+	public static TwitchIrcConnectionHandler createIrcConnectionHandler(@NotNull String accountName){
+		return new TwitchIrcConnectionHandler(accountName);
+	}
+	
+	@NotNull
+	public static TwitchIrcMessageHandler createIrcMessageHandler(@NotNull String accountName){
+		return new TwitchIrcMessageHandler(accountName);
 	}
 }

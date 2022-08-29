@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.miner;
 
 import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
-import fr.raksrinana.channelpointsminer.miner.api.chat.TwitchChatFactory;
+import fr.raksrinana.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
 import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
@@ -9,20 +9,22 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSol
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.miner.api.ws.ITwitchPubSubMessageListener;
 import fr.raksrinana.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
-import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IMessage;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.IPubSubMessage;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topics;
 import fr.raksrinana.channelpointsminer.miner.config.AccountConfiguration;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.event.IEvent;
-import fr.raksrinana.channelpointsminer.miner.event.IEventListener;
+import fr.raksrinana.channelpointsminer.miner.event.IEventHandler;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamerAddedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamerRemovedEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.MinerRunnableFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
-import fr.raksrinana.channelpointsminer.miner.handler.IMessageHandler;
+import fr.raksrinana.channelpointsminer.miner.factory.TwitchChatFactory;
+import fr.raksrinana.channelpointsminer.miner.handler.IPubSubMessageHandler;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.runnable.SyncInventory;
 import fr.raksrinana.channelpointsminer.miner.runnable.UpdateStreamInfo;
@@ -63,17 +65,19 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	private final TwitchPubSubWebSocketPool pubSubWebSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
 	private final ExecutorService handlerExecutor;
+	@Getter
+	private final IDatabase database;
 	private final StreamerSettingsFactory streamerSettingsFactory;
 	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
 			@TestOnly,
 			@VisibleForTesting
 	})
-	private final Collection<IMessageHandler> messageHandlers;
+	private final Collection<IPubSubMessageHandler> pubSubMessageHandlers;
 	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
 			@TestOnly,
 			@VisibleForTesting
 	})
-	private final Collection<IEventListener> eventListeners;
+	private final Collection<IEventHandler> eventHandlers;
 	@Getter
 	private final MinerData minerData;
 	
@@ -94,17 +98,19 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchPubSubWebSocketPool pubSubWebSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
-			@NotNull ExecutorService handlerExecutor){
+			@NotNull ExecutorService handlerExecutor,
+			@NotNull IDatabase database){
 		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
 		this.pubSubWebSocketPool = pubSubWebSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
+		this.database = database;
 		
 		streamers = new ConcurrentHashMap<>();
-		messageHandlers = new ConcurrentLinkedQueue<>();
-		eventListeners = new ConcurrentLinkedQueue<>();
+		pubSubMessageHandlers = new ConcurrentLinkedQueue<>();
+		eventHandlers = new ConcurrentLinkedQueue<>();
 		minerData = new MinerData();
 	}
 	
@@ -145,10 +151,14 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	 */
 	private void login(){
 		try{
+			var analyticsConfiguration = accountConfiguration.getAnalytics();
+			var listenMessages = analyticsConfiguration.isEnabled() && analyticsConfiguration.isRecordChatsPredictions();
+			
 			twitchLogin = passportApi.login();
 			gqlApi = ApiFactory.createGqlApi(twitchLogin);
 			twitchApi = ApiFactory.createTwitchApi();
-			chatClient = TwitchChatFactory.createChat(accountConfiguration.getChatMode(), twitchLogin);
+			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);
+			chatClient.addChatMessageListener(new TwitchChatEventProducer(this));
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");
@@ -301,7 +311,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
-		eventListeners.forEach(listener -> handlerExecutor.submit(() -> {
+		eventHandlers.forEach(listener -> handlerExecutor.submit(() -> {
 			try(var ignored = LogContext.restore(values, messages)){
 				listener.onEvent(event);
 			}
@@ -313,23 +323,23 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	@Override
-	public void onTwitchMessage(@NotNull Topic topic, @NotNull IMessage message){
+	public void onTwitchMessage(@NotNull Topic topic, @NotNull IPubSubMessage message){
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
-		messageHandlers.forEach(handler -> handlerExecutor.submit(() -> {
+		pubSubMessageHandlers.forEach(handler -> handlerExecutor.submit(() -> {
 			try(var ignored = LogContext.restore(values, messages)){
 				handler.handle(topic, message);
 			}
 		}));
 	}
 	
-	public void addHandler(@NotNull IMessageHandler handler){
-		messageHandlers.add(handler);
+	public void addPubSubHandler(@NotNull IPubSubMessageHandler handler){
+		pubSubMessageHandlers.add(handler);
 	}
 	
-	public void addEventListener(@NotNull IEventListener listener){
-		eventListeners.add(listener);
+	public void addEventHandler(@NotNull IEventHandler handler){
+		eventHandlers.add(handler);
 	}
 	
 	@Override
@@ -340,7 +350,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		if(!Objects.isNull(chatClient)){
 			chatClient.close();
 		}
-		for(var listener : eventListeners){
+		for(var listener : eventHandlers){
 			listener.close();
 		}
 	}

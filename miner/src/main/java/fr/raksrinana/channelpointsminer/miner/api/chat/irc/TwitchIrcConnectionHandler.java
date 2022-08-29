@@ -11,7 +11,9 @@ import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEven
 
 @RequiredArgsConstructor
 @Log4j2
-public class TwitchIrcEventListener{
+public class TwitchIrcConnectionHandler{
+	
+	@NotNull
 	private final String accountName;
 	
 	@Handler
@@ -20,7 +22,7 @@ public class TwitchIrcEventListener{
 			log.info("IRC client connected");
 		}
 	}
-	
+
 	@Handler
 	public void onClientConnectionCLoseEvent(ClientConnectionClosedEvent event){
 		try(var ignored = LogContext.with(accountName)){
@@ -33,7 +35,7 @@ public class TwitchIrcEventListener{
 			}
 		}
 	}
-	
+
 	@Handler
 	public void onChannelJoinEvent(@NotNull RequestedChannelJoinCompleteEvent event){
 		try(var ignored = LogContext.with(accountName)){

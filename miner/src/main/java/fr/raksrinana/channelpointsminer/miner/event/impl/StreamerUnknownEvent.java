@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.event.impl;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
-import fr.raksrinana.channelpointsminer.miner.event.AbstractStreamerEvent;
+import fr.raksrinana.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class StreamerUnknownEvent extends AbstractStreamerEvent{
+public class StreamerUnknownEvent extends AbstractLoggableStreamerEvent{
 	public StreamerUnknownEvent(@NotNull IMiner miner, @NotNull String streamerUsername, @NotNull Instant instant){
 		super(miner, "-1", streamerUsername, null, instant);
 	}

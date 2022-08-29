@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.event.impl;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
-import fr.raksrinana.channelpointsminer.miner.event.AbstractEvent;
+import fr.raksrinana.channelpointsminer.miner.event.AbstractLoggableEvent;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class MinerStartedEvent extends AbstractEvent{
+public class MinerStartedEvent extends AbstractLoggableEvent{
 	private final String version;
 	private final String commit;
 	private final String branch;

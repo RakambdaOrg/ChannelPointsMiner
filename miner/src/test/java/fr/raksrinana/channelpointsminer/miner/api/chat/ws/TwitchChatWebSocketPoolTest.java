@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.chat.ws;
 
+import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatMessageListener;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
@@ -39,25 +40,43 @@ class TwitchChatWebSocketPoolTest{
 	
 	@Mock
 	private TwitchLogin twitchLogin;
-	
+    @Mock
+    private ITwitchChatMessageListener chatMessageListener;
 	@Mock
 	private TwitchChatWebSocketClient client;
 	
 	@BeforeEach
 	void setUp(){
-		tested = new TwitchChatWebSocketPool(50, twitchLogin);
+		tested = new TwitchChatWebSocketPool(50, twitchLogin, false);
 	}
 	
 	@Test
 	void addChannelCreatesNewClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
-			verify(client).addListener(tested);
+			verify(client).addWebSocketClosedListener(tested);
+			verify(client).connectBlocking();
+			verify(client).join(STREAMER_LOWER);
+		}
+	}
+	
+	@Test
+	void addChannelCreatesNewClientWithMessageListening() throws InterruptedException{
+		tested = new TwitchChatWebSocketPool(50, twitchLogin, true);
+		
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, true)).thenReturn(client);
+			
+			assertDoesNotThrow(() -> tested.join(STREAMER));
+			
+			assertThat(tested.getClientCount()).isEqualTo(1);
+			
+			verify(client).addWebSocketClosedListener(tested);
 			verify(client).connectBlocking();
 			verify(client).join(STREAMER_LOWER);
 		}
@@ -66,7 +85,7 @@ class TwitchChatWebSocketPoolTest{
 	@Test
 	void addNewChannelToExistingClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			when(client.isChannelJoined(STREAMER_LOWER)).thenReturn(false);
 			
@@ -75,16 +94,52 @@ class TwitchChatWebSocketPoolTest{
 			
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
-			verify(client).addListener(tested);
+			verify(client).addWebSocketClosedListener(tested);
 			verify(client).connectBlocking();
 			verify(client, times(2)).join(STREAMER_LOWER);
 		}
 	}
 	
 	@Test
+	void addMessageListenerToNewClient() throws InterruptedException{
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
+			
+			tested.addChatMessageListener(chatMessageListener);
+			
+			assertDoesNotThrow(() -> tested.join(STREAMER));
+			
+			assertThat(tested.getClientCount()).isEqualTo(1);
+			
+			verify(client).addWebSocketClosedListener(tested);
+			verify(client).connectBlocking();
+			verify(client).join(STREAMER_LOWER);
+			verify(client).addChatMessageListener(chatMessageListener);
+		}
+	}
+	
+	@Test
+	void addMessageListenerToPreviousClient() throws InterruptedException{
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
+			
+			assertDoesNotThrow(() -> tested.join(STREAMER));
+			
+			tested.addChatMessageListener(chatMessageListener);
+			
+			assertThat(tested.getClientCount()).isEqualTo(1);
+			
+			verify(client).addWebSocketClosedListener(tested);
+			verify(client).connectBlocking();
+			verify(client).join(STREAMER_LOWER);
+			verify(client).addChatMessageListener(chatMessageListener);
+		}
+	}
+	
+	@Test
 	void addExistingChannelToExistingClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			when(client.isChannelJoined(STREAMER_LOWER)).thenReturn(true);
 			
@@ -93,16 +148,53 @@ class TwitchChatWebSocketPoolTest{
 			
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
-			verify(client).addListener(tested);
+			verify(client).addWebSocketClosedListener(tested);
 			verify(client).connectBlocking();
 			verify(client).join(STREAMER_LOWER);
 		}
 	}
 	
 	@Test
+	void addExistingListenerToNewClient() throws InterruptedException{
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
+			
+			tested.addChatMessageListener(chatMessageListener);
+			
+			assertDoesNotThrow(() -> tested.join(STREAMER));
+			
+			assertThat(tested.getClientCount()).isEqualTo(1);
+			
+			verify(client).addWebSocketClosedListener(tested);
+			verify(client).connectBlocking();
+			verify(client).join(STREAMER_LOWER);
+			verify(client).addChatMessageListener(chatMessageListener);
+		}
+	}
+	
+	@Test
+	void addNewListenerToNewClient() throws InterruptedException{
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
+			
+			assertDoesNotThrow(() -> tested.join(STREAMER));
+			
+			assertThat(tested.getClientCount()).isEqualTo(1);
+			
+			verify(client).addWebSocketClosedListener(tested);
+			verify(client).connectBlocking();
+			verify(client).join(STREAMER_LOWER);
+			verify(client, never()).addChatMessageListener(chatMessageListener);
+			
+			tested.addChatMessageListener(chatMessageListener);
+			verify(client).addChatMessageListener(chatMessageListener);
+		}
+	}
+	
+	@Test
 	void clientError() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			doThrow(new RuntimeException("For tests")).when(client).connectBlocking();
 			
@@ -115,7 +207,7 @@ class TwitchChatWebSocketPoolTest{
 	@Test
 	void clientErrorJoinPending() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			doThrow(new RuntimeException("For tests")).when(client).connectBlocking();
 			
@@ -128,7 +220,7 @@ class TwitchChatWebSocketPoolTest{
 			
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
-			verify(client, times(2)).addListener(tested);
+			verify(client, times(2)).addWebSocketClosedListener(tested);
 			verify(client, times(2)).connectBlocking();
 			verify(client).join(STREAMER_LOWER);
 		}
@@ -137,7 +229,7 @@ class TwitchChatWebSocketPoolTest{
 	@Test
 	void normalClientCloseRemovesClient(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			assertDoesNotThrow(() -> tested.join(STREAMER));
 			assertThat(tested.getClientCount()).isEqualTo(1);
@@ -151,7 +243,7 @@ class TwitchChatWebSocketPoolTest{
 	void abnormalClientCloseRecreatesClient(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
 			var client2 = mock(TwitchChatWebSocketClient.class);
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client).thenReturn(client2);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client).thenReturn(client2);
 			
 			when(client.getChannels()).thenReturn(Set.of(STREAMER));
 			
@@ -170,7 +262,7 @@ class TwitchChatWebSocketPoolTest{
 	void pingSendsPing(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastHeartbeat()).thenReturn(NOW.minusSeconds(10));
@@ -190,7 +282,7 @@ class TwitchChatWebSocketPoolTest{
 	void closeTimedOut(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastHeartbeat()).thenReturn(NOW.minusSeconds(600));
@@ -208,7 +300,7 @@ class TwitchChatWebSocketPoolTest{
 	void keepNotTimedOut(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastHeartbeat()).thenReturn(NOW.minusSeconds(300));
@@ -225,7 +317,7 @@ class TwitchChatWebSocketPoolTest{
 	@Test
 	void removeChannel(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			when(client.isChannelJoined(STREAMER_LOWER)).thenReturn(true);
 			tested.join(STREAMER);
@@ -238,7 +330,7 @@ class TwitchChatWebSocketPoolTest{
 	@Test
 	void removeUnknownChannel(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			when(client.isChannelJoined(STREAMER_LOWER)).thenReturn(false);
 			tested.join(STREAMER);
@@ -251,7 +343,7 @@ class TwitchChatWebSocketPoolTest{
 	@Test
 	void closeClosesClients(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin)).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createChatClient(twitchLogin, false)).thenReturn(client);
 			
 			tested.join(STREAMER);
 			assertDoesNotThrow(() -> tested.close());

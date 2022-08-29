@@ -23,11 +23,13 @@
       },
       "reloadEvery": 15,
       "analytics": {
-        "enabled": true,
-        "database": {
-          "jdbcUrl": "jdbcUrl",
-          "username": "user",
-          "password": "pass"
+        "enabled" : true,
+        "recordChatsPredictions" : true,
+        "database" : {
+          "jdbcUrl" : "jdbcUrl",
+          "username" : "user",
+          "password" : "pass",
+          "maxPoolSize" : 15
         }
       }
     }

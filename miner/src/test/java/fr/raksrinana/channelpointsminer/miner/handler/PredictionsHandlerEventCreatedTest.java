@@ -45,6 +45,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerEventCreatedTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String NON_EXISTENT_STREAMER_ID = "streamer-id2";
 	private static final String EVENT_ID = "event-id";
 	private static final int MINIMUM_REQUIRED = 50;
 	private static final int WINDOW_SECONDS = 300;
@@ -78,12 +79,13 @@ class PredictionsHandlerEventCreatedTest{
 	
 	@BeforeEach
 	void setUp(){
+        
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		
 		lenient().when(eventCreated.getData()).thenReturn(eventCreatedData);
 		lenient().when(eventCreatedData.getEvent()).thenReturn(event);
-		
+        
 		lenient().when(event.getId()).thenReturn(EVENT_ID);
 		lenient().when(event.getStatus()).thenReturn(ACTIVE);
 		lenient().when(event.getCreatedAt()).thenReturn(EVENT_DATE);

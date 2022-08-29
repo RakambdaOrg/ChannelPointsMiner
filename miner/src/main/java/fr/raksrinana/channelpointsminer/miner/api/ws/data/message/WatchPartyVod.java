@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WatchPartyVod extends IMessage{
+public class WatchPartyVod extends IPubSubMessage{
 	@JsonProperty("vod")
 	@NotNull
 	private Vod vod;

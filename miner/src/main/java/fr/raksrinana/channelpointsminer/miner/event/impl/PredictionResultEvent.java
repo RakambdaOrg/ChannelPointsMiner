@@ -4,7 +4,7 @@ import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
-import fr.raksrinana.channelpointsminer.miner.event.AbstractStreamerEvent;
+import fr.raksrinana.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PredictionResultEvent extends AbstractStreamerEvent{
+public class PredictionResultEvent extends AbstractLoggableStreamerEvent{
 	private final PlacedPrediction placedPrediction;
 	@Getter
 	private final PredictionResultData predictionResultData;

@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
@@ -22,6 +23,8 @@ class LeastUsersOutcomePickerTest{
 	private final LeastUsersOutcomePicker tested = LeastUsersOutcomePicker.builder().build();
 	
 	@Mock
+	private IDatabase database;
+	@Mock
 	private BettingPrediction bettingPrediction;
 	@Mock
 	private Event event;
@@ -41,13 +44,13 @@ class LeastUsersOutcomePickerTest{
 		when(blueOutcome.getTotalUsers()).thenReturn(20);
 		when(pinkOutcome.getTotalUsers()).thenReturn(19);
 		
-		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(pinkOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction, database)).isEqualTo(pinkOutcome);
 	}
 	
 	@Test
 	void missingOutcome(){
 		when(event.getOutcomes()).thenReturn(List.of());
 		
-		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
 	}
 }

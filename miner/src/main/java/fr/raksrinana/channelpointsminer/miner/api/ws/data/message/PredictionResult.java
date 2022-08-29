@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PredictionResult extends IMessage{
+public class PredictionResult extends IPubSubMessage{
 	@JsonProperty("data")
 	@NotNull
 	private PredictionResultData data;

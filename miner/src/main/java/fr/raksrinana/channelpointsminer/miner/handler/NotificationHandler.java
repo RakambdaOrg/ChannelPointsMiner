@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public class NotificationHandler extends HandlerAdapter{
+public class NotificationHandler extends PubSubMessageHandlerAdapter{
 	public static final String DROP_REWARD_REMINDER = "user_drop_reward_reminder_notification";
 	
 	private final IMiner miner;

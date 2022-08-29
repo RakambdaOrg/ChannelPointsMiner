@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 @Builder
-public class ClaimClaimed extends IMessage{
+public class ClaimClaimed extends IPubSubMessage{
 	@JsonProperty("data")
 	@NotNull
 	private ClaimClaimedData data;

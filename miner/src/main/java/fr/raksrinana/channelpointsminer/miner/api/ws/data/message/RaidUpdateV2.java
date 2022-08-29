@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RaidUpdateV2 extends IMessage{
+public class RaidUpdateV2 extends IPubSubMessage{
 	@JsonProperty("raid")
 	@NotNull
 	private Raid raid;

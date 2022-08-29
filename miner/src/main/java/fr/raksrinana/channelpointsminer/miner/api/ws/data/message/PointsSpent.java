@@ -17,7 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PointsSpent extends IMessage{
+public class PointsSpent extends IPubSubMessage{
 	@JsonProperty("data")
 	private PointsSpentData data;
 }
