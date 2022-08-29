@@ -4,6 +4,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ChannelLastVie
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimClaimed;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.Commercial;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.CreateNotification;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.DeleteNotification;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.EventCreated;
@@ -78,6 +79,8 @@ public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandl
 	public void onDeleteNotification(@NotNull Topic topic, @NotNull DeleteNotification message){}
 	
 	public void onUpdateSummary(@NotNull Topic topic, @NotNull UpdateSummary message){}
+	
+	public void onCommunityMomentStart(@NotNull Topic topic, @NotNull CommunityMomentStart message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IPubSubMessage message){

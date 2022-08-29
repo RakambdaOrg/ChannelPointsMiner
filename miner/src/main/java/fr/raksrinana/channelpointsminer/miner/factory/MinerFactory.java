@@ -33,6 +33,7 @@ public class MinerFactory{
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createFollowRaidHandler(miner));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPointsHandler(miner));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimMomentHandler(miner));
 			
 			miner.addEventHandler(LogEventListenerFactory.createLogger());
 			if(Objects.nonNull(config.getDiscord().getUrl())){
