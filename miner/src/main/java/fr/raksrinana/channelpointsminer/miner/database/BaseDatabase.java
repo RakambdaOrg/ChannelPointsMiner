@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -98,11 +99,18 @@ public abstract class BaseDatabase implements IDatabase{
 			}
 			else{
 				try(var addUserStatement = conn.prepareStatement("""
-						INSERT INTO `PredictionUser`(`Username`) VALUES (?) RETURNING `ID`""")){
+						INSERT INTO `PredictionUser`(`Username`) VALUES (?)""", Statement.RETURN_GENERATED_KEYS)){
 					addUserStatement.setString(1, username);
-					var insertResult = addUserStatement.executeQuery();
-					insertResult.next();
-					userId = insertResult.getInt(1);
+					var insertResult = addUserStatement.executeUpdate();
+					if(insertResult <= 0){
+						throw new SQLException("Failed to create new prediction user");
+					}
+					
+					var generatedKeys = addUserStatement.getGeneratedKeys();
+					if(!generatedKeys.next()){
+						throw new SQLException("Failed to get new prediction user id");
+					}
+					userId = generatedKeys.getInt(1);
 				}
 				log.debug("Added new prediction user '{}'", username);
 			}
@@ -127,7 +135,7 @@ public abstract class BaseDatabase implements IDatabase{
 				var addCanceledPredictionStmt = conn.prepareStatement("""
 						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`)
 						VALUES (?,?,?,?,?,true)""");
-                var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
+				var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
 		){
 			conn.setAutoCommit(false);
 			try{
@@ -140,9 +148,9 @@ public abstract class BaseDatabase implements IDatabase{
 				addCanceledPredictionStmt.executeUpdate();
 				
 				//Remove made predictions
-                removePredictionsStmt.setString(1, event.getChannelId());
-                removePredictionsStmt.executeUpdate();
-                
+				removePredictionsStmt.setString(1, event.getChannelId());
+				removePredictionsStmt.executeUpdate();
+				
 				conn.commit();
 			}
 			catch(SQLException e){
@@ -163,7 +171,7 @@ public abstract class BaseDatabase implements IDatabase{
 				var addResolvedPredictionStmt = conn.prepareStatement("""
 						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`,`Outcome`,`Badge`,`ReturnRatioForWin`)
 						VALUES (?,?,?,?,?,false,?,?,?)""");
-                var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
+				var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
 		){
 			conn.setAutoCommit(false);
 			
@@ -200,9 +208,9 @@ public abstract class BaseDatabase implements IDatabase{
 				addResolvedPredictionStmt.executeUpdate();
 				
 				//Remove Predictions
-                removePredictionsStmt.setString(1, event.getChannelId());
-                removePredictionsStmt.executeUpdate();
-                
+				removePredictionsStmt.setString(1, event.getChannelId());
+				removePredictionsStmt.executeUpdate();
+				
 				conn.commit();
 			}
 			catch(SQLException e){
@@ -225,14 +233,14 @@ public abstract class BaseDatabase implements IDatabase{
 			statement.executeUpdate();
 		}
 	}
-    
-    @NotNull
-    private PreparedStatement getDeleteUserPredictionsForChannelStmt(@NotNull Connection conn) throws SQLException{
-        return conn.prepareStatement("""
+	
+	@NotNull
+	private PreparedStatement getDeleteUserPredictionsForChannelStmt(@NotNull Connection conn) throws SQLException{
+		return conn.prepareStatement("""
 				DELETE FROM `UserPrediction`
 				WHERE `ChannelID`=?"""
-        );
-    }
+		);
+	}
 	
 	@Override
 	public void deleteUserPredictionsForChannel(@NotNull String channelId) throws SQLException{
