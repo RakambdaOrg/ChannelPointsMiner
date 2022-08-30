@@ -38,7 +38,7 @@ public class DatabaseFactory{
 		database.initDatabase();
 		return database;
 	}
-    
+	
 	@NotNull
 	private static HikariDataSource createDatasource(@NotNull DatabaseConfiguration configuration, @NotNull String driver, int maxPoolSize){
 		var poolConfiguration = new HikariConfig();
@@ -46,7 +46,7 @@ public class DatabaseFactory{
 		poolConfiguration.setUsername(configuration.getUsername());
 		poolConfiguration.setPassword(configuration.getPassword());
 		poolConfiguration.setDriverClassName(driver);
-        poolConfiguration.setMaximumPoolSize(maxPoolSize);
+		poolConfiguration.setMaximumPoolSize(maxPoolSize);
 		
 		return new HikariDataSource(poolConfiguration);
 	}

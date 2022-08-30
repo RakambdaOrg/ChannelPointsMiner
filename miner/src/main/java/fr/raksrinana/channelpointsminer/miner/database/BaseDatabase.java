@@ -7,6 +7,7 @@ import fr.raksrinana.channelpointsminer.miner.database.model.prediction.OutcomeS
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.sql.Connection;
@@ -33,6 +34,16 @@ public abstract class BaseDatabase implements IDatabase{
 			new ReentrantLock(),
 			new ReentrantLock()
 	};
+	
+	protected void applyFlyway(@NotNull String... migrationsPaths){
+		var flyway = Flyway.configure()
+				.dataSource(dataSource)
+				.locations(migrationsPaths)
+				.baselineOnMigrate(true)
+				.baselineVersion("1")
+				.load();
+		flyway.migrate();
+	}
 	
 	@Override
 	public void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException{

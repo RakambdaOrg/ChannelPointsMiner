@@ -19,6 +19,7 @@ hikari-cp-version = "5.0.1"
 mariadb-version = "3.0.7"
 sqlite-version = "3.39.2.1"
 rerunner-jupiter-version = "2.1.6"
+flyway-version = "9.2.0"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
@@ -47,6 +48,7 @@ kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitt
 hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari-cp-version" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb-version" }
 sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-version" }
+flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway-version" }
 
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
