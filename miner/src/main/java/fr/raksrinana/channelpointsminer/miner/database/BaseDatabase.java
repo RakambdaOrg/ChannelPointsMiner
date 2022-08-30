@@ -84,36 +84,10 @@ public abstract class BaseDatabase implements IDatabase{
 	public void addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge) throws SQLException{
 		
 		try(var conn = getConnection();
-				var selectUserStatement = conn.prepareStatement("""
-						SELECT `ID` FROM `PredictionUser` WHERE `Username`=?""");
 				var predictionStatement = getPredictionStmt(conn)){
 			conn.setAutoCommit(false);
 			
-			username = username.toLowerCase(Locale.ROOT);
-			
-			selectUserStatement.setString(1, username);
-			var userResult = selectUserStatement.executeQuery();
-			int userId;
-			if(userResult.next()){
-				userId = userResult.getInt(1);
-			}
-			else{
-				try(var addUserStatement = conn.prepareStatement("""
-						INSERT INTO `PredictionUser`(`Username`) VALUES (?)""", Statement.RETURN_GENERATED_KEYS)){
-					addUserStatement.setString(1, username);
-					var insertResult = addUserStatement.executeUpdate();
-					if(insertResult <= 0){
-						throw new SQLException("Failed to create new prediction user");
-					}
-					
-					var generatedKeys = addUserStatement.getGeneratedKeys();
-					if(!generatedKeys.next()){
-						throw new SQLException("Failed to get new prediction user id");
-					}
-					userId = generatedKeys.getInt(1);
-				}
-				log.debug("Added new prediction user '{}'", username);
-			}
+			var userId = getOrCreatePredictionUserId(conn, username);
 			
 			predictionStatement.setInt(1, userId);
 			predictionStatement.setString(2, badge);
@@ -121,6 +95,39 @@ public abstract class BaseDatabase implements IDatabase{
 			
 			predictionStatement.executeUpdate();
 			conn.commit();
+		}
+	}
+	
+	protected int getOrCreatePredictionUserId(@NotNull Connection conn, @NotNull String username) throws SQLException{
+		username = username.toLowerCase(Locale.ROOT);
+		
+		try(var selectUserStatement = conn.prepareStatement("""
+				SELECT `ID` FROM `PredictionUser` WHERE `Username`=?""")){
+			
+			selectUserStatement.setString(1, username);
+			var userResult = selectUserStatement.executeQuery();
+			
+			if(userResult.next()){
+				return userResult.getInt(1);
+			}
+			
+			try(var addUserStatement = conn.prepareStatement("""
+					INSERT INTO `PredictionUser`(`Username`) VALUES (?)""", Statement.RETURN_GENERATED_KEYS)){
+				addUserStatement.setString(1, username);
+				var insertResult = addUserStatement.executeUpdate();
+				if(insertResult <= 0){
+					throw new SQLException("Failed to create new prediction user");
+				}
+				
+				var generatedKeys = addUserStatement.getGeneratedKeys();
+				if(!generatedKeys.next()){
+					throw new SQLException("Failed to get new prediction user id");
+				}
+				
+				var userId = generatedKeys.getInt(1);
+				log.debug("Added new prediction user '{}' : {}", username, userId);
+				return userId;
+			}
 		}
 	}
 	
