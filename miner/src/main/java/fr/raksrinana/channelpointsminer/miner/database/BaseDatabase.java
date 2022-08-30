@@ -20,12 +20,19 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import static java.time.ZoneOffset.UTC;
 
 @RequiredArgsConstructor
 @Log4j2
 public abstract class BaseDatabase implements IDatabase{
 	private final HikariDataSource dataSource;
+	private final Lock[] getOrCreatePredictionUserIdLocks = new Lock[]{
+			new ReentrantLock(),
+			new ReentrantLock(),
+			new ReentrantLock()
+	};
 	
 	@Override
 	public void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException{
@@ -100,6 +107,8 @@ public abstract class BaseDatabase implements IDatabase{
 	
 	protected int getOrCreatePredictionUserId(@NotNull Connection conn, @NotNull String username) throws SQLException{
 		username = username.toLowerCase(Locale.ROOT);
+		var lock = getOrCreatePredictionUserIdLocks[hashToIndex(username.hashCode(), getOrCreatePredictionUserIdLocks.length)];
+		lock.lock();
 		
 		try(var selectUserStatement = conn.prepareStatement("""
 				SELECT `ID` FROM `PredictionUser` WHERE `Username`=?""")){
@@ -129,6 +138,16 @@ public abstract class BaseDatabase implements IDatabase{
 				return userId;
 			}
 		}
+		finally{
+			lock.unlock();
+		}
+	}
+	
+	private int hashToIndex(int hash, int length){
+		if(hash == Integer.MIN_VALUE){
+			return 0;
+		}
+		return Math.abs(hash) % length;
 	}
 	
 	@NotNull
