@@ -61,18 +61,19 @@ public class MariaDBDatabase extends BaseDatabase{
 						CREATE TABLE IF NOT EXISTS `PredictionUser` (
 							`ID` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 							`Username` VARCHAR(128) NOT NULL,
+							`ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 							`PredictionCnt` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 							`WinCnt` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 							`WinRate` DECIMAL(8,7) NOT NULL DEFAULT 0,
 							`ReturnOnInvestment` DOUBLE NOT NULL DEFAULT 0,
-							UNIQUE (`Username`),
-							INDEX `UsernameIdx`(`Username`)
+							UNIQUE (`Username`, `ChannelID`),
+							INDEX `UsernameIdx`(`Username`, `ChannelID`)
 						)
 						ENGINE=InnoDB CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci';""",
 				"""
 						CREATE TABLE IF NOT EXISTS `UserPrediction` (
-							 `ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 							 `UserID` INT NOT NULL REFERENCES `PredictionUser`(`ID`),
+							 `ChannelID` VARCHAR(32) NOT NULL REFERENCES `Channel`(`ID`),
 							 `Badge` VARCHAR(32) NOT NULL,
 							 PRIMARY KEY (`ChannelID`, `UserID`),
 							 INDEX `ChannelIDIdx`(`ChannelID`),
@@ -110,7 +111,11 @@ public class MariaDBDatabase extends BaseDatabase{
 	protected PreparedStatement getUpdatePredictionUserStmt(@NotNull Connection conn) throws SQLException{
 		return conn.prepareStatement("""
 				UPDATE `PredictionUser`
-				SET `PredictionCnt`=`PredictionCnt`+1, `WinCnt`=`WinCnt`+?, `WinRate`=`WinCnt`/`PredictionCnt`,
-				`ReturnOnInvestment`=`ReturnOnInvestment`+? WHERE `ID`=?""");
+				SET
+				`PredictionCnt`=`PredictionCnt`+1,
+				`WinCnt`=`WinCnt`+?,
+				`WinRate`=`WinCnt`/`PredictionCnt`,
+				`ReturnOnInvestment`=`ReturnOnInvestment`+?
+				WHERE `ID`=? AND `ChannelID`=?""");
 	}
 }

@@ -217,6 +217,7 @@ public abstract class BaseDatabase implements IDatabase{
 							updatePredictionUserStmt.setDouble(2, -1);
 						}
 						updatePredictionUserStmt.setInt(3, userPrediction.getUserId());
+						updatePredictionUserStmt.setString(4, userPrediction.getChannelId());
 						updatePredictionUserStmt.addBatch();
 					}
 					updatePredictionUserStmt.executeBatch();
@@ -291,7 +292,8 @@ public abstract class BaseDatabase implements IDatabase{
 							AVG(`WinCnt`) AS AvgUserWins,
 							AVG(`ReturnOnInvestment`) AS AvgReturnOnInvestment
 						FROM `UserPrediction` AS up
-						INNER JOIN `PredictionUser` AS pu ON up.`UserID`=pu.`ID`
+						INNER JOIN `PredictionUser` AS pu
+						ON up.`UserID`=pu.`ID` AND up.`ChannelID` = pu.`ChannelID`
 						WHERE `ChannelID`=?
 						AND `PredictionCnt`>?
 						GROUP BY `Badge`"""
