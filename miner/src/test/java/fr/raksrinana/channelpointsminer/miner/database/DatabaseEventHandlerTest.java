@@ -297,6 +297,7 @@ class DatabaseEventHandlerTest{
 		tested.onEvent(event);
 		
 		verify(database).addPrediction(CHANNEL_ID, EVENT_ID, "PREDICTED", "123", NOW);
+		//TODO test database.addUserPrediction
 	}
 	
 	@Test
@@ -373,16 +374,16 @@ class DatabaseEventHandlerTest{
 		var event = mock(EventUpdatedEvent.class);
 		
 		when(event.getEvent()).thenReturn(eventData);
-		when(event.getStreamerUsername()).thenReturn(CHANNEL_NAME);
+		when(eventData.getChannelId()).thenReturn(CHANNEL_ID);
 		
 		when(eventData.getStatus()).thenReturn(EventStatus.ACTIVE);
 		
 		assertDoesNotThrow(() -> tested.onEvent(event));
 		
-		verify(database).addUserPrediction(USERNAME1, CHANNEL_NAME, BADGE_1);
-		verify(database).addUserPrediction(USERNAME2, CHANNEL_NAME, BADGE_1);
-		verify(database).addUserPrediction(USERNAME3, CHANNEL_NAME, BADGE_2);
-		verify(database).addUserPrediction(USERNAME4, CHANNEL_NAME, BADGE_2);
+		verify(database).addUserPrediction(USERNAME1, CHANNEL_ID, BADGE_1);
+		verify(database).addUserPrediction(USERNAME2, CHANNEL_ID, BADGE_1);
+		verify(database).addUserPrediction(USERNAME3, CHANNEL_ID, BADGE_2);
+		verify(database).addUserPrediction(USERNAME4, CHANNEL_ID, BADGE_2);
 	}
 	
 	@Test
@@ -423,9 +424,26 @@ class DatabaseEventHandlerTest{
 		when(event.getActor()).thenReturn(ACTOR);
 		when(event.getBadges()).thenReturn(BADGE_PREDICTION_INFO);
 		
+		when(database.getStreamerIdFromName(CHANNEL_NAME)).thenReturn(Optional.of(CHANNEL_ID));
+		
 		assertDoesNotThrow(() -> tested.onEvent(event));
 		
-		verify(database).addUserPrediction(ACTOR, CHANNEL_NAME, PREDICTION);
+		verify(database).addUserPrediction(ACTOR, CHANNEL_ID, PREDICTION);
+	}
+	
+	@Test
+	void onChatMessagePredictionChannelUnknown() throws SQLException{
+		var event = mock(ChatMessageEvent.class);
+		
+		when(event.getStreamer()).thenReturn(CHANNEL_NAME);
+		when(event.getActor()).thenReturn(ACTOR);
+		when(event.getBadges()).thenReturn(BADGE_PREDICTION_INFO);
+		
+		when(database.getStreamerIdFromName(CHANNEL_NAME)).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> tested.onEvent(event));
+		
+		verify(database, never()).addUserPrediction(ACTOR, CHANNEL_ID, PREDICTION);
 	}
 	
 	@ParameterizedTest

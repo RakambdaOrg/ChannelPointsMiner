@@ -99,32 +99,33 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge) throws SQLException{
+	public void addUserPrediction(@NotNull String username, @NotNull String channelId, @NotNull String badge) throws SQLException{
 		
 		try(var conn = getConnection();
 				var predictionStatement = getPredictionStmt(conn)){
 			conn.setAutoCommit(false);
 			
-			var userId = getOrCreatePredictionUserId(conn, username);
+			var userId = getOrCreatePredictionUserId(conn, username, channelId);
 			
-			predictionStatement.setInt(1, userId);
-			predictionStatement.setString(2, badge);
-			predictionStatement.setString(3, streamerName);
+			predictionStatement.setString(1, channelId);
+			predictionStatement.setInt(2, userId);
+			predictionStatement.setString(3, badge);
 			
 			predictionStatement.executeUpdate();
 			conn.commit();
 		}
 	}
 	
-	protected int getOrCreatePredictionUserId(@NotNull Connection conn, @NotNull String username) throws SQLException{
+	protected int getOrCreatePredictionUserId(@NotNull Connection conn, @NotNull String username, @NotNull String channelId) throws SQLException{
 		username = username.toLowerCase(Locale.ROOT);
 		var lock = getOrCreatePredictionUserIdLocks[hashToIndex(username.hashCode(), getOrCreatePredictionUserIdLocks.length)];
 		lock.lock();
 		
 		try(var selectUserStatement = conn.prepareStatement("""
-				SELECT `ID` FROM `PredictionUser` WHERE `Username`=?""")){
+				SELECT `ID` FROM `PredictionUser` WHERE `Username`=? AND `ChannelID`=?""")){
 			
 			selectUserStatement.setString(1, username);
+			selectUserStatement.setString(2, channelId);
 			var userResult = selectUserStatement.executeQuery();
 			
 			if(userResult.next()){
@@ -132,8 +133,9 @@ public abstract class BaseDatabase implements IDatabase{
 			}
 			
 			try(var addUserStatement = conn.prepareStatement("""
-					INSERT INTO `PredictionUser`(`Username`) VALUES (?)""", Statement.RETURN_GENERATED_KEYS)){
+					INSERT INTO `PredictionUser`(`Username`, `ChannelID`) VALUES (?, ?)""", Statement.RETURN_GENERATED_KEYS)){
 				addUserStatement.setString(1, username);
+				addUserStatement.setString(2, channelId);
 				var insertResult = addUserStatement.executeUpdate();
 				if(insertResult <= 0){
 					throw new SQLException("Failed to create new prediction user");
@@ -145,7 +147,7 @@ public abstract class BaseDatabase implements IDatabase{
 				}
 				
 				var userId = generatedKeys.getInt(1);
-				log.debug("Added new prediction user '{}' : {}", username, userId);
+				log.debug("Added new prediction user '{}' for channel '{}' : {}", username, channelId, userId);
 				return userId;
 			}
 		}
@@ -305,7 +307,7 @@ public abstract class BaseDatabase implements IDatabase{
 						FROM `UserPrediction` AS up
 						INNER JOIN `PredictionUser` AS pu
 						ON up.`UserID`=pu.`ID` AND up.`ChannelID` = pu.`ChannelID`
-						WHERE `ChannelID`=?
+						WHERE up.`ChannelID`=?
 						AND `PredictionCnt`>?
 						GROUP BY `Badge`"""
 				)){
@@ -328,24 +330,30 @@ public abstract class BaseDatabase implements IDatabase{
 		dataSource.close();
 	}
 	
+	@Override
+	@NotNull
+	public Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException{
+		log.debug("Getting streamerId from channel {}", channelName);
+		try(var conn = getConnection();
+				var statement = conn.prepareStatement("""
+						SELECT `ID`
+						FROM `Channel`
+						WHERE `Username`=?"""
+				)){
+			statement.setString(1, channelName);
+			
+			try(var result = statement.executeQuery()){
+				if(result.next()){
+					return Optional.ofNullable(result.getString("ID"));
+				}
+			}
+			
+			return Optional.empty();
+		}
+	}
+	
 	@NotNull
 	protected Connection getConnection() throws SQLException{
 		return dataSource.getConnection();
-	}
-	
-	protected void execute(@NotNull String... statements) throws SQLException{
-		try(var conn = getConnection()){
-			conn.setAutoCommit(false);
-			for(var sql : statements){
-				try(var statement = conn.createStatement()){
-					statement.execute(sql);
-				}
-				catch(SQLException e){
-					conn.rollback();
-					throw e;
-				}
-			}
-			conn.commit();
-		}
 	}
 }

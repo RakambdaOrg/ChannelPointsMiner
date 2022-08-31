@@ -4,9 +4,11 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class NoOpDatabase implements IDatabase{
 	@Override
@@ -57,5 +59,11 @@ public class NoOpDatabase implements IDatabase{
 	
 	@Override
 	public void close(){
+	}
+	
+	@Override
+	@NotNull
+	public Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException{
+		return Optional.empty();
 	}
 }

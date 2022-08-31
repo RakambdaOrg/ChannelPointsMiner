@@ -41,8 +41,7 @@ public class SQLiteDatabase extends BaseDatabase{
 	protected PreparedStatement getPredictionStmt(@NotNull Connection conn) throws SQLException{
 		return conn.prepareStatement("""
 				INSERT OR IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
-				SELECT c.`ID`, ?, ? FROM `Channel` AS c
-				WHERE c.`Username`=?"""
+				VALUES(?,?,?)"""
 		);
 	}
 	

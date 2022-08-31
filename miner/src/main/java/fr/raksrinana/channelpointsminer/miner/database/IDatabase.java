@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IDatabase extends AutoCloseable{
 	void initDatabase() throws SQLException;
@@ -19,7 +20,7 @@ public interface IDatabase extends AutoCloseable{
 	
 	void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant) throws SQLException;
 	
-	void addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge) throws SQLException;
+	void addUserPrediction(@NotNull String username, @NotNull String streamerId, @NotNull String badge) throws SQLException;
 	
 	void cancelPrediction(@NotNull Event event) throws SQLException;
 	
@@ -34,4 +35,7 @@ public interface IDatabase extends AutoCloseable{
 	
 	@Override
 	void close();
+	
+	@NotNull
+	Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException;
 }

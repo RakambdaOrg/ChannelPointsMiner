@@ -46,7 +46,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 			for(var outcome : predictionEvent.getOutcomes()){
 				var badge = outcome.getBadge().getVersion();
 				for(var predictor : outcome.getTopPredictors()){
-					database.addUserPrediction(predictor.getUserDisplayName(), streamerUsername, badge);
+					database.addUserPrediction(predictor.getUserDisplayName(), event.getEvent().getChannelId(), badge);
 				}
 			}
 		}
@@ -92,7 +92,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 					.filter(o -> o.getId().equals(outcomeId))
 					.findFirst();
 			if(placedOutcome.isPresent()){
-				database.addUserPrediction(event.getMiner().getUsername(), event.getStreamerUsername().get(), placedOutcome.get().getBadge().getVersion());
+				database.addUserPrediction(event.getMiner().getUsername(), event.getStreamerId(), placedOutcome.get().getBadge().getVersion());
 			}
 		}
 	}
@@ -124,10 +124,16 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 			try{
 				var predictionBadge = matcher.group(1);
 				log.debug("Read user prediction from chat. User: {}, Badge: {}", event.getActor(), predictionBadge);
-				database.addUserPrediction(event.getActor(), event.getStreamer(), predictionBadge);
+				
+				var streamerId = database.getStreamerIdFromName(event.getStreamer());
+				if(streamerId.isEmpty()){
+					log.warn("Failed to get streamer id from name: {}", event.getStreamer());
+					return;
+				}
+				database.addUserPrediction(event.getActor(), streamerId.get(), predictionBadge);
 			}
 			catch(SQLException e){
-				log.error("SQL Exception while adding user prediction: {}", e.getMessage());
+				log.error("SQL Exception while adding user prediction", e);
 			}
 		}
 	}

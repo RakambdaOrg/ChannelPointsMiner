@@ -35,8 +35,7 @@ public class MariaDBDatabase extends BaseDatabase{
 	@Override
 	protected PreparedStatement getPredictionStmt(@NotNull Connection conn) throws SQLException{
 		return conn.prepareStatement("""
-				INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
-				SELECT c.`ID`, ?, ? FROM `Channel` AS c WHERE c.`Username`=?"""
+				INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`) VALUES (?,?,?)"""
 		);
 	}
 	
