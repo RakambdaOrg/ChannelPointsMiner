@@ -19,7 +19,7 @@ hikari-cp-version = "5.0.1"
 mariadb-version = "3.0.7"
 sqlite-version = "3.39.2.1"
 rerunner-jupiter-version = "2.1.6"
-flyway-version = "9.2.1"
+flyway-version = "9.2.2"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
