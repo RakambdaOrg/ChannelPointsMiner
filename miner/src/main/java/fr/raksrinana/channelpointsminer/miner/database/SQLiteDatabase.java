@@ -1,12 +1,12 @@
 package fr.raksrinana.channelpointsminer.miner.database;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import static java.time.ZoneOffset.UTC;
+import java.sql.Timestamp;
 
 public class SQLiteDatabase extends BaseDatabase{
 	public SQLiteDatabase(HikariDataSource dataSource){
@@ -26,11 +26,9 @@ public class SQLiteDatabase extends BaseDatabase{
 						VALUES(?, ?, ?);"""
 				)){
 			
-			var timestamp = LocalDateTime.now(UTC);
-			
 			statement.setString(1, channelId);
 			statement.setString(2, username);
-			statement.setObject(3, timestamp);
+			statement.setTimestamp(3, Timestamp.from(TimeFactory.now()));
 			
 			statement.executeUpdate();
 		}

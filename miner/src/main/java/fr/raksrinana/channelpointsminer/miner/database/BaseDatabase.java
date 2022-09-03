@@ -14,8 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import static java.time.ZoneOffset.UTC;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -54,9 +53,7 @@ public abstract class BaseDatabase implements IDatabase{
 						WHERE `ID` = ?;"""
 				)){
 			
-			var timestamp = LocalDateTime.now(UTC);
-			
-			statement.setObject(1, timestamp);
+			statement.setTimestamp(1, Timestamp.from(instant));
 			statement.setString(2, channelId);
 			
 			statement.executeUpdate();
@@ -72,7 +69,7 @@ public abstract class BaseDatabase implements IDatabase{
 				)){
 			
 			statement.setString(1, channelId);
-			statement.setObject(2, LocalDateTime.ofInstant(instant, UTC));
+			statement.setTimestamp(2, Timestamp.from(instant));
 			statement.setInt(3, balance);
 			statement.setString(4, reason);
 			
@@ -90,7 +87,7 @@ public abstract class BaseDatabase implements IDatabase{
 			
 			statement.setString(1, channelId);
 			statement.setString(2, eventId);
-			statement.setObject(3, LocalDateTime.ofInstant(instant, UTC));
+			statement.setTimestamp(3, Timestamp.from(instant));
 			statement.setString(4, type);
 			statement.setString(5, description);
 			
@@ -182,8 +179,8 @@ public abstract class BaseDatabase implements IDatabase{
 				addCanceledPredictionStmt.setString(1, event.getId());
 				addCanceledPredictionStmt.setString(2, event.getChannelId());
 				addCanceledPredictionStmt.setString(3, event.getTitle());
-				addCanceledPredictionStmt.setObject(4, event.getCreatedAt().withZoneSameInstant(UTC).toLocalDateTime());
-				addCanceledPredictionStmt.setObject(5, LocalDateTime.ofInstant(ended, UTC));
+				addCanceledPredictionStmt.setTimestamp(4, Timestamp.from(event.getCreatedAt().toInstant()));
+				addCanceledPredictionStmt.setTimestamp(5, Timestamp.from(ended));
 				addCanceledPredictionStmt.executeUpdate();
 				
 				//Remove made predictions
@@ -240,8 +237,8 @@ public abstract class BaseDatabase implements IDatabase{
 				addResolvedPredictionStmt.setString(1, event.getId());
 				addResolvedPredictionStmt.setString(2, event.getChannelId());
 				addResolvedPredictionStmt.setString(3, event.getTitle());
-				addResolvedPredictionStmt.setObject(4, event.getCreatedAt().withZoneSameInstant(UTC).toLocalDateTime());
-				addResolvedPredictionStmt.setObject(5, LocalDateTime.ofInstant(ended, UTC));
+				addResolvedPredictionStmt.setTimestamp(4, Timestamp.from(event.getCreatedAt().toInstant()));
+				addResolvedPredictionStmt.setTimestamp(5, Timestamp.from(ended));
 				addResolvedPredictionStmt.setString(6, outcome);
 				addResolvedPredictionStmt.setString(7, badge);
 				addResolvedPredictionStmt.setDouble(8, returnRatioForWin);
