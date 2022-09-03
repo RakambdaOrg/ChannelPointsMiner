@@ -417,6 +417,22 @@ class DatabaseEventHandlerTest{
 	}
 	
 	@Test
+	void onResolvedPredictionUpdateWithNoBetsOnWinningSide() throws SQLException{
+		var event = mock(EventUpdatedEvent.class);
+		
+		when(event.getEvent()).thenReturn(eventData);
+		when(event.getStreamerUsername()).thenReturn(CHANNEL_NAME);
+		
+		when(blueOutcome.getTotalPoints()).thenReturn(0L);
+		
+		when(eventData.getStatus()).thenReturn(EventStatus.RESOLVED);
+		
+		assertDoesNotThrow(() -> tested.onEvent(event));
+		
+		verify(database).resolvePrediction(eventData, BLUE_TITLE, BADGE_1, 100000);
+	}
+	
+	@Test
 	void onChatMessagePredictionRecorded() throws SQLException{
 		var event = mock(ChatMessageEvent.class);
 		

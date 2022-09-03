@@ -26,7 +26,8 @@ import java.util.regex.Pattern;
 @Log4j2
 public class DatabaseEventHandler extends EventHandlerAdapter{
 	
-	private final static Pattern CHAT_PREDICTION_BADGE_PATTERN = Pattern.compile("predictions/([^,]*)");
+	private static final Pattern CHAT_PREDICTION_BADGE_PATTERN = Pattern.compile("predictions/([^,]*)");
+	private static final double INFINITE_RETURN_RATIO = 100_000D;
 	
 	@NotNull
 	private IDatabase database;
@@ -64,7 +65,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 			log.info("Prediction-Update: Event RESOLVED. Streamer: {}, Title: {}, Outcome: {}", streamerUsername, predictionEvent.getTitle(), winningOutcome.getTitle());
 			
 			var totalPoints = predictionEvent.getOutcomes().stream().mapToDouble(Outcome::getTotalPoints).sum();
-			var returnRatio = totalPoints / winningOutcome.getTotalPoints();
+			var returnRatio = winningOutcome.getTotalPoints() == 0L ? INFINITE_RETURN_RATIO : totalPoints / winningOutcome.getTotalPoints();
 			database.resolvePrediction(predictionEvent, winningOutcome.getTitle(), winningOutcomeBadge, returnRatio);
 		}
 	}
