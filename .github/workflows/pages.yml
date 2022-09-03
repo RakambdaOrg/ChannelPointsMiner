@@ -1,0 +1,30 @@
+name: "Build and deploy Github pages"
+
+on:
+  push:
+    branches:
+      - main
+      - develop # Temporary, to test
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - name: Setup asciidoctor
+        uses: reitzig/actions-asciidoctor@v2.0.0
+      - name: Build pages
+        run: asciidoctor README.adoc
+      - name: Prepare deploy
+        run: |
+          mkdir pages
+          cp README.html pages/index.html
+      - name: Deploy Github Pages
+        uses: JamesIves/github-pages-deploy-action@4.4.0
+        with:
+          folder: pages

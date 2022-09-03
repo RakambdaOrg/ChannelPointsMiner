@@ -6,6 +6,9 @@
 image:https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner",window="_blank",align="center"]
 image:https://img.shields.io/docker/pulls/mrcraftcod/channel-points-miner.svg[link="https://hub.docker.com/r/mrcraftcod/channel-points-miner",window="_blank",align="center"]
 
+WARN: If you're reading this on GitHub, this may correspond to the documentation of the `develop` branch.
+If you want documentation of the latest released version please go to link:aaa[pages]
+
 The main objective of this miner is to acquire Twitch channel points automatically.
 Other forms of point, like those provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
 
