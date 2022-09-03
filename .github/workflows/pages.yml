@@ -7,12 +7,14 @@ on:
       - develop # Temporary, to test
 
 jobs:
-  build-and-deploy:
-    name: Build and deploy pages
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -21,11 +23,22 @@ jobs:
         uses: reitzig/actions-asciidoctor@v2.0.0
       - name: Build pages
         run: asciidoctor README.adoc
-      - name: Prepare deploy
+      - name: Prepare upload
         run: |
           mkdir pages
-          cp README.html pages/index.html
-      - name: Deploy Github Pages
-        uses: JamesIves/github-pages-deploy-action@v4.4.0
+          cp README.html pages/
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          folder: pages
+          path: pages
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
