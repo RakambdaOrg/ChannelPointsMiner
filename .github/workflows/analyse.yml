@@ -1,4 +1,4 @@
-name: "CodeQL"
+name: Analyse
 
 on:
   push:
@@ -13,10 +13,9 @@ on:
     - cron: '0 13 * * 1'
 
 jobs:
-  analyse:
-    name: Analyse
+  code-ql:
+    name: CodeQL
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -36,3 +35,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
+
+  qodana:
+    name: Qodana
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Qodana
+        uses: JetBrains/qodana-action@v5.0.2

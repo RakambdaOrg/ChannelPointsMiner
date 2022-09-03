@@ -8,6 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
+    name: Build and deploy pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -25,6 +26,6 @@ jobs:
           mkdir pages
           cp README.html pages/index.html
       - name: Deploy Github Pages
-        uses: JamesIves/github-pages-deploy-action@4.4.0
+        uses: JamesIves/github-pages-deploy-action@v4.4.0
         with:
           folder: pages
