@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mockStatic;
 class SQLiteDatabaseTest{
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CHANNEL_USERNAME = "channel-username";
+	private static final String USER_USERNAME = "user1";
 	
 	private static final String ID_COL = "ID";
 	private static final String USERNAME_COL = "Username";
@@ -35,6 +36,12 @@ class SQLiteDatabaseTest{
 	private static final String EVENT_DATE_COL = "EventDate";
 	private static final String TYPE_COL = "Type";
 	private static final String DESCRIPTION_COL = "Description";
+	private static final String PREDICTION_CNT_COL = "PredictionCnt";
+	private static final String WIN_CNT_COL = "WinCnt";
+	private static final String WIN_RATE_COL = "WinRate";
+	private static final String RETURN_ON_INVESTMENT_COL = "ReturnOnInvestment";
+	private static final String USER_ID_COL = "UserID";
+	private static final String BADGE_COL = "Badge";
 	
 	@TempDir
 	private Path tempPath;
@@ -199,6 +206,55 @@ class SQLiteDatabaseTest{
 				.column(EVENT_DATE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(secondInstant))
 				.column(TYPE_COL).valueAtEndPoint().isEqualTo("Type2")
 				.column(DESCRIPTION_COL).valueAtEndPoint().isEqualTo("Description2");
+	}
+	
+	@Test
+	void addPredictionFromNewUser() throws SQLException{
+		var tableUserPrediction = this.tableUserPrediction.get();
+		var tablePredictionUser = this.tablePredictionUser.get();
+		var changeUserPrediction = new Changes(tableUserPrediction);
+		var changePredictionUser = new Changes(tablePredictionUser);
+		
+		changeUserPrediction.setStartPointNow();
+		changePredictionUser.setStartPointNow();
+		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		changeUserPrediction.setEndPointNow();
+		changePredictionUser.setEndPointNow();
+		
+		assertThat(changePredictionUser).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(ID_COL).valueAtEndPoint().isNotNull()
+				.column(USERNAME_COL).valueAtEndPoint().isEqualTo(USER_USERNAME)
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(PREDICTION_CNT_COL).valueAtEndPoint().isEqualTo(0)
+				.column(WIN_CNT_COL).valueAtEndPoint().isEqualTo(0)
+				.column(WIN_RATE_COL).valueAtEndPoint().isEqualTo(0D)
+				.column(RETURN_ON_INVESTMENT_COL).valueAtEndPoint().isEqualTo(0D);
+		
+		assertThat(changeUserPrediction).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(USER_ID_COL).valueAtEndPoint().isNotNull()
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(BADGE_COL).valueAtEndPoint().isEqualTo("B1");
+	}
+	
+	@Test
+	void addPredictionFromExistingUser() throws SQLException{
+		var tableUserPrediction = this.tableUserPrediction.get();
+		var tablePredictionUser = this.tablePredictionUser.get();
+		var changeUserPrediction = new Changes(tableUserPrediction);
+		var changePredictionUser = new Changes(tablePredictionUser);
+		
+		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		
+		changeUserPrediction.setStartPointNow();
+		changePredictionUser.setStartPointNow();
+		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B2"); //This should be impossible, we can't change badge
+		changeUserPrediction.setEndPointNow();
+		changePredictionUser.setEndPointNow();
+		
+		assertThat(changePredictionUser).hasNumberOfChanges(0);
+		assertThat(changeUserPrediction).hasNumberOfChanges(0);
 	}
 	
 	private LocalDateTime getExpectedTimestamp(Instant instant){
