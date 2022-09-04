@@ -63,17 +63,18 @@ class SQLiteDatabaseTest{
 	
 	@TempDir
 	private Path tempPath;
-	private final Supplier<Changes> changesBalance = () -> new Changes(new Table(dataSource, "Balance"));
+	@Mock
+	private Event event;
 	
 	private SQLiteDatabase tested;
 	private HikariDataSource dataSource;
-	private final Supplier<Changes> changesChannel = () -> new Changes(new Table(dataSource, "Channel"));
-	private final Supplier<Changes> changesPrediction = () -> new Changes(new Table(dataSource, "Prediction"));
-	private final Supplier<Changes> changesPredictionUser = () -> new Changes(new Table(dataSource, "PredictionUser"));
-	private final Supplier<Changes> changesUserPrediction = () -> new Changes(new Table(dataSource, "UserPrediction"));
-	private final Supplier<Changes> changesResolvedPrediction = () -> new Changes(new Table(dataSource, "ResolvedPrediction"));
-	@Mock
-	private Event event;
+	
+	private Supplier<Changes> changesBalance;
+	private Supplier<Changes> changesChannel;
+	private Supplier<Changes> changesPrediction;
+	private Supplier<Changes> changesPredictionUser;
+	private Supplier<Changes> changesUserPrediction;
+	private Supplier<Changes> changesResolvedPrediction;
 	
 	@BeforeEach
 	void setUp() throws SQLException{
@@ -86,6 +87,13 @@ class SQLiteDatabaseTest{
 		tested = new SQLiteDatabase(dataSource);
 		
 		tested.initDatabase();
+		
+		changesBalance = () -> new Changes(new Table(dataSource, "Balance"));
+		changesChannel = () -> new Changes(new Table(dataSource, "Channel"));
+		changesPrediction = () -> new Changes(new Table(dataSource, "Prediction"));
+		changesPredictionUser = () -> new Changes(new Table(dataSource, "PredictionUser"));
+		changesUserPrediction = () -> new Changes(new Table(dataSource, "UserPrediction"));
+		changesResolvedPrediction = () -> new Changes(new Table(dataSource, "ResolvedPrediction"));
 		
 		lenient().when(event.getId()).thenReturn(EVENT_ID);
 		lenient().when(event.getChannelId()).thenReturn(CHANNEL_ID);
@@ -342,6 +350,106 @@ class SQLiteDatabaseTest{
 				.changeOfDeletion()
 				.column(USER_ID_COL).valueAtStartPoint().isEqualTo(userId2)
 				.column(CHANNEL_ID_COL).valueAtStartPoint().isEqualTo(CHANNEL_ID);
+	}
+	
+	@Test
+	void resolvePrediction() throws SQLException{
+		var changes = changesResolvedPrediction.get();
+		
+		changes.setStartPointNow();
+		tested.resolvePrediction(event, "Outcome1", "B1", 1.5D);
+		changes.setEndPointNow();
+		
+		assertThat(changes).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(EVENT_ID_COL).valueAtEndPoint().isEqualTo(EVENT_ID)
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(TITLE_COL).valueAtEndPoint().isEqualTo(EVENT_TITLE)
+				.column(EVENT_CREATED_COL).valueAtEndPoint().isEqualTo(EVENT_CREATED_AT.toLocalDateTime())
+				.column(EVENT_ENDED_COL).valueAtEndPoint().isEqualTo(EVENT_ENDED_AT.toLocalDateTime())
+				.column(CANCELED_COL).valueAtEndPoint().isEqualTo(0)
+				.column(OUTCOME_COL).valueAtEndPoint().isEqualTo("Outcome1")
+				.column(BADGE_COL).valueAtEndPoint().isEqualTo("B1")
+				.column(RETURN_RATIO_FOR_WIN_COL).valueAtEndPoint().isEqualTo(1.5D);
+	}
+	
+	@Test
+	void resolvePredictionWithNoEndDate() throws SQLException{
+		try(var factory = mockStatic(TimeFactory.class)){
+			var endInstant = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
+			factory.when(TimeFactory::now).thenReturn(endInstant);
+			
+			var changes = changesResolvedPrediction.get();
+			
+			when(event.getEndedAt()).thenReturn(null);
+			
+			changes.setStartPointNow();
+			tested.resolvePrediction(event, "Outcome1", "B1", 1.5D);
+			changes.setEndPointNow();
+			
+			assertThat(changes).hasNumberOfChanges(1)
+					.changeOfCreation()
+					.column(EVENT_ID_COL).valueAtEndPoint().isEqualTo(EVENT_ID)
+					.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+					.column(TITLE_COL).valueAtEndPoint().isEqualTo(EVENT_TITLE)
+					.column(EVENT_CREATED_COL).valueAtEndPoint().isEqualTo(EVENT_CREATED_AT.toLocalDateTime())
+					.column(EVENT_ENDED_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(endInstant))
+					.column(CANCELED_COL).valueAtEndPoint().isEqualTo(0)
+					.column(OUTCOME_COL).valueAtEndPoint().isEqualTo("Outcome1")
+					.column(BADGE_COL).valueAtEndPoint().isEqualTo("B1")
+					.column(RETURN_RATIO_FOR_WIN_COL).valueAtEndPoint().isEqualTo(1.5D);
+		}
+	}
+	
+	@Test
+	void resolvePredictionClearsUserPredictions() throws SQLException{
+		var changes = changesUserPrediction.get();
+		
+		var userId1 = tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		var userId2 = tested.addUserPrediction("user-2", CHANNEL_ID, "B2");
+		tested.addUserPrediction(USER_USERNAME, "other-channel", "B1");
+		
+		changes.setStartPointNow();
+		tested.resolvePrediction(event, "Outcome1", "B1", 1.5D);
+		changes.setEndPointNow();
+		
+		assertThat(changes).hasNumberOfChanges(2)
+				.changeOfDeletion()
+				.column(USER_ID_COL).valueAtStartPoint().isEqualTo(userId1)
+				.column(CHANNEL_ID_COL).valueAtStartPoint().isEqualTo(CHANNEL_ID)
+				.changeOfDeletion()
+				.column(USER_ID_COL).valueAtStartPoint().isEqualTo(userId2)
+				.column(CHANNEL_ID_COL).valueAtStartPoint().isEqualTo(CHANNEL_ID);
+	}
+	
+	@Test
+	void resolvePredictionUpdatesPredictionUsers() throws SQLException{
+		var changes = changesPredictionUser.get();
+		
+		var userId1 = tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		var userId2 = tested.addUserPrediction("user-2", CHANNEL_ID, "B2");
+		
+		changes.setStartPointNow();
+		tested.resolvePrediction(event, "Outcome1", "B1", 1.5D);
+		changes.setEndPointNow();
+		
+		assertThat(changes).hasNumberOfChanges(2)
+				.changeOfModification()
+				.column(ID_COL).valueAtEndPoint().isEqualTo(userId1)
+				.column(USERNAME_COL).valueAtEndPoint().isEqualTo(USER_USERNAME)
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(PREDICTION_CNT_COL).valueAtEndPoint().isEqualTo(1)
+				.column(WIN_CNT_COL).valueAtEndPoint().isEqualTo(1)
+				.column(WIN_RATE_COL).valueAtEndPoint().isEqualTo(1D)
+				.column(RETURN_ON_INVESTMENT_COL).valueAtEndPoint().isEqualTo(0.5D)
+				.changeOfModification()
+				.column(ID_COL).valueAtEndPoint().isEqualTo(userId2)
+				.column(USERNAME_COL).valueAtEndPoint().isEqualTo("user-2")
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(PREDICTION_CNT_COL).valueAtEndPoint().isEqualTo(1)
+				.column(WIN_CNT_COL).valueAtEndPoint().isEqualTo(0)
+				.column(WIN_RATE_COL).valueAtEndPoint().isEqualTo(0D)
+				.column(RETURN_ON_INVESTMENT_COL).valueAtEndPoint().isEqualTo(-1D);
 	}
 	
 	private LocalDateTime getExpectedTimestamp(Instant instant){

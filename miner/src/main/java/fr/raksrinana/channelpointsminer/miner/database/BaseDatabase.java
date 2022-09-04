@@ -176,65 +176,28 @@ public abstract class BaseDatabase implements IDatabase{
 	public void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnRatioForWin) throws SQLException{
 		var ended = Optional.ofNullable(event.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
 		
+		resolveUserPredictions(returnRatioForWin, event.getChannelId(), badge);
+		
 		try(var conn = getConnection();
-				var getOpenPredictionStmt = conn.prepareStatement("""
-						SELECT * FROM `UserPrediction` WHERE `ChannelID`=?""");
-				var updatePredictionUserStmt = getUpdatePredictionUserStmt(conn);
 				var addResolvedPredictionStmt = conn.prepareStatement("""
 						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`,`Outcome`,`Badge`,`ReturnRatioForWin`)
-						VALUES (?,?,?,?,?,false,?,?,?)""");
-				var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
+						VALUES (?,?,?,?,?,false,?,?,?)""")
 		){
-			conn.setAutoCommit(false);
-			
-			try{
-				//Get user predictions, determine win/lose and update
-				double returnOnInvestment = returnRatioForWin - 1;
-				getOpenPredictionStmt.setString(1, event.getChannelId());
-				try(var result = getOpenPredictionStmt.executeQuery()){
-					while(result.next()){
-						var userPrediction = Converters.convertUserPrediction(result);
-						if(badge.equals(userPrediction.getBadge())){
-							updatePredictionUserStmt.setInt(1, 1);
-							updatePredictionUserStmt.setDouble(2, returnOnInvestment);
-						}
-						else{
-							updatePredictionUserStmt.setInt(1, 0);
-							updatePredictionUserStmt.setDouble(2, -1);
-						}
-						updatePredictionUserStmt.setInt(3, userPrediction.getUserId());
-						updatePredictionUserStmt.setString(4, userPrediction.getChannelId());
-						updatePredictionUserStmt.addBatch();
-					}
-					updatePredictionUserStmt.executeBatch();
-				}
-				
-				//Add the resolved prediction
-				addResolvedPredictionStmt.setString(1, event.getId());
-				addResolvedPredictionStmt.setString(2, event.getChannelId());
-				addResolvedPredictionStmt.setString(3, event.getTitle());
-				addResolvedPredictionStmt.setTimestamp(4, Timestamp.from(event.getCreatedAt().toInstant()));
-				addResolvedPredictionStmt.setTimestamp(5, Timestamp.from(ended));
-				addResolvedPredictionStmt.setString(6, outcome);
-				addResolvedPredictionStmt.setString(7, badge);
-				addResolvedPredictionStmt.setDouble(8, returnRatioForWin);
-				addResolvedPredictionStmt.executeUpdate();
-				
-				//Remove Predictions
-				removePredictionsStmt.setString(1, event.getChannelId());
-				removePredictionsStmt.executeUpdate();
-				
-				conn.commit();
-			}
-			catch(SQLException e){
-				conn.rollback();
-				throw e;
-			}
+			addResolvedPredictionStmt.setString(1, event.getId());
+			addResolvedPredictionStmt.setString(2, event.getChannelId());
+			addResolvedPredictionStmt.setString(3, event.getTitle());
+			addResolvedPredictionStmt.setTimestamp(4, Timestamp.from(event.getCreatedAt().toInstant()));
+			addResolvedPredictionStmt.setTimestamp(5, Timestamp.from(ended));
+			addResolvedPredictionStmt.setString(6, outcome);
+			addResolvedPredictionStmt.setString(7, badge);
+			addResolvedPredictionStmt.setDouble(8, returnRatioForWin);
+			addResolvedPredictionStmt.executeUpdate();
 		}
+		
+		deleteUserPredictionsForChannel(event.getChannelId());
 	}
 	
-	@NotNull
-	protected abstract PreparedStatement getUpdatePredictionUserStmt(@NotNull Connection conn) throws SQLException;
+	protected abstract void resolveUserPredictions(double returnRatioForWin, @NotNull String channelId, @NotNull String badge) throws SQLException;
 	
 	@Override
 	public void deleteUserPredictions() throws SQLException{
