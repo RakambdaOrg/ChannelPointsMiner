@@ -12,6 +12,9 @@ import java.util.Optional;
 public interface IDatabase extends AutoCloseable{
 	void initDatabase() throws SQLException;
 	
+	@Override
+	void close();
+	
 	void createChannel(@NotNull String channelId, @NotNull String username) throws SQLException;
 	
 	void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException;
@@ -32,9 +35,6 @@ public interface IDatabase extends AutoCloseable{
 	
 	@NotNull
 	Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser) throws SQLException;
-	
-	@Override
-	void close();
 	
 	@NotNull
 	Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException;

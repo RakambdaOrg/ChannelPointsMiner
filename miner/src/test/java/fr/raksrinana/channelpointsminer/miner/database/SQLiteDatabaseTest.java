@@ -31,6 +31,10 @@ class SQLiteDatabaseTest{
 	private static final String BALANCE_DATE_COL = "BalanceDate";
 	private static final String BALANCE_COL = "Balance";
 	private static final String REASON_COL = "Reason";
+	private static final String EVENT_ID_COL = "EventID";
+	private static final String EVENT_DATE_COL = "EventDate";
+	private static final String TYPE_COL = "Type";
+	private static final String DESCRIPTION_COL = "Description";
 	
 	@TempDir
 	private Path tempPath;
@@ -161,6 +165,40 @@ class SQLiteDatabaseTest{
 				.column(BALANCE_DATE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(secondInstant))
 				.column(BALANCE_COL).valueAtEndPoint().isEqualTo(50)
 				.column(REASON_COL).valueAtEndPoint().isEqualTo("Test2");
+	}
+	
+	@Test
+	void addPrediction() throws SQLException{
+		var table = tablePrediction.get();
+		var change = new Changes(table);
+		
+		var firstInstant = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
+		change.setStartPointNow();
+		tested.addPrediction(CHANNEL_ID, "Event1", "Type1", "Description1", firstInstant);
+		change.setEndPointNow();
+		
+		assertThat(change).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(ID_COL).valueAtEndPoint().isNotNull()
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(EVENT_ID_COL).valueAtEndPoint().isEqualTo("Event1")
+				.column(EVENT_DATE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(firstInstant))
+				.column(TYPE_COL).valueAtEndPoint().isEqualTo("Type1")
+				.column(DESCRIPTION_COL).valueAtEndPoint().isEqualTo("Description1");
+		
+		var secondInstant = firstInstant.plusSeconds(30);
+		change.setStartPointNow();
+		tested.addPrediction(CHANNEL_ID, "Event2", "Type2", "Description2", secondInstant);
+		change.setEndPointNow();
+		
+		assertThat(change).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(ID_COL).valueAtEndPoint().isNotNull()
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(EVENT_ID_COL).valueAtEndPoint().isEqualTo("Event2")
+				.column(EVENT_DATE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(secondInstant))
+				.column(TYPE_COL).valueAtEndPoint().isEqualTo("Type2")
+				.column(DESCRIPTION_COL).valueAtEndPoint().isEqualTo("Description2");
 	}
 	
 	private LocalDateTime getExpectedTimestamp(Instant instant){
