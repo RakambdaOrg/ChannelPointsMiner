@@ -31,12 +31,19 @@ public class MariaDBDatabase extends BaseDatabase{
 		}
 	}
 	
-	@NotNull
 	@Override
-	protected PreparedStatement getPredictionStmt(@NotNull Connection conn) throws SQLException{
-		return conn.prepareStatement("""
-				INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`) VALUES (?,?,?)"""
-		);
+	protected void addUserPrediction(@NotNull String channelId, int userId, @NotNull String badge) throws SQLException{
+		try(var conn = getConnection();
+				var predictionStatement = conn.prepareStatement("""
+						INSERT IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`) VALUES (?,?,?)"""
+				)){
+			
+			predictionStatement.setString(1, channelId);
+			predictionStatement.setInt(2, userId);
+			predictionStatement.setString(3, badge);
+			
+			predictionStatement.executeUpdate();
+		}
 	}
 	
 	@NotNull

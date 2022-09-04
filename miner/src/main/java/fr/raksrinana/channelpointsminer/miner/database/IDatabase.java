@@ -23,7 +23,7 @@ public interface IDatabase extends AutoCloseable{
 	
 	void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant) throws SQLException;
 	
-	void addUserPrediction(@NotNull String username, @NotNull String streamerId, @NotNull String badge) throws SQLException;
+	int addUserPrediction(@NotNull String username, @NotNull String streamerId, @NotNull String badge) throws SQLException;
 	
 	void cancelPrediction(@NotNull Event event) throws SQLException;
 	

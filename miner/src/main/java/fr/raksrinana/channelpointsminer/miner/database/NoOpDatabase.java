@@ -32,7 +32,8 @@ public class NoOpDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge){
+	public int addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge){
+		return -1;
 	}
 	
 	@Override

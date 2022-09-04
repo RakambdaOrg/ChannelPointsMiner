@@ -61,6 +61,13 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
+	public int addUserPrediction(@NotNull String username, @NotNull String channelId, @NotNull String badge) throws SQLException{
+		var userId = getOrCreatePredictionUserId(username, channelId);
+		addUserPrediction(channelId, userId, badge);
+		return userId;
+	}
+	
+	@Override
 	public void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant instant) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
@@ -95,31 +102,14 @@ public abstract class BaseDatabase implements IDatabase{
 		}
 	}
 	
-	@Override
-	public void addUserPrediction(@NotNull String username, @NotNull String channelId, @NotNull String badge) throws SQLException{
-		
-		try(var conn = getConnection();
-				var predictionStatement = getPredictionStmt(conn)){
-			conn.setAutoCommit(false);
-			
-			var userId = getOrCreatePredictionUserId(conn, username, channelId);
-			
-			predictionStatement.setString(1, channelId);
-			predictionStatement.setInt(2, userId);
-			predictionStatement.setString(3, badge);
-			
-			predictionStatement.executeUpdate();
-			conn.commit();
-		}
-	}
-	
-	protected int getOrCreatePredictionUserId(@NotNull Connection conn, @NotNull String username, @NotNull String channelId) throws SQLException{
+	protected int getOrCreatePredictionUserId(@NotNull String username, @NotNull String channelId) throws SQLException{
 		username = username.toLowerCase(Locale.ROOT);
 		var lock = getOrCreatePredictionUserIdLocks[hashToIndex(username.hashCode(), getOrCreatePredictionUserIdLocks.length)];
 		lock.lock();
 		
-		try(var selectUserStatement = conn.prepareStatement("""
-				SELECT `ID` FROM `PredictionUser` WHERE `Username`=? AND `ChannelID`=?""")){
+		try(var conn = getConnection();
+				var selectUserStatement = conn.prepareStatement("""
+						SELECT `ID` FROM `PredictionUser` WHERE `Username`=? AND `ChannelID`=?""")){
 			
 			selectUserStatement.setString(1, username);
 			selectUserStatement.setString(2, channelId);
@@ -153,15 +143,14 @@ public abstract class BaseDatabase implements IDatabase{
 		}
 	}
 	
+	protected abstract void addUserPrediction(@NotNull String channelId, int userId, @NotNull String badge) throws SQLException;
+	
 	private int hashToIndex(int hash, int length){
 		if(hash == Integer.MIN_VALUE){
 			return 0;
 		}
 		return Math.abs(hash) % length;
 	}
-	
-	@NotNull
-	protected abstract PreparedStatement getPredictionStmt(@NotNull Connection conn) throws SQLException;
 	
 	@Override
 	public void cancelPrediction(@NotNull Event event) throws SQLException{
@@ -170,30 +159,17 @@ public abstract class BaseDatabase implements IDatabase{
 		try(var conn = getConnection();
 				var addCanceledPredictionStmt = conn.prepareStatement("""
 						INSERT INTO `ResolvedPrediction`(`EventID`,`ChannelID`, `Title`,`EventCreated`,`EventEnded`,`Canceled`)
-						VALUES (?,?,?,?,?,true)""");
-				var removePredictionsStmt = getDeleteUserPredictionsForChannelStmt(conn)
+						VALUES (?,?,?,?,?,true)""")
 		){
-			conn.setAutoCommit(false);
-			try{
-				//Add canceled prediction
-				addCanceledPredictionStmt.setString(1, event.getId());
-				addCanceledPredictionStmt.setString(2, event.getChannelId());
-				addCanceledPredictionStmt.setString(3, event.getTitle());
-				addCanceledPredictionStmt.setTimestamp(4, Timestamp.from(event.getCreatedAt().toInstant()));
-				addCanceledPredictionStmt.setTimestamp(5, Timestamp.from(ended));
-				addCanceledPredictionStmt.executeUpdate();
-				
-				//Remove made predictions
-				removePredictionsStmt.setString(1, event.getChannelId());
-				removePredictionsStmt.executeUpdate();
-				
-				conn.commit();
-			}
-			catch(SQLException e){
-				conn.rollback();
-				throw e;
-			}
+			addCanceledPredictionStmt.setString(1, event.getId());
+			addCanceledPredictionStmt.setString(2, event.getChannelId());
+			addCanceledPredictionStmt.setString(3, event.getTitle());
+			addCanceledPredictionStmt.setTimestamp(4, Timestamp.from(event.getCreatedAt().toInstant()));
+			addCanceledPredictionStmt.setTimestamp(5, Timestamp.from(ended));
+			addCanceledPredictionStmt.executeUpdate();
 		}
+		
+		deleteUserPredictionsForChannel(event.getChannelId());
 	}
 	
 	@Override
@@ -264,19 +240,9 @@ public abstract class BaseDatabase implements IDatabase{
 	public void deleteUserPredictions() throws SQLException{
 		log.debug("Removing all user predictions.");
 		try(var conn = getConnection();
-				var statement = conn.prepareStatement("""
-						DELETE FROM `UserPrediction`"""
-				)){
+				var statement = conn.prepareStatement("DELETE FROM `UserPrediction`")){
 			statement.executeUpdate();
 		}
-	}
-	
-	@NotNull
-	private PreparedStatement getDeleteUserPredictionsForChannelStmt(@NotNull Connection conn) throws SQLException{
-		return conn.prepareStatement("""
-				DELETE FROM `UserPrediction`
-				WHERE `ChannelID`=?"""
-		);
 	}
 	
 	@Override
@@ -286,6 +252,28 @@ public abstract class BaseDatabase implements IDatabase{
 			statement.setString(1, channelId);
 			
 			statement.executeUpdate();
+		}
+	}
+	
+	@Override
+	@NotNull
+	public Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException{
+		log.debug("Getting streamerId from channel {}", channelName);
+		try(var conn = getConnection();
+				var statement = conn.prepareStatement("""
+						SELECT `ID`
+						FROM `Channel`
+						WHERE `Username`=?"""
+				)){
+			statement.setString(1, channelName);
+			
+			try(var result = statement.executeQuery()){
+				if(result.next()){
+					return Optional.ofNullable(result.getString("ID"));
+				}
+			}
+			
+			return Optional.empty();
 		}
 	}
 	
@@ -327,30 +315,16 @@ public abstract class BaseDatabase implements IDatabase{
 		dataSource.close();
 	}
 	
-	@Override
-	@NotNull
-	public Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException{
-		log.debug("Getting streamerId from channel {}", channelName);
-		try(var conn = getConnection();
-				var statement = conn.prepareStatement("""
-						SELECT `ID`
-						FROM `Channel`
-						WHERE `Username`=?"""
-				)){
-			statement.setString(1, channelName);
-			
-			try(var result = statement.executeQuery()){
-				if(result.next()){
-					return Optional.ofNullable(result.getString("ID"));
-				}
-			}
-			
-			return Optional.empty();
-		}
-	}
-	
 	@NotNull
 	protected Connection getConnection() throws SQLException{
 		return dataSource.getConnection();
+	}
+	
+	@NotNull
+	private PreparedStatement getDeleteUserPredictionsForChannelStmt(@NotNull Connection conn) throws SQLException{
+		return conn.prepareStatement("""
+				DELETE FROM `UserPrediction`
+				WHERE `ChannelID`=?"""
+		);
 	}
 }

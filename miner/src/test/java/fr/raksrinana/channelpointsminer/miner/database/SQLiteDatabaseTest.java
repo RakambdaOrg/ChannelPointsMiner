@@ -2,28 +2,40 @@ package fr.raksrinana.channelpointsminer.miner.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import org.assertj.db.type.Changes;
 import org.assertj.db.type.Table;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Supplier;
 import static org.assertj.db.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class SQLiteDatabaseTest{
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CHANNEL_USERNAME = "channel-username";
 	private static final String USER_USERNAME = "user1";
+	private static final String EVENT_ID = "event-id";
+	private static final String EVENT_TITLE = "event-title";
+	private static final ZonedDateTime EVENT_CREATED_AT = ZonedDateTime.of(2022, 2, 15, 12, 0, 0, 0, ZoneId.systemDefault());
+	private static final ZonedDateTime EVENT_ENDED_AT = EVENT_CREATED_AT.plusDays(1);
 	
 	private static final String ID_COL = "ID";
 	private static final String USERNAME_COL = "Username";
@@ -42,18 +54,26 @@ class SQLiteDatabaseTest{
 	private static final String RETURN_ON_INVESTMENT_COL = "ReturnOnInvestment";
 	private static final String USER_ID_COL = "UserID";
 	private static final String BADGE_COL = "Badge";
+	private static final String TITLE_COL = "Title";
+	private static final String EVENT_CREATED_COL = "EventCreated";
+	private static final String EVENT_ENDED_COL = "EventEnded";
+	private static final String CANCELED_COL = "Canceled";
+	private static final String OUTCOME_COL = "Outcome";
+	private static final String RETURN_RATIO_FOR_WIN_COL = "ReturnRatioForWIn";
 	
 	@TempDir
 	private Path tempPath;
+	private final Supplier<Changes> changesBalance = () -> new Changes(new Table(dataSource, "Balance"));
 	
 	private SQLiteDatabase tested;
 	private HikariDataSource dataSource;
-	
-	private final Supplier<Table> tableBalance = () -> new Table(dataSource, BALANCE_COL);
-	private final Supplier<Table> tableChannel = () -> new Table(dataSource, "Channel");
-	private final Supplier<Table> tablePrediction = () -> new Table(dataSource, "Prediction");
-	private final Supplier<Table> tablePredictionUser = () -> new Table(dataSource, "PredictionUser");
-	private final Supplier<Table> tableUserPrediction = () -> new Table(dataSource, "UserPrediction");
+	private final Supplier<Changes> changesChannel = () -> new Changes(new Table(dataSource, "Channel"));
+	private final Supplier<Changes> changesPrediction = () -> new Changes(new Table(dataSource, "Prediction"));
+	private final Supplier<Changes> changesPredictionUser = () -> new Changes(new Table(dataSource, "PredictionUser"));
+	private final Supplier<Changes> changesUserPrediction = () -> new Changes(new Table(dataSource, "UserPrediction"));
+	private final Supplier<Changes> changesResolvedPrediction = () -> new Changes(new Table(dataSource, "ResolvedPrediction"));
+	@Mock
+	private Event event;
 	
 	@BeforeEach
 	void setUp() throws SQLException{
@@ -66,6 +86,12 @@ class SQLiteDatabaseTest{
 		tested = new SQLiteDatabase(dataSource);
 		
 		tested.initDatabase();
+		
+		lenient().when(event.getId()).thenReturn(EVENT_ID);
+		lenient().when(event.getChannelId()).thenReturn(CHANNEL_ID);
+		lenient().when(event.getTitle()).thenReturn(EVENT_TITLE);
+		lenient().when(event.getCreatedAt()).thenReturn(EVENT_CREATED_AT);
+		lenient().when(event.getEndedAt()).thenReturn(EVENT_ENDED_AT);
 	}
 	
 	@AfterEach
@@ -75,17 +101,16 @@ class SQLiteDatabaseTest{
 	
 	@Test
 	void tablesAreCreated(){
-		assertThat(tableBalance.get()).exists();
-		assertThat(tableChannel.get()).exists();
-		assertThat(tablePrediction.get()).exists();
-		assertThat(tablePredictionUser.get()).exists();
-		assertThat(tableUserPrediction.get()).exists();
+		assertThat(new Table(dataSource, "Balance")).exists();
+		assertThat(new Table(dataSource, "Channel")).exists();
+		assertThat(new Table(dataSource, "Prediction")).exists();
+		assertThat(new Table(dataSource, "PredictionUser")).exists();
+		assertThat(new Table(dataSource, "UserPrediction")).exists();
 	}
 	
 	@Test
 	void newChannelIsInsertedIfNew() throws SQLException{
-		var table = tableChannel.get();
-		var changes = new Changes(table);
+		var changes = changesChannel.get();
 		
 		changes.setStartPointNow();
 		tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
@@ -101,8 +126,7 @@ class SQLiteDatabaseTest{
 	@Test
 	void oldChannelIsNotInsertedIfNew() throws SQLException{
 		try(var factory = mockStatic(TimeFactory.class)){
-			var table = tableChannel.get();
-			var changes = new Changes(table);
+			var changes = changesChannel.get();
 			
 			var beforeChange = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
 			factory.when(TimeFactory::now).thenReturn(beforeChange);
@@ -122,8 +146,7 @@ class SQLiteDatabaseTest{
 	@Test
 	void updateChannelStatusTime() throws SQLException{
 		try(var factory = mockStatic(TimeFactory.class)){
-			var table = tableChannel.get();
-			var changes = new Changes(table);
+			var changes = changesChannel.get();
 			
 			var beforeChange = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
 			factory.when(TimeFactory::now).thenReturn(beforeChange);
@@ -144,15 +167,14 @@ class SQLiteDatabaseTest{
 	
 	@Test
 	void addBalance() throws SQLException{
-		var table = tableBalance.get();
-		var change = new Changes(table);
+		var changes = changesBalance.get();
 		
 		var firstInstant = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
-		change.setStartPointNow();
+		changes.setStartPointNow();
 		tested.addBalance(CHANNEL_ID, 25, "Test1", firstInstant);
-		change.setEndPointNow();
+		changes.setEndPointNow();
 		
-		assertThat(change).hasNumberOfChanges(1)
+		assertThat(changes).hasNumberOfChanges(1)
 				.changeOfCreation()
 				.column(ID_COL).valueAtEndPoint().isNotNull()
 				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
@@ -161,11 +183,11 @@ class SQLiteDatabaseTest{
 				.column(REASON_COL).valueAtEndPoint().isEqualTo("Test1");
 		
 		var secondInstant = firstInstant.plusSeconds(30);
-		change.setStartPointNow();
+		changes.setStartPointNow();
 		tested.addBalance(CHANNEL_ID, 50, "Test2", secondInstant);
-		change.setEndPointNow();
+		changes.setEndPointNow();
 		
-		assertThat(change).hasNumberOfChanges(1)
+		assertThat(changes).hasNumberOfChanges(1)
 				.changeOfCreation()
 				.column(ID_COL).valueAtEndPoint().isNotNull()
 				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
@@ -176,15 +198,14 @@ class SQLiteDatabaseTest{
 	
 	@Test
 	void addPrediction() throws SQLException{
-		var table = tablePrediction.get();
-		var change = new Changes(table);
+		var changes = changesPrediction.get();
 		
 		var firstInstant = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
-		change.setStartPointNow();
+		changes.setStartPointNow();
 		tested.addPrediction(CHANNEL_ID, "Event1", "Type1", "Description1", firstInstant);
-		change.setEndPointNow();
+		changes.setEndPointNow();
 		
-		assertThat(change).hasNumberOfChanges(1)
+		assertThat(changes).hasNumberOfChanges(1)
 				.changeOfCreation()
 				.column(ID_COL).valueAtEndPoint().isNotNull()
 				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
@@ -194,11 +215,11 @@ class SQLiteDatabaseTest{
 				.column(DESCRIPTION_COL).valueAtEndPoint().isEqualTo("Description1");
 		
 		var secondInstant = firstInstant.plusSeconds(30);
-		change.setStartPointNow();
+		changes.setStartPointNow();
 		tested.addPrediction(CHANNEL_ID, "Event2", "Type2", "Description2", secondInstant);
-		change.setEndPointNow();
+		changes.setEndPointNow();
 		
-		assertThat(change).hasNumberOfChanges(1)
+		assertThat(changes).hasNumberOfChanges(1)
 				.changeOfCreation()
 				.column(ID_COL).valueAtEndPoint().isNotNull()
 				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
@@ -210,20 +231,18 @@ class SQLiteDatabaseTest{
 	
 	@Test
 	void addPredictionFromNewUser() throws SQLException{
-		var tableUserPrediction = this.tableUserPrediction.get();
-		var tablePredictionUser = this.tablePredictionUser.get();
-		var changeUserPrediction = new Changes(tableUserPrediction);
-		var changePredictionUser = new Changes(tablePredictionUser);
+		var changesUserPrediction = this.changesUserPrediction.get();
+		var changesPredictionUser = this.changesPredictionUser.get();
 		
-		changeUserPrediction.setStartPointNow();
-		changePredictionUser.setStartPointNow();
-		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
-		changeUserPrediction.setEndPointNow();
-		changePredictionUser.setEndPointNow();
+		changesUserPrediction.setStartPointNow();
+		changesPredictionUser.setStartPointNow();
+		var userId = tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		changesUserPrediction.setEndPointNow();
+		changesPredictionUser.setEndPointNow();
 		
-		assertThat(changePredictionUser).hasNumberOfChanges(1)
+		assertThat(changesPredictionUser).hasNumberOfChanges(1)
 				.changeOfCreation()
-				.column(ID_COL).valueAtEndPoint().isNotNull()
+				.column(ID_COL).valueAtEndPoint().isEqualTo(userId)
 				.column(USERNAME_COL).valueAtEndPoint().isEqualTo(USER_USERNAME)
 				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
 				.column(PREDICTION_CNT_COL).valueAtEndPoint().isEqualTo(0)
@@ -231,7 +250,7 @@ class SQLiteDatabaseTest{
 				.column(WIN_RATE_COL).valueAtEndPoint().isEqualTo(0D)
 				.column(RETURN_ON_INVESTMENT_COL).valueAtEndPoint().isEqualTo(0D);
 		
-		assertThat(changeUserPrediction).hasNumberOfChanges(1)
+		assertThat(changesUserPrediction).hasNumberOfChanges(1)
 				.changeOfCreation()
 				.column(USER_ID_COL).valueAtEndPoint().isNotNull()
 				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
@@ -240,21 +259,89 @@ class SQLiteDatabaseTest{
 	
 	@Test
 	void addPredictionFromExistingUser() throws SQLException{
-		var tableUserPrediction = this.tableUserPrediction.get();
-		var tablePredictionUser = this.tablePredictionUser.get();
-		var changeUserPrediction = new Changes(tableUserPrediction);
-		var changePredictionUser = new Changes(tablePredictionUser);
+		var changesUserPrediction = this.changesUserPrediction.get();
+		var changesPredictionUser = this.changesPredictionUser.get();
 		
 		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
 		
-		changeUserPrediction.setStartPointNow();
-		changePredictionUser.setStartPointNow();
+		changesUserPrediction.setStartPointNow();
+		changesPredictionUser.setStartPointNow();
 		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B2"); //This should be impossible, we can't change badge
-		changeUserPrediction.setEndPointNow();
-		changePredictionUser.setEndPointNow();
+		changesUserPrediction.setEndPointNow();
+		changesPredictionUser.setEndPointNow();
 		
-		assertThat(changePredictionUser).hasNumberOfChanges(0);
-		assertThat(changeUserPrediction).hasNumberOfChanges(0);
+		assertThat(changesPredictionUser).hasNumberOfChanges(0);
+		assertThat(changesUserPrediction).hasNumberOfChanges(0);
+	}
+	
+	@Test
+	void cancelPrediction() throws SQLException{
+		var changes = changesResolvedPrediction.get();
+		
+		changes.setStartPointNow();
+		tested.cancelPrediction(event);
+		changes.setEndPointNow();
+		
+		assertThat(changes).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(EVENT_ID_COL).valueAtEndPoint().isEqualTo(EVENT_ID)
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(TITLE_COL).valueAtEndPoint().isEqualTo(EVENT_TITLE)
+				.column(EVENT_CREATED_COL).valueAtEndPoint().isEqualTo(EVENT_CREATED_AT.toLocalDateTime())
+				.column(EVENT_ENDED_COL).valueAtEndPoint().isEqualTo(EVENT_ENDED_AT.toLocalDateTime())
+				.column(CANCELED_COL).valueAtEndPoint().isEqualTo(1)
+				.column(OUTCOME_COL).valueAtEndPoint().isNull()
+				.column(BADGE_COL).valueAtEndPoint().isNull()
+				.column(RETURN_RATIO_FOR_WIN_COL).valueAtEndPoint().isNull();
+	}
+	
+	@Test
+	void cancelPredictionWithNoEndDate() throws SQLException{
+		try(var factory = mockStatic(TimeFactory.class)){
+			var endInstant = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
+			factory.when(TimeFactory::now).thenReturn(endInstant);
+			
+			var changes = changesResolvedPrediction.get();
+			
+			when(event.getEndedAt()).thenReturn(null);
+			
+			changes.setStartPointNow();
+			tested.cancelPrediction(event);
+			changes.setEndPointNow();
+			
+			assertThat(changes).hasNumberOfChanges(1)
+					.changeOfCreation()
+					.column(EVENT_ID_COL).valueAtEndPoint().isEqualTo(EVENT_ID)
+					.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+					.column(TITLE_COL).valueAtEndPoint().isEqualTo(EVENT_TITLE)
+					.column(EVENT_CREATED_COL).valueAtEndPoint().isEqualTo(EVENT_CREATED_AT.toLocalDateTime())
+					.column(EVENT_ENDED_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(endInstant))
+					.column(CANCELED_COL).valueAtEndPoint().isEqualTo(1)
+					.column(OUTCOME_COL).valueAtEndPoint().isNull()
+					.column(BADGE_COL).valueAtEndPoint().isNull()
+					.column(RETURN_RATIO_FOR_WIN_COL).valueAtEndPoint().isNull();
+		}
+	}
+	
+	@Test
+	void cancelPredictionClearsUserPredictions() throws SQLException{
+		var changes = changesUserPrediction.get();
+		
+		var userId1 = tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		var userId2 = tested.addUserPrediction("user-2", CHANNEL_ID, "B2");
+		tested.addUserPrediction(USER_USERNAME, "other-channel", "B1");
+		
+		changes.setStartPointNow();
+		tested.cancelPrediction(event);
+		changes.setEndPointNow();
+		
+		assertThat(changes).hasNumberOfChanges(2)
+				.changeOfDeletion()
+				.column(USER_ID_COL).valueAtStartPoint().isEqualTo(userId1)
+				.column(CHANNEL_ID_COL).valueAtStartPoint().isEqualTo(CHANNEL_ID)
+				.changeOfDeletion()
+				.column(USER_ID_COL).valueAtStartPoint().isEqualTo(userId2)
+				.column(CHANNEL_ID_COL).valueAtStartPoint().isEqualTo(CHANNEL_ID);
 	}
 	
 	private LocalDateTime getExpectedTimestamp(Instant instant){
