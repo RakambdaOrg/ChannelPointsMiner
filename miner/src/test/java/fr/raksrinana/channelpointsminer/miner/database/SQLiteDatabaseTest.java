@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
+import org.assertj.db.type.Changes;
 import org.assertj.db.type.Table;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,13 +24,21 @@ class SQLiteDatabaseTest{
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CHANNEL_USERNAME = "channel-username";
 	
+	private static final String ID_COL = "ID";
+	private static final String USERNAME_COL = "Username";
+	private static final String LAST_STATUS_CHANGE_COL = "LastStatusChange";
+	private static final String CHANNEL_ID_COL = "ChannelID";
+	private static final String BALANCE_DATE_COL = "BalanceDate";
+	private static final String BALANCE_COL = "Balance";
+	private static final String REASON_COL = "Reason";
+	
 	@TempDir
 	private Path tempPath;
 	
 	private SQLiteDatabase tested;
 	private HikariDataSource dataSource;
 	
-	private final Supplier<Table> tableBalance = () -> new Table(dataSource, "Balance");
+	private final Supplier<Table> tableBalance = () -> new Table(dataSource, BALANCE_COL);
 	private final Supplier<Table> tableChannel = () -> new Table(dataSource, "Channel");
 	private final Supplier<Table> tablePrediction = () -> new Table(dataSource, "Prediction");
 	private final Supplier<Table> tablePredictionUser = () -> new Table(dataSource, "PredictionUser");
@@ -64,50 +73,97 @@ class SQLiteDatabaseTest{
 	
 	@Test
 	void newChannelIsInsertedIfNew() throws SQLException{
-		tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
+		var table = tableChannel.get();
+		var changes = new Changes(table);
 		
-		assertThat(tableChannel.get())
-				.hasNumberOfRows(1)
-				.row()
-				.column("ID").value().isEqualTo(CHANNEL_ID)
-				.column("Username").value().isEqualTo(CHANNEL_USERNAME)
-				.column("LastStatusChange").value().isNotNull();
+		changes.setStartPointNow();
+		tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
+		changes.setEndPointNow();
+		
+		assertThat(changes).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(USERNAME_COL).valueAtEndPoint().isEqualTo(CHANNEL_USERNAME)
+				.column(LAST_STATUS_CHANGE_COL).valueAtEndPoint().isNotNull();
 	}
 	
 	@Test
 	void oldChannelIsNotInsertedIfNew() throws SQLException{
 		try(var factory = mockStatic(TimeFactory.class)){
+			var table = tableChannel.get();
+			var changes = new Changes(table);
+			
 			var beforeChange = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
 			factory.when(TimeFactory::now).thenReturn(beforeChange);
 			
 			tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
-			assertThat(tableChannel.get()).hasNumberOfRows(1);
 			
 			factory.when(TimeFactory::now).thenReturn(beforeChange.plus(1, ChronoUnit.HOURS));
 			
+			changes.setStartPointNow();
 			tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
+			changes.setEndPointNow();
 			
-			assertThat(tableChannel.get()).hasNumberOfRows(1)
-					.row()
-					.column("LastStatusChange").value().isEqualTo(LocalDateTime.ofInstant(beforeChange, ZoneId.systemDefault()));
+			assertThat(changes).hasNumberOfChanges(0);
 		}
 	}
 	
 	@Test
 	void updateChannelStatusTime() throws SQLException{
 		try(var factory = mockStatic(TimeFactory.class)){
+			var table = tableChannel.get();
+			var changes = new Changes(table);
+			
 			var beforeChange = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
 			factory.when(TimeFactory::now).thenReturn(beforeChange);
 			
 			tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
-			assertThat(tableChannel.get()).hasNumberOfRows(1);
 			
 			var newTime = beforeChange.plus(1, ChronoUnit.HOURS);
-			tested.updateChannelStatusTime(CHANNEL_ID, newTime);
 			
-			assertThat(tableChannel.get()).hasNumberOfRows(1)
-					.row()
-					.column("LastStatusChange").value().isEqualTo(LocalDateTime.ofInstant(newTime, ZoneId.systemDefault()));
+			changes.setStartPointNow();
+			tested.updateChannelStatusTime(CHANNEL_ID, newTime);
+			changes.setEndPointNow();
+			
+			assertThat(changes).hasNumberOfChanges(1)
+					.changeOfModification()
+					.column(LAST_STATUS_CHANGE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(newTime));
 		}
+	}
+	
+	@Test
+	void addBalance() throws SQLException{
+		var table = tableBalance.get();
+		var change = new Changes(table);
+		
+		var firstInstant = Instant.now().with(ChronoField.NANO_OF_SECOND, 0);
+		change.setStartPointNow();
+		tested.addBalance(CHANNEL_ID, 25, "Test1", firstInstant);
+		change.setEndPointNow();
+		
+		assertThat(change).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(ID_COL).valueAtEndPoint().isNotNull()
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(BALANCE_DATE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(firstInstant))
+				.column(BALANCE_COL).valueAtEndPoint().isEqualTo(25)
+				.column(REASON_COL).valueAtEndPoint().isEqualTo("Test1");
+		
+		var secondInstant = firstInstant.plusSeconds(30);
+		change.setStartPointNow();
+		tested.addBalance(CHANNEL_ID, 50, "Test2", secondInstant);
+		change.setEndPointNow();
+		
+		assertThat(change).hasNumberOfChanges(1)
+				.changeOfCreation()
+				.column(ID_COL).valueAtEndPoint().isNotNull()
+				.column(CHANNEL_ID_COL).valueAtEndPoint().isEqualTo(CHANNEL_ID)
+				.column(BALANCE_DATE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(secondInstant))
+				.column(BALANCE_COL).valueAtEndPoint().isEqualTo(50)
+				.column(REASON_COL).valueAtEndPoint().isEqualTo("Test2");
+	}
+	
+	private LocalDateTime getExpectedTimestamp(Instant instant){
+		return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 	}
 }
