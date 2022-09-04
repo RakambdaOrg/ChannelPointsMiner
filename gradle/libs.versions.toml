@@ -10,7 +10,8 @@ lang3-version = "3.12.0"
 jetbrains-annotations-version = "23.0.0"
 websocket-version = "1.5.3"
 junit-version = "5.9.0"
-assertj-version = "3.23.1"
+assertj-core-version = "3.23.1"
+assertj-db-version = "2.0.2"
 mockito-version = "4.7.0"
 awaitility-version = "4.2.0"
 json-unit-version = "2.35.0"
@@ -54,7 +55,8 @@ flyway-mysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "f
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
 junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-version" }
-assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-version" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core-version" }
+assertj-db = { group = "org.assertj", name = "assertj-db", version.ref = "assertj-db-version" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
 mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito-version" }
 mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito-version" }
@@ -71,6 +73,7 @@ flyway = ["flyway-core", "flyway-mysql"]
 junit = ["junit-api", "junit-params"]
 mockito = ["mockito-core", "mockito-inline", "mockito-junit"]
 jsonUnit = ["json-unit", "json-unit-assertj"]
+assertj = ["assertj-core", "assertj-db"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }

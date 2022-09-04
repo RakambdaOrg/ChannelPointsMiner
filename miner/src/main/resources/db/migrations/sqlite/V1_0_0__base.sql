@@ -2,14 +2,14 @@ CREATE TABLE IF NOT EXISTS `Channel`
 (
     `ID`               VARCHAR(32)  NOT NULL PRIMARY KEY,
     `Username`         VARCHAR(128) NOT NULL,
-    `LastStatusChange` DATETIME     NOT NULL
+    `LastStatusChange` TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `Balance`
 (
     `ID`          INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT,
     `ChannelID`   VARCHAR(32) NOT NULL REFERENCES `Channel` (`ID`),
-    `BalanceDate` DATETIME(3) NOT NULL,
+    `BalanceDate` TIMESTAMP   NOT NULL,
     `Balance`     INTEGER     NOT NULL,
     `Reason`      VARCHAR(16) NULL
 );
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `Prediction`
     `ID`          INTEGER      NOT NULL PRIMARY KEY AUTOINCREMENT,
     `ChannelID`   VARCHAR(32)  NOT NULL REFERENCES `Channel` (`ID`),
     `EventID`     VARCHAR(36)  NOT NULL,
-    `EventDate`   DATETIME     NOT NULL,
+    `EventDate`   TIMESTAMP    NOT NULL,
     `Type`        VARCHAR(16)  NULL,
     `Description` VARCHAR(255) NULL
 );
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS `ResolvedPrediction`
     `EventID`           VARCHAR(36) NOT NULL PRIMARY KEY,
     `ChannelID`         VARCHAR(32) NOT NULL REFERENCES `Channel` (`ID`),
     `Title`             VARCHAR(64) NOT NULL,
-    `EventCreated`      DATETIME    NOT NULL,
-    `EventEnded`        DATETIME    NULL,
+    `EventCreated`      TIMESTAMP   NOT NULL,
+    `EventEnded`        TIMESTAMP   NULL,
     `Canceled`          BOOLEAN     NOT NULL,
     `Outcome`           VARCHAR(32) NULL,
     `Badge`             VARCHAR(32) NULL,

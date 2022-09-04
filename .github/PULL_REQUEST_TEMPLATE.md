@@ -3,13 +3,11 @@
 ### Checklist
 
 - [ ] Tests have been added in relevant areas
-- [ ] Corresponding changes made to the documentation (README.adoc)
+- [ ] Corresponding changes made to the documentation (README.adoc) <!-- (if irrelevant check the box too) -->
 
 ### Type of change
 
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
+<!-- Choose one from "Bug fix" / "New Feature" / "Breaking change" / "Internal change" -->
 
 ## Description
 

@@ -15,7 +15,7 @@ public class WebsocketMockServerExtension implements Extension, BeforeAllCallbac
 	private final WebsocketMockServer server;
 	
 	public WebsocketMockServerExtension(){
-		server = new WebsocketMockServer(ThreadLocalRandom.current().nextInt(10000, 30000));
+		this(ThreadLocalRandom.current().nextInt(10000, 30000));
 	}
 	
 	public WebsocketMockServerExtension(int port){

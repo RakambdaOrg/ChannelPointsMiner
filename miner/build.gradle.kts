@@ -29,7 +29,7 @@ dependencies {
     testImplementation(libs.bundles.junit)
     testRuntimeOnly(libs.junitEngine)
 
-    testImplementation(libs.assertj)
+    testImplementation(libs.bundles.assertj)
     testImplementation(libs.bundles.mockito)
     testImplementation(libs.awaitility)
     testImplementation(libs.unirestMocks)

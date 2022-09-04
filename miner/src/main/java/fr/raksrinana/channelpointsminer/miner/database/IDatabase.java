@@ -12,30 +12,30 @@ import java.util.Optional;
 public interface IDatabase extends AutoCloseable{
 	void initDatabase() throws SQLException;
 	
+	@Override
+	void close();
+	
 	void createChannel(@NotNull String channelId, @NotNull String username) throws SQLException;
 	
 	void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException;
+	
+	@NotNull
+	Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException;
 	
 	void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant instant) throws SQLException;
 	
 	void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant) throws SQLException;
 	
-	void addUserPrediction(@NotNull String username, @NotNull String streamerId, @NotNull String badge) throws SQLException;
+	int addUserPrediction(@NotNull String username, @NotNull String streamerId, @NotNull String badge) throws SQLException;
 	
 	void cancelPrediction(@NotNull Event event) throws SQLException;
 	
 	void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnOnInvestment) throws SQLException;
 	
-	void deleteUserPredictions() throws SQLException;
+	void deleteAllUserPredictions() throws SQLException;
 	
 	void deleteUserPredictionsForChannel(@NotNull String channelId) throws SQLException;
 	
 	@NotNull
 	Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser) throws SQLException;
-	
-	@Override
-	void close();
-	
-	@NotNull
-	Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException;
 }
