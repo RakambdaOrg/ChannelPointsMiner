@@ -150,7 +150,7 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(LoggerEventListener.class)
 					.hasAtLeastOneElementOfType(DatabaseEventHandler.class);
 			
-			verify(database).deleteUserPredictions();
+			verify(database).deleteAllUserPredictions();
 			
 			miner.close();
 		}

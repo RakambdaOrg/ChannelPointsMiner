@@ -3,7 +3,9 @@ package fr.raksrinana.channelpointsminer.miner.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.raksrinana.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
+import org.assertj.core.api.Assertions;
 import org.assertj.db.type.Changes;
 import org.assertj.db.type.Table;
 import org.mockito.Mock;
@@ -171,6 +173,17 @@ class SQLiteDatabaseTest{
 					.changeOfModification()
 					.column(LAST_STATUS_CHANGE_COL).valueAtEndPoint().isEqualTo(getExpectedTimestamp(newTime));
 		}
+	}
+	
+	@Test
+	void getStreamerIdFromName() throws SQLException{
+		tested.createChannel("other-id", "other-name");
+		
+		Assertions.assertThat(tested.getStreamerIdFromName(CHANNEL_USERNAME)).isEmpty();
+		
+		tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
+		
+		Assertions.assertThat(tested.getStreamerIdFromName(CHANNEL_USERNAME)).isPresent().get().isEqualTo(CHANNEL_ID);
 	}
 	
 	@Test
@@ -450,6 +463,74 @@ class SQLiteDatabaseTest{
 				.column(WIN_CNT_COL).valueAtEndPoint().isEqualTo(0)
 				.column(WIN_RATE_COL).valueAtEndPoint().isEqualTo(0D)
 				.column(RETURN_ON_INVESTMENT_COL).valueAtEndPoint().isEqualTo(-1D);
+	}
+	
+	@Test
+	void getOutcomeStatisticsForChannel() throws SQLException{
+		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		tested.addUserPrediction("user-2", CHANNEL_ID, "B2");
+		
+		tested.resolvePrediction(event, "Outcome1", "B1", 1.5D);
+		
+		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B3");
+		tested.addUserPrediction("user-2", CHANNEL_ID, "B4");
+		tested.addUserPrediction("user-3", CHANNEL_ID, "B5");
+		
+		Assertions.assertThat(tested.getOutcomeStatisticsForChannel(CHANNEL_ID, 1))
+				.containsExactlyInAnyOrder(
+						OutcomeStatistic.builder()
+								.badge("B3")
+								.userCnt(1)
+								.averageWinRate(1D)
+								.averageUserBetsPlaced(1D)
+								.averageUserWins(1D)
+								.averageReturnOnInvestment(0.5)
+								.build(),
+						OutcomeStatistic.builder()
+								.badge("B4")
+								.userCnt(1)
+								.averageWinRate(0D)
+								.averageUserBetsPlaced(1D)
+								.averageUserWins(0D)
+								.averageReturnOnInvestment(-1D)
+								.build()
+				);
+	}
+	
+	@Test
+	void deleteAllUserPredictions() throws SQLException{
+		var changes = changesUserPrediction.get();
+		
+		tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		tested.addUserPrediction(USER_USERNAME, "channel-2", "B2");
+		tested.addUserPrediction("user-2", CHANNEL_ID, "B2");
+		
+		changes.setStartPointNow();
+		tested.deleteAllUserPredictions();
+		changes.setEndPointNow();
+		
+		assertThat(changes).ofDeletion().hasNumberOfChanges(3);
+	}
+	
+	@Test
+	void deleteUserPredictionsForChannel() throws SQLException{
+		var changes = changesUserPrediction.get();
+		
+		var userId1 = tested.addUserPrediction(USER_USERNAME, CHANNEL_ID, "B1");
+		tested.addUserPrediction(USER_USERNAME, "channel-2", "B2");
+		var userId3 = tested.addUserPrediction("user-2", CHANNEL_ID, "B2");
+		
+		changes.setStartPointNow();
+		tested.deleteUserPredictionsForChannel(CHANNEL_ID);
+		changes.setEndPointNow();
+		
+		assertThat(changes).hasNumberOfChanges(2)
+				.changeOfDeletion()
+				.column(USER_ID_COL).valueAtStartPoint().isEqualTo(userId1)
+				.column(CHANNEL_ID_COL).valueAtStartPoint().isEqualTo(CHANNEL_ID)
+				.changeOfDeletion()
+				.column(USER_ID_COL).valueAtStartPoint().isEqualTo(userId3)
+				.column(CHANNEL_ID_COL).valueAtStartPoint().isEqualTo(CHANNEL_ID);
 	}
 	
 	private LocalDateTime getExpectedTimestamp(Instant instant){

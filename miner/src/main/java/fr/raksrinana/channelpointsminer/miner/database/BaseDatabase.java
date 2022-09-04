@@ -200,7 +200,7 @@ public abstract class BaseDatabase implements IDatabase{
 	protected abstract void resolveUserPredictions(double returnRatioForWin, @NotNull String channelId, @NotNull String badge) throws SQLException;
 	
 	@Override
-	public void deleteUserPredictions() throws SQLException{
+	public void deleteAllUserPredictions() throws SQLException{
 		log.debug("Removing all user predictions.");
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("DELETE FROM `UserPrediction`")){
@@ -256,7 +256,7 @@ public abstract class BaseDatabase implements IDatabase{
 						INNER JOIN `PredictionUser` AS pu
 						ON up.`UserID`=pu.`ID` AND up.`ChannelID` = pu.`ChannelID`
 						WHERE up.`ChannelID`=?
-						AND `PredictionCnt`>?
+						AND `PredictionCnt`>=?
 						GROUP BY `Badge`"""
 				)){
 			statement.setString(1, channelId);
