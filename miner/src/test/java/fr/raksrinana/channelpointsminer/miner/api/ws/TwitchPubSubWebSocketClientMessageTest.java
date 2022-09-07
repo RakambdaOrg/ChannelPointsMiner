@@ -580,6 +580,8 @@ class TwitchPubSubWebSocketClientMessageTest{
 						.message(CommunityMomentStart.builder()
 								.data(CommunityMomentStartData.builder()
 										.momentId("moment-id")
+										.channelId("123456789")
+										.clipSlug("clip-slug")
 										.build())
 								.build())
 						.build())

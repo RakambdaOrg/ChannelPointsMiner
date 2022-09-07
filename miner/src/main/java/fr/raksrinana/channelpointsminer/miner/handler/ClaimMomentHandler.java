@@ -8,6 +8,7 @@ import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
@@ -15,8 +16,11 @@ public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
 	
 	@Override
 	public void onCommunityMomentStart(@NotNull Topic topic, @NotNull CommunityMomentStart message){
-		try(var ignored = LogContext.with(miner)){
-			miner.onEvent(new ClaimMomentEvent(miner, "FAKE-CHANNEL_ID", "FAKE-USERNAME", null, TimeFactory.now()));
+		var channelId = message.getData().getChannelId();
+		var streamer = miner.getStreamerById(channelId).orElse(null);
+		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
+		try(var ignored = LogContext.with(miner).withStreamer(streamer)){
+			miner.onEvent(new ClaimMomentEvent(miner, channelId, username, streamer, TimeFactory.now()));
 			miner.getGqlApi().claimCommunityMoment(message.getData().getMomentId());
 		}
 	}
