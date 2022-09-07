@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.api.ws;
 
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ActiveMultipliersUpdated;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimClaimed;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.Commercial;
@@ -18,6 +19,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.UpdateSummary;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.WatchPartyVod;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.activemultipliersupdated.ActiveMultipliersUpdatedData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimclaimed.ClaimClaimedData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.communitymoment.CommunityMomentStartData;
@@ -31,6 +33,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsspent.Po
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.predictionupdated.PredictionUpdatedData;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.ActiveMultipliers;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.CommunityPointsMultiplier;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.NotificationDisplayType;
@@ -582,6 +585,34 @@ class TwitchPubSubWebSocketClientMessageTest{
 										.momentId("moment-id")
 										.channelId("123456789")
 										.clipSlug("clip-slug")
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onActiveMultipliersUpdated(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/activeMultipliersUpdated.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(COMMUNITY_POINTS_USER_V1)
+								.target("123456789")
+								.build())
+						.message(ActiveMultipliersUpdated.builder()
+								.data(ActiveMultipliersUpdatedData.builder()
+										.timestamp(ZonedDateTime.of(2022, 8, 19, 21, 54, 20, 354269854, UTC))
+										.activeMultipliers(ActiveMultipliers.builder()
+												.userId("123456789")
+												.channelId("987654321")
+												.multipliers(List.of(CommunityPointsMultiplier.builder()
+														.reasonCode(MultiplierReasonCode.SUB_T1)
+														.factor(0.2F)
+														.build()))
+												.build())
 										.build())
 								.build())
 						.build())
