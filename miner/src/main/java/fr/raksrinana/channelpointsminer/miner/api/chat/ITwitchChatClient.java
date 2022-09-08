@@ -13,4 +13,6 @@ public interface ITwitchChatClient extends AutoCloseable{
 	
 	@Override
 	void close();
+	
+	void addChatMessageListener(@NotNull ITwitchChatMessageListener listener);
 }

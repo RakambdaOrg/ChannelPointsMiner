@@ -22,7 +22,7 @@ class TwitchChatWebSocketClientLeaveJoinTest{
 	private TwitchChatWebSocketClient tested;
 	
 	@Mock
-	private ITwitchChatWebSocketListener listener;
+	private ITwitchChatWebSocketClosedListener listener;
 	@Mock
 	private TwitchLogin twitchLogin;
 	
@@ -77,9 +77,9 @@ class TwitchChatWebSocketClientLeaveJoinTest{
 		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchChatWebSocketClient(uri, twitchLogin);
+		tested = new TwitchChatWebSocketClient(uri, twitchLogin, false);
 		tested.setReuseAddr(true);
-		tested.addListener(listener);
+		tested.addWebSocketClosedListener(listener);
 		tested.connectBlocking();
 		server.awaitMessage(3);
 		server.reset();

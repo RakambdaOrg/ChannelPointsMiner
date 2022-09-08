@@ -1,32 +1,34 @@
 [versions]
-slf4j-version = "2.0.0-beta0"
+slf4j-version = "2.0.0"
 log4j2-version = "2.18.0"
 log4j2-slf4j-version = "2.18.0"
 unirest-version = "4.0.0-RC4"
 picocli-version = "4.6.3"
-jackson-version = "2.13.3"
+jackson-version = "2.13.4"
 httpclient-version = "4.5.13"
 lang3-version = "3.12.0"
 jetbrains-annotations-version = "23.0.0"
 websocket-version = "1.5.3"
 junit-version = "5.9.0"
-assertj-version = "3.23.1"
-mockito-version = "4.6.1"
+assertj-core-version = "3.23.1"
+assertj-db-version = "2.0.2"
+mockito-version = "4.8.0"
 awaitility-version = "4.2.0"
 json-unit-version = "2.35.0"
 kitteh-irc-version = "8.0.0"
 hikari-cp-version = "5.0.1"
 mariadb-version = "3.0.7"
-sqlite-version = "3.39.2.0"
+sqlite-version = "3.39.2.1"
 rerunner-jupiter-version = "2.1.6"
+flyway-version = "9.2.3"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
-lombok-version = "6.5.0.3"
-jib-version = "3.2.1"
+lombok-version = "6.5.1"
+jib-version = "3.3.0"
 git-properties-version = "2.4.1"
-springboot-version = "2.7.2"
-springboot-dependencies-version = "1.0.12.RELEASE"
+springboot-version = "2.7.3"
+springboot-dependencies-version = "1.0.13.RELEASE"
 
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
@@ -47,11 +49,14 @@ kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitt
 hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari-cp-version" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb-version" }
 sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-version" }
+flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway-version" }
+flyway-mysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway-version" }
 
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
 junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-version" }
-assertj = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-version" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core-version" }
+assertj-db = { group = "org.assertj", name = "assertj-db", version.ref = "assertj-db-version" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
 mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito-version" }
 mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito-version" }
@@ -64,9 +69,11 @@ rerunnerJupiter = { group = "io.github.artsok", name = "rerunner-jupiter", versi
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]
 log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-objectmapper-jackson"]
+flyway = ["flyway-core", "flyway-mysql"]
 junit = ["junit-api", "junit-params"]
 mockito = ["mockito-core", "mockito-inline", "mockito-junit"]
 jsonUnit = ["json-unit", "json-unit-assertj"]
+assertj = ["assertj-core", "assertj-db"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }

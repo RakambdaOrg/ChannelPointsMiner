@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,4 +31,8 @@ public class NotificationSummary{
 	private int viewerUnreadCount;
 	@JsonProperty("creator_unread_count")
 	private int creatorUnreadCount;
+	@NotNull
+	@JsonProperty("summaries_by_display_type")
+	@Builder.Default
+	private Map<NotificationDisplayType, NotificationSummaryByDisplayType> summariesByDisplayType = new HashMap<>();
 }

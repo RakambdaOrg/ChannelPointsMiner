@@ -6,6 +6,9 @@
 image:https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner",window="_blank",align="center"]
 image:https://img.shields.io/docker/pulls/mrcraftcod/channel-points-miner.svg[link="https://hub.docker.com/r/mrcraftcod/channel-points-miner",window="_blank",align="center"]
 
+WARN: If you're reading this on GitHub, this may correspond to the documentation of the `develop` branch.
+If you want documentation of the latest released version please go to link:https://raksrinana.github.io/ChannelPointsMiner/[pages].
+
 The main objective of this miner is to acquire Twitch channel points automatically.
 Other forms of point, like those provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
 
@@ -15,7 +18,8 @@ Other forms of point, like those provided by bots through IRC (Streamlabs, etc.)
 * Follow raids.
 * Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
 * Join IRC chat.
-* Participate in predictions.
+* Participate in predictions and record peoples predictions.
+* Claim link:https://help.twitch.tv/s/article/moments[moments].
 
 Limits:
 
@@ -224,9 +228,10 @@ Analytics settings define a way to collect data on your twitch account as time p
 This includes:
 
 * Balance evolution
-* Predictions made & results
+* Your own Predictions made & results
+* Predictions from other chat participants and their return-on-investment (only approximate as the bet amount is mostly anonymous).
 
-These are store in an external database which allows any external software to access it and process it they wanted way.
+These are stored in an external database which allows any external software to access it and process it the wanted way.
 
 Several database types are supported and listed below.
 Each database (logical database for MariaDB, different file for H2/SQLite) will however represent one mined account.
@@ -243,6 +248,10 @@ You'll therefore have to adjust the settings for each mined account to not point
 |database
 |<<analytics_database_settings,Analytics database settings>>.
 |
+
+|recordChatsPredictions
+|If set to true, other peoples predictions will be recorded. This is done from two sources, from the top-predictors list and from chat messages (via their badge). Reading from chat, requires the joinIrc setting to be set to true.
+|false
 |===
 
 ==== Analytics database [[analytics_database_settings]]
@@ -270,6 +279,12 @@ NOTE: Can be omitted if no account
 
 NOTE: Can be omitted if no password
 |
+
+|maxPoolSize
+|Maximum number of connections to the database.
+
+NOTE: For SQLite connection, value 1 will be forced.
+|10
 |===
 
 === Streamer settings [[streamer_settings]]
@@ -298,6 +313,10 @@ An example can be found link:https://github.com/RakSrinaNa/ChannelPointsMiner/bl
 
 |participateCampaigns
 |If set to true, progression towards campaigns will be made, and completed rewards will be claimed.
+|false
+
+|claimMoments
+|If set to true, link:https://help.twitch.tv/s/article/moments[moments] will be claimed when available.
 |false
 
 |joinIrc
@@ -471,6 +490,15 @@ This is the same as "the outcome with higher odds".
 |Choose the outcome with the biggest predictor.
 |Outcome with the person that placed the biggest prediction overall.
 |
+
+|mostTrusted
+|Choose the outcome that's backed by other users with the highest average return-on-investment. *Requires at least some data gathered beforehand via the 'recordChatsPredictions' setting!* E.g. only users with at least 5 made predictions are taken into account by default.
+|Take the return-on-investment from people who already placed a prediction, calculate the average per outcome, then pick the highest.
+|* minTotalBetsPlacedByUser: only user with at least this number of bets are considered in the calculation. Default is 5.
+
+* minTotalBetsPlacedOnPrediction: if not enough bets were placed, skip this prediction. Default is 10.
+
+* minTotalBetsPlacedOnOutcome: if not enough bets were placed on the chosen outcome, skip this prediction. Default is 5.
 
 |smart
 |Choose the outcome with the most users.

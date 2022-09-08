@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.event.impl;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
-import fr.raksrinana.channelpointsminer.miner.event.AbstractEvent;
+import fr.raksrinana.channelpointsminer.miner.event.AbstractLoggableEvent;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class DropClaimEvent extends AbstractEvent{
+public class DropClaimEvent extends AbstractLoggableEvent{
 	private final TimeBasedDrop drop;
 	
 	public DropClaimEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop, @NotNull Instant instant){

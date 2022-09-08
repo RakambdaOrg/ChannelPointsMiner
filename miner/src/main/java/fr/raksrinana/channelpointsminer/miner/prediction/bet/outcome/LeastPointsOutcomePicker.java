@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ import java.util.Comparator;
 public class LeastPointsOutcomePicker implements IOutcomePicker{
 	@Override
 	@NotNull
-	public Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction) throws BetPlacementException{
+	public Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction, @NotNull IDatabase database) throws BetPlacementException{
 		return bettingPrediction.getEvent().getOutcomes().stream()
 				.min(Comparator.comparingLong(Outcome::getTotalPoints))
 				.orElseThrow(() -> new BetPlacementException("Couldn't get outcome with least points"));

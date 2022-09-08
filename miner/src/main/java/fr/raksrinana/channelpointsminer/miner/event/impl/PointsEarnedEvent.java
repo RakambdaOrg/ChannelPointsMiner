@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.event.impl;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
-import fr.raksrinana.channelpointsminer.miner.event.AbstractStreamerEvent;
+import fr.raksrinana.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PointsEarnedEvent extends AbstractStreamerEvent{
+public class PointsEarnedEvent extends AbstractLoggableStreamerEvent{
 	@Getter
 	private final PointsEarnedData pointsEarnedData;
 	

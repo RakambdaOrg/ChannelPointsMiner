@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.NotEnoughUsersBetPlacementException;
@@ -30,7 +31,7 @@ public class SmartOutcomePicker implements IOutcomePicker{
 	
 	@Override
 	@NotNull
-	public Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction) throws BetPlacementException{
+	public Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction, @NotNull IDatabase database) throws BetPlacementException{
 		
 		var totalUsers = (double) bettingPrediction.getEvent().getOutcomes().stream().mapToInt(Outcome::getTotalUsers).sum();
 		if(Double.compare(0D, totalUsers) == 0){

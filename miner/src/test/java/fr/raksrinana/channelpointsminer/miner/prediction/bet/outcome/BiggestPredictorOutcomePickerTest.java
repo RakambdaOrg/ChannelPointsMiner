@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Predictor;
+import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
@@ -23,6 +24,8 @@ import static org.mockito.Mockito.when;
 class BiggestPredictorOutcomePickerTest{
 	private final BiggestPredictorOutcomePicker tested = BiggestPredictorOutcomePicker.builder().build();
 	
+	@Mock
+	private IDatabase database;
 	@Mock
 	private BettingPrediction bettingPrediction;
 	@Mock
@@ -53,13 +56,13 @@ class BiggestPredictorOutcomePickerTest{
 		when(blueOutcome.getTopPredictors()).thenReturn(List.of(predictor10, predictor11));
 		when(pinkOutcome.getTopPredictors()).thenReturn(List.of(predictor20, predictor21));
 		
-		assertThat(tested.chooseOutcome(bettingPrediction)).isEqualTo(pinkOutcome);
+		assertThat(tested.chooseOutcome(bettingPrediction, database)).isEqualTo(pinkOutcome);
 	}
 	
 	@Test
 	void missingOutcome(){
 		when(event.getOutcomes()).thenReturn(List.of());
 		
-		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction));
+		assertThrows(BetPlacementException.class, () -> tested.chooseOutcome(bettingPrediction, database));
 	}
 }

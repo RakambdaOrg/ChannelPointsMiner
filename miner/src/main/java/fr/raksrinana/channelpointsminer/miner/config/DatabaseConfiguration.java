@@ -28,4 +28,8 @@ public class DatabaseConfiguration{
 	@Nullable
 	@ToString.Exclude
 	private String password;
+	@JsonProperty("maxPoolSize")
+	@Comment(value = "Max pool size")
+    @Builder.Default
+	private int maxPoolSize = 10;
 }

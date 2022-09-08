@@ -2,13 +2,15 @@ package fr.raksrinana.channelpointsminer.miner.factory;
 
 import fr.raksrinana.channelpointsminer.miner.config.DatabaseConfiguration;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
+import fr.raksrinana.channelpointsminer.miner.database.NoOpDatabase;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
-import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.sql.SQLException;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -31,6 +33,11 @@ class DatabaseFactoryTest{
 		lenient().when(databaseConfiguration.getJdbcUrl()).thenReturn("jdbc:mariadb://%s:%d/%s".formatted(HOST, PORT, DATABASE));
 		lenient().when(databaseConfiguration.getUsername()).thenReturn(USERNAME);
 		lenient().when(databaseConfiguration.getPassword()).thenReturn(PASSWORD);
+	}
+	
+	@Test
+	void createNoOpDatabase() throws SQLException{
+		assertThat(DatabaseFactory.createDatabase(null)).isInstanceOf(NoOpDatabase.class);
 	}
 	
 	@Test
@@ -57,6 +64,6 @@ class DatabaseFactoryTest{
 		var database = mock(IDatabase.class);
 		
 		var handler = DatabaseFactory.createDatabaseHandler(database);
-		Assertions.assertThat(handler).isNotNull();
+		assertThat(handler).isNotNull();
 	}
 }

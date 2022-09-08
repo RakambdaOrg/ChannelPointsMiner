@@ -17,7 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PredictionMade extends IMessage{
+public class PredictionMade extends IPubSubMessage{
 	@JsonProperty("data")
 	private PredictionMadeData data;
 }

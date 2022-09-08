@@ -34,7 +34,7 @@ public class BetPlacer{
 			}
 			
 			var outcomePicker = bettingPrediction.getStreamer().getSettings().getPredictions().getOutcomePicker();
-			var outcome = outcomePicker.chooseOutcome(bettingPrediction);
+			var outcome = outcomePicker.chooseOutcome(bettingPrediction, miner.getDatabase());
 			
 			var amountCalculator = bettingPrediction.getStreamer().getSettings().getPredictions().getAmountCalculator();
 			var amount = amountCalculator.calculateAmount(bettingPrediction, outcome);

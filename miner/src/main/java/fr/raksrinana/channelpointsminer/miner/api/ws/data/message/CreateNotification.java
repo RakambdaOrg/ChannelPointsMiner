@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateNotification extends IMessage{
+public class CreateNotification extends IPubSubMessage{
 	@JsonProperty("data")
 	@NotNull
 	private CreateNotificationData data;

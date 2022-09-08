@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateSummary extends IMessage{
+public class UpdateSummary extends IPubSubMessage{
 	@JsonProperty("data")
 	@NotNull
 	private UpdateSummaryData data;

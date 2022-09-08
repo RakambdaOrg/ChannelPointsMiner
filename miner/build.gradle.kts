@@ -22,13 +22,14 @@ dependencies {
     implementation(libs.hikaricp)
     implementation(libs.mariadb)
     implementation(libs.sqlite)
+    implementation(libs.bundles.flyway)
 
     compileOnly(libs.jetbrainsAnnotations)
 
     testImplementation(libs.bundles.junit)
     testRuntimeOnly(libs.junitEngine)
 
-    testImplementation(libs.assertj)
+    testImplementation(libs.bundles.assertj)
     testImplementation(libs.bundles.mockito)
     testImplementation(libs.awaitility)
     testImplementation(libs.unirestMocks)

@@ -11,6 +11,8 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.chatroombanstatus.Cha
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.chatroombanstatus.ChatRoomBanStatusOperation;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.claimcommunitypoints.ClaimCommunityPointsData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.claimcommunitypoints.ClaimCommunityPointsOperation;
+import fr.raksrinana.channelpointsminer.miner.api.gql.data.communitymomentcalloutclaim.CommunityMomentCalloutClaimData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.data.communitymomentcalloutclaim.CommunityMomentCalloutClaimOperation;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsOperation;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
@@ -48,7 +50,7 @@ import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 public class GQLApi{
 	private static final String ENDPOINT = "https://gql.twitch.tv/gql";
 	private static final String ORDER_DESC = "DESC";
-	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error");
+	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error", "server error", "service unavailable");
 	
 	private final TwitchLogin twitchLogin;
 	
@@ -113,6 +115,11 @@ public class GQLApi{
 	@NotNull
 	public Optional<GQLResponse<ClaimCommunityPointsData>> claimCommunityPoints(@NotNull String channelId, @NotNull String claimId){
 		return postRequest(new ClaimCommunityPointsOperation(channelId, claimId));
+	}
+	
+	@NotNull
+	public Optional<GQLResponse<CommunityMomentCalloutClaimData>> claimCommunityMoment(@NotNull String momentId){
+		return postRequest(new CommunityMomentCalloutClaimOperation(momentId));
 	}
 	
 	@NotNull

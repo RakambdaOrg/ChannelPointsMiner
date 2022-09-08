@@ -1,0 +1,45 @@
+name: Analyse
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  schedule:
+    - cron: '0 13 * * 1'
+
+jobs:
+  code-ql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: java
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v1
+        env:
+          GITHUB_USER: RakSrinaNa
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+  qodana:
+    name: Qodana
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Qodana
+        uses: JetBrains/qodana-action@v5.0.2

@@ -25,7 +25,14 @@ class TwitchIrcFactoryTest{
 	}
 	
 	@Test
-	void createListener(){
-		assertThat(TwitchIrcFactory.createIrcListener("username")).isNotNull().isInstanceOf(TwitchIrcEventListener.class);
+	void createIrcConnectionHandler(){
+		assertThat(TwitchIrcFactory.createIrcConnectionHandler("username")).isNotNull()
+				.isInstanceOf(TwitchIrcConnectionHandler.class);
+	}
+	
+	@Test
+	void createIrcMessageHandler(){
+		assertThat(TwitchIrcFactory.createIrcMessageHandler("username")).isNotNull()
+				.isInstanceOf(TwitchIrcMessageHandler.class);
 	}
 }

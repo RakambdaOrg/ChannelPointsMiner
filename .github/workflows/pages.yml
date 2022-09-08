@@ -1,0 +1,47 @@
+name: Build and deploy Github pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - name: Setup asciidoctor
+        uses: reitzig/actions-asciidoctor@v2.0.0
+      - name: Build pages
+        run: asciidoctor README.adoc
+      - name: Prepare upload
+        run: |
+          mkdir pages
+          cp README.html pages/
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: pages
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    needs: build
+    name: Deploy pages
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

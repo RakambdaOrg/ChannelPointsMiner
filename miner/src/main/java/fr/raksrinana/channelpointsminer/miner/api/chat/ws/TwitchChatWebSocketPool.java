@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.api.chat.ws;
 
 import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
+import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatMessageListener;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
@@ -9,6 +10,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -17,19 +19,23 @@ import static org.java_websocket.framing.CloseFrame.ABNORMAL_CLOSE;
 import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
-public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSocketListener, ITwitchChatClient{
+public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSocketClosedListener, ITwitchChatClient{
 	private static final int SOCKET_TIMEOUT_MINUTES = 5;
 	
 	private final Collection<TwitchChatWebSocketClient> clients;
 	private final int maxTopicPerClient;
+	private final boolean listenMessages;
+	private final Collection<ITwitchChatMessageListener> chatMessageListeners;
 	private final TwitchLogin twitchLogin;
 	private final Queue<String> pendingJoin;
 	
-	public TwitchChatWebSocketPool(int maxTopicPerClient, @NotNull TwitchLogin twitchLogin){
+	public TwitchChatWebSocketPool(int maxTopicPerClient, @NotNull TwitchLogin twitchLogin, boolean listenMessages){
 		this.maxTopicPerClient = maxTopicPerClient;
 		this.twitchLogin = twitchLogin;
+		this.listenMessages = listenMessages;
 		clients = new ConcurrentLinkedQueue<>();
 		pendingJoin = new ConcurrentLinkedQueue<>();
+		chatMessageListeners = new LinkedList<>();
 	}
 	
 	@Override
@@ -111,9 +117,10 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	@NotNull
 	private TwitchChatWebSocketClient createNewClient(){
 		try{
-			var client = TwitchWebSocketClientFactory.createChatClient(twitchLogin);
+			var client = TwitchWebSocketClientFactory.createChatClient(twitchLogin, listenMessages);
 			log.debug("Created websocket client with uuid {}", client.getUuid());
-			client.addListener(this);
+			client.addWebSocketClosedListener(this);
+			chatMessageListeners.forEach(client::addChatMessageListener);
 			client.connectBlocking();
 			clients.add(client);
 			return client;
@@ -131,5 +138,11 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	
 	public int getClientCount(){
 		return clients.size();
+	}
+	
+	@Override
+	public void addChatMessageListener(@NotNull ITwitchChatMessageListener listener){
+		chatMessageListeners.add(listener);
+		clients.forEach(c -> c.addChatMessageListener(listener));
 	}
 }

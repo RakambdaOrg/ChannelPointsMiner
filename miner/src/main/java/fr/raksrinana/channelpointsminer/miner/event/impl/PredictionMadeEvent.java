@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.event.impl;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
-import fr.raksrinana.channelpointsminer.miner.event.AbstractStreamerEvent;
+import fr.raksrinana.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class PredictionMadeEvent extends AbstractStreamerEvent{
+public class PredictionMadeEvent extends AbstractLoggableStreamerEvent{
 	private static final String UNKNOWN_OUTCOME = "UnknownOutcome";
 	
 	@Getter

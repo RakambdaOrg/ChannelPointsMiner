@@ -22,4 +22,8 @@ public class AnalyticsConfiguration{
 	@Comment(value = "Database settings")
 	@Nullable
 	private DatabaseConfiguration database;
+	@JsonProperty("recordChatsPredictions")
+	@Comment(value = "Record other chat members predictions.")
+	@Builder.Default
+	private boolean recordChatsPredictions = false;
 }

@@ -1,9 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.api.ws;
 
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ActiveMultipliersUpdated;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimClaimed;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.Commercial;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.CreateNotification;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.DeleteNotification;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.PointsEarned;
@@ -17,8 +19,10 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.UpdateSummary;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ViewCount;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.WatchPartyVod;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.activemultipliersupdated.ActiveMultipliersUpdatedData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimclaimed.ClaimClaimedData;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.communitymoment.CommunityMomentStartData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.CreateNotificationData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.Notification;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.NotificationAction;
@@ -29,15 +33,18 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsspent.Po
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.predictionupdated.PredictionUpdatedData;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.ActiveMultipliers;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.CommunityPointsMultiplier;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.NotificationDisplayType;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.NotificationSummary;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.NotificationSummaryByDisplayType;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PointGain;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Raid;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Summary;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.updatesummary.UpdateSummaryData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.watchpartyvod.Vod;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
@@ -57,7 +64,9 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PointReasonCode.CLAIM;
+import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
@@ -530,6 +539,28 @@ class TwitchPubSubWebSocketClientMessageTest{
 												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 957079333, UTC))
 												.viewerUnreadCount(8)
 												.creatorUnreadCount(1)
+												.summariesByDisplayType(Map.of(
+														NotificationDisplayType.CREATOR, NotificationSummaryByDisplayType.builder()
+																		.unreadSummary(Summary.builder()
+																				.count(5)
+																				.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 20, 41, 56, 957079333, UTC))
+																				.build())
+																		.unseenSummary(Summary.builder()
+																				.count(6)
+																				.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 21, 41, 56, 957079333, UTC))
+																				.build())
+																.build(),
+														NotificationDisplayType.VIEWER, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(7)
+																		.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 22, 41, 56, 957079333, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(8)
+																		.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 23, 41, 56, 957079333, UTC))
+																		.build())
+																.build()
+												))
 												.build())
 										.build())
 								.build())
@@ -537,32 +568,82 @@ class TwitchPubSubWebSocketClientMessageTest{
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
-    
-    @Test
-    void onWatchPartyVod(WebsocketMockServer server) throws MalformedURLException{
-        server.send(getAllResourceContent("api/ws/watchPartyVod.json"));
-        
-        var expected = MessageResponse.builder()
-                .data(MessageData.builder()
-                        .topic(Topic.builder()
-                                .name(ONSITE_NOTIFICATIONS)
-                                .target("123456789")
-                                .build())
-                        .message(WatchPartyVod.builder()
-                                .vod(Vod.builder()
-                                        .wpId("")
-                                        .wpType("rerun")
-                                        .incrementUrl(new URL("https://increment_url"))
-                                        .vodId("123456")
-                                        .title("the title")
-                                        .broadcastType("highlight")
-                                        .viewable("public")
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
-    }
+	
+	@Test
+	void onWatchPartyVod(WebsocketMockServer server) throws MalformedURLException{
+		server.send(getAllResourceContent("api/ws/watchPartyVod.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(WatchPartyVod.builder()
+								.vod(Vod.builder()
+										.wpId("")
+										.wpType("rerun")
+										.incrementUrl(new URL("https://increment_url"))
+										.vodId("123456")
+										.title("the title")
+										.broadcastType("highlight")
+										.viewable("public")
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onCommunityMomentStart(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/communityMomentStart.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(COMMUNITY_MOMENTS_CHANNEL_V1)
+								.target("123456789")
+								.build())
+						.message(CommunityMomentStart.builder()
+								.data(CommunityMomentStartData.builder()
+										.momentId("moment-id")
+										.channelId("123456789")
+										.clipSlug("clip-slug")
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onActiveMultipliersUpdated(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/activeMultipliersUpdated.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(COMMUNITY_POINTS_USER_V1)
+								.target("123456789")
+								.build())
+						.message(ActiveMultipliersUpdated.builder()
+								.data(ActiveMultipliersUpdatedData.builder()
+										.timestamp(ZonedDateTime.of(2022, 8, 19, 21, 54, 20, 354269854, UTC))
+										.activeMultipliers(ActiveMultipliers.builder()
+												.userId("123456789")
+												.channelId("987654321")
+												.multipliers(List.of(CommunityPointsMultiplier.builder()
+														.reasonCode(MultiplierReasonCode.SUB_T1)
+														.factor(0.2F)
+														.build()))
+												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
 	
 	@BeforeEach
 	void setUp(WebsocketMockServer server) throws InterruptedException{

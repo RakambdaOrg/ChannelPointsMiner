@@ -255,6 +255,7 @@ class StreamerSettingsFactoryTest{
 				.makePredictions(true)
 				.followRaid(true)
 				.participateCampaigns(true)
+				.claimMoments(true)
 				.joinIrc(true)
 				.index(5)
 				.priorities(priorities)

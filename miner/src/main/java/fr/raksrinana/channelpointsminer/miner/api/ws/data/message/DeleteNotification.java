@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DeleteNotification extends IMessage{
+public class DeleteNotification extends IPubSubMessage{
 	@JsonProperty("data")
 	@NotNull
 	private DeleteNotificationData data;

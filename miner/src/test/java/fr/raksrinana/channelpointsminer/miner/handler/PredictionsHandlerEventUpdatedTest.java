@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.event.impl.EventCreatedEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
@@ -22,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +38,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,13 +46,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PredictionsHandlerEventUpdatedTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String STREAMER_USERNAME = "streamer-username";
 	private static final String EVENT_ID = "event-id";
 	private static final int MINIMUM_REQUIRED = 50;
 	private static final int WINDOW_SECONDS = 300;
 	private static final ZonedDateTime EVENT_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 0, 0, UTC);
 	private static final ZonedDateTime EVENT_UPDATE_DATE = ZonedDateTime.of(2021, 10, 10, 11, 59, 30, 0, UTC);
 	private static final ZonedDateTime SCHEDULE_DATE = ZonedDateTime.of(2021, 10, 10, 12, 1, 0, 0, UTC);
-	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
+	private static final Instant NOW = Instant.parse("2021-10-10T12:00:00.000Z");
+	private static final ZonedDateTime NOW_ZONED = ZonedDateTime.ofInstant(NOW, UTC);
 	
 	@InjectMocks
 	private PredictionsHandler tested;
@@ -64,8 +69,6 @@ class PredictionsHandlerEventUpdatedTest{
 	private EventUpdatedData eventUpdatedData;
 	@Mock
 	private Event event;
-	@Mock
-	private Event event2;
 	@Mock
 	private Topic topic;
 	@Mock
@@ -84,16 +87,16 @@ class PredictionsHandlerEventUpdatedTest{
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		
 		lenient().when(eventUpdated.getData()).thenReturn(eventUpdatedData);
-		lenient().when(eventUpdatedData.getEvent()).thenReturn(event2);
+		lenient().when(eventUpdatedData.getEvent()).thenReturn(event);
 		lenient().when(eventUpdatedData.getTimestamp()).thenReturn(EVENT_UPDATE_DATE);
 		
 		lenient().when(event.getId()).thenReturn(EVENT_ID);
-		lenient().when(event2.getId()).thenReturn(EVENT_ID);
-		lenient().when(event2.getStatus()).thenReturn(EventStatus.ACTIVE);
-		lenient().when(event2.getCreatedAt()).thenReturn(EVENT_DATE);
-		lenient().when(event2.getPredictionWindowSeconds()).thenReturn(WINDOW_SECONDS);
+		lenient().when(event.getStatus()).thenReturn(EventStatus.ACTIVE);
+		lenient().when(event.getCreatedAt()).thenReturn(EVENT_DATE);
+		lenient().when(event.getPredictionWindowSeconds()).thenReturn(WINDOW_SECONDS);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
+		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
 		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
 		lenient().when(streamer.getChannelPoints()).thenReturn(Optional.of(MINIMUM_REQUIRED + 1));
 		
@@ -101,7 +104,7 @@ class PredictionsHandlerEventUpdatedTest{
 		lenient().when(predictionSettings.getMinimumPointsRequired()).thenReturn(MINIMUM_REQUIRED);
 		lenient().when(predictionSettings.getDelayCalculator()).thenReturn(delayCalculator);
 		
-		lenient().when(delayCalculator.calculate(event2)).thenReturn(SCHEDULE_DATE);
+		lenient().when(delayCalculator.calculate(event)).thenReturn(SCHEDULE_DATE);
 		
 		lenient().when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
 			var runnable = invocation.getArgument(0, Runnable.class);
@@ -113,10 +116,11 @@ class PredictionsHandlerEventUpdatedTest{
 	@Test
 	void unknownEvent(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
-			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
-			
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW_ZONED);
+            timeFactory.when(TimeFactory::now).thenReturn(NOW);
+            
 			var expectedPrediction = BettingPrediction.builder()
-					.event(event2)
+					.event(event)
 					.streamer(streamer)
 					.state(PredictionState.SCHEDULED)
 					.lastUpdate(EVENT_DATE)
@@ -126,7 +130,8 @@ class PredictionsHandlerEventUpdatedTest{
 			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
-			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event2));
+			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
+			verify(miner).onEvent(new EventUpdatedEvent(miner, NOW, STREAMER_USERNAME, event));
 			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}
@@ -145,7 +150,7 @@ class PredictionsHandlerEventUpdatedTest{
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		
 		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, BettingPrediction.builder()
-				.event(event2)
+				.event(event)
 				.streamer(streamer)
 				.state(PredictionState.SCHEDULED)
 				.lastUpdate(EVENT_UPDATE_DATE)
@@ -173,5 +178,17 @@ class PredictionsHandlerEventUpdatedTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
 		assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, createDefaultPrediction()));
+	}
+	
+	@Test
+	void eventUpdatedEvent(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			createEvent();
+			
+			assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
+			verify(miner).onEvent(new EventUpdatedEvent(miner, NOW, STREAMER_USERNAME, event));
+		}
 	}
 }
