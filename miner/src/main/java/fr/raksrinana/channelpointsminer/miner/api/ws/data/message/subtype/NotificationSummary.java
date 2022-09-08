@@ -33,5 +33,6 @@ public class NotificationSummary{
 	private int creatorUnreadCount;
 	@NotNull
 	@JsonProperty("summaries_by_display_type")
+	@Builder.Default
 	private Map<NotificationDisplayType, NotificationSummaryByDisplayType> summariesByDisplayType = new HashMap<>();
 }
