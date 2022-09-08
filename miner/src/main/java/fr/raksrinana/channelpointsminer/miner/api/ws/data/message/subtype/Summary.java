@@ -20,18 +20,11 @@ import java.util.Map;
 @EqualsAndHashCode
 @ToString
 @Builder
-public class NotificationSummary{
-	@JsonProperty("unseen_view_count")
-	private int unseenViewCount;
-	@JsonProperty("last_seen_at")
+public class Summary{
+	@JsonProperty("count")
+	private int count;
+	@JsonProperty("last_read_all")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@NotNull
 	private ZonedDateTime lastSeenAt;
-	@JsonProperty("viewer_unread_count")
-	private int viewerUnreadCount;
-	@JsonProperty("creator_unread_count")
-	private int creatorUnreadCount;
-	@NotNull
-	@JsonProperty("summaries_by_display_type")
-	private Map<NotificationDisplayType, NotificationSummaryByDisplayType> summariesByDisplayType = new HashMap<>();
 }
