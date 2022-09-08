@@ -10,6 +10,9 @@ changelog:
     - title: "🐛 Fixes"
       labels:
         - "type: 🐛 bug"
+    - title: "⚙️ Internal"
+      labels:
+        - "type: ⚙️ internal enhancement"
     - title: Other Changes
       labels:
         - "*"
