@@ -25,7 +25,7 @@ jobs:
       - name: Prepare upload
         run: |
           mkdir pages
-          cp README.html pages/
+          cp README.html pages/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
