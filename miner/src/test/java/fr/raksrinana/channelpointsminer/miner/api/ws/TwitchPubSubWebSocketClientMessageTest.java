@@ -38,11 +38,13 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.CommunityPointsMultiplier;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.NotificationDisplayType;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.NotificationSummary;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.NotificationSummaryByDisplayType;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PointGain;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Raid;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Summary;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.updatesummary.UpdateSummaryData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.watchpartyvod.Vod;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
@@ -62,6 +64,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.PointReasonCode.CLAIM;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
@@ -536,6 +539,28 @@ class TwitchPubSubWebSocketClientMessageTest{
 												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 957079333, UTC))
 												.viewerUnreadCount(8)
 												.creatorUnreadCount(1)
+												.summariesByDisplayType(Map.of(
+														NotificationDisplayType.CREATOR, NotificationSummaryByDisplayType.builder()
+																		.unreadSummary(Summary.builder()
+																				.count(5)
+																				.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 20, 41, 56, 957079333, UTC))
+																				.build())
+																		.unseenSummary(Summary.builder()
+																				.count(6)
+																				.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 21, 41, 56, 957079333, UTC))
+																				.build())
+																.build(),
+														NotificationDisplayType.VIEWER, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(7)
+																		.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 22, 41, 56, 957079333, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(8)
+																		.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 23, 41, 56, 957079333, UTC))
+																		.build())
+																.build()
+												))
 												.build())
 										.build())
 								.build())
