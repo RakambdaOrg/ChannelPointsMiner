@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Log4j2
 public class UnirestMockExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver{
-	private MockClient unirest;
+	private UnirestMock unirest;
 	
 	@Override
 	public void beforeAll(ExtensionContext context){
@@ -46,7 +46,7 @@ public class UnirestMockExtension implements Extension, BeforeAllCallback, Befor
 	@Override
 	public void beforeEach(ExtensionContext context){
 		Unirest.config().clearDefaultHeaders();
-		unirest = MockClient.register();
+		unirest = new UnirestMock();
 	}
 	
 	@Override
@@ -56,7 +56,7 @@ public class UnirestMockExtension implements Extension, BeforeAllCallback, Befor
 	
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException{
-		return Objects.equals(parameterContext.getParameter().getType(), MockClient.class);
+		return Objects.equals(parameterContext.getParameter().getType(), UnirestMock.class);
 	}
 	
 	@Override

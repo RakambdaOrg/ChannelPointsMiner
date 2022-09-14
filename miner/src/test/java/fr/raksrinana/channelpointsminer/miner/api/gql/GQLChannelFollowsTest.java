@@ -9,8 +9,8 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.PageInfo;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.UserSelfConnection;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import kong.unirest.core.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,19 +22,16 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import static fr.raksrinana.channelpointsminer.miner.tests.TestUtils.getAllResourceContent;
 import static java.time.ZoneOffset.UTC;
-import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
-class GQLChannelFollowsTest{
+class GQLChannelFollowsTest extends AbstractGQLTest{
 	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"4b9cb31b54b9213e5760f2f6e9e935ad09924cac2f78aac51f8a64d85f028ed0\",\"version\":1}},\"operationName\":\"ChannelFollows\",\"variables\":{\"limit\":%d,\"order\":\"%s\"}}";
 	public static final String VALID_QUERY_WITH_CURSOR = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"4b9cb31b54b9213e5760f2f6e9e935ad09924cac2f78aac51f8a64d85f028ed0\",\"version\":1}},\"operationName\":\"ChannelFollows\",\"variables\":{\"cursor\":\"%s\",\"limit\":%d,\"order\":\"%s\"}}";
-	private static final String ACCESS_TOKEN = "access-token";
 	private static final int LIMIT = 15;
 	private static final int ALL_LIMIT = 100;
 	private static final String ORDER = "DESC";
@@ -51,7 +48,7 @@ class GQLChannelFollowsTest{
 	}
 	
 	@Test
-	void nominal(MockClient unirest) throws MalformedURLException{
+	void nominal(UnirestMock unirest) throws MalformedURLException{
 		var expected = GQLResponse.<ChannelFollowsData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 102,
@@ -85,12 +82,7 @@ class GQLChannelFollowsTest{
 								.build())
 						.build())
 				.build();
-		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/channelFollows_oneFollow.json"))
-				.withStatus(200);
+		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.channelFollows(LIMIT, ORDER, null)).isPresent().get().isEqualTo(expected);
 		
@@ -98,7 +90,7 @@ class GQLChannelFollowsTest{
 	}
 	
 	@Test
-	void nominalWithCursor(MockClient unirest) throws MalformedURLException{
+	void nominalWithCursor(UnirestMock unirest) throws MalformedURLException{
 		var expected = GQLResponse.<ChannelFollowsData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 102,
@@ -135,11 +127,7 @@ class GQLChannelFollowsTest{
 		
 		var cursor = "my-cursor";
 		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY_WITH_CURSOR.formatted(cursor, LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/channelFollows_oneFollow.json"))
-				.withStatus(200);
+		expectBodyRequestOkWithIntegrityOk(unirest, VALID_QUERY_WITH_CURSOR.formatted(cursor, LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.channelFollows(LIMIT, ORDER, cursor)).isPresent().get().isEqualTo(expected);
 		
@@ -147,18 +135,10 @@ class GQLChannelFollowsTest{
 	}
 	
 	@Test
-	void getAllFollowsNominal(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(ALL_LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/channelFollows_severalFollows.json"))
-				.withStatus(200);
-		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/channelFollows_oneFollow.json"))
-				.withStatus(200);
+	void getAllFollowsNominal(UnirestMock unirest){
+		setupIntegrityOk(unirest);
+		expectBodyRequestOk(unirest, VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_severalFollows.json");
+		expectBodyRequestOk(unirest, VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.allChannelFollows()).hasSize(3);
 		
@@ -166,12 +146,8 @@ class GQLChannelFollowsTest{
 	}
 	
 	@Test
-	void getAllFollowsNominalOnePage(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(ALL_LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/channelFollows_oneFollow.json"))
-				.withStatus(200);
+	void getAllFollowsNominalOnePage(UnirestMock unirest){
+		expectBodyRequestOkWithIntegrityOk(unirest, VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.allChannelFollows()).hasSize(1);
 		
@@ -179,54 +155,16 @@ class GQLChannelFollowsTest{
 	}
 	
 	@Test
-	void getAllFollowsErrorGettingCursor(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(ALL_LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/channelFollows_invalidCursor.json"))
-				.withStatus(200);
+	void getAllFollowsErrorGettingCursor(UnirestMock unirest){
+		expectBodyRequestOkWithIntegrityOk(unirest, VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_invalidCursor.json");
 		
 		assertThrows(IllegalStateException.class, () -> tested.allChannelFollows());
 		
 		unirest.verifyAll();
 	}
 	
-	@Test
-	void invalidCredentials(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/invalidAuth.json"))
-				.withStatus(401);
-		
-		assertThrows(RuntimeException.class, () -> tested.channelFollows(LIMIT, ORDER, null));
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidRequest(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(LIMIT, ORDER))
-				.thenReturn(getAllResourceContent("api/gql/invalidRequest.json"))
-				.withStatus(200);
-		
-		assertThat(tested.channelFollows(LIMIT, ORDER, null)).isEmpty();
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidResponse(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(LIMIT, ORDER))
-				.thenReturn()
-				.withStatus(500);
-		
-		assertThat(tested.channelFollows(LIMIT, ORDER, null)).isEmpty();
-		
-		unirest.verifyAll();
+	@Override
+	protected String getValidRequest(){
+		return VALID_QUERY.formatted(LIMIT, ORDER);
 	}
 }

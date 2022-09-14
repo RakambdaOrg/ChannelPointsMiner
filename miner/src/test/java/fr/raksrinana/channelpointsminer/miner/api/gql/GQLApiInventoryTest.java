@@ -16,8 +16,8 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDropSe
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.UserDropReward;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import kong.unirest.core.MockClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,19 +29,13 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import static fr.raksrinana.channelpointsminer.miner.tests.TestUtils.getAllResourceContent;
 import static java.time.ZoneOffset.UTC;
-import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
-class GQLApiInventoryTest{
-	public static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"e0765ebaa8e8eeb4043cc6dfeab3eac7f682ef5f724b81367e6e55c7aef2be4c\",\"version\":1}},\"operationName\":\"Inventory\",\"variables\":{}}";
-	private static final String ACCESS_TOKEN = "access-token";
-	
+class GQLApiInventoryTest extends AbstractGQLTest{
 	@InjectMocks
 	private GQLApi tested;
 	
@@ -54,7 +48,7 @@ class GQLApiInventoryTest{
 	}
 	
 	@Test
-	void nominal(MockClient unirest) throws MalformedURLException{
+	void nominal(UnirestMock unirest) throws MalformedURLException{
 		var game = Game.builder()
 				.id("123")
 				.name("game-1")
@@ -170,53 +164,15 @@ class GQLApiInventoryTest{
 						.build())
 				.build();
 		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY)
-				.thenReturn(getAllResourceContent("api/gql/inventory.json"))
-				.withStatus(200);
+		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/inventory.json");
 		
 		assertThat(tested.inventory()).isPresent().get().isEqualTo(expected);
 		
 		unirest.verifyAll();
 	}
 	
-	@Test
-	void invalidCredentials(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY)
-				.thenReturn(getAllResourceContent("api/gql/invalidAuth.json"))
-				.withStatus(401);
-		
-		assertThrows(RuntimeException.class, () -> tested.inventory());
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidRequest(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY)
-				.thenReturn(getAllResourceContent("api/gql/invalidRequest.json"))
-				.withStatus(200);
-		
-		assertThat(tested.inventory()).isEmpty();
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidResponse(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY)
-				.thenReturn()
-				.withStatus(500);
-		
-		assertThat(tested.inventory()).isEmpty();
-		
-		unirest.verifyAll();
+	@Override
+	protected String getValidRequest(){
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"e0765ebaa8e8eeb4043cc6dfeab3eac7f682ef5f724b81367e6e55c7aef2be4c\",\"version\":1}},\"operationName\":\"Inventory\",\"variables\":{}}";
 	}
 }

@@ -2,9 +2,9 @@ package fr.raksrinana.channelpointsminer.miner.api.discord;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Webhook;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import kong.unirest.core.HttpMethod;
-import kong.unirest.core.MockClient;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class DiscordApiTest{
 	}
 	
 	@Test
-	void nominal(MockClient unirest){
+	void nominal(UnirestMock unirest){
 		var webhook = Webhook.builder()
 				.username("UsernameWillBeOverriden")
 				.content("Test message")
@@ -48,7 +48,7 @@ class DiscordApiTest{
 	}
 	
 	@Test
-	void nominalRetryAfter(MockClient unirest){
+	void nominalRetryAfter(UnirestMock unirest){
 		var webhook = Webhook.builder()
 				.content("Test message")
 				.build();
@@ -65,7 +65,7 @@ class DiscordApiTest{
 	}
 	
 	@Test
-	void error(MockClient unirest){
+	void error(UnirestMock unirest){
 		var webhook = Webhook.builder()
 				.content("Test message")
 				.build();
