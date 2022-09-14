@@ -113,6 +113,7 @@ public class GQLApi{
 			return integrityResponse.getToken();
 		}
 		
+		log.info("Querying new integrity token");
 		var response = Unirest.post(ENDPOINT + "/integrity")
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
 				.asObject(IntegrityResponse.class);
@@ -126,6 +127,7 @@ public class GQLApi{
 			throw new RuntimeException(new IntegrityError(response.getStatus(), body.getMessage()));
 		}
 		
+		log.info("New integrity token will expire at {}", body.getExpiration());
 		integrityResponse = body;
 		return body.getToken();
 	}
