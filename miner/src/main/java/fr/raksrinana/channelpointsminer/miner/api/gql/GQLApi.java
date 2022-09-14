@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.api.gql;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLError;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.IGQLOperation;
+import fr.raksrinana.channelpointsminer.miner.api.gql.data.IntegrityResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.channelfollows.ChannelFollowsData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.channelfollows.ChannelFollowsOperation;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.channelpointscontext.ChannelPointsContextData;
@@ -32,37 +33,54 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelOperation;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.IntegrityError;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
+import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.Unirest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @Log4j2
-@RequiredArgsConstructor
 public class GQLApi{
-	private static final String ENDPOINT = "https://gql.twitch.tv/gql";
+	public static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+	private static final String ENDPOINT = "https://gql.twitch.tv";
+	private static final String CLIENT_INTEGRITY_HEADER = "Client-Integrity";
+	private static final String CLIENT_ID_HEADER = "Client-ID";
 	private static final String ORDER_DESC = "DESC";
 	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error", "server error", "service unavailable");
+	private static final String DEVICE_ID_HEADER = "Device-ID";
+	private static final int DEVICE_ID_LENGTH = 26;
 	
 	private final TwitchLogin twitchLogin;
+	private final String deviceId;
+	private IntegrityResponse integrityResponse;
 	
-	@NotNull
-	public Optional<GQLResponse<ReportMenuItemData>> reportMenuItem(@NotNull String username){
-		return postRequest(new ReportMenuItemOperation(username));
+	public GQLApi(TwitchLogin twitchLogin){
+		this.twitchLogin = twitchLogin;
+		this.deviceId = RandomStringUtils.randomAlphanumeric(DEVICE_ID_LENGTH);
 	}
 	
 	@NotNull
-	private <T> Optional<GQLResponse<T>> postRequest(@NotNull IGQLOperation<T> operation){
-		var response = Unirest.post(ENDPOINT)
+	public Optional<GQLResponse<ReportMenuItemData>> reportMenuItem(@NotNull String username){
+		return postGqlRequest(new ReportMenuItemOperation(username));
+	}
+	
+	@NotNull
+	private <T> Optional<GQLResponse<T>> postGqlRequest(@NotNull IGQLOperation<T> operation){
+		var response = Unirest.post(ENDPOINT + "/gql")
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
+				.header(CLIENT_INTEGRITY_HEADER, getClientIntegrity())
+				.header(CLIENT_ID_HEADER, CLIENT_ID)
+				.header(DEVICE_ID_HEADER, deviceId)
 				.body(operation)
 				.asObject(operation.getResponseType());
 		
@@ -89,6 +107,29 @@ public class GQLApi{
 		return Optional.ofNullable(response.getBody());
 	}
 	
+	@NotNull
+	private String getClientIntegrity(){
+		if(Objects.nonNull(integrityResponse) && integrityResponse.getExpiration().isAfter(TimeFactory.now())){
+			return integrityResponse.getToken();
+		}
+		
+		var response = Unirest.post(ENDPOINT + "/integrity")
+				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
+				.asObject(IntegrityResponse.class);
+		
+		if(!response.isSuccess()){
+			throw new RuntimeException(new IntegrityError(response.getStatus(), "Http code is not a success"));
+		}
+		
+		var body = response.getBody();
+		if(Objects.isNull(body.getToken())){
+			throw new RuntimeException(new IntegrityError(response.getStatus(), body.getMessage()));
+		}
+		
+		integrityResponse = body;
+		return body.getToken();
+	}
+	
 	private boolean isErrorExpected(@NotNull Collection<GQLError> errors){
 		return errors.stream().allMatch(this::isErrorExpected);
 	}
@@ -99,47 +140,47 @@ public class GQLApi{
 	
 	@NotNull
 	public Optional<GQLResponse<ChannelPointsContextData>> channelPointsContext(@NotNull String username){
-		return postRequest(new ChannelPointsContextOperation(username));
+		return postGqlRequest(new ChannelPointsContextOperation(username));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<VideoPlayerStreamInfoOverlayChannelData>> videoPlayerStreamInfoOverlayChannel(@NotNull String username){
-		return postRequest(new VideoPlayerStreamInfoOverlayChannelOperation(username));
+		return postGqlRequest(new VideoPlayerStreamInfoOverlayChannelOperation(username));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(@NotNull String channelId){
-		return postRequest(new DropsHighlightServiceAvailableDropsOperation(channelId));
+		return postGqlRequest(new DropsHighlightServiceAvailableDropsOperation(channelId));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<ClaimCommunityPointsData>> claimCommunityPoints(@NotNull String channelId, @NotNull String claimId){
-		return postRequest(new ClaimCommunityPointsOperation(channelId, claimId));
+		return postGqlRequest(new ClaimCommunityPointsOperation(channelId, claimId));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<CommunityMomentCalloutClaimData>> claimCommunityMoment(@NotNull String momentId){
-		return postRequest(new CommunityMomentCalloutClaimOperation(momentId));
+		return postGqlRequest(new CommunityMomentCalloutClaimOperation(momentId));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<JoinRaidData>> joinRaid(@NotNull String raidId){
-		return postRequest(new JoinRaidOperation(raidId));
+		return postGqlRequest(new JoinRaidOperation(raidId));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<InventoryData>> inventory(){
-		return postRequest(new InventoryOperation());
+		return postGqlRequest(new InventoryOperation());
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<DropsPageClaimDropRewardsData>> dropsPageClaimDropRewards(@NotNull String dropInstanceId){
-		return postRequest(new DropsPageClaimDropRewardsOperation(dropInstanceId));
+		return postGqlRequest(new DropsPageClaimDropRewardsOperation(dropInstanceId));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<MakePredictionData>> makePrediction(@NotNull String eventId, @NotNull String outcomeId, int amount, @NotNull String transactionId){
-		return postRequest(new MakePredictionOperation(eventId, outcomeId, amount, transactionId));
+		return postGqlRequest(new MakePredictionOperation(eventId, outcomeId, amount, transactionId));
 	}
 	
 	@NotNull
@@ -174,11 +215,11 @@ public class GQLApi{
 	
 	@NotNull
 	public Optional<GQLResponse<ChannelFollowsData>> channelFollows(int limit, @NotNull String order, @Nullable String cursor){
-		return postRequest(new ChannelFollowsOperation(limit, order, cursor));
+		return postGqlRequest(new ChannelFollowsOperation(limit, order, cursor));
 	}
 	
 	@NotNull
 	public Optional<GQLResponse<ChatRoomBanStatusData>> chatRoomBanStatus(@NotNull String channelId, @NotNull String targetUserId){
-		return postRequest(new ChatRoomBanStatusOperation(channelId, targetUserId));
+		return postGqlRequest(new ChatRoomBanStatusOperation(channelId, targetUserId));
 	}
 }

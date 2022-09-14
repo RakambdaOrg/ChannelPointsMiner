@@ -77,7 +77,7 @@ public class MinerApplication{
 		Unirest.config()
 				.enableCookieManagement(true)
 				.setObjectMapper(new JacksonObjectMapper(JacksonUtils.getMapper()))
-				.setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0")
+				.setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0")
 				.interceptor(new UnirestLogger());
 	}
 }
