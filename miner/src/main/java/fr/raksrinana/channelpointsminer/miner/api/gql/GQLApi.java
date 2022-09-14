@@ -51,7 +51,7 @@ import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @Log4j2
 public class GQLApi{
-	public static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String ENDPOINT = "https://gql.twitch.tv";
 	private static final String CLIENT_INTEGRITY_HEADER = "Client-Integrity";
 	private static final String CLIENT_ID_HEADER = "Client-ID";
