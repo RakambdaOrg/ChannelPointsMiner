@@ -161,6 +161,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-miner
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    concurrency: miner_docker
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -182,6 +183,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-viewer
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    concurrency: viewer_docker
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
