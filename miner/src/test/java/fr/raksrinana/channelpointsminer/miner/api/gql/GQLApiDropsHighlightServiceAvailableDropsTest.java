@@ -10,14 +10,9 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Game;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Inventory;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import kong.unirest.core.MockClient;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
@@ -26,31 +21,15 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import static java.time.ZoneOffset.UTC;
-import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
-class GQLApiDropsHighlightServiceAvailableDropsTest{
-	private static final String ACCESS_TOKEN = "access-token";
+class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
 	private static final String STREAMER_ID = "streamer-id";
-	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}";
-	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
 	
 	@Test
-	void nominalWithDrops(MockClient unirest) throws MalformedURLException{
+	void nominalWithDrops(UnirestMock unirest) throws MalformedURLException{
 		var game = Game.builder()
 				.id("159357")
 				.name("game-name")
@@ -96,19 +75,15 @@ class GQLApiDropsHighlightServiceAvailableDropsTest{
 						.build())
 				.build();
 		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(STREAMER_ID))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/dropsHighlightServiceAvailableDrops_withDrops.json"))
-				.withStatus(200);
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/dropsHighlightServiceAvailableDrops_withDrops.json");
 		
 		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void nominalNoDrops(MockClient unirest){
+	void nominalNoDrops(){
 		var expected = GQLResponse.<DropsHighlightServiceAvailableDropsData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 31,
@@ -126,53 +101,15 @@ class GQLApiDropsHighlightServiceAvailableDropsTest{
 						.build())
 				.build();
 		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(STREAMER_ID))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/dropsHighlightServiceAvailableDrops_noDrops.json"))
-				.withStatus(200);
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/dropsHighlightServiceAvailableDrops_noDrops.json");
 		
 		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
-	@Test
-	void invalidCredentials(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(STREAMER_ID))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidAuth.json"))
-				.withStatus(401);
-		
-		assertThrows(RuntimeException.class, () -> tested.dropsHighlightServiceAvailableDrops(STREAMER_ID));
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidRequest(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(STREAMER_ID))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidRequest.json"))
-				.withStatus(200);
-		
-		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isEmpty();
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidResponse(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(STREAMER_ID))
-				.thenReturn()
-				.withStatus(500);
-		
-		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isEmpty();
-		
-		unirest.verifyAll();
+	@Override
+	protected String getValidRequest(){
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
 	}
 }

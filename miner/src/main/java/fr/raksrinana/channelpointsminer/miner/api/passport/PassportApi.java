@@ -10,7 +10,7 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingAut
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingTwitchGuard;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.HttpResponse;
-import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestInstance;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
@@ -29,6 +29,7 @@ import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 public class PassportApi{
 	public static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String ENDPOINT = "https://passport.twitch.tv";
+	private final UnirestInstance unirest;
 	private final String username;
 	private final String password;
 	private final boolean ask2FA;
@@ -39,7 +40,8 @@ public class PassportApi{
 	 * @param password             Password of the user.
 	 * @param authenticationFolder File containing authentication to restore.
 	 */
-	public PassportApi(@NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean ask2FA){
+	public PassportApi(@NotNull UnirestInstance unirest, @NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean ask2FA){
+		this.unirest = unirest;
 		this.username = username;
 		this.password = password;
 		this.ask2FA = ask2FA;
@@ -97,10 +99,6 @@ public class PassportApi{
 		}
 		
 		var twitchLogin = JacksonUtils.read(Files.newInputStream(userAuthenticationFile), new TypeReference<TwitchLogin>(){});
-		
-		var unirestConfig = Unirest.config();
-		twitchLogin.getCookies().forEach(unirestConfig::addDefaultCookie);
-		
 		return Optional.of(twitchLogin);
 	}
 	
@@ -127,9 +125,9 @@ public class PassportApi{
 	 * @throws LoginException Login failed.
 	 */
 	@NotNull
-	private static HttpResponse<LoginResponse> login(@NotNull LoginRequest loginRequest) throws LoginException{
+	private HttpResponse<LoginResponse> login(@NotNull LoginRequest loginRequest) throws LoginException{
 		log.debug("Sending passport login request");
-		var response = Unirest.post(ENDPOINT + "/login")
+		var response = unirest.post(ENDPOINT + "/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
 				.body(loginRequest)

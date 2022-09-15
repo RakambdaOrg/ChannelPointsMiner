@@ -4,50 +4,22 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ClaimDropRewardsPayload;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ClaimDropRewardsStatus;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Game;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import kong.unirest.core.MockClient;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
-import static fr.raksrinana.channelpointsminer.miner.tests.TestUtils.getAllResourceContent;
-import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
-class GQLApiDropsPageClaimDropRewardsTest{
-	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"2f884fa187b8fadb2a49db0adc033e636f7b6aaee6e76de1e2bba9a7baf0daf6\",\"version\":1}},\"operationName\":\"DropsPage_ClaimDropRewards\",\"variables\":{\"input\":{\"dropInstanceID\":\"%s\"}}}";
-	private static final String ACCESS_TOKEN = "access-token";
-	private static final String DROP_ID = "";
-	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
+class GQLApiDropsPageClaimDropRewardsTest extends AbstractGQLTest{
+	private static final String DROP_ID = "drop-id";
 	
 	@Test
-	void nominal(MockClient unirest) throws MalformedURLException{
-		var game = Game.builder()
-				.id("123")
-				.name("game-1")
-				.boxArtUrl(new URL("https://bow-art-1"))
-				.build();
+	void nominal(UnirestMock unirest) throws MalformedURLException{
 		var expected = GQLResponse.<DropsPageClaimDropRewardsData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 18,
@@ -62,53 +34,15 @@ class GQLApiDropsPageClaimDropRewardsTest{
 						.build())
 				.build();
 		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(DROP_ID))
-				.thenReturn(getAllResourceContent("api/gql/dropspageclaimdroprewardsdata_eligibleforall.json"))
-				.withStatus(200);
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/dropspageclaimdroprewardsdata_eligibleforall.json");
 		
 		assertThat(tested.dropsPageClaimDropRewards(DROP_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
-	@Test
-	void invalidCredentials(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(DROP_ID))
-				.thenReturn(getAllResourceContent("api/gql/invalidAuth.json"))
-				.withStatus(401);
-		
-		assertThrows(RuntimeException.class, () -> tested.dropsPageClaimDropRewards(DROP_ID));
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidRequest(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(DROP_ID))
-				.thenReturn(getAllResourceContent("api/gql/invalidRequest.json"))
-				.withStatus(200);
-		
-		assertThat(tested.dropsPageClaimDropRewards(DROP_ID)).isEmpty();
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidResponse(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(DROP_ID))
-				.thenReturn()
-				.withStatus(500);
-		
-		assertThat(tested.dropsPageClaimDropRewards(DROP_ID)).isEmpty();
-		
-		unirest.verifyAll();
+	@Override
+	protected String getValidRequest(){
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"2f884fa187b8fadb2a49db0adc033e636f7b6aaee6e76de1e2bba9a7baf0daf6\",\"version\":1}},\"operationName\":\"DropsPage_ClaimDropRewards\",\"variables\":{\"input\":{\"dropInstanceID\":\"%s\"}}}".formatted(DROP_ID);
 	}
 }

@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.PlayerEvent;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
-import kong.unirest.core.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
+@ParallelizableTest
 class TwitchApiTest{
 	private static final int USER_ID = 123456789;
 	private static final String BROADCAST_ID = "broadcast-id";
@@ -38,19 +40,21 @@ class TwitchApiTest{
 	private static final String SPADE_BODY = "\"spade_url\":\"%s\"".formatted(SPADE_URL);
 	private static final String SPADE_BODY_INVALID_FORMAT = "\"spade_url\":\"%s\"".formatted("https://google.com:-80/");
 	
-	private final TwitchApi tested = new TwitchApi();
+	private TwitchApi tested;
 	
 	private URL streamerUrl;
 	private URL spadeUrl;
 	
 	@BeforeEach
-	void setUp() throws MalformedURLException{
+	void setUp(UnirestMock unirestMock) throws MalformedURLException{
 		streamerUrl = new URL(STREAMER_URL);
 		spadeUrl = new URL(SPADE_URL);
+		
+		tested = new TwitchApi(unirestMock.getUnirestInstance());
 	}
 	
 	@Test
-	void sendMinutesWatched(MockClient unirest){
+	void sendMinutesWatched(UnirestMock unirest){
 		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
@@ -74,7 +78,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void sendMinutesWatchedWithGame(MockClient unirest){
+	void sendMinutesWatchedWithGame(UnirestMock unirest){
 		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"game\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(BROADCAST_ID, CHANNEL_ID, GAME, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
@@ -99,7 +103,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void sendMinutesWatchedNotSuccess(MockClient unirest){
+	void sendMinutesWatchedNotSuccess(UnirestMock unirest){
 		var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
 				.formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
 		var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
@@ -142,7 +146,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrl(MockClient unirest){
+	void getSpadeUrl(UnirestMock unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);
@@ -156,7 +160,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlInvalidConfigUrlResponse(MockClient unirest){
+	void getSpadeUrlInvalidConfigUrlResponse(UnirestMock unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(500);
@@ -165,7 +169,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlNoConfigUrl(MockClient unirest){
+	void getSpadeUrlNoConfigUrl(UnirestMock unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn("")
 				.withStatus(200);
@@ -174,7 +178,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlInvalidResponse(MockClient unirest){
+	void getSpadeUrlInvalidResponse(UnirestMock unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);
@@ -187,7 +191,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlInvalidFormat(MockClient unirest){
+	void getSpadeUrlInvalidFormat(UnirestMock unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);
@@ -200,7 +204,7 @@ class TwitchApiTest{
 	}
 	
 	@Test
-	void getSpadeUrlNoUrl(MockClient unirest){
+	void getSpadeUrlNoUrl(UnirestMock unirest){
 		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(CONFIG_BODY)
 				.withStatus(200);

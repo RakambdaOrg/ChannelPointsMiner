@@ -1,0 +1,5 @@
+{
+  "token" : "integrity-token",
+  "expiration" : 9999999999999,
+  "request_id" : "request-id"
+}

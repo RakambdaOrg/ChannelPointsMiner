@@ -1,10 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.api.discord;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Webhook;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import kong.unirest.core.HttpMethod;
-import kong.unirest.core.MockClient;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
+@ParallelizableTest
 class DiscordApiTest{
 	private static final String URL = "https://webhook";
 	private static final String PAYLOAD = "{\"content\":\"Test message\",\"username\":\"ChannelPointsMiner\"}";
@@ -24,13 +26,13 @@ class DiscordApiTest{
 	private DiscordApi tested;
 	
 	@BeforeEach
-	void setUp() throws MalformedURLException{
+	void setUp(UnirestMock unirestMock) throws MalformedURLException{
 		var url = new URL(URL);
-		tested = new DiscordApi(url);
+		tested = new DiscordApi(url, unirestMock.getUnirestInstance());
 	}
 	
 	@Test
-	void nominal(MockClient unirest){
+	void nominal(UnirestMock unirest){
 		var webhook = Webhook.builder()
 				.username("UsernameWillBeOverriden")
 				.content("Test message")
@@ -48,7 +50,7 @@ class DiscordApiTest{
 	}
 	
 	@Test
-	void nominalRetryAfter(MockClient unirest){
+	void nominalRetryAfter(UnirestMock unirest){
 		var webhook = Webhook.builder()
 				.content("Test message")
 				.build();
@@ -65,7 +67,7 @@ class DiscordApiTest{
 	}
 	
 	@Test
-	void error(MockClient unirest){
+	void error(UnirestMock unirest){
 		var webhook = Webhook.builder()
 				.content("Test message")
 				.build();

@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.api.ws.data.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topics;
+import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import lombok.Getter;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,6 @@ public class ListenTopicRequest extends ITwitchWebSocketRequest{
 	public ListenTopicRequest(@NotNull Topics topics){
 		super("LISTEN");
 		data = topics;
-		nonce = RandomStringUtils.randomAlphanumeric(NONCE_LENGTH);
+		nonce = CommonUtils.randomAlphanumeric(NONCE_LENGTH);
 	}
 }

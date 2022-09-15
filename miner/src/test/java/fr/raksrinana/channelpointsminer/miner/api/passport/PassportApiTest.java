@@ -4,10 +4,11 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.data.LoginResponse;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import kong.unirest.core.Cookie;
-import kong.unirest.core.MockClient;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
+@ParallelizableTest
 class PassportApiTest{
 	private static final String USER_PASS_REQUEST = "{\"client_id\":\"%s\",\"password\":\"%s\",\"remember_me\":true,\"undelete_user\":false,\"username\":\"%s\"}";
 	private static final String USER_PASS_2FA_REQUEST = "{\"authy_token\":\"%s\",\"client_id\":\"%s\",\"password\":\"%s\",\"remember_me\":true,\"undelete_user\":false,\"username\":\"%s\"}";
@@ -50,73 +52,12 @@ class PassportApiTest{
 	
 	private Path authFile;
 	
-	@BeforeEach
-	void setUp(){
-		tested = new PassportApi(USERNAME, PASSWORD, authFolder, false);
-		
-		authFile = authFolder.resolve(USERNAME + ".json");
-	}
-	
 	@Test
-	void newAuthWithout2FA(MockClient unirest) throws LoginException, IOException{
-		unirest.expect(POST, "https://passport.twitch.tv/login")
-				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
-				.header("Client-Id", CLIENT_ID)
-				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
-				.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).build())
-				.withHeader("Set-Cookie", "yummy_cookie=choco")
-				.withHeader("Set-Cookie", "yummy_cake=vanilla")
-				.withStatus(200);
-		
-		var expected = TwitchLogin.builder()
-				.username(USERNAME)
-				.accessToken(ACCESS_TOKEN)
-				.cookies(List.of(
-						new Cookie("yummy_cookie=choco"),
-						new Cookie("yummy_cake=vanilla")
-				))
-				.build();
-		
-		assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
-		assertThat(authFile).exists().isNotEmptyFile();
-		assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void newAuthWithObscuredEmail(MockClient unirest) throws LoginException, IOException{
-		unirest.expect(POST, "https://passport.twitch.tv/login")
-				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
-				.header("Client-Id", CLIENT_ID)
-				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
-				.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).obscuredEmail("t**t@t****.com").build())
-				.withHeader("Set-Cookie", "yummy_cookie=choco")
-				.withHeader("Set-Cookie", "yummy_cake=vanilla")
-				.withStatus(200);
-		
-		var expected = TwitchLogin.builder()
-				.username(USERNAME)
-				.accessToken(ACCESS_TOKEN)
-				.cookies(List.of(
-						new Cookie("yummy_cookie=choco"),
-						new Cookie("yummy_cake=vanilla")
-				))
-				.build();
-		
-		assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
-		assertThat(authFile).exists().isNotEmptyFile();
-		assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void newAuthWith2FA(MockClient unirest) throws LoginException, IOException{
+	void newAuthWith2FA(UnirestMock unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			
-			tested = new PassportApi(USERNAME, PASSWORD, authFolder, true);
+			tested = new PassportApi(unirest.getUnirestInstance(), USERNAME, PASSWORD, authFolder, true);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
@@ -144,12 +85,73 @@ class PassportApiTest{
 		}
 	}
 	
+	@Test
+	void newAuthWithout2FA(UnirestMock unirest) throws LoginException, IOException{
+		unirest.expect(POST, "https://passport.twitch.tv/login")
+				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
+				.header("Client-Id", CLIENT_ID)
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
+				.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).build())
+				.withHeader("Set-Cookie", "yummy_cookie=choco")
+				.withHeader("Set-Cookie", "yummy_cake=vanilla")
+				.withStatus(200);
+		
+		var expected = TwitchLogin.builder()
+				.username(USERNAME)
+				.accessToken(ACCESS_TOKEN)
+				.cookies(List.of(
+						new Cookie("yummy_cookie=choco"),
+						new Cookie("yummy_cake=vanilla")
+				))
+				.build();
+		
+		assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(authFile).exists().isNotEmptyFile();
+		assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
+		
+		unirest.verifyAll();
+	}
+	
+	@Test
+	void newAuthWithObscuredEmail(UnirestMock unirest) throws LoginException, IOException{
+		unirest.expect(POST, "https://passport.twitch.tv/login")
+				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
+				.header("Client-Id", CLIENT_ID)
+				.body(USER_PASS_REQUEST.formatted(CLIENT_ID, PASSWORD, USERNAME))
+				.thenReturn(LoginResponse.builder().accessToken(ACCESS_TOKEN).obscuredEmail("t**t@t****.com").build())
+				.withHeader("Set-Cookie", "yummy_cookie=choco")
+				.withHeader("Set-Cookie", "yummy_cake=vanilla")
+				.withStatus(200);
+		
+		var expected = TwitchLogin.builder()
+				.username(USERNAME)
+				.accessToken(ACCESS_TOKEN)
+				.cookies(List.of(
+						new Cookie("yummy_cookie=choco"),
+						new Cookie("yummy_cake=vanilla")
+				))
+				.build();
+		
+		assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(authFile).exists().isNotEmptyFile();
+		assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
+		
+		unirest.verifyAll();
+	}
+	
+	@BeforeEach
+	void setUp(UnirestMock unirestMock){
+		tested = new PassportApi(unirestMock.getUnirestInstance(), USERNAME, PASSWORD, authFolder, false);
+		
+		authFile = authFolder.resolve(USERNAME + ".json");
+	}
+	
 	@ParameterizedTest
 	@ValueSource(ints = {
 			3011,
 			3012
 	})
-	void newAuthWithMissing2FAOnFirstTry(int errorCode, MockClient unirest) throws LoginException, IOException{
+	void newAuthWithMissing2FAOnFirstTry(int errorCode, UnirestMock unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -190,7 +192,7 @@ class PassportApiTest{
 			3022,
 			3023
 	})
-	void newAuthWithMissingTwitchGuardOnFirstTry(int errorCode, MockClient unirest) throws LoginException, IOException{
+	void newAuthWithMissingTwitchGuardOnFirstTry(int errorCode, UnirestMock unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -227,7 +229,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithCaptchaRequired(MockClient unirest){
+	void failedAuthWithCaptchaRequired(UnirestMock unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -246,7 +248,7 @@ class PassportApiTest{
 			3001,
 			3003
 	})
-	void failedAuthWithInvalidCredentials(int errorCode, MockClient unirest){
+	void failedAuthWithInvalidCredentials(int errorCode, UnirestMock unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -261,7 +263,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithMissing2FA(MockClient unirest){
+	void failedAuthWithMissing2FA(UnirestMock unirest){
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -286,7 +288,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithMissingTwitchGuard(MockClient unirest){
+	void failedAuthWithMissingTwitchGuard(UnirestMock unirest){
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			unirest.expect(POST, "https://passport.twitch.tv/login")
@@ -311,7 +313,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithUnknownErrorCode(MockClient unirest){
+	void failedAuthWithUnknownErrorCode(UnirestMock unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -326,7 +328,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithNoErrorCode(MockClient unirest){
+	void failedAuthWithNoErrorCode(UnirestMock unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)
@@ -341,7 +343,7 @@ class PassportApiTest{
 	}
 	
 	@Test
-	void failedAuthWithServerError(MockClient unirest){
+	void failedAuthWithServerError(UnirestMock unirest){
 		unirest.expect(POST, "https://passport.twitch.tv/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.header("Client-Id", CLIENT_ID)

@@ -29,7 +29,7 @@ class ApiFactoryTest{
 	
 	@Test
 	void createTwitchApi(){
-		assertThat(ApiFactory.createTwitchApi()).isNotNull().isInstanceOf(TwitchApi.class);
+		assertThat(ApiFactory.createTwitchApi(twitchLogin)).isNotNull().isInstanceOf(TwitchApi.class);
 	}
 	
 	@Test

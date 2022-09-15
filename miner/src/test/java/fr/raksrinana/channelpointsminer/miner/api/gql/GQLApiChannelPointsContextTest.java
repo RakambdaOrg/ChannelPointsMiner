@@ -21,16 +21,8 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.CommunityPoints
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.UserSelfConnection;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
-import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import kong.unirest.core.MockClient;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
+import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,31 +34,13 @@ import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ContentT
 import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ContentType.CUSTOM_REWARD;
 import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.RewardType.SEND_HIGHLIGHTED_MESSAGE;
 import static java.time.ZoneOffset.UTC;
-import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@ExtendWith(UnirestMockExtension.class)
-class GQLApiChannelPointsContextTest{
-	private static final String ACCESS_TOKEN = "access-token";
+class GQLApiChannelPointsContextTest extends AbstractGQLTest{
 	private static final String USERNAME = "username";
-	private static final String VALID_QUERY = "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"9988086babc615a918a1e9a722ff41d98847acac822645209ac7379eecb27152\",\"version\":1}},\"operationName\":\"ChannelPointsContext\",\"variables\":{\"channelLogin\":\"%s\"}}";
-	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
 	
 	@Test
-	void nominal(MockClient unirest) throws MalformedURLException{
+	void nominal() throws MalformedURLException{
 		var communityPointsImage = CommunityPointsImage.builder()
 				.url(new URL("https://image"))
 				.url2X(new URL("https://image2x"))
@@ -192,19 +166,15 @@ class GQLApiChannelPointsContextTest{
 						.build())
 				.build();
 		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(USERNAME))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/channelPointsContext_noClaim.json"))
-				.withStatus(200);
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelPointsContext_noClaim.json");
 		
 		assertThat(tested.channelPointsContext(USERNAME)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void nominalWithClaim(MockClient unirest) throws MalformedURLException{
+	void nominalWithClaim(UnirestMock unirest) throws MalformedURLException{
 		var communityPointsImage = CommunityPointsImage.builder()
 				.url(new URL("https://image"))
 				.url2X(new URL("https://image2x"))
@@ -333,53 +303,15 @@ class GQLApiChannelPointsContextTest{
 						.build())
 				.build();
 		
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(USERNAME))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/channelPointsContext_withClaim.json"))
-				.withStatus(200);
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelPointsContext_withClaim.json");
 		
 		assertThat(tested.channelPointsContext(USERNAME)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
-	@Test
-	void invalidCredentials(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(USERNAME))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidAuth.json"))
-				.withStatus(401);
-		
-		assertThrows(RuntimeException.class, () -> tested.channelPointsContext(USERNAME));
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidRequest(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(USERNAME))
-				.thenReturn(TestUtils.getAllResourceContent("api/gql/invalidRequest.json"))
-				.withStatus(200);
-		
-		assertThat(tested.channelPointsContext(USERNAME)).isEmpty();
-		
-		unirest.verifyAll();
-	}
-	
-	@Test
-	void invalidResponse(MockClient unirest){
-		unirest.expect(POST, "https://gql.twitch.tv/gql")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.body(VALID_QUERY.formatted(USERNAME))
-				.thenReturn()
-				.withStatus(500);
-		
-		assertThat(tested.channelPointsContext(USERNAME)).isEmpty();
-		
-		unirest.verifyAll();
+	@Override
+	protected String getValidRequest(){
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"9988086babc615a918a1e9a722ff41d98847acac822645209ac7379eecb27152\",\"version\":1}},\"operationName\":\"ChannelPointsContext\",\"variables\":{\"channelLogin\":\"%s\"}}".formatted(USERNAME);
 	}
 }
