@@ -36,9 +36,9 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.IntegrityError;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
+import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import kong.unirest.core.Unirest;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -51,22 +51,30 @@ import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @Log4j2
 public class GQLApi{
-	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String ENDPOINT = "https://gql.twitch.tv";
 	private static final String CLIENT_INTEGRITY_HEADER = "Client-Integrity";
 	private static final String CLIENT_ID_HEADER = "Client-ID";
+	private static final String CLIENT_SESSION_ID_HEADER = "Client-Session-ID";
+	private static final String CLIENT_VERSION_HEADER = "Client-Version";
+	private static final String X_DEVICE_ID_HEADER = "X-Device-ID";
+	
 	private static final String ORDER_DESC = "DESC";
 	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error", "server error", "service unavailable");
-	private static final String DEVICE_ID_HEADER = "Device-ID";
-	private static final int DEVICE_ID_LENGTH = 26;
+	
+	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+	private static final String CLIENT_VERSION = "97087acf-5eca-40dd-9a1b-ee0e771c3d3f";
+	private static final int CLIENT_SESSION_ID_LENGTH = 16;
+	private static final int X_DEVICE_ID_LENGTH = 36;
 	
 	private final TwitchLogin twitchLogin;
-	private final String deviceId;
+	private final String clientSessionId;
+	private final String xDeviceId;
 	private IntegrityResponse integrityResponse;
 	
 	public GQLApi(TwitchLogin twitchLogin){
 		this.twitchLogin = twitchLogin;
-		this.deviceId = RandomStringUtils.randomAlphanumeric(DEVICE_ID_LENGTH);
+		clientSessionId = CommonUtils.randomHex(CLIENT_SESSION_ID_LENGTH);
+		xDeviceId = CommonUtils.randomAlphanumeric(X_DEVICE_ID_LENGTH);
 	}
 	
 	@NotNull
@@ -80,7 +88,9 @@ public class GQLApi{
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
 				.header(CLIENT_INTEGRITY_HEADER, getClientIntegrity())
 				.header(CLIENT_ID_HEADER, CLIENT_ID)
-				.header(DEVICE_ID_HEADER, deviceId)
+				.header(CLIENT_SESSION_ID_HEADER, clientSessionId)
+				.header(CLIENT_VERSION_HEADER, CLIENT_VERSION)
+				.header(X_DEVICE_ID_HEADER, xDeviceId)
 				.body(operation)
 				.asObject(operation.getResponseType());
 		
@@ -116,6 +126,10 @@ public class GQLApi{
 		log.info("Querying new integrity token");
 		var response = Unirest.post(ENDPOINT + "/integrity")
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
+				.header(CLIENT_ID_HEADER, CLIENT_ID)
+				.header(CLIENT_SESSION_ID_HEADER, clientSessionId)
+				.header(CLIENT_VERSION_HEADER, CLIENT_VERSION)
+				.header(X_DEVICE_ID_HEADER, xDeviceId)
 				.asObject(IntegrityResponse.class);
 		
 		if(!response.isSuccess()){
