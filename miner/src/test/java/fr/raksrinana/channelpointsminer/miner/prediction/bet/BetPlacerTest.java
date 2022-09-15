@@ -10,7 +10,6 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
-import fr.raksrinana.channelpointsminer.miner.factory.TransactionIdFactory;
 import fr.raksrinana.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.raksrinana.channelpointsminer.miner.handler.data.PredictionState;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
@@ -23,6 +22,7 @@ import fr.raksrinana.channelpointsminer.miner.streamer.PredictionSettings;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
+import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -174,8 +174,8 @@ class BetPlacerTest{
 	void nominalOnLimit() throws BetPlacementException{
 		var amount = 10;
 		
-		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
-			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+		try(var transactionIdFactory = mockStatic(CommonUtils.class)){
+			transactionIdFactory.when(() -> CommonUtils.randomHex(32)).thenReturn(TRANSACTION_ID);
 			when(amountCalculator.calculateAmount(bettingPrediction, outcome)).thenReturn(amount);
 			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, amount, TRANSACTION_ID)).thenReturn(Optional.of(gqlResponse));
 			
@@ -188,8 +188,8 @@ class BetPlacerTest{
 	
 	@Test
 	void nominal(){
-		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
-			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+		try(var transactionIdFactory = mockStatic(CommonUtils.class)){
+			transactionIdFactory.when(() -> CommonUtils.randomHex(32)).thenReturn(TRANSACTION_ID);
 			
 			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));
 			
@@ -201,8 +201,8 @@ class BetPlacerTest{
 	@Test
 	void nominalWithActionModification() throws BetPlacementException{
 		var newAmount = AMOUNT + 10;
-		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
-			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+		try(var transactionIdFactory = mockStatic(CommonUtils.class)){
+			transactionIdFactory.when(() -> CommonUtils.randomHex(32)).thenReturn(TRANSACTION_ID);
 			
 			when(predictionSettings.getActions()).thenReturn(List.of(predictionAction));
 			doAnswer(invocation -> {
@@ -226,8 +226,8 @@ class BetPlacerTest{
 	
 	@Test
 	void nominalWithActionThrowing() throws BetPlacementException{
-		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
-			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+		try(var transactionIdFactory = mockStatic(CommonUtils.class)){
+			transactionIdFactory.when(() -> CommonUtils.randomHex(32)).thenReturn(TRANSACTION_ID);
 			
 			when(predictionSettings.getActions()).thenReturn(List.of(predictionAction));
 			doThrow(new BetPlacementException("For tests")).when(predictionAction).perform(any());
@@ -246,8 +246,8 @@ class BetPlacerTest{
 	
 	@Test
 	void placeNoData(){
-		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
-			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+		try(var transactionIdFactory = mockStatic(CommonUtils.class)){
+			transactionIdFactory.when(() -> CommonUtils.randomHex(32)).thenReturn(TRANSACTION_ID);
 			
 			when(gqlApi.makePrediction(EVENT_ID, OUTCOME_ID, AMOUNT, TRANSACTION_ID)).thenReturn(Optional.empty());
 			
@@ -260,8 +260,8 @@ class BetPlacerTest{
 	
 	@Test
 	void placeError(){
-		try(var transactionIdFactory = mockStatic(TransactionIdFactory.class)){
-			transactionIdFactory.when(TransactionIdFactory::create).thenReturn(TRANSACTION_ID);
+		try(var transactionIdFactory = mockStatic(CommonUtils.class)){
+			transactionIdFactory.when(() -> CommonUtils.randomHex(32)).thenReturn(TRANSACTION_ID);
 			
 			when(makePrediction.getError()).thenReturn(MakePredictionError.builder()
 					.code(MakePredictionErrorCode.NOT_ENOUGH_POINTS)

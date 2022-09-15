@@ -36,9 +36,9 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.IntegrityError;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
+import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import kong.unirest.core.Unirest;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @Log4j2
@@ -65,7 +64,6 @@ public class GQLApi{
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String CLIENT_VERSION = "97087acf-5eca-40dd-9a1b-ee0e771c3d3f";
 	private static final int CLIENT_SESSION_ID_LENGTH = 16;
-	private static final int DEVICE_ID_LENGTH = 26;
 	private static final int X_DEVICE_ID_LENGTH = 36;
 	
 	private final TwitchLogin twitchLogin;
@@ -75,8 +73,8 @@ public class GQLApi{
 	
 	public GQLApi(TwitchLogin twitchLogin){
 		this.twitchLogin = twitchLogin;
-		this.clientSessionId = RandomStringUtils.random(CLIENT_SESSION_ID_LENGTH, '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
-		this.xDeviceId = RandomStringUtils.random(X_DEVICE_ID_LENGTH);
+		clientSessionId = CommonUtils.randomHex(CLIENT_SESSION_ID_LENGTH);
+		xDeviceId = CommonUtils.randomAlphanumeric(X_DEVICE_ID_LENGTH);
 	}
 	
 	@NotNull
