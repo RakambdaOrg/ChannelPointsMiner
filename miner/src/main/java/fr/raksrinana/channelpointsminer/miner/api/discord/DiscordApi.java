@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.api.discord;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.DiscordResponse;
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Webhook;
-import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +18,8 @@ public class DiscordApi{
 	
 	@NotNull
 	private final URL webhookUrl;
+	@NotNull
+	private final UnirestInstance unirest;
 	
 	@SneakyThrows
 	public synchronized void sendMessage(@NotNull Webhook webhook){
@@ -32,7 +34,7 @@ public class DiscordApi{
 			return;
 		}
 		
-		var response = Unirest.post(webhookUrl.toString())
+		var response = unirest.post(webhookUrl.toString())
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
 				.body(webhook)
 				.asObject(DiscordResponse.class);

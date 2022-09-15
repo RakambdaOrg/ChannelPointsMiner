@@ -3,7 +3,8 @@ package fr.raksrinana.channelpointsminer.miner.api.twitch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.PlayerEvent;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
-import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestInstance;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
@@ -14,16 +15,19 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@RequiredArgsConstructor
 @Log4j2
 public class TwitchApi{
 	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("https://static.twitchcdn.net/config/settings.*?js");
 	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade_url\":\"(.*?)\"");
 	
+	private final UnirestInstance unirest;
+	
 	@NotNull
 	public Optional<URL> getSpadeUrl(@NotNull URL streamerUrl){
 		return getSettingsUrl(streamerUrl)
 				.map(settingsUrl -> {
-					var response = Unirest.get(settingsUrl.toString()).asString();
+					var response = unirest.get(settingsUrl.toString()).asString();
 					
 					if(!response.isSuccess()){
 						return null;
@@ -47,7 +51,7 @@ public class TwitchApi{
 	
 	@NotNull
 	private Optional<URL> getSettingsUrl(@NotNull URL streamerUrl){
-		var response = Unirest.get(streamerUrl.toString()).asString();
+		var response = unirest.get(streamerUrl.toString()).asString();
 		
 		if(!response.isSuccess()){
 			return Optional.empty();
@@ -74,7 +78,7 @@ public class TwitchApi{
 			var requestBase64 = new String(Base64.getEncoder().encode(requestStr.getBytes(UTF_8)), UTF_8);
 			var data = "data=" + requestBase64;
 			
-			var response = Unirest.post(spadeUrl.toString())
+			var response = unirest.post(spadeUrl.toString())
 					.body(data)
 					.asEmpty();
 			

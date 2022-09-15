@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.PlayerEvent;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
+@ParallelizableTest
 class TwitchApiTest{
 	private static final int USER_ID = 123456789;
 	private static final String BROADCAST_ID = "broadcast-id";
@@ -38,15 +40,17 @@ class TwitchApiTest{
 	private static final String SPADE_BODY = "\"spade_url\":\"%s\"".formatted(SPADE_URL);
 	private static final String SPADE_BODY_INVALID_FORMAT = "\"spade_url\":\"%s\"".formatted("https://google.com:-80/");
 	
-	private final TwitchApi tested = new TwitchApi();
+	private TwitchApi tested;
 	
 	private URL streamerUrl;
 	private URL spadeUrl;
 	
 	@BeforeEach
-	void setUp() throws MalformedURLException{
+	void setUp(UnirestMock unirestMock) throws MalformedURLException{
 		streamerUrl = new URL(STREAMER_URL);
 		spadeUrl = new URL(SPADE_URL);
+		
+		tested = new TwitchApi(unirestMock.getUnirestInstance());
 	}
 	
 	@Test

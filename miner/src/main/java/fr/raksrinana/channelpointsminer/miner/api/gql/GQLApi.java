@@ -36,7 +36,7 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.IntegrityError;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
-import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestInstance;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,13 +64,15 @@ public class GQLApi{
 	private static final String CLIENT_VERSION = "97087acf-5eca-40dd-9a1b-ee0e771c3d3f";
 	
 	private final TwitchLogin twitchLogin;
+	private final UnirestInstance unirest;
 	private final String clientSessionId;
 	private final String xDeviceId;
 	
 	private IntegrityResponse integrityResponse;
 	
-	public GQLApi(@NotNull TwitchLogin twitchLogin, @NotNull String clientSessionId, @NotNull String xDeviceId){
+	public GQLApi(@NotNull TwitchLogin twitchLogin, @NotNull UnirestInstance unirest, @NotNull String clientSessionId, @NotNull String xDeviceId){
 		this.twitchLogin = twitchLogin;
+		this.unirest = unirest;
 		this.clientSessionId = clientSessionId;
 		this.xDeviceId = xDeviceId;
 	}
@@ -82,7 +84,7 @@ public class GQLApi{
 	
 	@NotNull
 	private <T> Optional<GQLResponse<T>> postGqlRequest(@NotNull IGQLOperation<T> operation){
-		var response = Unirest.post(ENDPOINT + "/gql")
+		var response = unirest.post(ENDPOINT + "/gql")
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
 				.header(CLIENT_INTEGRITY_HEADER, getClientIntegrity())
 				.header(CLIENT_ID_HEADER, CLIENT_ID)
@@ -122,7 +124,7 @@ public class GQLApi{
 		}
 		
 		log.info("Querying new integrity token");
-		var response = Unirest.post(ENDPOINT + "/integrity")
+		var response = unirest.post(ENDPOINT + "/integrity")
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
 				.header(CLIENT_ID_HEADER, CLIENT_ID)
 				.header(CLIENT_SESSION_ID_HEADER, clientSessionId)

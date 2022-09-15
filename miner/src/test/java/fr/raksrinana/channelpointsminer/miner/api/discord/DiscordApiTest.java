@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.api.discord;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Webhook;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
+@ParallelizableTest
 class DiscordApiTest{
 	private static final String URL = "https://webhook";
 	private static final String PAYLOAD = "{\"content\":\"Test message\",\"username\":\"ChannelPointsMiner\"}";
@@ -24,9 +26,9 @@ class DiscordApiTest{
 	private DiscordApi tested;
 	
 	@BeforeEach
-	void setUp() throws MalformedURLException{
+	void setUp(UnirestMock unirestMock) throws MalformedURLException{
 		var url = new URL(URL);
-		tested = new DiscordApi(url);
+		tested = new DiscordApi(url, unirestMock.getUnirestInstance());
 	}
 	
 	@Test

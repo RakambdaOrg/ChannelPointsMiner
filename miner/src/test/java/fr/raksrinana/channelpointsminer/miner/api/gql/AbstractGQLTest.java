@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.api.gql;
 
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
@@ -13,17 +14,30 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
+@ParallelizableTest
 public abstract class AbstractGQLTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String CLIENT_SESSION_ID = "client-session-id";
 	private static final String X_DEVICE_ID = "x-device-id";
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String CLIENT_VERSION = "97087acf-5eca-40dd-9a1b-ee0e771c3d3f";
+	
 	protected GQLApi tested;
+	
 	@Mock
 	private TwitchLogin twitchLogin;
+	
 	private UnirestMock unirest;
 	private String currentIntegrityToken;
+	
+	@BeforeEach
+	void setUp(UnirestMock unirest){
+		this.unirest = unirest;
+		
+		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
+		
+		tested = new GQLApi(twitchLogin, unirest.getUnirestInstance(), CLIENT_SESSION_ID, X_DEVICE_ID);
+	}
 	
 	protected abstract String getValidRequest();
 	
@@ -97,14 +111,5 @@ public abstract class AbstractGQLTest{
 	
 	protected void setupIntegrityStatus(int status){
 		expectIntegrityRequest(status, null);
-	}
-	
-	@BeforeEach
-	void setUp(UnirestMock unirest){
-		this.unirest = unirest;
-		
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-		
-		tested = new GQLApi(twitchLogin, CLIENT_SESSION_ID, X_DEVICE_ID);
 	}
 }
