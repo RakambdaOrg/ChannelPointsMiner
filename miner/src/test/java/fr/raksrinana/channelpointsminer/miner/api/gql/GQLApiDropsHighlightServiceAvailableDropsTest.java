@@ -75,7 +75,7 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/dropsHighlightServiceAvailableDrops_withDrops.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/dropsHighlightServiceAvailableDrops_withDrops.json");
 		
 		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
 		
@@ -101,7 +101,7 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/dropsHighlightServiceAvailableDrops_noDrops.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/dropsHighlightServiceAvailableDrops_noDrops.json");
 		
 		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
 		

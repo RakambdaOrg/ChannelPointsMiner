@@ -35,7 +35,7 @@ class GQLApiChatRoomBanStatusTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/channelRoomBanStatus_notBanned.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelRoomBanStatus_notBanned.json");
 		
 		assertThat(tested.chatRoomBanStatus(CHANNEL, USERNAME)).isPresent().get().isEqualTo(expected);
 		
@@ -68,7 +68,7 @@ class GQLApiChatRoomBanStatusTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/channelRoomBanStatus_banned.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelRoomBanStatus_banned.json");
 		
 		var actual = tested.chatRoomBanStatus(CHANNEL, USERNAME);
 		assertThat(actual).isPresent().get().isEqualTo(expected);

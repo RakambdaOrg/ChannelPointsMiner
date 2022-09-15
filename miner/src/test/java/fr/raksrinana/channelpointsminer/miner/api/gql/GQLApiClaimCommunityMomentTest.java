@@ -33,7 +33,7 @@ class GQLApiClaimCommunityMomentTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/communityMomentCalloutClaim_success.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/communityMomentCalloutClaim_success.json");
 		
 		assertThat(tested.claimCommunityMoment(MOMENT_ID)).isPresent().get().isEqualTo(expected);
 		

@@ -66,7 +66,7 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 								.build())
 						.build())
 				.build();
-		expectValidRequestOkWithIntegrityOk("api/gql/channelFollows_oneFollow.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.channelFollows(LIMIT, ORDER, null)).isPresent().get().isEqualTo(expected);
 		
@@ -111,7 +111,7 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 		
 		var cursor = "my-cursor";
 		
-		expectBodyRequestOkWithIntegrityOk(VALID_QUERY_WITH_CURSOR.formatted(cursor, LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY_WITH_CURSOR.formatted(cursor, LIMIT, ORDER), "api/gql/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.channelFollows(LIMIT, ORDER, cursor)).isPresent().get().isEqualTo(expected);
 		
@@ -121,8 +121,8 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 	@Test
 	void getAllFollowsNominal(){
 		setupIntegrityOk();
-		expectBodyRequestOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_severalFollows.json");
-		expectBodyRequestOk(VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
+		expectBodyRequestOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_severalFollows.json");
+		expectBodyRequestOk(VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.allChannelFollows()).hasSize(3);
 		
@@ -131,7 +131,7 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 	
 	@Test
 	void getAllFollowsNominalOnePage(){
-		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.allChannelFollows()).hasSize(1);
 		
@@ -140,7 +140,7 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 	
 	@Test
 	void getAllFollowsErrorGettingCursor(){
-		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_invalidCursor.json");
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_invalidCursor.json");
 		
 		assertThrows(IllegalStateException.class, () -> tested.allChannelFollows());
 		

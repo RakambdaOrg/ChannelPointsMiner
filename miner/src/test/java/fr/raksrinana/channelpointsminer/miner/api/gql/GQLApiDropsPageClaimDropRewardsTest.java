@@ -34,7 +34,7 @@ class GQLApiDropsPageClaimDropRewardsTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/dropspageclaimdroprewardsdata_eligibleforall.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/dropspageclaimdroprewardsdata_eligibleforall.json");
 		
 		assertThat(tested.dropsPageClaimDropRewards(DROP_ID)).isPresent().get().isEqualTo(expected);
 		

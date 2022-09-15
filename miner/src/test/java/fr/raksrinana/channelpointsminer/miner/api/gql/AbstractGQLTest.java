@@ -60,7 +60,7 @@ public abstract class AbstractGQLTest{
 	
 	protected void setupIntegrityOk(){
 		currentIntegrityToken = "integrity-token";
-		expectIntegrityRequest(200, "api/gql/integrity_ok.json");
+		expectIntegrityRequest(200, "api/gql/integrity/integrity_ok.json");
 	}
 	
 	protected void expectBodyRequestOk(String requestBody, String responseBody){
@@ -102,11 +102,11 @@ public abstract class AbstractGQLTest{
 	
 	protected void setupIntegrityWillNeedRefresh(){
 		currentIntegrityToken = "integrity-refresh";
-		expectIntegrityRequest(200, "api/gql/integrity_needRefresh.json");
+		expectIntegrityRequest(200, "api/gql/integrity/integrity_needRefresh.json");
 	}
 	
 	protected void setupIntegrityNoToken(){
-		expectIntegrityRequest(200, "api/gql/integrity_noToken.json");
+		expectIntegrityRequest(200, "api/gql/integrity/integrity_noToken.json");
 	}
 	
 	protected void setupIntegrityStatus(int status){

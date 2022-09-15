@@ -30,7 +30,7 @@ class GQLApiJoinRaidTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/joinRaid.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
 		
 		assertThat(tested.joinRaid(RAID_ID)).isPresent().get().isEqualTo(expected);
 		

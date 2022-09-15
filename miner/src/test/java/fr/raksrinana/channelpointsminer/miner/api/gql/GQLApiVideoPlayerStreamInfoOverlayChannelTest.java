@@ -61,7 +61,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/videoPlayerStreamInfoOverlayChannel_online.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/videoPlayerStreamInfoOverlayChannel_online.json");
 		
 		assertThat(tested.videoPlayerStreamInfoOverlayChannel(USERNAME)).isPresent().get().isEqualTo(expected);
 		
@@ -96,7 +96,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/videoPlayerStreamInfoOverlayChannel_offline.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/videoPlayerStreamInfoOverlayChannel_offline.json");
 		
 		assertThat(tested.videoPlayerStreamInfoOverlayChannel(USERNAME)).isPresent().get().isEqualTo(expected);
 		

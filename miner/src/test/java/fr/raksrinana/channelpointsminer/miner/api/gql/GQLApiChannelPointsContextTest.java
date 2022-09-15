@@ -166,7 +166,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/channelPointsContext_noClaim.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelPointsContext_noClaim.json");
 		
 		assertThat(tested.channelPointsContext(USERNAME)).isPresent().get().isEqualTo(expected);
 		
@@ -303,7 +303,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/channelPointsContext_withClaim.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelPointsContext_withClaim.json");
 		
 		assertThat(tested.channelPointsContext(USERNAME)).isPresent().get().isEqualTo(expected);
 		

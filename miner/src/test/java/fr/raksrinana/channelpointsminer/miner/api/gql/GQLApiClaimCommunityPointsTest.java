@@ -39,7 +39,7 @@ class GQLApiClaimCommunityPointsTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/claimCommunityPoints_claimed.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/claimCommunityPoints_claimed.json");
 		
 		assertThat(tested.claimCommunityPoints(CHANNEL_ID, CLAIM_ID)).isPresent().get().isEqualTo(expected);
 		
@@ -63,7 +63,7 @@ class GQLApiClaimCommunityPointsTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/claimCommunityPoints_notFound.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/claimCommunityPoints_notFound.json");
 		
 		assertThat(tested.claimCommunityPoints(CHANNEL_ID, CLAIM_ID)).isPresent().get().isEqualTo(expected);
 		

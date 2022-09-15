@@ -149,7 +149,7 @@ class GQLApiInventoryTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/inventory.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/inventory.json");
 		
 		assertThat(tested.inventory()).isPresent().get().isEqualTo(expected);
 		

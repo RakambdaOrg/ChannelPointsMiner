@@ -33,7 +33,7 @@ class GQLApiMakePredictionTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/makePrediction_success.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/makePrediction_success.json");
 		
 		assertThat(tested.makePrediction(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID)).isPresent().get().isEqualTo(expected);
 		
@@ -57,7 +57,7 @@ class GQLApiMakePredictionTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/makePrediction_notEnoughPoints.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/makePrediction_notEnoughPoints.json");
 		
 		assertThat(tested.makePrediction(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID)).isPresent().get().isEqualTo(expected);
 		

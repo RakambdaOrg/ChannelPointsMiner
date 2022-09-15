@@ -37,7 +37,7 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/reportMenuItem_offline.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/reportMenuItem_offline.json");
 		
 		assertThat(tested.reportMenuItem(USERNAME)).isPresent().get().isEqualTo(expected);
 		
@@ -66,7 +66,7 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk("api/gql/reportMenuItem_online.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/reportMenuItem_online.json");
 		
 		var result = tested.reportMenuItem(USERNAME);
 		assertThat(result).isPresent().get().isEqualTo(expected);
