@@ -5,18 +5,12 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.makeprediction.MakePr
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MakePredictionError;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MakePredictionErrorCode;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MakePredictionPayload;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
@@ -26,19 +20,8 @@ class GQLApiMakePredictionTest extends AbstractGQLTest{
 	private static final int POINTS = 20;
 	private static final String TRANSACTION_ID = "transaction-id";
 	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
-	
 	@Test
-	void nominalMakePrediction(UnirestMock unirest){
+	void nominalMakePrediction(){
 		var expected = GQLResponse.<MakePredictionData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 127,
@@ -50,15 +33,15 @@ class GQLApiMakePredictionTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/makePrediction_success.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/makePrediction_success.json");
 		
 		assertThat(tested.makePrediction(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void errorMakePrediction(UnirestMock unirest){
+	void errorMakePrediction(){
 		var expected = GQLResponse.<MakePredictionData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 37,
@@ -74,11 +57,11 @@ class GQLApiMakePredictionTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/makePrediction_notEnoughPoints.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/makePrediction_notEnoughPoints.json");
 		
 		assertThat(tested.makePrediction(EVENT_ID, OUTCOME_ID, POINTS, TRANSACTION_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override

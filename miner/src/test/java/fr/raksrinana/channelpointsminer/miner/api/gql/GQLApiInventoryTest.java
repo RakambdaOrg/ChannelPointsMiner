@@ -15,13 +15,9 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDropSelfEdge;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.UserDropReward;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
@@ -31,21 +27,10 @@ import java.util.List;
 import java.util.Map;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
 class GQLApiInventoryTest extends AbstractGQLTest{
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
 	
 	@Test
 	void nominal(UnirestMock unirest) throws MalformedURLException{
@@ -164,11 +149,11 @@ class GQLApiInventoryTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/inventory.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/inventory.json");
 		
 		assertThat(tested.inventory()).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override

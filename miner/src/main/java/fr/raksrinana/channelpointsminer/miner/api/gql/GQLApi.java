@@ -36,7 +36,6 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.IntegrityError;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
-import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import kong.unirest.core.Unirest;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -63,18 +62,17 @@ public class GQLApi{
 	
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String CLIENT_VERSION = "97087acf-5eca-40dd-9a1b-ee0e771c3d3f";
-	private static final int CLIENT_SESSION_ID_LENGTH = 16;
-	private static final int X_DEVICE_ID_LENGTH = 36;
 	
 	private final TwitchLogin twitchLogin;
 	private final String clientSessionId;
 	private final String xDeviceId;
+	
 	private IntegrityResponse integrityResponse;
 	
-	public GQLApi(TwitchLogin twitchLogin){
+	public GQLApi(@NotNull TwitchLogin twitchLogin, @NotNull String clientSessionId, @NotNull String xDeviceId){
 		this.twitchLogin = twitchLogin;
-		clientSessionId = CommonUtils.randomHex(CLIENT_SESSION_ID_LENGTH);
-		xDeviceId = CommonUtils.randomAlphanumeric(X_DEVICE_ID_LENGTH);
+		this.clientSessionId = clientSessionId;
+		this.xDeviceId = xDeviceId;
 	}
 	
 	@NotNull

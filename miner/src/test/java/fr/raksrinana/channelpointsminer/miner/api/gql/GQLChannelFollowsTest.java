@@ -8,13 +8,9 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.FollowerEdge;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.PageInfo;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.UserSelfConnection;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
@@ -25,7 +21,6 @@ import java.util.Map;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
@@ -35,17 +30,6 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 	private static final int LIMIT = 15;
 	private static final int ALL_LIMIT = 100;
 	private static final String ORDER = "DESC";
-	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
 	
 	@Test
 	void nominal(UnirestMock unirest) throws MalformedURLException{
@@ -82,11 +66,11 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 								.build())
 						.build())
 				.build();
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/channelFollows_oneFollow.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.channelFollows(LIMIT, ORDER, null)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
@@ -127,40 +111,40 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 		
 		var cursor = "my-cursor";
 		
-		expectBodyRequestOkWithIntegrityOk(unirest, VALID_QUERY_WITH_CURSOR.formatted(cursor, LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY_WITH_CURSOR.formatted(cursor, LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.channelFollows(LIMIT, ORDER, cursor)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void getAllFollowsNominal(UnirestMock unirest){
-		setupIntegrityOk(unirest);
-		expectBodyRequestOk(unirest, VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_severalFollows.json");
-		expectBodyRequestOk(unirest, VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
+	void getAllFollowsNominal(){
+		setupIntegrityOk();
+		expectBodyRequestOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_severalFollows.json");
+		expectBodyRequestOk(VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.allChannelFollows()).hasSize(3);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void getAllFollowsNominalOnePage(UnirestMock unirest){
-		expectBodyRequestOkWithIntegrityOk(unirest, VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
+	void getAllFollowsNominalOnePage(){
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.allChannelFollows()).hasSize(1);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void getAllFollowsErrorGettingCursor(UnirestMock unirest){
-		expectBodyRequestOkWithIntegrityOk(unirest, VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_invalidCursor.json");
+	void getAllFollowsErrorGettingCursor(){
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/channelFollows_invalidCursor.json");
 		
 		assertThrows(IllegalStateException.class, () -> tested.allChannelFollows());
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override

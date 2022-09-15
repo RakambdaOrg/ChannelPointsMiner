@@ -21,15 +21,8 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.CommunityPoints
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.UserSelfConnection;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
-import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,26 +35,12 @@ import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ContentT
 import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.RewardType.SEND_HIGHLIGHTED_MESSAGE;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@ExtendWith(UnirestMockExtension.class)
 class GQLApiChannelPointsContextTest extends AbstractGQLTest{
 	private static final String USERNAME = "username";
 	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
-	
 	@Test
-	void nominal(UnirestMock unirest) throws MalformedURLException{
+	void nominal() throws MalformedURLException{
 		var communityPointsImage = CommunityPointsImage.builder()
 				.url(new URL("https://image"))
 				.url2X(new URL("https://image2x"))
@@ -187,11 +166,11 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/channelPointsContext_noClaim.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/channelPointsContext_noClaim.json");
 		
 		assertThat(tested.channelPointsContext(USERNAME)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
@@ -324,11 +303,11 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/channelPointsContext_withClaim.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/channelPointsContext_withClaim.json");
 		
 		assertThat(tested.channelPointsContext(USERNAME)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override

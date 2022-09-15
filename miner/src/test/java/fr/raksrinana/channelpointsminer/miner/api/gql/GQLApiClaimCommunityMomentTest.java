@@ -4,37 +4,20 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.communitymomentcalloutclaim.CommunityMomentCalloutClaimData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ClaimCommunityMomentPayload;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.CommunityMoment;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
 class GQLApiClaimCommunityMomentTest extends AbstractGQLTest{
 	private static final String MOMENT_ID = "moment-id";
 	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
-	
 	@Test
-	void nominalClaimed(UnirestMock unirest){
+	void nominalClaimed(){
 		var expected = GQLResponse.<CommunityMomentCalloutClaimData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 9,
@@ -50,11 +33,11 @@ class GQLApiClaimCommunityMomentTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/communityMomentCalloutClaim_success.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/communityMomentCalloutClaim_success.json");
 		
 		assertThat(tested.claimCommunityMoment(MOMENT_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override

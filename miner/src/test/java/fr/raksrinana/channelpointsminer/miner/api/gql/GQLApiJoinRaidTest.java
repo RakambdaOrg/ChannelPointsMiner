@@ -3,37 +3,20 @@ package fr.raksrinana.channelpointsminer.miner.api.gql;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.joinraid.JoinRaidData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.JoinRaidPayload;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
 class GQLApiJoinRaidTest extends AbstractGQLTest{
 	private static final String RAID_ID = "raid-id";
 	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
-	
 	@Test
-	void nominalFollowRaid(UnirestMock unirest){
+	void nominalFollowRaid(){
 		var expected = GQLResponse.<JoinRaidData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 4,
@@ -47,11 +30,11 @@ class GQLApiJoinRaidTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/joinRaid.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/joinRaid.json");
 		
 		assertThat(tested.joinRaid(RAID_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override

@@ -5,39 +5,22 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.reportmenuitem.Report
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.RequestInfo;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Stream;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
 class GQLApiReportMenuItemTest extends AbstractGQLTest{
 	private static final String USERNAME = "username";
 	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
-	
 	@Test
-	void nominalOffline(UnirestMock unirest){
+	void nominalOffline(){
 		var expected = GQLResponse.<ReportMenuItemData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 41,
@@ -54,15 +37,15 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/reportMenuItem_offline.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/reportMenuItem_offline.json");
 		
 		assertThat(tested.reportMenuItem(USERNAME)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void nominalOnline(UnirestMock unirest){
+	void nominalOnline(){
 		var expected = GQLResponse.<ReportMenuItemData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 41,
@@ -83,12 +66,12 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/reportMenuItem_online.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/reportMenuItem_online.json");
 		
 		var result = tested.reportMenuItem(USERNAME);
 		assertThat(result).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override

@@ -10,13 +10,9 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Game;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Inventory;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
@@ -26,23 +22,11 @@ import java.util.List;
 import java.util.Map;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
 class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
 	private static final String STREAMER_ID = "streamer-id";
-	
-	@InjectMocks
-	private GQLApi tested;
-	
-	@Mock
-	private TwitchLogin twitchLogin;
-	
-	@BeforeEach
-	void setUp(){
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-	}
 	
 	@Test
 	void nominalWithDrops(UnirestMock unirest) throws MalformedURLException{
@@ -91,15 +75,15 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/dropsHighlightServiceAvailableDrops_withDrops.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/dropsHighlightServiceAvailableDrops_withDrops.json");
 		
 		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Test
-	void nominalNoDrops(UnirestMock unirest){
+	void nominalNoDrops(){
 		var expected = GQLResponse.<DropsHighlightServiceAvailableDropsData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 31,
@@ -117,11 +101,11 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
 						.build())
 				.build();
 		
-		expectValidRequestOkWithIntegrityOk(unirest, "api/gql/dropsHighlightServiceAvailableDrops_noDrops.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/dropsHighlightServiceAvailableDrops_noDrops.json");
 		
 		assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
 		
-		unirest.verifyAll();
+		verifyAll();
 	}
 	
 	@Override
