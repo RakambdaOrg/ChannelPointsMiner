@@ -41,13 +41,13 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  qodana:
-    name: Qodana
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Run Qodana
-        uses: JetBrains/qodana-action@v5.0.2
+#  qodana:
+#    name: Qodana
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#      - name: Run Qodana
+#        uses: JetBrains/qodana-action@v5.0.2
