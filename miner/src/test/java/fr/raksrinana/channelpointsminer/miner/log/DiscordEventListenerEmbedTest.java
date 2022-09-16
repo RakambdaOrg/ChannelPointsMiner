@@ -23,6 +23,7 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.event.IEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.ClaimMomentEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.MinerStartedEvent;
@@ -144,6 +145,20 @@ class DiscordEventListenerEmbedTest{
 						.footer(footer)
 						.color(CYAN.getRGB())
 						.description("Moment available")
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onClaimedMoment(){
+		tested.onEvent(new ClaimedMomentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("Moment claimed")
 						.build()))
 				.build());
 	}
