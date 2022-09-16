@@ -28,7 +28,7 @@ public class ApiFactory{
 		var unirest = createUnirestInstance();
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
 		
-		return new GQLApi(twitchLogin, unirest, clientSessionId, xDeviceId);
+		return new GQLApi(twitchLogin, unirest, clientSessionId, xDeviceId, "97087acf-5eca-40dd-9a1b-ee0e771c3d3f");
 	}
 	
 	private static UnirestInstance createUnirestInstance(){

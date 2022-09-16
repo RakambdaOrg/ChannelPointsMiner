@@ -13,10 +13,10 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class DropClaimEvent extends AbstractLoggableEvent{
+public class DropClaimedEvent extends AbstractLoggableEvent{
 	private final TimeBasedDrop drop;
 	
-	public DropClaimEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop, @NotNull Instant instant){
+	public DropClaimedEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop, @NotNull Instant instant){
 		super(miner, instant);
 		this.drop = drop;
 	}
@@ -24,7 +24,7 @@ public class DropClaimEvent extends AbstractLoggableEvent{
 	@Override
 	@NotNull
 	public String getAsLog(){
-		return "Drop available [%s]".formatted(drop.getName());
+		return "Drop claimed [%s]".formatted(drop.getName());
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class DropClaimEvent extends AbstractLoggableEvent{
 	
 	@NotNull
 	protected String getEmbedDescription(){
-		return "Drop available";
+		return "Drop claimed";
 	}
 	
 	@Override

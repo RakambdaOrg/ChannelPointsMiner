@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @Log4j2
@@ -61,7 +62,8 @@ public class GQLApi{
 	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error", "server error", "service unavailable");
 	
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
-	private static final String CLIENT_VERSION = "97087acf-5eca-40dd-9a1b-ee0e771c3d3f";
+	
+	private static final Pattern TWILIGHT_BUILD_ID_PATTERN = Pattern.compile("window\\.__twilightBuildID=\"([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12})\";");
 	
 	private final TwitchLogin twitchLogin;
 	private final UnirestInstance unirest;
@@ -69,12 +71,14 @@ public class GQLApi{
 	private final String xDeviceId;
 	
 	private IntegrityResponse integrityResponse;
+	private String clientVersion;
 	
-	public GQLApi(@NotNull TwitchLogin twitchLogin, @NotNull UnirestInstance unirest, @NotNull String clientSessionId, @NotNull String xDeviceId){
+	public GQLApi(@NotNull TwitchLogin twitchLogin, @NotNull UnirestInstance unirest, @NotNull String clientSessionId, @NotNull String xDeviceId, @NotNull String defaultClientVersion){
 		this.twitchLogin = twitchLogin;
 		this.unirest = unirest;
 		this.clientSessionId = clientSessionId;
 		this.xDeviceId = xDeviceId;
+		this.clientVersion = defaultClientVersion;
 	}
 	
 	@NotNull
@@ -84,12 +88,13 @@ public class GQLApi{
 	
 	@NotNull
 	private <T> Optional<GQLResponse<T>> postGqlRequest(@NotNull IGQLOperation<T> operation){
+		var clientIntegrity = getClientIntegrity();
 		var response = unirest.post(ENDPOINT + "/gql")
 				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
-				.header(CLIENT_INTEGRITY_HEADER, getClientIntegrity())
+				.header(CLIENT_INTEGRITY_HEADER, clientIntegrity)
 				.header(CLIENT_ID_HEADER, CLIENT_ID)
 				.header(CLIENT_SESSION_ID_HEADER, clientSessionId)
-				.header(CLIENT_VERSION_HEADER, CLIENT_VERSION)
+				.header(CLIENT_VERSION_HEADER, clientVersion)
 				.header(X_DEVICE_ID_HEADER, xDeviceId)
 				.body(operation)
 				.asObject(operation.getResponseType());
@@ -119,31 +124,59 @@ public class GQLApi{
 	
 	@NotNull
 	private String getClientIntegrity(){
-		if(Objects.nonNull(integrityResponse) && integrityResponse.getExpiration().isAfter(TimeFactory.now())){
-			return integrityResponse.getToken();
+		synchronized(this){
+			if(Objects.nonNull(integrityResponse) && integrityResponse.getExpiration().isAfter(TimeFactory.now())){
+				return integrityResponse.getToken();
+			}
+			
+			updateClientVersion();
+			
+			log.info("Querying new integrity token");
+			var response = unirest.post(ENDPOINT + "/integrity")
+					.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
+					.header(CLIENT_ID_HEADER, CLIENT_ID)
+					.header(CLIENT_SESSION_ID_HEADER, clientSessionId)
+					.header(CLIENT_VERSION_HEADER, clientVersion)
+					.header(X_DEVICE_ID_HEADER, xDeviceId)
+					.asObject(IntegrityResponse.class);
+			
+			if(!response.isSuccess()){
+				throw new RuntimeException(new IntegrityError(response.getStatus(), "Http code is not a success"));
+			}
+			
+			var body = response.getBody();
+			if(Objects.isNull(body.getToken())){
+				throw new RuntimeException(new IntegrityError(response.getStatus(), body.getMessage()));
+			}
+			
+			log.info("New integrity token will expire at {}", body.getExpiration());
+			integrityResponse = body;
+			return body.getToken();
 		}
-		
-		log.info("Querying new integrity token");
-		var response = unirest.post(ENDPOINT + "/integrity")
-				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
-				.header(CLIENT_ID_HEADER, CLIENT_ID)
-				.header(CLIENT_SESSION_ID_HEADER, clientSessionId)
-				.header(CLIENT_VERSION_HEADER, CLIENT_VERSION)
-				.header(X_DEVICE_ID_HEADER, xDeviceId)
-				.asObject(IntegrityResponse.class);
-		
+	}
+	
+	private void updateClientVersion(){
+		log.info("Querying new client version");
+		var response = unirest.get("https://www.twitch.tv").asString();
 		if(!response.isSuccess()){
-			throw new RuntimeException(new IntegrityError(response.getStatus(), "Http code is not a success"));
+			log.warn("Failed to update client version, status is : " + response.getStatus());
+			return;
 		}
 		
-		var body = response.getBody();
-		if(Objects.isNull(body.getToken())){
-			throw new RuntimeException(new IntegrityError(response.getStatus(), body.getMessage()));
+		var page = response.getBody();
+		if(Objects.isNull(page)){
+			log.warn("Failed to update client version, null page");
+			return;
 		}
 		
-		log.info("New integrity token will expire at {}", body.getExpiration());
-		integrityResponse = body;
-		return body.getToken();
+		var matcher = TWILIGHT_BUILD_ID_PATTERN.matcher(page);
+		if(!matcher.find()){
+			log.warn("Failed to update client version, didn't find version in page");
+			return;
+		}
+		
+		clientVersion = matcher.group(1);
+		log.info("Current client version is {}", clientVersion);
 	}
 	
 	private boolean isErrorExpected(@NotNull Collection<GQLError> errors){
