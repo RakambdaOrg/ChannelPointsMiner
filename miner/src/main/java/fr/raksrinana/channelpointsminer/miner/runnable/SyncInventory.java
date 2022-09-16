@@ -6,6 +6,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Inventory;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDropSelfEdge;
 import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
@@ -15,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import static java.util.Optional.ofNullable;
 
 @Log4j2
@@ -65,12 +67,21 @@ public class SyncInventory implements Runnable{
 		}
 		
 		log.debug("Claiming drops {}", dropsToClaim);
-		dropsToClaim.stream()
-				.map(drop -> new DropClaimEvent(miner, drop, TimeFactory.now()))
-				.forEach(miner::onEvent);
-		dropsToClaim.stream()
-				.map(TimeBasedDrop::getSelf)
-				.map(TimeBasedDropSelfEdge::getDropInstanceId)
-				.forEach(miner.getGqlApi()::dropsPageClaimDropRewards);
+		dropsToClaim.forEach(this::claimDrop);
+	}
+	
+	private void claimDrop(@NotNull TimeBasedDrop timeBasedDrop){
+		miner.onEvent(new DropClaimEvent(miner, timeBasedDrop, TimeFactory.now()));
+		
+		var dropInstanceId = Optional.ofNullable(timeBasedDrop.getSelf()).map(TimeBasedDropSelfEdge::getDropInstanceId);
+		if(dropInstanceId.isEmpty()){
+			log.error("Failed to claim drop, value is null");
+			return;
+		}
+		
+		miner.getGqlApi().dropsPageClaimDropRewards(dropInstanceId.get())
+				.filter(r -> !r.isError())
+				.map(r -> new DropClaimedEvent(miner, timeBasedDrop, TimeFactory.now()))
+				.ifPresent(miner::onEvent);
 	}
 }

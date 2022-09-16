@@ -25,6 +25,7 @@ import fr.raksrinana.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.MinerStartedEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.PointsEarnedEvent;
@@ -551,7 +552,25 @@ class DiscordEventListenerEmbedTest{
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Claiming drop")
+						.description("Drop available")
+						.field(Field.builder().name("Name").value(name).build())
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onDropClaimed(){
+		var name = "drop-name";
+		var drop = mock(TimeBasedDrop.class);
+		when(drop.getName()).thenReturn(name);
+		
+		tested.onEvent(new DropClaimedEvent(miner, drop, NOW));
+		
+		verify(discordApi).sendMessage(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("Drop claimed")
 						.field(Field.builder().name("Name").value(name).build())
 						.build()))
 				.build());
