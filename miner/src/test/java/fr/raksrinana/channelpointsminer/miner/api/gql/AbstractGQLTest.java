@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static kong.unirest.core.HttpMethod.GET;
 import static kong.unirest.core.HttpMethod.POST;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +21,7 @@ public abstract class AbstractGQLTest{
 	private static final String CLIENT_SESSION_ID = "client-session-id";
 	private static final String X_DEVICE_ID = "x-device-id";
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
-	private static final String CLIENT_VERSION = "97087acf-5eca-40dd-9a1b-ee0e771c3d3f";
+	private static final String DEFAULT_CLIENT_VERSION = "ef928475-9403-42f2-8a34-55784bd08e16";
 	
 	protected GQLApi tested;
 	
@@ -29,14 +30,13 @@ public abstract class AbstractGQLTest{
 	
 	private UnirestMock unirest;
 	private String currentIntegrityToken;
+	private String currentClientVersion;
 	
-	@BeforeEach
-	void setUp(UnirestMock unirest){
-		this.unirest = unirest;
+	protected void setupIntegrityOk(){
+		setupTwitchVersionOk();
 		
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-		
-		tested = new GQLApi(twitchLogin, unirest.getUnirestInstance(), CLIENT_SESSION_ID, X_DEVICE_ID);
+		currentIntegrityToken = "integrity-token";
+		expectIntegrityRequest(200, "api/gql/integrity/integrity_ok.json");
 	}
 	
 	protected abstract String getValidRequest();
@@ -58,13 +58,8 @@ public abstract class AbstractGQLTest{
 		expectBodyRequestOk(requestBody, responseBody);
 	}
 	
-	protected void setupIntegrityOk(){
-		currentIntegrityToken = "integrity-token";
-		expectIntegrityRequest(200, "api/gql/integrity/integrity_ok.json");
-	}
-	
-	protected void expectBodyRequestOk(String requestBody, String responseBody){
-		expectGqlRequest(requestBody, 200, responseBody);
+	protected void setupTwitchVersionOk(){
+		setupTwitchVersionOk(currentClientVersion);
 	}
 	
 	private void expectIntegrityRequest(int responseStatus, String responseBody){
@@ -72,10 +67,30 @@ public abstract class AbstractGQLTest{
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.header("Client-ID", CLIENT_ID)
 				.header("Client-Session-Id", CLIENT_SESSION_ID)
-				.header("Client-Version", CLIENT_VERSION)
+				.header("Client-Version", currentClientVersion)
 				.header("X-Device-Id", X_DEVICE_ID)
 				.thenReturn(responseBody == null ? null : TestUtils.getAllResourceContent(responseBody))
 				.withStatus(responseStatus);
+	}
+	
+	protected void setupTwitchVersionOk(String twitchVersion){
+		currentClientVersion = twitchVersion;
+		expectTwitchVersionRequest(200, "window.__twilightBuildID=\"%s\";".formatted(currentClientVersion));
+	}
+	
+	protected void expectTwitchVersionRequest(int responseStatus, String responseBody){
+		unirest.expect(GET, "https://www.twitch.tv")
+				.thenReturn(responseBody)
+				.withStatus(responseStatus);
+	}
+	
+	protected void expectBodyRequestOk(String requestBody, String responseBody){
+		expectGqlRequest(requestBody, 200, responseBody);
+	}
+	
+	protected void setupIntegrityOkWithoutTwitchVersionOk(){
+		currentIntegrityToken = "integrity-token";
+		expectIntegrityRequest(200, "api/gql/integrity/integrity_ok.json");
 	}
 	
 	private void expectGqlRequest(String requestBody, int responseStatus, String responseBody){
@@ -84,11 +99,22 @@ public abstract class AbstractGQLTest{
 				.header("Client-Integrity", currentIntegrityToken)
 				.header("Client-ID", CLIENT_ID)
 				.header("Client-Session-Id", CLIENT_SESSION_ID)
-				.header("Client-Version", CLIENT_VERSION)
+				.header("Client-Version", currentClientVersion)
 				.header("X-Device-Id", X_DEVICE_ID)
 				.body(requestBody)
 				.thenReturn(responseBody == null ? null : TestUtils.getAllResourceContent(responseBody))
 				.withStatus(responseStatus);
+	}
+	
+	@BeforeEach
+	void setUp(UnirestMock unirest){
+		this.unirest = unirest;
+		
+		currentClientVersion = DEFAULT_CLIENT_VERSION;
+		
+		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
+		
+		tested = new GQLApi(twitchLogin, unirest.getUnirestInstance(), CLIENT_SESSION_ID, X_DEVICE_ID, DEFAULT_CLIENT_VERSION);
 	}
 	
 	protected void expectValidRequestOk(String responseBody){

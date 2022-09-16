@@ -120,8 +120,7 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 	
 	@Test
 	void getAllFollowsNominal(){
-		setupIntegrityOk();
-		expectBodyRequestOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_severalFollows.json");
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_severalFollows.json");
 		expectBodyRequestOk(VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_oneFollow.json");
 		
 		assertThat(tested.allChannelFollows()).hasSize(3);

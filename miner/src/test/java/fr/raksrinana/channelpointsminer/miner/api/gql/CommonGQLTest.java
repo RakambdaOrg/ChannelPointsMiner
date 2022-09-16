@@ -55,6 +55,7 @@ public class CommonGQLTest extends AbstractGQLTest{
 	
 	@Test
 	void integrityIsRefreshed(){
+		setupTwitchVersionOk();
 		setupIntegrityWillNeedRefresh();
 		expectValidRequestOk("api/gql/gql/joinRaid.json");
 		
@@ -62,14 +63,14 @@ public class CommonGQLTest extends AbstractGQLTest{
 		verifyAll();
 		reset();
 		
-		setupIntegrityOk();
-		expectValidRequestOk("api/gql/gql/joinRaid.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
 		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
 		verifyAll();
 	}
 	
 	@Test
 	void integrityNotSuccess(){
+		setupTwitchVersionOk();
 		setupIntegrityStatus(500);
 		
 		var thrown = assertThrows(RuntimeException.class, () -> tested.joinRaid(RAID_ID));
@@ -82,6 +83,7 @@ public class CommonGQLTest extends AbstractGQLTest{
 	
 	@Test
 	void integrityNoToken(){
+		setupTwitchVersionOk();
 		setupIntegrityNoToken();
 		
 		var thrown = assertThrows(RuntimeException.class, () -> tested.joinRaid(RAID_ID));
@@ -89,6 +91,50 @@ public class CommonGQLTest extends AbstractGQLTest{
 		assertThat(thrown)
 				.hasCauseInstanceOf(IntegrityError.class)
 				.hasCause(new IntegrityError(200, "error-message"));
+		verifyAll();
+	}
+	
+	@Test
+	void clientVersionErrorResponse(){
+		expectTwitchVersionRequest(500, null);
+		setupIntegrityOkWithoutTwitchVersionOk();
+		expectValidRequestOk("api/gql/gql/joinRaid.json");
+		
+		assertThat(tested.joinRaid(RAID_ID)).isPresent();
+		
+		verifyAll();
+	}
+	
+	@Test
+	void clientVersionNullBody(){
+		expectTwitchVersionRequest(200, null);
+		setupIntegrityOkWithoutTwitchVersionOk();
+		expectValidRequestOk("api/gql/gql/joinRaid.json");
+		
+		assertThat(tested.joinRaid(RAID_ID)).isPresent();
+		
+		verifyAll();
+	}
+	
+	@Test
+	void clientVersionNotMatchingBody(){
+		expectTwitchVersionRequest(200, "not what we want");
+		setupIntegrityOkWithoutTwitchVersionOk();
+		expectValidRequestOk("api/gql/gql/joinRaid.json");
+		
+		assertThat(tested.joinRaid(RAID_ID)).isPresent();
+		
+		verifyAll();
+	}
+	
+	@Test
+	void clientVersionChanged(){
+		setupTwitchVersionOk("0202fcd9-207a-4659-956c-ed2030260de0");
+		setupIntegrityOkWithoutTwitchVersionOk();
+		expectValidRequestOk("api/gql/gql/joinRaid.json");
+		
+		assertThat(tested.joinRaid(RAID_ID)).isPresent();
+		
 		verifyAll();
 	}
 	
