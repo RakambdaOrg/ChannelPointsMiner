@@ -69,6 +69,21 @@ public class CommonGQLTest extends AbstractGQLTest{
 	}
 	
 	@Test
+	void integrityIsInvalidatedOnError(){
+		setupTwitchVersionOk();
+		setupIntegrityOk();
+		expectValidRequestOk("api/gql/gql/failedIntegrity.json");
+		
+		assertThat(tested.joinRaid(RAID_ID)).isEmpty();
+		verifyAll();
+		reset();
+		
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
+		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
+		verifyAll();
+	}
+	
+	@Test
 	void integrityNotSuccess(){
 		setupTwitchVersionOk();
 		setupIntegrityStatus(500);

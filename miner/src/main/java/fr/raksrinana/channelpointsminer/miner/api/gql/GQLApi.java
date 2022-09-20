@@ -40,6 +40,7 @@ import kong.unirest.core.UnirestInstance;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -60,6 +61,7 @@ public class GQLApi{
 	
 	private static final String ORDER_DESC = "DESC";
 	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error", "server error", "service unavailable");
+	private static final Set<String> INTEGRITY_ERROR_MESSAGES = Set.of("failed integrity check");
 	
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	
@@ -110,7 +112,11 @@ public class GQLApi{
 		if(body.isError()){
 			var errors = body.getErrors();
 			
-			if(isErrorExpected(errors)){
+			if(isErrorIntegrity(errors)){
+				log.error("Received GQL integrity error response: {}", errors);
+				integrityResponse = null;
+			}
+			else if(isErrorExpected(errors)){
 				log.warn("Received GQL error response: {}", errors);
 			}
 			else{
@@ -125,7 +131,8 @@ public class GQLApi{
 	@NotNull
 	private String getClientIntegrity(){
 		synchronized(this){
-			if(Objects.nonNull(integrityResponse) && integrityResponse.getExpiration().isAfter(TimeFactory.now())){
+			if(Objects.nonNull(integrityResponse)
+					&& integrityResponse.getExpiration().minus(Duration.ofMinutes(5)).isAfter(TimeFactory.now())){
 				return integrityResponse.getToken();
 			}
 			
@@ -185,6 +192,14 @@ public class GQLApi{
 	
 	private boolean isErrorExpected(@NotNull GQLError error){
 		return EXPECTED_ERROR_MESSAGES.contains(error.getMessage());
+	}
+	
+	private boolean isErrorIntegrity(@NotNull Collection<GQLError> errors){
+		return errors.stream().anyMatch(this::isErrorIntegrity);
+	}
+	
+	private boolean isErrorIntegrity(@NotNull GQLError error){
+		return INTEGRITY_ERROR_MESSAGES.contains(error.getMessage());
 	}
 	
 	@NotNull
