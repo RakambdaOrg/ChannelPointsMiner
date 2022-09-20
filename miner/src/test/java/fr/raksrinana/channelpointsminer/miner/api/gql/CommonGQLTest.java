@@ -70,7 +70,6 @@ public class CommonGQLTest extends AbstractGQLTest{
 	
 	@Test
 	void integrityIsInvalidatedOnError(){
-		setupTwitchVersionOk();
 		setupIntegrityOk();
 		expectValidRequestOk("api/gql/gql/failedIntegrity.json");
 		
