@@ -15,7 +15,7 @@ public class CommonGQLTest extends AbstractGQLTest{
 	
 	@Test
 	void invalidCredentials(){
-		expectValidRequestWithIntegrityOk(401, "api/gql/gql/invalidAuth.json");
+		expectValidRequestWithIntegrityOk(401, "api/gql/gql/error_invalidAuth.json");
 		
 		assertThrows(RuntimeException.class, () -> tested.joinRaid(RAID_ID));
 		
@@ -24,7 +24,16 @@ public class CommonGQLTest extends AbstractGQLTest{
 	
 	@Test
 	void invalidRequest(){
-		expectValidRequestOkWithIntegrityOk("api/gql/gql/invalidRequest.json");
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/error_invalidRequest.json");
+		
+		assertThat(tested.joinRaid(RAID_ID)).isEmpty();
+		
+		verifyAll();
+	}
+	
+	@Test
+	void expectedError(){
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/error_expected.json");
 		
 		assertThat(tested.joinRaid(RAID_ID)).isEmpty();
 		
@@ -60,6 +69,20 @@ public class CommonGQLTest extends AbstractGQLTest{
 		expectValidRequestOk("api/gql/gql/joinRaid.json");
 		
 		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
+		verifyAll();
+		reset();
+		
+		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
+		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
+		verifyAll();
+	}
+	
+	@Test
+	void integrityIsInvalidatedOnError(){
+		setupIntegrityOk();
+		expectValidRequestOk("api/gql/gql/error_failedIntegrity.json");
+		
+		assertThat(tested.joinRaid(RAID_ID)).isEmpty();
 		verifyAll();
 		reset();
 		
