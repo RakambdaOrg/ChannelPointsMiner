@@ -88,7 +88,7 @@ class UpdateStreamInfoTest{
 		lenient().when(miner.getStreamers()).thenReturn(List.of(streamer));
 		lenient().when(miner.getTwitchLogin()).thenReturn(twitchLogin);
 		
-		lenient().when(twitchLogin.fetchUserId()).thenReturn(ACCOUNT_ID);
+		lenient().when(twitchLogin.fetchUserId(gqlApi)).thenReturn(ACCOUNT_ID);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);

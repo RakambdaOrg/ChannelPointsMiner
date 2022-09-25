@@ -1,12 +1,13 @@
 package fr.raksrinana.channelpointsminer.miner.api.gql.gql;
 
-import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.IntegrityError;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
@@ -50,115 +51,25 @@ public class CommonGQLTest extends AbstractGQLTest{
 	}
 	
 	@Test
-	void integrityIsNotQueriedTwice(){
-		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
-		
-		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
-		verifyAll();
-		reset();
-		
-		expectValidRequestOk("api/gql/gql/joinRaid.json");
-		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
-		verifyAll();
-	}
-	
-	@Test
-	void integrityIsRefreshed(){
-		setupTwitchVersionOk();
-		setupIntegrityWillNeedRefresh();
-		expectValidRequestOk("api/gql/gql/joinRaid.json");
-		
-		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
-		verifyAll();
-		reset();
-		
-		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
-		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
-		verifyAll();
-	}
-	
-	@Test
 	void integrityIsInvalidatedOnError(){
 		setupIntegrityOk();
-		expectValidRequestOk("api/gql/gql/error_failedIntegrity.json");
+		expectValidRequestFailedIntegrity();
 		
 		assertThat(tested.joinRaid(RAID_ID)).isEmpty();
 		verifyAll();
 		reset();
-		
-		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
-		assertThat(tested.joinRaid(RAID_ID)).isNotEmpty();
-		verifyAll();
+		verify(integrityProvider).invalidate();
 	}
 	
 	@Test
-	void integrityNotSuccess(){
-		setupTwitchVersionOk();
-		setupIntegrityStatus(500);
+	void integrityException() throws IntegrityException{
+		setupIntegrityException();
 		
 		var thrown = assertThrows(RuntimeException.class, () -> tested.joinRaid(RAID_ID));
 		
 		assertThat(thrown)
-				.hasCauseInstanceOf(IntegrityError.class)
-				.hasCause(new IntegrityError(500, "Http code is not a success"));
-		verifyAll();
-	}
-	
-	@Test
-	void integrityNoToken(){
-		setupTwitchVersionOk();
-		setupIntegrityNoToken();
-		
-		var thrown = assertThrows(RuntimeException.class, () -> tested.joinRaid(RAID_ID));
-		
-		assertThat(thrown)
-				.hasCauseInstanceOf(IntegrityError.class)
-				.hasCause(new IntegrityError(200, "error-message"));
-		verifyAll();
-	}
-	
-	@Test
-	void clientVersionErrorResponse(){
-		expectTwitchVersionRequest(500, null);
-		setupIntegrityOkWithoutTwitchVersionOk();
-		expectValidRequestOk("api/gql/gql/joinRaid.json");
-		
-		assertThat(tested.joinRaid(RAID_ID)).isPresent();
-		
-		verifyAll();
-	}
-	
-	@Test
-	void clientVersionNullBody(){
-		expectTwitchVersionRequest(200, null);
-		setupIntegrityOkWithoutTwitchVersionOk();
-		expectValidRequestOk("api/gql/gql/joinRaid.json");
-		
-		assertThat(tested.joinRaid(RAID_ID)).isPresent();
-		
-		verifyAll();
-	}
-	
-	@Test
-	void clientVersionNotMatchingBody(){
-		expectTwitchVersionRequest(200, "not what we want");
-		setupIntegrityOkWithoutTwitchVersionOk();
-		expectValidRequestOk("api/gql/gql/joinRaid.json");
-		
-		assertThat(tested.joinRaid(RAID_ID)).isPresent();
-		
-		verifyAll();
-	}
-	
-	@Test
-	void clientVersionChanged(){
-		setupTwitchVersionOk("0202fcd9-207a-4659-956c-ed2030260de0");
-		setupIntegrityOkWithoutTwitchVersionOk();
-		expectValidRequestOk("api/gql/gql/joinRaid.json");
-		
-		assertThat(tested.joinRaid(RAID_ID)).isPresent();
-		
-		verifyAll();
+				.hasCauseInstanceOf(IntegrityException.class)
+				.hasCause(new IntegrityException(500, "For tests"));
 	}
 	
 	@Override

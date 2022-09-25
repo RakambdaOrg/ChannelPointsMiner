@@ -84,7 +84,7 @@ public class UpdateStreamInfo implements Runnable{
 	private void updateBanStatus(@NotNull Streamer streamer){
 		log.trace("Updating ban status");
 		if(streamer.isStreaming()){
-			var banned = miner.getGqlApi().chatRoomBanStatus(streamer.getId(), miner.getTwitchLogin().fetchUserId())
+			var banned = miner.getGqlApi().chatRoomBanStatus(streamer.getId(), miner.getTwitchLogin().fetchUserId(miner.getGqlApi()))
 					.map(GQLResponse::getData)
 					.map(ChatRoomBanStatusData::getChatRoomBanStatus)
 					.isPresent();

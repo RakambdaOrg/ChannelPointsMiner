@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.User;
-import fr.raksrinana.channelpointsminer.miner.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.miner.util.json.CookieDeserializer;
 import fr.raksrinana.channelpointsminer.miner.util.json.CookieSerializer;
 import kong.unirest.core.Cookie;
@@ -55,19 +55,19 @@ public class TwitchLogin{
 	@ToString.Include
 	private String userId;
 	
-	public int getUserIdAsInt(){
-		return Integer.parseInt(fetchUserId());
+	public int getUserIdAsInt(@NotNull GQLApi gqlApi){
+		return Integer.parseInt(fetchUserId(gqlApi));
 	}
 	
 	@NotNull
-	public String fetchUserId(){
+	public String fetchUserId(@NotNull GQLApi gqlApi){
 		if(Objects.isNull(userId)){
 			userId = cookies.stream()
 					.filter(c -> Objects.equals(c.getName(), PERSISTENT_COOKIE_NAME))
 					.findAny()
 					.map(Cookie::getValue)
 					.map(v -> v.split("%")[0])
-					.or(() -> ApiFactory.createGqlApi(this).reportMenuItem(username)
+					.or(() -> gqlApi.reportMenuItem(username)
 							.map(GQLResponse::getData)
 							.map(ReportMenuItemData::getUser)
 							.map(User::getId))

@@ -2,6 +2,8 @@ package fr.raksrinana.channelpointsminer.miner.factory;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
@@ -20,11 +22,13 @@ class ApiFactoryTest{
 	@Mock
 	private TwitchLogin twitchLogin;
 	@Mock
+	private IIntegrityProvider integrityProvider;
+	@Mock
 	private URL url;
 	
 	@Test
 	void createGqlApi(){
-		assertThat(ApiFactory.createGqlApi(twitchLogin)).isNotNull().isInstanceOf(GQLApi.class);
+		assertThat(ApiFactory.createGqlApi(twitchLogin, integrityProvider)).isNotNull().isInstanceOf(GQLApi.class);
 	}
 	
 	@Test
@@ -40,5 +44,10 @@ class ApiFactoryTest{
 	@Test
 	void createPassportApi(){
 		assertThat(ApiFactory.createPassportApi("user", "pass", Paths.get("."), false)).isNotNull().isInstanceOf(PassportApi.class);
+	}
+	
+	@Test
+	void createHttpIntegrityProvider(){
+		assertThat(ApiFactory.createHttpIntegrityProvider(twitchLogin)).isNotNull().isInstanceOf(HttpIntegrityProvider.class);
 	}
 }

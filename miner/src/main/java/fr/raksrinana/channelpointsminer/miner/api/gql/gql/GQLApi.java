@@ -3,7 +3,6 @@ package fr.raksrinana.channelpointsminer.miner.api.gql.gql;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLError;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.IGQLOperation;
-import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.IntegrityResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.channelfollows.ChannelFollowsData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.channelfollows.ChannelFollowsOperation;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.channelpointscontext.ChannelPointsContextData;
@@ -32,27 +31,26 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.PageInfo;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelOperation;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.IntegrityError;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
-import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.UnirestInstance;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
+@RequiredArgsConstructor
 @Log4j2
 public class GQLApi{
-	private static final String ENDPOINT = "https://gql.twitch.tv";
+	private static final String ENDPOINT = "https://gql.twitch.tv/gql";
 	private static final String CLIENT_INTEGRITY_HEADER = "Client-Integrity";
 	private static final String CLIENT_ID_HEADER = "Client-ID";
 	private static final String CLIENT_SESSION_ID_HEADER = "Client-Session-ID";
@@ -65,23 +63,9 @@ public class GQLApi{
 	
 	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	
-	private static final Pattern TWILIGHT_BUILD_ID_PATTERN = Pattern.compile("window\\.__twilightBuildID=\"([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12})\";");
-	
 	private final TwitchLogin twitchLogin;
 	private final UnirestInstance unirest;
-	private final String clientSessionId;
-	private final String xDeviceId;
-	
-	private IntegrityResponse integrityResponse;
-	private String clientVersion;
-	
-	public GQLApi(@NotNull TwitchLogin twitchLogin, @NotNull UnirestInstance unirest, @NotNull String clientSessionId, @NotNull String xDeviceId, @NotNull String defaultClientVersion){
-		this.twitchLogin = twitchLogin;
-		this.unirest = unirest;
-		this.clientSessionId = clientSessionId;
-		this.xDeviceId = xDeviceId;
-		this.clientVersion = defaultClientVersion;
-	}
+	private final IIntegrityProvider integrityProvider;
 	
 	@NotNull
 	public Optional<GQLResponse<ReportMenuItemData>> reportMenuItem(@NotNull String username){
@@ -90,100 +74,48 @@ public class GQLApi{
 	
 	@NotNull
 	private <T> Optional<GQLResponse<T>> postGqlRequest(@NotNull IGQLOperation<T> operation){
-		var clientIntegrity = getClientIntegrity();
-		var response = unirest.post(ENDPOINT + "/gql")
-				.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
-				.header(CLIENT_INTEGRITY_HEADER, clientIntegrity)
-				.header(CLIENT_ID_HEADER, CLIENT_ID)
-				.header(CLIENT_SESSION_ID_HEADER, clientSessionId)
-				.header(CLIENT_VERSION_HEADER, clientVersion)
-				.header(X_DEVICE_ID_HEADER, xDeviceId)
-				.body(operation)
-				.asObject(operation.getResponseType());
-		
-		if(!response.isSuccess()){
-			if(response.getStatus() == 401){
-				throw new RuntimeException(new InvalidCredentials(response.getStatus(), -1, "Invalid credentials provided"));
-			}
-			return Optional.empty();
-		}
-		
-		var body = response.getBody();
-		if(body.isError()){
-			var errors = body.getErrors();
+		try{
+			var integrity = integrityProvider.getIntegrity();
 			
-			if(isErrorIntegrity(errors)){
-				log.error("Received GQL integrity error response: {}", errors);
-				integrityResponse = null;
-			}
-			else if(isErrorExpected(errors)){
-				log.warn("Received GQL error response: {}", errors);
-			}
-			else{
-				log.error("Received GQL error response: {}", errors);
-			}
-			return Optional.empty();
-		}
-		
-		return Optional.ofNullable(response.getBody());
-	}
-	
-	@NotNull
-	private String getClientIntegrity(){
-		synchronized(this){
-			if(Objects.nonNull(integrityResponse)
-					&& integrityResponse.getExpiration().minus(Duration.ofMinutes(5)).isAfter(TimeFactory.now())){
-				return integrityResponse.getToken();
-			}
-			
-			updateClientVersion();
-			
-			log.info("Querying new integrity token");
-			var response = unirest.post(ENDPOINT + "/integrity")
+			var response = unirest.post(ENDPOINT)
 					.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
+					.header(CLIENT_INTEGRITY_HEADER, integrity.getToken())
 					.header(CLIENT_ID_HEADER, CLIENT_ID)
-					.header(CLIENT_SESSION_ID_HEADER, clientSessionId)
-					.header(CLIENT_VERSION_HEADER, clientVersion)
-					.header(X_DEVICE_ID_HEADER, xDeviceId)
-					.asObject(IntegrityResponse.class);
+					.header(CLIENT_SESSION_ID_HEADER, integrity.getClientSessionId())
+					.header(CLIENT_VERSION_HEADER, integrity.getClientVersion())
+					.header(X_DEVICE_ID_HEADER, integrity.getXDeviceId())
+					.body(operation)
+					.asObject(operation.getResponseType());
 			
 			if(!response.isSuccess()){
-				throw new RuntimeException(new IntegrityError(response.getStatus(), "Http code is not a success"));
+				if(response.getStatus() == 401){
+					throw new InvalidCredentials(response.getStatus(), -1, "Invalid credentials provided");
+				}
+				return Optional.empty();
 			}
 			
 			var body = response.getBody();
-			if(Objects.isNull(body.getToken())){
-				throw new RuntimeException(new IntegrityError(response.getStatus(), body.getMessage()));
+			if(body.isError()){
+				var errors = body.getErrors();
+				
+				if(isErrorIntegrity(errors)){
+					log.error("Received GQL integrity error response: {}", errors);
+					integrityProvider.invalidate();
+				}
+				else if(isErrorExpected(errors)){
+					log.warn("Received GQL error response: {}", errors);
+				}
+				else{
+					log.error("Received GQL error response: {}", errors);
+				}
+				return Optional.empty();
 			}
 			
-			log.info("New integrity token will expire at {}", body.getExpiration());
-			integrityResponse = body;
-			return body.getToken();
+			return Optional.ofNullable(response.getBody());
 		}
-	}
-	
-	private void updateClientVersion(){
-		log.info("Querying new client version");
-		var response = unirest.get("https://www.twitch.tv").asString();
-		if(!response.isSuccess()){
-			log.warn("Failed to update client version, status is : " + response.getStatus());
-			return;
+		catch(IntegrityException | InvalidCredentials e){
+			throw new RuntimeException(e);
 		}
-		
-		var page = response.getBody();
-		if(Objects.isNull(page)){
-			log.warn("Failed to update client version, null page");
-			return;
-		}
-		
-		var matcher = TWILIGHT_BUILD_ID_PATTERN.matcher(page);
-		if(!matcher.find()){
-			log.warn("Failed to update client version, didn't find version in page");
-			return;
-		}
-		
-		clientVersion = matcher.group(1);
-		log.info("Current client version is {}", clientVersion);
 	}
 	
 	private boolean isErrorExpected(@NotNull Collection<GQLError> errors){

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +51,7 @@ class TwitchLoginTest{
 				.build();
 		
 		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
+			assertThat(tested.fetchUserId(gqlApi)).isEqualTo(USER_ID);
 			
 			apiFactory.verifyNoInteractions();
 		}
@@ -65,11 +64,7 @@ class TwitchLoginTest{
 				.username(USERNAME)
 				.build();
 		
-		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
-			
-			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
-		}
+		assertThat(tested.fetchUserId(gqlApi)).isEqualTo(USER_ID);
 	}
 	
 	@Test
@@ -79,13 +74,7 @@ class TwitchLoginTest{
 				.username(USERNAME)
 				.build();
 		
-		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
-			
-			assertThat(tested.fetchUserId()).isEqualTo(USER_ID);
-			
-			apiFactory.verify(() -> ApiFactory.createGqlApi(any()));
-		}
+		assertThat(tested.fetchUserId(gqlApi)).isEqualTo(USER_ID);
 	}
 	
 	@Test
@@ -95,13 +84,9 @@ class TwitchLoginTest{
 				.username(USERNAME)
 				.build();
 		
-		try(var apiFactory = Mockito.mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.createGqlApi(tested)).thenReturn(gqlApi);
-			
-			when(gqlApi.reportMenuItem(USERNAME)).thenReturn(Optional.empty());
-			
-			assertThrows(IllegalStateException.class, () -> tested.fetchUserId());
-		}
+		when(gqlApi.reportMenuItem(USERNAME)).thenReturn(Optional.empty());
+		
+		assertThrows(IllegalStateException.class, () -> tested.fetchUserId(gqlApi));
 	}
 	
 	@Test
@@ -112,6 +97,6 @@ class TwitchLoginTest{
 				.userId("123456")
 				.build();
 		
-		assertThat(tested.getUserIdAsInt()).isEqualTo(123456);
+		assertThat(tested.getUserIdAsInt(gqlApi)).isEqualTo(123456);
 	}
 }

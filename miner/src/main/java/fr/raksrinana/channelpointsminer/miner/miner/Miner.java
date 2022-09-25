@@ -140,8 +140,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 				scheduledExecutor.schedule(streamerConfigurationReload, 0, MINUTES);
 			}
 			
-			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
-			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId());
+			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
+			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId(gqlApi));
 		}
 	}
 	
@@ -156,7 +156,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			var listenMessages = analyticsConfiguration.isEnabled() && analyticsConfiguration.isRecordChatsPredictions();
 			
 			twitchLogin = passportApi.login();
-			gqlApi = ApiFactory.createGqlApi(twitchLogin);
+			var integrityProvider = ApiFactory.createHttpIntegrityProvider(twitchLogin);
+			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
 			twitchApi = ApiFactory.createTwitchApi(twitchLogin);
 			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);
 			chatClient.addChatMessageListener(new TwitchChatEventProducer(this));
@@ -222,7 +223,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 			
 			if(streamer.getSettings().isMakePredictions()){
-				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId());
+				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
 				listenTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			}
 			else{

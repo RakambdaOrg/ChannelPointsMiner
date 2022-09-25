@@ -1,5 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.api.gql.gql;
 
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
@@ -9,8 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static kong.unirest.core.HttpMethod.GET;
 import static kong.unirest.core.HttpMethod.POST;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,16 +30,18 @@ public abstract class AbstractGQLTest{
 	
 	@Mock
 	private TwitchLogin twitchLogin;
+	@Mock
+	protected IIntegrityProvider integrityProvider;
+	@Mock
+	private IntegrityData integrityData;
 	
 	private UnirestMock unirest;
 	private String currentIntegrityToken;
 	private String currentClientVersion;
 	
 	protected void setupIntegrityOk(){
-		setupTwitchVersionOk();
-		
 		currentIntegrityToken = "integrity-token";
-		expectIntegrityRequest(200, "api/gql/integrity/integrity_ok.json");
+		when(integrityData.getToken()).thenReturn("integrity-token");
 	}
 	
 	protected abstract String getValidRequest();
@@ -58,39 +63,8 @@ public abstract class AbstractGQLTest{
 		expectBodyRequestOk(requestBody, responseBody);
 	}
 	
-	protected void setupTwitchVersionOk(){
-		setupTwitchVersionOk(currentClientVersion);
-	}
-	
-	private void expectIntegrityRequest(int responseStatus, String responseBody){
-		unirest.expect(POST, "https://gql.twitch.tv/integrity")
-				.header("Authorization", "OAuth " + ACCESS_TOKEN)
-				.header("Client-ID", CLIENT_ID)
-				.header("Client-Session-Id", CLIENT_SESSION_ID)
-				.header("Client-Version", currentClientVersion)
-				.header("X-Device-Id", X_DEVICE_ID)
-				.thenReturn(responseBody == null ? null : TestUtils.getAllResourceContent(responseBody))
-				.withStatus(responseStatus);
-	}
-	
-	protected void setupTwitchVersionOk(String twitchVersion){
-		currentClientVersion = twitchVersion;
-		expectTwitchVersionRequest(200, "window.__twilightBuildID=\"%s\";".formatted(currentClientVersion));
-	}
-	
-	protected void expectTwitchVersionRequest(int responseStatus, String responseBody){
-		unirest.expect(GET, "https://www.twitch.tv")
-				.thenReturn(responseBody)
-				.withStatus(responseStatus);
-	}
-	
 	protected void expectBodyRequestOk(String requestBody, String responseBody){
 		expectGqlRequest(requestBody, 200, responseBody);
-	}
-	
-	protected void setupIntegrityOkWithoutTwitchVersionOk(){
-		currentIntegrityToken = "integrity-token";
-		expectIntegrityRequest(200, "api/gql/integrity/integrity_ok.json");
 	}
 	
 	private void expectGqlRequest(String requestBody, int responseStatus, String responseBody){
@@ -106,19 +80,13 @@ public abstract class AbstractGQLTest{
 				.withStatus(responseStatus);
 	}
 	
-	@BeforeEach
-	void setUp(UnirestMock unirest){
-		this.unirest = unirest;
-		
-		currentClientVersion = DEFAULT_CLIENT_VERSION;
-		
-		when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
-		
-		tested = new GQLApi(twitchLogin, unirest.getUnirestInstance(), CLIENT_SESSION_ID, X_DEVICE_ID, DEFAULT_CLIENT_VERSION);
+	protected void expectValidRequestFailedIntegrity(){
+		expectBodyRequestOk(getValidRequest(), "api/gql/gql/error_failedIntegrity.json");
 	}
 	
-	protected void expectValidRequestOk(String responseBody){
-		expectBodyRequestOk(getValidRequest(), responseBody);
+	protected void setupIntegrityException() throws IntegrityException{
+		currentIntegrityToken = "integrity-refresh";
+		when(integrityProvider.getIntegrity()).thenThrow(new IntegrityException(500, "For tests"));
 	}
 	
 	protected void expectValidRequestWithIntegrityOk(int responseStatus, String responseBody){
@@ -126,16 +94,18 @@ public abstract class AbstractGQLTest{
 		expectGqlRequest(getValidRequest(), responseStatus, responseBody);
 	}
 	
-	protected void setupIntegrityWillNeedRefresh(){
-		currentIntegrityToken = "integrity-refresh";
-		expectIntegrityRequest(200, "api/gql/integrity/integrity_needRefresh.json");
-	}
-	
-	protected void setupIntegrityNoToken(){
-		expectIntegrityRequest(200, "api/gql/integrity/integrity_noToken.json");
-	}
-	
-	protected void setupIntegrityStatus(int status){
-		expectIntegrityRequest(status, null);
+	@BeforeEach
+	void setUp(UnirestMock unirest) throws IntegrityException{
+		this.unirest = unirest;
+		
+		currentClientVersion = DEFAULT_CLIENT_VERSION;
+		
+		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
+		lenient().when(integrityProvider.getIntegrity()).thenReturn(integrityData);
+		lenient().when(integrityData.getClientSessionId()).thenReturn(CLIENT_SESSION_ID);
+		lenient().when(integrityData.getXDeviceId()).thenReturn(X_DEVICE_ID);
+		lenient().when(integrityData.getClientVersion()).thenReturn(DEFAULT_CLIENT_VERSION);
+		
+		tested = new GQLApi(twitchLogin, unirest.getUnirestInstance(), integrityProvider);
 	}
 }

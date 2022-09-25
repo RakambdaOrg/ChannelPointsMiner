@@ -2,6 +2,8 @@ package fr.raksrinana.channelpointsminer.miner.factory;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
@@ -21,14 +23,11 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class ApiFactory{
 	@NotNull
-	public static GQLApi createGqlApi(@NotNull TwitchLogin twitchLogin){
-		var clientSessionId = CommonUtils.randomHex(16);
-		var xDeviceId = CommonUtils.randomAlphanumeric(32);
-		
+	public static GQLApi createGqlApi(@NotNull TwitchLogin twitchLogin, @NotNull IIntegrityProvider integrityProvider){
 		var unirest = createUnirestInstance();
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
 		
-		return new GQLApi(twitchLogin, unirest, clientSessionId, xDeviceId, "97087acf-5eca-40dd-9a1b-ee0e771c3d3f");
+		return new GQLApi(twitchLogin, unirest, integrityProvider);
 	}
 	
 	private static UnirestInstance createUnirestInstance(){
@@ -57,5 +56,16 @@ public class ApiFactory{
 	@NotNull
 	public static PassportApi createPassportApi(@NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean use2Fa){
 		return new PassportApi(createUnirestInstance(), username, password, authenticationFolder, use2Fa);
+	}
+	
+	@NotNull
+	public static IIntegrityProvider createHttpIntegrityProvider(@NotNull TwitchLogin twitchLogin){
+		var clientSessionId = CommonUtils.randomHex(16);
+		var xDeviceId = CommonUtils.randomAlphanumeric(32);
+		
+		var unirest = createUnirestInstance();
+		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
+		
+		return new HttpIntegrityProvider(twitchLogin, unirest, clientSessionId, xDeviceId);
 	}
 }

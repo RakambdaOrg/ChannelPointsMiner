@@ -78,7 +78,7 @@ public class SendMinutesWatched implements Runnable{
 							.channelId(streamer.getId())
 							.broadcastId(streamId.get())
 							.player(SITE_PLAYER)
-							.userId(miner.getTwitchLogin().getUserIdAsInt())
+							.userId(miner.getTwitchLogin().getUserIdAsInt(miner.getGqlApi()))
 							.game(streamer.getGame().map(Game::getName).orElse(null))
 							.build())
 					.build();
