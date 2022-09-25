@@ -4,9 +4,13 @@ import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
+import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
 import fr.raksrinana.channelpointsminer.miner.log.UnirestLogger;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
@@ -59,13 +63,27 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static IIntegrityProvider createHttpIntegrityProvider(@NotNull TwitchLogin twitchLogin){
+	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider){
+		return createHttpIntegrityProvider(twitchLogin, versionProvider);
+	}
+	
+	@NotNull
+	private static IIntegrityProvider createHttpIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider){
 		var clientSessionId = CommonUtils.randomHex(16);
 		var xDeviceId = CommonUtils.randomAlphanumeric(32);
 		
 		var unirest = createUnirestInstance();
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
 		
-		return new HttpIntegrityProvider(twitchLogin, unirest, clientSessionId, xDeviceId);
+		return new HttpIntegrityProvider(twitchLogin, unirest, versionProvider, clientSessionId, xDeviceId);
+	}
+	
+	@NotNull
+	public static IVersionProvider createVersionProvider(@NotNull VersionProvider versionProvider){
+		var unirest = createUnirestInstance();
+		return switch(versionProvider){
+			case WEBPAGE -> new WebpageVersionProvider(unirest);
+			case MANIFEST -> new ManifestVersionProvider(unirest);
+		};
 	}
 }

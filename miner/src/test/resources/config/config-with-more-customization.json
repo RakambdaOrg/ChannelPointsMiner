@@ -23,15 +23,17 @@
       },
       "reloadEvery": 15,
       "analytics": {
-        "enabled" : true,
-        "recordChatsPredictions" : true,
-        "database" : {
-          "jdbcUrl" : "jdbcUrl",
-          "username" : "user",
-          "password" : "pass",
-          "maxPoolSize" : 15
+        "enabled": true,
+        "recordChatsPredictions": true,
+        "database": {
+          "jdbcUrl": "jdbcUrl",
+          "username": "user",
+          "password": "pass",
+          "maxPoolSize": 15
         }
-      }
+      },
+      "chatMode": "IRC",
+      "versionProvider": "MANIFEST"
     }
   ]
 }

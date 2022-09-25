@@ -188,6 +188,13 @@ NOTE: Only <<streamer_settings,streamer settings>> are reloaded, not the <<globa
 * WS: Using WebSocket method (used on Twitch website).
 * IRC: Using IRC protocol.
 |WS
+
+|versionProvider
+|Define what method is used to get Twitch version.
+
+* WEBPAGE: Obtained from Twitch webpage.
+* MANIFEST: Obtained from Twitch manifest.
+|WEBPAGE
 |===
 
 === Streamer directories [[streamer_directories]]

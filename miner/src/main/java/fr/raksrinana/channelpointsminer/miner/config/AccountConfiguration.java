@@ -73,4 +73,9 @@ public class AccountConfiguration{
 	@Comment(value = "Method used to join chat")
 	@Builder.Default
 	private ChatMode chatMode = ChatMode.WS;
+	@JsonProperty("versionProvider")
+	@NotNull
+	@Comment(value = "Method used to get twitch version")
+	@Builder.Default
+	private VersionProvider versionProvider = VersionProvider.WEBPAGE;
 }

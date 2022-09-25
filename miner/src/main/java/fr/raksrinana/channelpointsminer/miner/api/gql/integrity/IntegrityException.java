@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.gql.integrity;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -7,6 +8,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class IntegrityException extends Exception{
 	public IntegrityException(int statusCode, @Nullable String description){
-		super("Failed to get integrity token. Status code is " + statusCode + " : " + description);
+		this("Failed to get integrity token. Status code is " + statusCode + " : " + description);
+	}
+	
+	public IntegrityException(@NotNull String description){
+		super(description);
 	}
 }

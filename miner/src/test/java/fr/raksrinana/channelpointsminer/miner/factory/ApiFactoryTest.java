@@ -4,9 +4,13 @@ import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
+import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,6 +27,8 @@ class ApiFactoryTest{
 	private TwitchLogin twitchLogin;
 	@Mock
 	private IIntegrityProvider integrityProvider;
+	@Mock
+	private IVersionProvider versionProvider;
 	@Mock
 	private URL url;
 	
@@ -48,6 +54,16 @@ class ApiFactoryTest{
 	
 	@Test
 	void createHttpIntegrityProvider(){
-		assertThat(ApiFactory.createHttpIntegrityProvider(twitchLogin)).isNotNull().isInstanceOf(HttpIntegrityProvider.class);
+		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider)).isNotNull().isInstanceOf(HttpIntegrityProvider.class);
+	}
+	
+	@Test
+	void createWebpageVersionProvider(){
+		assertThat(ApiFactory.createVersionProvider(VersionProvider.WEBPAGE)).isNotNull().isInstanceOf(WebpageVersionProvider.class);
+	}
+	
+	@Test
+	void createManifestVersionProvider(){
+		assertThat(ApiFactory.createVersionProvider(VersionProvider.MANIFEST)).isNotNull().isInstanceOf(ManifestVersionProvider.class);
 	}
 }
