@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;

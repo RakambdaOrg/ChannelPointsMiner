@@ -1,8 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.reportmenuitem.ReportMenuItemData;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.event.impl.StreamerUnknownEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;

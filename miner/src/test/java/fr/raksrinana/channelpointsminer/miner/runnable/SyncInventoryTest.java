@@ -1,14 +1,14 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.inventory.InventoryData;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.DropCampaign;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Inventory;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDropSelfEdge;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDropSelfEdge;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimEvent;
 import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;

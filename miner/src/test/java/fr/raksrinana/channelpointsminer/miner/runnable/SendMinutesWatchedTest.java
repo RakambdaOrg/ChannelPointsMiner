@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Game;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;

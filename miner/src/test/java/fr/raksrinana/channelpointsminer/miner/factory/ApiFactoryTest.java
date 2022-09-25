@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.factory;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;

@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.ws;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ActiveMultipliersUpdated;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimClaimed;

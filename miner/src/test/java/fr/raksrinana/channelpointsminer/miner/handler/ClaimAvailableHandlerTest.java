@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.handler;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimavailable.ClaimAvailableData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Claim;

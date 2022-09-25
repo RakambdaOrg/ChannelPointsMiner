@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.log;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Webhook;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsspent.PointsSpentData;

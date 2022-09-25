@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.handler;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.communitymomentcalloutclaim.CommunityMomentCalloutClaimData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.communitymomentcalloutclaim.CommunityMomentCalloutClaimData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.raksrinana.channelpointsminer.miner.event.impl.ClaimMomentEvent;

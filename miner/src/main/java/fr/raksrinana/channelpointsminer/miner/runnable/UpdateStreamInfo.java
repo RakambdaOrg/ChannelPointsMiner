@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.chatroombanstatus.ChatRoomBanStatusData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.chatroombanstatus.ChatRoomBanStatusData;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.log.LogContext;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;

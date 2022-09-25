@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.miner;
 
 import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.raksrinana.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
