@@ -1,7 +1,7 @@
 [versions]
 slf4j-version = "2.0.3"
 log4j2-version = "2.19.0"
-log4j2-slf4j-version = "2.18.0"
+log4j2-slf4j-version = "2.19.0"
 unirest-version = "4.0.0-RC4"
 picocli-version = "4.6.3"
 jackson-version = "2.13.4"
@@ -33,7 +33,7 @@ springboot-dependencies-version = "1.0.14.RELEASE"
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2-version" }
-log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j18-impl", version.ref = "log4j2-slf4j-version" }
+log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j2-slf4j-version" }
 unirest-java = { group = "com.konghq", name = "unirest-java-core", version.ref = "unirest-version" }
 unirest-objectmapper-jackson = { group = "com.konghq", name = "unirest-objectmapper-jackson", version.ref = "unirest-version" }
 unirestMocks = { group = "com.konghq", name = "unirest-mocks", version.ref = "unirest-version" }
