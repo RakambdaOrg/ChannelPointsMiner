@@ -156,7 +156,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			var listenMessages = analyticsConfiguration.isEnabled() && analyticsConfiguration.isRecordChatsPredictions();
 			
 			twitchLogin = passportApi.login();
-			var integrityProvider = ApiFactory.createHttpIntegrityProvider(twitchLogin);
+			var versionProvider = ApiFactory.createVersionProvider(accountConfiguration.getVersionProvider());
+			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider);
 			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
 			twitchApi = ApiFactory.createTwitchApi(twitchLogin);
 			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);

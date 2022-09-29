@@ -4,10 +4,12 @@ import fr.raksrinana.channelpointsminer.miner.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.miner.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.miner.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.AnalyticsConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.ChatMode;
 import fr.raksrinana.channelpointsminer.miner.config.Configuration;
 import fr.raksrinana.channelpointsminer.miner.config.DatabaseConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.DiscordConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.StreamerDirectory;
+import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
 import org.assertj.core.api.Assertions;
@@ -113,6 +115,8 @@ class ConfigurationFactoryTest{
 										.maxPoolSize(15)
 										.build())
 								.build())
+						.chatMode(ChatMode.IRC)
+						.versionProvider(VersionProvider.MANIFEST)
 						.build()))
 				.build();
 		

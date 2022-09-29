@@ -1,0 +1,22 @@
+{
+  "channels": [
+    {
+      "id": "channel-id",
+      "created": 1671670185123,
+      "updated": 1671670185456,
+      "primary": true,
+      "active": true,
+      "releases": [
+        {
+          "buildId": "build-id",
+          "created": 1671670185789,
+          "files": [
+            "file1",
+            "file2"
+          ],
+          "stage": "live"
+        }
+      ]
+    }
+  ]
+}
