@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.lang3)
     implementation(libs.websocket)
     implementation(libs.kittehIrc)
+    implementation(libs.selenide)
 
     implementation(libs.hikaricp)
     implementation(libs.mariadb)

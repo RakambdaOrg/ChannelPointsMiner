@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.factory;
 import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.browser.BrowserIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
@@ -10,6 +11,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.version.webpage.WebpageVer
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
+import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
 import fr.raksrinana.channelpointsminer.miner.log.UnirestLogger;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
@@ -19,8 +21,10 @@ import kong.unirest.core.UnirestInstance;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Objects;
 import static kong.unirest.core.HeaderNames.USER_AGENT;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -63,8 +67,8 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider){
-		return createHttpIntegrityProvider(twitchLogin, versionProvider);
+	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @Nullable BrowserConfiguration configuration){
+		return Objects.isNull(configuration) ? createHttpIntegrityProvider(twitchLogin, versionProvider) : createBrowserIntegrityProvider(twitchLogin, configuration);
 	}
 	
 	@NotNull
@@ -76,6 +80,11 @@ public class ApiFactory{
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
 		
 		return new HttpIntegrityProvider(twitchLogin, unirest, versionProvider, clientSessionId, xDeviceId);
+	}
+	
+	@NotNull
+	private static IIntegrityProvider createBrowserIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull BrowserConfiguration configuration){
+		return new BrowserIntegrityProvider(twitchLogin, configuration);
 	}
 	
 	@NotNull

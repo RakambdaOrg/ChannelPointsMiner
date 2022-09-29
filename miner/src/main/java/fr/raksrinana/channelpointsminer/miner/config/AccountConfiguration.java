@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -78,4 +79,8 @@ public class AccountConfiguration{
 	@Comment(value = "Method used to get twitch version")
 	@Builder.Default
 	private VersionProvider versionProvider = VersionProvider.WEBPAGE;
+	@JsonProperty("browser")
+	@Nullable
+	@Comment(value = "Selenium driver configuration")
+	private BrowserConfiguration browser;
 }

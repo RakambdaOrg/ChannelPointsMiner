@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.factory;
 import fr.raksrinana.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.browser.BrowserIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
@@ -10,6 +11,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.version.webpage.WebpageVer
 import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
+import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
@@ -29,6 +31,8 @@ class ApiFactoryTest{
 	private IIntegrityProvider integrityProvider;
 	@Mock
 	private IVersionProvider versionProvider;
+	@Mock
+	private BrowserConfiguration browserConfiguration;
 	@Mock
 	private URL url;
 	
@@ -54,7 +58,12 @@ class ApiFactoryTest{
 	
 	@Test
 	void createHttpIntegrityProvider(){
-		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider)).isNotNull().isInstanceOf(HttpIntegrityProvider.class);
+		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, null)).isNotNull().isInstanceOf(HttpIntegrityProvider.class);
+	}
+	
+	@Test
+	void createBrowserIntegrityProvider(){
+		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, browserConfiguration)).isNotNull().isInstanceOf(BrowserIntegrityProvider.class);
 	}
 	
 	@Test
