@@ -4,7 +4,7 @@ import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
-import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.IPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
@@ -88,7 +88,7 @@ class MinerTest{
 	@Mock
 	private AnalyticsConfiguration analyticsConfiguration;
 	@Mock
-	private PassportApi passportApi;
+	private IPassportApi passportApi;
 	@Mock
 	private TwitchPubSubWebSocketPool webSocketPool;
 	@Mock

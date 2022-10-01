@@ -1,7 +1,7 @@
-package fr.raksrinana.channelpointsminer.miner.api.passport.data;
+package fr.raksrinana.channelpointsminer.miner.api.passport.http.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.http.HttpPassportApi;
 import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class LoginRequest{
 	@JsonProperty("client_id")
 	@Builder.Default
-	private String clientId = PassportApi.CLIENT_ID;
+	private String clientId = HttpPassportApi.CLIENT_ID;
 	@Builder.Default
 	@JsonProperty("undelete_user")
 	private boolean undeleteUser = false;

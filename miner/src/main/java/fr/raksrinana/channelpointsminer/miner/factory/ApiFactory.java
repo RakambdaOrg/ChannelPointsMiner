@@ -8,8 +8,10 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegri
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
-import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.IPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.api.passport.browser.BrowserPassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.http.HttpPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
@@ -62,13 +64,13 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static PassportApi createPassportApi(@NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean use2Fa){
-		return new PassportApi(createUnirestInstance(), username, password, authenticationFolder, use2Fa);
+	public static IPassportApi createPassportApi(@NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean use2Fa, @Nullable BrowserConfiguration configuration){
+		return Objects.isNull(configuration) ? new HttpPassportApi(createUnirestInstance(), username, password, authenticationFolder, use2Fa) : new BrowserPassportApi(configuration, username, password);
 	}
 	
 	@NotNull
 	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @Nullable BrowserConfiguration configuration){
-		return Objects.isNull(configuration) ? createHttpIntegrityProvider(twitchLogin, versionProvider) : createBrowserIntegrityProvider(twitchLogin, configuration);
+		return Objects.isNull(configuration) ? createHttpIntegrityProvider(twitchLogin, versionProvider) : createBrowserIntegrityProvider(configuration);
 	}
 	
 	@NotNull
@@ -83,8 +85,8 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	private static IIntegrityProvider createBrowserIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull BrowserConfiguration configuration){
-		return new BrowserIntegrityProvider(twitchLogin, configuration);
+	private static IIntegrityProvider createBrowserIntegrityProvider(@NotNull BrowserConfiguration configuration){
+		return new BrowserIntegrityProvider(configuration);
 	}
 	
 	@NotNull

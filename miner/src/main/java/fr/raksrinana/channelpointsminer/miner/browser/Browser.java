@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.api.gql.integrity.browser;
+package fr.raksrinana.channelpointsminer.miner.browser;
 
 import com.codeborne.selenide.SelenideConfig;
 import com.codeborne.selenide.SelenideDriver;
@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -19,7 +18,6 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +31,7 @@ public class Browser implements AutoCloseable{
 	private SelenideDriver selenideDriver;
 	
 	@NotNull
-	public BrowserController setup(Collection<Cookie> cookies){
+	public BrowserController setup(){
 		log.info("Starting browser...");
 		
 		var config = setupSelenideConfig(new SelenideConfig());
@@ -45,8 +43,6 @@ public class Browser implements AutoCloseable{
 		driver.manage().window().maximize();
 		
 		//Remove navigator.webdriver Flag using JavaScript
-		selenideDriver.executeJavaScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
-		
 		if(!(driver instanceof HasDevTools devToolsDriver)){
 			throw new IllegalStateException("Browser must have dev tools support");
 		}
@@ -57,7 +53,7 @@ public class Browser implements AutoCloseable{
 					get: () => undefined
 				})""")));
 		
-		return new BrowserController(selenideDriver, cookies);
+		return new BrowserController(selenideDriver);
 	}
 	
 	@NotNull
@@ -108,6 +104,7 @@ public class Browser implements AutoCloseable{
 		Optional.ofNullable(configuration.getUserAgent()).map("user-agent=\"%s\""::formatted).ifPresent(options::addArguments);
 		Optional.ofNullable(configuration.getUserDir()).map(ud -> ud.replace(" ", "\\ ")).map("user-data-dir=%s"::formatted).ifPresent(options::addArguments);
 		options.addArguments("--disable-blink-features=AutomationControlled");
+		options.addArguments("--no-sandbox");
 		options.addArguments("disable-infobars");
 		options.addArguments("disable-popup-blocking");
 		options.setExperimentalOption("excludeSwitches", Set.of("enable-automation"));
@@ -117,6 +114,9 @@ public class Browser implements AutoCloseable{
 	
 	@NotNull
 	private FirefoxOptions getDefaultFirefoxOptions(@NotNull BrowserConfiguration configuration){
+		if(true){
+			throw new IllegalStateException("Please use chrome driver (or remote chrome)");
+		}
 		var options = new FirefoxOptions();
 		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary)));
 		options.setHeadless(configuration.isHeadless());

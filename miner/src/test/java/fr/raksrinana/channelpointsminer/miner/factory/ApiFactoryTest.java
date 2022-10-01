@@ -8,8 +8,9 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.HttpIntegri
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
-import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.api.passport.browser.BrowserPassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.http.HttpPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
@@ -52,8 +53,13 @@ class ApiFactoryTest{
 	}
 	
 	@Test
-	void createPassportApi(){
-		assertThat(ApiFactory.createPassportApi("user", "pass", Paths.get("."), false)).isNotNull().isInstanceOf(PassportApi.class);
+	void createHttpPassportApi(){
+		assertThat(ApiFactory.createPassportApi("user", "pass", Paths.get("."), false, null)).isNotNull().isInstanceOf(HttpPassportApi.class);
+	}
+	
+	@Test
+	void createBrowserPassportApi(){
+		assertThat(ApiFactory.createPassportApi("user", "pass", Paths.get("."), false, browserConfiguration)).isNotNull().isInstanceOf(BrowserPassportApi.class);
 	}
 	
 	@Test

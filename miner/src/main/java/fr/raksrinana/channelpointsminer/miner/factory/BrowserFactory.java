@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.factory;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.browser.Browser;
+import fr.raksrinana.channelpointsminer.miner.browser.Browser;
 import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;

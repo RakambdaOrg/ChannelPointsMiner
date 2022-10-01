@@ -1,9 +1,10 @@
-package fr.raksrinana.channelpointsminer.miner.api.passport;
+package fr.raksrinana.channelpointsminer.miner.api.passport.http;
 
-import fr.raksrinana.channelpointsminer.miner.api.passport.data.LoginResponse;
+import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
+import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginResponse;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
@@ -48,7 +49,7 @@ class PassportApiTest{
 	@TempDir
 	private Path authFolder;
 	
-	private PassportApi tested;
+	private HttpPassportApi tested;
 	
 	private Path authFile;
 	
@@ -57,7 +58,7 @@ class PassportApiTest{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			
-			tested = new PassportApi(unirest.getUnirestInstance(), USERNAME, PASSWORD, authFolder, true);
+			tested = new HttpPassportApi(unirest.getUnirestInstance(), USERNAME, PASSWORD, authFolder, true);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
@@ -141,7 +142,7 @@ class PassportApiTest{
 	
 	@BeforeEach
 	void setUp(UnirestMock unirestMock){
-		tested = new PassportApi(unirestMock.getUnirestInstance(), USERNAME, PASSWORD, authFolder, false);
+		tested = new HttpPassportApi(unirestMock.getUnirestInstance(), USERNAME, PASSWORD, authFolder, false);
 		
 		authFile = authFolder.resolve(USERNAME + ".json");
 	}
