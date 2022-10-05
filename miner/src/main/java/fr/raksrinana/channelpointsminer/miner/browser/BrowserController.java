@@ -3,14 +3,11 @@ package fr.raksrinana.channelpointsminer.miner.browser;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
-import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityData;
-import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import java.util.Optional;
 import static org.openqa.selenium.By.id;
 
 @RequiredArgsConstructor
@@ -62,16 +59,6 @@ public class BrowserController{
 			driver.$("input[data-a-target=tw-checkbox]").scrollTo().click();
 			driver.$("button[screen=two_factor,target=submit_button]").scrollTo().click();
 		}
-	}
-	
-	@NotNull
-	public Optional<TwitchLogin> extractPassportInfo(){
-		return Optional.empty(); //TODO
-	}
-	
-	@NotNull
-	public Optional<IntegrityData> extractGQLIntegrity(){
-		return Optional.empty(); //TODO
 	}
 	
 	private boolean isLoggedIn(){

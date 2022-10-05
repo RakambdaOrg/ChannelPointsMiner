@@ -3,6 +3,8 @@ package fr.raksrinana.channelpointsminer.miner.browser;
 import com.codeborne.selenide.SelenideConfig;
 import com.codeborne.selenide.SelenideDriver;
 import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -11,31 +13,45 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.Command;
+import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
+import org.openqa.selenium.devtools.v104.network.Network;
+import org.openqa.selenium.devtools.v104.network.model.RequestId;
+import org.openqa.selenium.devtools.v104.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v104.network.model.ResponseReceived;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Log4j2
 @RequiredArgsConstructor
 public class Browser implements AutoCloseable{
 	private final BrowserConfiguration browserConfiguration;
 	
+	@Getter
 	private WebDriver driver;
+	private DevTools devTools;
 	private SelenideDriver selenideDriver;
+	@Getter
+	private Collection<RequestWillBeSent> sentRequests = new ConcurrentLinkedQueue<>();
+	@Getter
+	private Collection<ResponseReceived> receivedResponses = new ConcurrentLinkedQueue<>();
 	
 	@NotNull
 	public BrowserController setup(){
 		log.info("Starting browser...");
 		
 		var config = setupSelenideConfig(new SelenideConfig());
-		driver = getDriver(browserConfiguration);
+		driver = buildDriver(browserConfiguration);
 		driver = new Augmenter().augment(driver);
 		
 		selenideDriver = new SelenideDriver(config, driver, null);
@@ -46,14 +62,42 @@ public class Browser implements AutoCloseable{
 		if(!(driver instanceof HasDevTools devToolsDriver)){
 			throw new IllegalStateException("Browser must have dev tools support");
 		}
-		var devTools = devToolsDriver.getDevTools();
+		devTools = devToolsDriver.maybeGetDevTools().orElseThrow(() -> new IllegalStateException("Failed to get devTools"));
 		devTools.createSession();
+		setupHideJsElements(devTools);
+		listenNetwork(devTools);
+		return new BrowserController(selenideDriver);
+	}
+	
+	private void setupHideJsElements(@NotNull DevTools devTools){
 		devTools.send(new Command<>("Page.addScriptToEvaluateOnNewDocument", Map.of("source", """
 				Object.defineProperty(navigator, 'webdriver', {
 					get: () => undefined
-				})""")));
-		
-		return new BrowserController(selenideDriver);
+				})"""
+		)));
+		devTools.send(new Command<>("Page.addScriptToEvaluateOnNewDocument", Map.of("source", """
+				let objectToInspect = window;
+				let result = [];
+				while(objectToInspect !== null)
+				{
+					result = result.concat(Object.getOwnPropertyNames(objectToInspect));
+				    objectToInspect = Object.getPrototypeOf(objectToInspect);
+				}
+				result.forEach(p => p.match(/.+_.+_(Array|Promise|Symbol)/ig)
+									&& delete window[p]
+									&& console.log('removed', p));"""
+		)));
+	}
+	
+	private void listenNetwork(@NotNull DevTools devTools){
+		devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		devTools.addListener(Network.requestWillBeSent(), sentRequests::add);
+		devTools.addListener(Network.responseReceived(), receivedResponses::add);
+	}
+	
+	@NotNull
+	public String getRequestBody(@NotNull RequestId requestId){
+		return devTools.send(Network.getResponseBody(requestId)).getBody();
 	}
 	
 	@NotNull
@@ -65,7 +109,8 @@ public class Browser implements AutoCloseable{
 		return config;
 	}
 	
-	private WebDriver getDriver(@NotNull BrowserConfiguration config){
+	@NotNull
+	private WebDriver buildDriver(@NotNull BrowserConfiguration config){
 		return switch(config.getDriver()){
 			case CHROME -> getChromeDriver(config);
 			case FIREFOX -> getFirefoxDriver(config);
@@ -114,14 +159,17 @@ public class Browser implements AutoCloseable{
 	
 	@NotNull
 	private FirefoxOptions getDefaultFirefoxOptions(@NotNull BrowserConfiguration configuration){
-		if(true){
-			throw new IllegalStateException("Please use chrome driver (or remote chrome)");
-		}
+		var profile = new FirefoxProfile();
+		profile.setPreference("dom.webdriver.enabled", false);
+		profile.setPreference("useAutomationExtension", false);
+		Optional.ofNullable(configuration.getUserDir()).ifPresent(dir -> profile.setPreference("profile", dir));
+		
 		var options = new FirefoxOptions();
+		options.setProfile(profile);
 		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary)));
 		options.setHeadless(configuration.isHeadless());
 		Optional.ofNullable(configuration.getUserAgent()).ifPresent(ua -> options.addPreference("general.useragent.override", ua));
-		Optional.ofNullable(configuration.getUserDir()).ifPresent(ud -> options.addArguments("-profile", ud));
+		// Optional.ofNullable(configuration.getUserDir()).ifPresent(ud -> options.addArguments("-profile", ud));
 		return options;
 	}
 	
@@ -130,6 +178,7 @@ public class Browser implements AutoCloseable{
 			log.info("Closing webdriver");
 			if(driver != null){
 				driver.quit();
+				CommonUtils.randomSleep(2000, 1);
 			}
 			log.info("Closed webdriver");
 		}

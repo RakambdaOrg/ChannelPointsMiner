@@ -14,4 +14,8 @@ public class IntegrityException extends Exception{
 	public IntegrityException(@NotNull String description){
 		super(description);
 	}
+	
+	public IntegrityException(String message, Throwable cause){
+		super(message, cause);
+	}
 }
