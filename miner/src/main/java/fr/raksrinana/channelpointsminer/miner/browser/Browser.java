@@ -42,9 +42,9 @@ public class Browser implements AutoCloseable{
 	private DevTools devTools;
 	private SelenideDriver selenideDriver;
 	@Getter
-	private Collection<RequestWillBeSent> sentRequests = new ConcurrentLinkedQueue<>();
+	private final Collection<RequestWillBeSent> sentRequests = new ConcurrentLinkedQueue<>();
 	@Getter
-	private Collection<ResponseReceived> receivedResponses = new ConcurrentLinkedQueue<>();
+	private final Collection<ResponseReceived> receivedResponses = new ConcurrentLinkedQueue<>();
 	
 	@NotNull
 	public BrowserController setup(){
@@ -54,18 +54,18 @@ public class Browser implements AutoCloseable{
 		driver = buildDriver(browserConfiguration);
 		driver = new Augmenter().augment(driver);
 		
-		selenideDriver = new SelenideDriver(config, driver, null);
-		
-		driver.manage().window().maximize();
-		
-		//Remove navigator.webdriver Flag using JavaScript
 		if(!(driver instanceof HasDevTools devToolsDriver)){
 			throw new IllegalStateException("Browser must have dev tools support");
 		}
+		
+		driver.manage().window().maximize();
+		
 		devTools = devToolsDriver.maybeGetDevTools().orElseThrow(() -> new IllegalStateException("Failed to get devTools"));
 		devTools.createSession();
 		setupHideJsElements(devTools);
 		listenNetwork(devTools);
+		
+		selenideDriver = new SelenideDriver(config, driver, null);
 		return new BrowserController(selenideDriver);
 	}
 	
@@ -121,12 +121,16 @@ public class Browser implements AutoCloseable{
 	
 	@NotNull
 	private ChromeDriver getChromeDriver(@NotNull BrowserConfiguration configuration){
-		return new ChromeDriver(getDefaultChromeOptions(configuration));
+		var options = getDefaultChromeOptions(configuration);
+		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary).toFile()));
+		return new ChromeDriver(options);
 	}
 	
 	@NotNull
 	private FirefoxDriver getFirefoxDriver(@NotNull BrowserConfiguration configuration){
-		return new FirefoxDriver(getDefaultFirefoxOptions(configuration));
+		var options = getDefaultFirefoxOptions(configuration);
+		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary)));
+		return new FirefoxDriver(options);
 	}
 	
 	@SneakyThrows
@@ -144,14 +148,19 @@ public class Browser implements AutoCloseable{
 	@NotNull
 	private ChromeOptions getDefaultChromeOptions(@NotNull BrowserConfiguration configuration){
 		var options = new ChromeOptions();
-		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary).toFile()));
 		options.setHeadless(configuration.isHeadless());
 		Optional.ofNullable(configuration.getUserAgent()).map("user-agent=\"%s\""::formatted).ifPresent(options::addArguments);
 		Optional.ofNullable(configuration.getUserDir()).map(ud -> ud.replace(" ", "\\ ")).map("user-data-dir=%s"::formatted).ifPresent(options::addArguments);
+		
 		options.addArguments("--disable-blink-features=AutomationControlled");
 		options.addArguments("--no-sandbox");
+		if(configuration.isDisableShm()){
+			options.addArguments("--disable-dev-shm-usage");
+		}
+		
 		options.addArguments("disable-infobars");
 		options.addArguments("disable-popup-blocking");
+		
 		options.setExperimentalOption("excludeSwitches", Set.of("enable-automation"));
 		options.setExperimentalOption("useAutomationExtension", false);
 		return options;
@@ -166,7 +175,6 @@ public class Browser implements AutoCloseable{
 		
 		var options = new FirefoxOptions();
 		options.setProfile(profile);
-		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary)));
 		options.setHeadless(configuration.isHeadless());
 		Optional.ofNullable(configuration.getUserAgent()).ifPresent(ua -> options.addPreference("general.useragent.override", ua));
 		// Optional.ofNullable(configuration.getUserDir()).ifPresent(ud -> options.addArguments("-profile", ud));
