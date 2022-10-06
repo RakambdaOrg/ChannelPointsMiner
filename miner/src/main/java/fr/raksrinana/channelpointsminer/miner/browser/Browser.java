@@ -184,6 +184,10 @@ public class Browser implements AutoCloseable{
 	public void close(){
 		try{
 			log.info("Closing webdriver");
+			if(devTools != null){
+				devTools.disconnectSession();
+				log.debug("Closed dev tools");
+			}
 			if(driver != null){
 				driver.quit();
 				CommonUtils.randomSleep(2000, 1);
@@ -195,6 +199,7 @@ public class Browser implements AutoCloseable{
 		}
 		finally{
 			selenideDriver = null;
+			devTools = null;
 			driver = null;
 		}
 	}
