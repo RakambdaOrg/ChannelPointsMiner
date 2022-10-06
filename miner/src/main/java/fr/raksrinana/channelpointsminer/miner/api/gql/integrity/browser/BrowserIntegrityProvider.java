@@ -54,7 +54,7 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 	}
 	
 	@NotNull
-	public IntegrityData extractGQLIntegrity(@NotNull Browser browser) throws IntegrityException{
+	private IntegrityData extractGQLIntegrity(@NotNull Browser browser) throws IntegrityException{
 		var integrityResponse = browser.getReceivedResponses().stream()
 				.filter(r -> Objects.equals(r.getResponse().getUrl(), INTEGRITY_URL))
 				.max(Comparator.comparing(r -> r.getTimestamp().toString()))

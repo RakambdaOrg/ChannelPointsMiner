@@ -33,7 +33,12 @@
         }
       },
       "chatMode": "IRC",
-      "versionProvider": "MANIFEST"
+      "versionProvider": "MANIFEST",
+      "browser": {
+        "driver": "REMOTE_CHROME",
+        "remoteHost": "http://selenium-hub:4444/wd/hub",
+        "userDir": "/home/seluser/profiles/channelpointsminer"
+      }
     }
   ]
 }

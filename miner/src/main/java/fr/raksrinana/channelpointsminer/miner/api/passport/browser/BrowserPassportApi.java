@@ -30,7 +30,7 @@ public class BrowserPassportApi implements IPassportApi{
 	}
 	
 	@NotNull
-	public TwitchLogin extractPassportInfo(WebDriver.Options manage) throws LoginException{
+	private TwitchLogin extractPassportInfo(WebDriver.Options manage) throws LoginException{
 		var username = Optional.ofNullable(manage.getCookieNamed("login")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no username found"));
 		var authToken = Optional.ofNullable(manage.getCookieNamed("auth-token")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no auth-token found"));
 		
