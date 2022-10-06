@@ -65,7 +65,7 @@ public class ApiFactory{
 	
 	@NotNull
 	public static IPassportApi createPassportApi(@NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean use2Fa, @Nullable BrowserConfiguration configuration){
-		return Objects.isNull(configuration) ? new HttpPassportApi(createUnirestInstance(), username, password, authenticationFolder, use2Fa) : new BrowserPassportApi(configuration, username, password);
+		return Objects.isNull(configuration) ? new HttpPassportApi(createUnirestInstance(), username, password, authenticationFolder, use2Fa) : new BrowserPassportApi(configuration);
 	}
 	
 	@NotNull

@@ -17,8 +17,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BrowserPassportApi implements IPassportApi{
 	private final BrowserConfiguration browserConfiguration;
-	private final String username;
-	private final String password;
 	
 	@Override
 	@NotNull
@@ -26,7 +24,7 @@ public class BrowserPassportApi implements IPassportApi{
 		log.info("Logging in");
 		try(var browser = BrowserFactory.createBrowser(browserConfiguration)){
 			var controller = browser.setup();
-			controller.login(username, password);
+			controller.login();
 			return extractPassportInfo(browser.getDriver().manage());
 		}
 	}

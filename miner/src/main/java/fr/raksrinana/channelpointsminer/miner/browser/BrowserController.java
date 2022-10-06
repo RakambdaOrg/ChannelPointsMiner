@@ -4,11 +4,9 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
-import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import static org.openqa.selenium.By.id;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -33,7 +31,7 @@ public class BrowserController{
 		}
 	}
 	
-	public void login(@NotNull String username, @NotNull String password) throws LoginException{
+	public void login() throws LoginException{
 		log.info("Logging in");
 		openMainPage();
 		
@@ -42,22 +40,19 @@ public class BrowserController{
 			return;
 		}
 		
-		getLoginButton().click();
-		driver.$(id("login-username")).scrollTo().setValue(username);
-		driver.$(id("password-input")).scrollTo().setValue(password);
-		driver.$("button[data-a-target=passport-login-button]").scrollTo().click();
+		askUserLogin();
 		
-		var serverErrorAlert = driver.$(".server-message-alert");
-		if(serverErrorAlert.is(Condition.visible)){
-			throw new LoginException("Failed to login: " + serverErrorAlert.text());
+		if(!isLoggedIn()){
+			throw new LoginException("Not logged in");
 		}
-		
-		var twoFactorInput = driver.$("input[data-a-target=tw-input]");
-		if(twoFactorInput.is(Condition.visible)){
-			twoFactorInput.scrollTo().setValue(CommonUtils.getUserInput("Enter 2FA token for user " + username + ":"));
-			
-			driver.$("input[data-a-target=tw-checkbox]").scrollTo().click();
-			driver.$("button[screen=two_factor,target=submit_button]").scrollTo().click();
+	}
+	
+	private void askUserLogin(){
+		log.error("Not logged in, giving you 4 minutes to copy your cookies into the browser or log in, will resume after");
+		try{
+			Thread.sleep(4 * 60 * 1000);
+		}
+		catch(InterruptedException ignored){
 		}
 	}
 	
