@@ -4,6 +4,8 @@ import fr.raksrinana.channelpointsminer.miner.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.miner.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.miner.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.AnalyticsConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.BrowserDriver;
 import fr.raksrinana.channelpointsminer.miner.config.ChatMode;
 import fr.raksrinana.channelpointsminer.miner.config.Configuration;
 import fr.raksrinana.channelpointsminer.miner.config.DatabaseConfiguration;
@@ -117,6 +119,11 @@ class ConfigurationFactoryTest{
 								.build())
 						.chatMode(ChatMode.IRC)
 						.versionProvider(VersionProvider.MANIFEST)
+						.browser(BrowserConfiguration.builder()
+								.driver(BrowserDriver.REMOTE_CHROME)
+								.remoteHost("http://selenium-hub:4444/wd/hub")
+								.userDir("/home/seluser/profiles/channelpointsminer")
+								.build())
 						.build()))
 				.build();
 		
