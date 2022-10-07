@@ -21,15 +21,15 @@ public class BrowserController{
 	private final SelenideDriver driver;
 	
 	public void ensureLoggedIn(){
-		openMainPage();
+		openTurboPage();
 		
 		if(!isLoggedIn()){
 			throw new RuntimeException("Failed to restore cookies");
 		}
 	}
 	
-	private void openMainPage(){
-		driver.open("https://www.twitch.tv/");
+	private void openTurboPage(){
+		driver.open("https://www.twitch.tv/turbo");
 		
 		var acceptCookiesButton = driver.$("button[data-a-target=consent-banner-accept]");
 		if(acceptCookiesButton.is(Condition.visible)){
@@ -39,7 +39,7 @@ public class BrowserController{
 	
 	public void login() throws LoginException, IOException{
 		log.info("Logging in");
-		openMainPage();
+		openTurboPage();
 		
 		if(isLoggedIn()){
 			log.info("Already logged in");
