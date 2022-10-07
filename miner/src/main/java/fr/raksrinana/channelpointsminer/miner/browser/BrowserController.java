@@ -20,11 +20,11 @@ public class BrowserController{
 	@NotNull
 	private final SelenideDriver driver;
 	
-	public void ensureLoggedIn(){
+	public void ensureLoggedIn() throws LoginException{
 		openTurboPage();
 		
 		if(!isLoggedIn()){
-			throw new RuntimeException("Failed to restore cookies");
+			throw new LoginException("Not logged in");
 		}
 	}
 	

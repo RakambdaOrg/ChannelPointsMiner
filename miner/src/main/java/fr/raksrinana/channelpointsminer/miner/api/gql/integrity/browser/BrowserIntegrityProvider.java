@@ -5,6 +5,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvid
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
+import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.miner.browser.Browser;
 import fr.raksrinana.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.factory.BrowserFactory;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -50,6 +52,9 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 				currentIntegrity = extractGQLIntegrity(browser);
 				return currentIntegrity;
 			}
+			catch(LoginException e){
+				throw new IntegrityException("Failed to get integrity", e);
+			}
 		}
 	}
 	
@@ -68,12 +73,22 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 		var responseBody = browser.getRequestBody(integrityResponse.getRequestId());
 		try{
 			var responseData = JacksonUtils.read(responseBody, new TypeReference<IntegrityResponse>(){});
+			var clientSessionId = Optional.ofNullable(integrityRequest.getRequest().getHeaders().get("Client-Session-Id"))
+					.map(String.class::cast)
+					.orElseThrow(() -> new IntegrityException("No client session id found"));
+			var clientVersion = Optional.ofNullable(integrityRequest.getRequest().getHeaders().get("Client-Version"))
+					.map(String.class::cast)
+					.orElseThrow(() -> new IntegrityException("No client version found"));
+			var xDeviceId = Optional.ofNullable(integrityRequest.getRequest().getHeaders().get("X-Device-Id"))
+					.map(String.class::cast)
+					.orElseThrow(() -> new IntegrityException("No x device id found"));
+			
 			return IntegrityData.builder()
-					.clientSessionId((String) integrityRequest.getRequest().getHeaders().get("Client-Session-Id"))
-					.clientVersion((String) integrityRequest.getRequest().getHeaders().get("Client-Version"))
+					.clientSessionId(clientSessionId)
+					.clientVersion(clientVersion)
 					.token(responseData.getToken())
 					.expiration(responseData.getExpiration())
-					.xDeviceId((String) integrityRequest.getRequest().getHeaders().get("X-Device-Id"))
+					.xDeviceId(xDeviceId)
 					.build();
 		}
 		catch(IOException e){

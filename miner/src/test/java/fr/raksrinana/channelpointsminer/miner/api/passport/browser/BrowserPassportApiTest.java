@@ -66,8 +66,7 @@ class BrowserPassportApiTest{
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
 			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
 			
-			var result = tested.login();
-			assertThat(result).isEqualTo(TwitchLogin.builder()
+			assertThat(tested.login()).isEqualTo(TwitchLogin.builder()
 					.username(USERNAME)
 					.accessToken(ACCESS_TOKEN)
 					.cookies(COOKIES)
