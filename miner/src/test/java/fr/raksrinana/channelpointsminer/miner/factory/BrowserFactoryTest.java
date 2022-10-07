@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.factory;
 
 import fr.raksrinana.channelpointsminer.miner.browser.Browser;
-import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

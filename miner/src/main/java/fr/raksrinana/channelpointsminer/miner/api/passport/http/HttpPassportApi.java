@@ -10,6 +10,7 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingAut
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingTwitchGuard;
 import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginRequest;
 import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginResponse;
+import fr.raksrinana.channelpointsminer.miner.config.login.HttpLoginMethod;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.UnirestInstance;
@@ -37,18 +38,13 @@ public class HttpPassportApi implements IPassportApi{
 	private final boolean ask2FA;
 	private final Path userAuthenticationFile;
 	
-	/**
-	 * @param username             Username of the user.
-	 * @param password             Password of the user.
-	 * @param authenticationFolder File containing authentication to restore.
-	 */
-	public HttpPassportApi(@NotNull UnirestInstance unirest, @NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean ask2FA){
+	public HttpPassportApi(@NotNull UnirestInstance unirest, @NotNull String username, @NotNull HttpLoginMethod httpLoginMethod){
 		this.unirest = unirest;
 		this.username = username;
-		this.password = password;
-		this.ask2FA = ask2FA;
 		
-		userAuthenticationFile = authenticationFolder.resolve(username.toLowerCase(Locale.ROOT) + ".json");
+		password = httpLoginMethod.getPassword();
+		ask2FA = httpLoginMethod.isUse2Fa();
+		userAuthenticationFile = httpLoginMethod.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
 	}
 	
 	/**

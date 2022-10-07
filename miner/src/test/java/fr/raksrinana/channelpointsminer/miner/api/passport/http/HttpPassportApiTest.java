@@ -5,11 +5,13 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSol
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginResponse;
+import fr.raksrinana.channelpointsminer.miner.config.login.HttpLoginMethod;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import kong.unirest.core.Cookie;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +33,8 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
@@ -51,14 +55,29 @@ class HttpPassportApiTest{
 	
 	private HttpPassportApi tested;
 	
+	@Mock
+	private HttpLoginMethod httpLoginMethod;
+	
 	private Path authFile;
+	
+	@BeforeEach
+	void setUp(UnirestMock unirestMock){
+		authFile = authFolder.resolve(USERNAME + ".json");
+		
+		lenient().when(httpLoginMethod.getPassword()).thenReturn(PASSWORD);
+		lenient().when(httpLoginMethod.getAuthenticationFolder()).thenReturn(authFolder);
+		lenient().when(httpLoginMethod.isUse2Fa()).thenReturn(false);
+		
+		tested = new HttpPassportApi(unirestMock.getUnirestInstance(), USERNAME, httpLoginMethod);
+	}
 	
 	@Test
 	void newAuthWith2FA(UnirestMock unirest) throws LoginException, IOException{
 		try(var commonUtils = Mockito.mockStatic(CommonUtils.class)){
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			
-			tested = new HttpPassportApi(unirest.getUnirestInstance(), USERNAME, PASSWORD, authFolder, true);
+			when(httpLoginMethod.isUse2Fa()).thenReturn(true);
+			tested = new HttpPassportApi(unirest.getUnirestInstance(), USERNAME, httpLoginMethod);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
@@ -138,13 +157,6 @@ class HttpPassportApiTest{
 		assertThatJson(getAllContent(authFile)).isEqualTo(getAllResourceContent("api/passport/expectedAuth.json"));
 		
 		unirest.verifyAll();
-	}
-	
-	@BeforeEach
-	void setUp(UnirestMock unirestMock){
-		tested = new HttpPassportApi(unirestMock.getUnirestInstance(), USERNAME, PASSWORD, authFolder, false);
-		
-		authFile = authFolder.resolve(USERNAME + ".json");
 	}
 	
 	@ParameterizedTest

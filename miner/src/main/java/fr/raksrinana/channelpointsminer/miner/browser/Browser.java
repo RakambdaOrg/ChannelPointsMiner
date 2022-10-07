@@ -2,7 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.browser;
 
 import com.codeborne.selenide.SelenideConfig;
 import com.codeborne.selenide.SelenideDriver;
-import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

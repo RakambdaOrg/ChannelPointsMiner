@@ -3,7 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.api.passport.browser;
 import fr.raksrinana.channelpointsminer.miner.api.passport.IPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
-import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.factory.BrowserFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

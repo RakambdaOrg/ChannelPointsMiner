@@ -13,8 +13,10 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.browser.BrowserPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.http.HttpPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
-import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
+import fr.raksrinana.channelpointsminer.miner.config.login.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.login.HttpLoginMethod;
+import fr.raksrinana.channelpointsminer.miner.config.login.ILoginMethod;
 import fr.raksrinana.channelpointsminer.miner.log.UnirestLogger;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
@@ -23,10 +25,7 @@ import kong.unirest.core.UnirestInstance;
 import kong.unirest.jackson.JacksonObjectMapper;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.net.URL;
-import java.nio.file.Path;
-import java.util.Objects;
 import static kong.unirest.core.HeaderNames.USER_AGENT;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -64,13 +63,22 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static IPassportApi createPassportApi(@NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean use2Fa, @Nullable BrowserConfiguration configuration){
-		return Objects.isNull(configuration) ? new HttpPassportApi(createUnirestInstance(), username, password, authenticationFolder, use2Fa) : new BrowserPassportApi(configuration);
+	public static IPassportApi createPassportApi(@NotNull String username, @NotNull ILoginMethod loginMethod){
+		if(loginMethod instanceof HttpLoginMethod httpLoginMethod){
+			return new HttpPassportApi(createUnirestInstance(), username, httpLoginMethod);
+		}
+		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
+			return new BrowserPassportApi(browserConfiguration);
+		}
+		throw new IllegalStateException("Unknown login method");
 	}
 	
 	@NotNull
-	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @Nullable BrowserConfiguration configuration){
-		return Objects.isNull(configuration) ? createHttpIntegrityProvider(twitchLogin, versionProvider) : createBrowserIntegrityProvider(configuration);
+	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @NotNull ILoginMethod loginMethod){
+		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
+			return createBrowserIntegrityProvider(browserConfiguration);
+		}
+		return createHttpIntegrityProvider(twitchLogin, versionProvider);
 	}
 	
 	@NotNull

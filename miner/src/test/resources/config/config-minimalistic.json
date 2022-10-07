@@ -1,17 +1,20 @@
 {
-  "accounts": [
+  "accounts" : [
     {
-      "username": "username",
-      "password": "password",
-      "streamerConfigDirectories": [
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "http",
+        "password" : "password"
+      },
+      "streamerConfigDirectories" : [
         {
-          "path": "streamers"
+          "path" : "streamers"
         }
       ],
-      "discord": {
-        "webhookUrl": "https://discord-webhook"
+      "discord" : {
+        "webhookUrl" : "https://discord-webhook"
       },
-      "reloadEvery": 15
+      "reloadEvery" : 15
     }
   ]
 }

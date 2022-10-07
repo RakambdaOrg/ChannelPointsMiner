@@ -36,5 +36,6 @@ public class ManifestChannel{
 	private boolean active;
 	@JsonProperty("releases")
 	@NotNull
+	@Builder.Default
 	private List<ManifestRelease> releases = new ArrayList<>();
 }

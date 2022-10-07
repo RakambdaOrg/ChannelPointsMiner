@@ -6,7 +6,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
 import fr.raksrinana.channelpointsminer.miner.browser.Browser;
-import fr.raksrinana.channelpointsminer.miner.config.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.raksrinana.channelpointsminer.miner.factory.BrowserFactory;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;

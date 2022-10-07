@@ -20,5 +20,6 @@ import java.util.List;
 public class ManifestResponse{
 	@JsonProperty("channels")
 	@NotNull
+	@Builder.Default
 	private List<ManifestChannel> channels = new ArrayList<>();
 }
