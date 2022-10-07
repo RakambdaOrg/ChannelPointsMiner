@@ -49,6 +49,7 @@ public class TwitchLogin{
 	@JsonSerialize(contentUsing = CookieSerializer.class)
 	@Builder.Default
 	@NotNull
+	@EqualsAndHashCode.Exclude
 	private List<Cookie> cookies = new ArrayList<>();
 	@JsonProperty("userId")
 	@Nullable

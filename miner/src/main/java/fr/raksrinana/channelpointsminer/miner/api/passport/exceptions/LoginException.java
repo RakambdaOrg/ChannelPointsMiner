@@ -12,6 +12,10 @@ public class LoginException extends Exception{
 		super(message);
 	}
 	
+	public LoginException(String message, Throwable cause){
+		super(message, cause);
+	}
+	
 	public LoginException(int statusCode, @Nullable Integer errorCode, @Nullable String description){
 		this("Failed to login (%d)[%d]: %s".formatted(
 				statusCode,

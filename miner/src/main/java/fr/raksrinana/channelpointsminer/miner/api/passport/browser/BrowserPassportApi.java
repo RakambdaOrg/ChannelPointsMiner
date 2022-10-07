@@ -20,12 +20,15 @@ public class BrowserPassportApi implements IPassportApi{
 	
 	@Override
 	@NotNull
-	public TwitchLogin login() throws LoginException, IOException{
+	public TwitchLogin login() throws LoginException{
 		log.info("Logging in");
 		try(var browser = BrowserFactory.createBrowser(browserConfiguration)){
 			var controller = browser.setup();
 			controller.login();
 			return extractPassportInfo(browser.getDriver().manage());
+		}
+		catch(IOException e){
+			throw new LoginException("Failed to login", e);
 		}
 	}
 	
