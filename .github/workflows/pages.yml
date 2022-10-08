@@ -25,9 +25,8 @@ jobs:
         run: npx antora .github/antora-playbook.yml
       - name: Prepare upload
         run: |
-          ls -R
           mkdir pages
-          cp -R docs-site/build/site pages/
+          cp -R build/site/ pages/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
