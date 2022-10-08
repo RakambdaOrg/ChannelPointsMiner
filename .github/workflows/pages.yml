@@ -20,12 +20,11 @@ jobs:
         with:
           node-version: '16'
       - name: Install Antora
-        run: npm i antora
+        run: npm i antora asciidoctor-kroki
       - name: Generate Site
         run: npx antora .github/antora-playbook.yml
       - name: Prepare upload
         run: |
-          ls -R .github
           mkdir pages
           cp -R .github/antora-docs/ pages/
       - name: Upload artifact

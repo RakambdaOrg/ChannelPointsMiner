@@ -5,6 +5,7 @@ log4j2-slf4j-version = "2.19.0"
 unirest-version = "4.0.0-RC4"
 picocli-version = "4.6.3"
 jackson-version = "2.13.4"
+jsonschema-generator-version = "4.27.0"
 httpclient-version = "4.5.13"
 lang3-version = "3.12.0"
 jetbrains-annotations-version = "23.0.0"
@@ -42,6 +43,8 @@ picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-ver
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson-version" }
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jackson-version" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-version" }
+jsonschema-generator = { group = "com.github.victools", name = "jsonschema-generator", version.ref = "jsonschema-generator-version" }
+jsonschema-module-jackson = { group = "com.github.victools", name = "jsonschema-module-jackson", version.ref = "jsonschema-generator-version" }
 httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "httpclient-version" }
 lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
@@ -72,6 +75,7 @@ jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]
 log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-objectmapper-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
+jsonschemaGenerator = ["jsonschema-generator", "jsonschema-module-jackson"]
 junit = ["junit-api", "junit-params"]
 mockito = ["mockito-core", "mockito-inline", "mockito-junit"]
 jsonUnit = ["json-unit", "json-unit-assertj"]

@@ -1,6 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.config;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import fr.raksrinana.channelpointsminer.miner.config.login.ILoginMethod;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
 import lombok.AllArgsConstructor;
@@ -17,53 +19,55 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString
+@JsonClassDescription("Mining account configuration.")
 public class AccountConfiguration{
 	@JsonProperty("enabled")
-	@Comment(value = "If the account is marked as enabled it'll be mined.", defaultValue = "true")
+	@JsonPropertyDescription("If the account is marked as enabled it'll be mined. Default: true")
 	@Builder.Default
 	private boolean enabled = true;
 	@NotNull
-	@JsonProperty("username")
-	@Comment(value = "Username of your Twitch account.")
+	@JsonProperty(value = "username", required = true)
+	@JsonPropertyDescription("Mining account's username.")
 	private String username;
 	@NotNull
-	@JsonProperty("loginMethod")
+	@JsonProperty(value = "loginMethod", required = true)
+	@JsonPropertyDescription("Login method to use.")
 	private ILoginMethod loginMethod;
 	@JsonProperty("loadFollows")
-	@Comment(value = "Load streamers to scrape from follow list.", defaultValue = "false")
+	@JsonPropertyDescription("Load streamers to scrape from follow list. Default: false")
 	@Builder.Default
 	private boolean loadFollows = false;
 	@JsonProperty("defaultStreamerSettings")
-	@Comment(value = "Default settings for the streamers mined.")
+	@JsonPropertyDescription("Default streamer settings.")
 	@Builder.Default
 	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
 	@NotNull
 	@JsonProperty("streamerConfigDirectories")
-	@Comment(value = "List of paths to a folder that'll contain streamer configurations.", defaultValue = "<empty>")
+	@JsonPropertyDescription("Paths containing overrides for streamer configurations.")
 	@Builder.Default
 	private List<StreamerDirectory> streamerConfigDirectories = new ArrayList<>();
 	@NotNull
 	@JsonProperty("discord")
-	@Comment(value = "Discord settings")
+	@JsonPropertyDescription("Discord settings to send notifications.")
 	@Builder.Default
 	private DiscordConfiguration discord = new DiscordConfiguration();
 	@JsonProperty("reloadEvery")
-	@Comment(value = "Reload streamer settings every x minutes.", defaultValue = "0")
+	@JsonPropertyDescription("Reload streamer settings every x minutes. Zero or negative value disables it. Default: 0")
 	@Builder.Default
 	private int reloadEvery = 0;
 	@JsonProperty("analytics")
 	@NotNull
-	@Comment(value = "Analytics settings")
+	@JsonPropertyDescription("Analytics settings, recording account's evolution, bets, predictions.")
 	@Builder.Default
 	private AnalyticsConfiguration analytics = new AnalyticsConfiguration();
 	@JsonProperty("chatMode")
 	@NotNull
-	@Comment(value = "Method used to join chat")
+	@JsonPropertyDescription("Method used to join chat. Default: WS")
 	@Builder.Default
 	private ChatMode chatMode = ChatMode.WS;
 	@JsonProperty("versionProvider")
 	@NotNull
-	@Comment(value = "Method used to get twitch version")
+	@JsonPropertyDescription("Method used to get twitch version. Default: WEBPAGE")
 	@Builder.Default
 	private VersionProvider versionProvider = VersionProvider.WEBPAGE;
 }

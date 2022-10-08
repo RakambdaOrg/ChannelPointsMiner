@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
@@ -19,6 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@JsonSubTypes.Type(value = BiggestPredictorOutcomePicker.class, name = "biggestPredictor"),
 		@JsonSubTypes.Type(value = MostTrustedPicker.class, name = "mostTrusted"),
 })
+@JsonClassDescription("Prediction outcome picker")
 public interface IOutcomePicker{
 	@NotNull
 	Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction, @NotNull IDatabase database) throws BetPlacementException;

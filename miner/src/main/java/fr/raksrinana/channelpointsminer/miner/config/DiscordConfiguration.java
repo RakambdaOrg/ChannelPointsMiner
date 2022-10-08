@@ -1,6 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.config;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.raksrinana.channelpointsminer.miner.util.json.URLDeserializer;
 import lombok.AllArgsConstructor;
@@ -16,14 +18,15 @@ import java.net.URL;
 @AllArgsConstructor
 @Builder
 @ToString
+@JsonClassDescription("Discord settings to send notifications.")
 public class DiscordConfiguration{
-	@JsonProperty("webhookUrl")
+	@JsonProperty(value = "webhookUrl", required = true)
 	@JsonDeserialize(using = URLDeserializer.class)
+	@JsonPropertyDescription("Discord webhook url to publish events to.")
 	@Nullable
-	@Comment("URL of the webhook")
 	private URL url;
 	@JsonProperty("embeds")
+	@JsonPropertyDescription("Use embeds in the messages or not. Default: false")
 	@Builder.Default
-	@Comment("Use embeds in the messages or not")
 	private boolean embeds = false;
 }

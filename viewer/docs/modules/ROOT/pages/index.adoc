@@ -1,0 +1,3 @@
+= Viewer
+
+The main objective of the viewer app is to display the analytics data collected by the miner.

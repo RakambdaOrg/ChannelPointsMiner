@@ -1,0 +1,32 @@
+= Streamer settings
+
+Streamer settings define settings for a particular streamer.
+Each streamer setting will be defined in a json file named with the username of the streamer (eg: `streamer_username.json`).
+
+Examples can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/miner/src/test/resources/factory[miner/src/test/resources/factory,window="_blank"].
+
+== Priorities [[priorities]]
+
+Priorities is a way to prioritize streamers among each others to mine one over another based on some conditions.
+
+You can then modify the position of a streamer by adding priorities to the streamers you want and if the condition is met then a `score` will be added to its overall score (sum of all the priority's scores).
+The 2 streamers that have the highest overall score will be those mined.
+If there's an exe-quo they'll be picked by their `index`, and if equal too it'll be random.
+
+NOTE: If you're banned from the chat of a channel, it'll be skipped as you can't gather points there.
+
+== Prediction
+
+=== Delays
+
+Prediction delays allow you to define when a bet should be placed.
+
+NOTE: All delays will be within an imposed time window: `[created date + 5s ; created date + prediction window - 5s]`.
+
+WARNING: Delay are calculated from when the prediction is created, if a moderator closes the bet early (which happens on some channels where a long timer is set) and the bet hasn't already been placed, then it'll be too late.
+
+=== Outcome pickers
+
+Outcome pickers allow you to define what outcome (side / color) will be chosen to place the bet on.
+
+The table below will list their `type` to be used in the JSON configuration as well as how the side is computed and parameters.

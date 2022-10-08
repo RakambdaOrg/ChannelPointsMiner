@@ -4,15 +4,14 @@ site:
   start_page: miner::index.adoc
 content:
   sources:
-    - url: https://github.com/RakSrinaNa/ChannelPointsMiner.git
+    - url: ./..
       branches: [ doc/antora ]
-      start_path: docs
+      start_paths:
+        - miner/docs
+        - viewer/docs
 asciidoc:
-  attributes:
-    experimental: ''
-    idprefix: ''
-    idseparator: '-'
-    page-pagination: ''
+  extensions:
+    - asciidoctor-kroki
 runtime:
   fetch: true
 output:

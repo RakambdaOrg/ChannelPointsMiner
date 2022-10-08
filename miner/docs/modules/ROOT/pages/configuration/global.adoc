@@ -1,0 +1,50 @@
+= Global settings
+
+The global settings, that you pass to the miner with the `--settings` argument, is under the JSON format.
+
+Schema of the file is available in the xref:configuration/index.adoc[Configuration] page.
+
+Examples of this file can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
+
+== Streamer directories
+
+To override streamer settings for a given streamer, you can place a JSON file within one of the defined directories, named by the streamer name and containing the overrides.
+
+.Override default streamer settings for my_streamer1, my_streamer2 and my_streamer3
+[plantuml]
+----
+skinparam Legend {
+	BackgroundColor transparent
+	BorderColor transparent
+}
+legend
+streamers
+|_ directory1
+  |_ my_streamer1.json
+|_ directory2
+  |_ my_streamer2.json
+  |_ my_streamer3.json
+end legend
+----
+
+== Analytics settings [[analytics_settings]]
+
+Analytics settings define a way to collect data on your twitch account as time passes.
+This includes:
+
+* Balance evolution
+* Your own Predictions made & results
+* Predictions from other chat participants and their return-on-investment (only approximate as the bet amount is mostly anonymous).
+
+These are stored in an external database which allows any external software to access it and process it the wanted way.
+
+Several database types are supported and listed below.
+Each database (logical database for MariaDB, different file for H2/SQLite) will however represent one mined account.
+You'll therefore have to adjust the settings for each mined account to not point to the same one.
+
+=== Analytics database [[analytics_database_settings]]
+
+link:https://www.baeldung.com/java-jdbc-url-format[JDBC url]:
+
+* MariaDB: `jdbc:mariadb://host:port/database` (great if you have a DB available or running inside docker as you can set a mariadb container)
+* SQLite: `jdbc:sqlite:/path/to/file` (great running locally and want to store it to a file, however less resilient and more prone to corruption).

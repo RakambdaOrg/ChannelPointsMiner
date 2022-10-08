@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.priority;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 @ToString(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
+@JsonClassDescription("Return a score if the streamer has a potential watch streak to claim.")
 public class WatchStreakPriority extends IStreamerPriority{
 	@Override
 	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
