@@ -16,6 +16,7 @@ asciidoc:
 runtime:
   fetch: true
   log:
+    format: pretty
     level: all
     destination:
       file: stdout
