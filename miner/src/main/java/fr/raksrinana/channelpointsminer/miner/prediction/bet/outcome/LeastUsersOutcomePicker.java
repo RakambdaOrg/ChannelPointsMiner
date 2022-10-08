@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
@@ -21,6 +22,7 @@ import java.util.Comparator;
 @Builder
 @AllArgsConstructor
 @Log4j2
+@JsonClassDescription("Choose the outcome with the least users.")
 public class LeastUsersOutcomePicker implements IOutcomePicker{
 	@Override
 	@NotNull

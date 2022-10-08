@@ -1,11 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.makeprediction.MakePredictionData;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MakePredictionError;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MakePredictionErrorCode;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MakePredictionPayload;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.makeprediction.MakePredictionData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionError;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionErrorCode;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionPayload;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;

@@ -2,8 +2,8 @@ package fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ContentId;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.ContentType;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.ContentId;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.ContentType;
 import fr.raksrinana.channelpointsminer.miner.util.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

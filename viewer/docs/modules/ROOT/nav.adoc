@@ -1,0 +1,5 @@
+* xref:index.adoc[Index]
+* Installation
+** xref:installation/clone.adoc[Clone]
+** xref:installation/docker.adoc[Docker]
+* xref:configuration/index.adoc[Configuration]

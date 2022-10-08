@@ -4,10 +4,15 @@ import fr.raksrinana.channelpointsminer.miner.cli.CLIHolder;
 import fr.raksrinana.channelpointsminer.miner.cli.CLIParameters;
 import fr.raksrinana.channelpointsminer.miner.config.AccountConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.AnalyticsConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.BrowserDriver;
+import fr.raksrinana.channelpointsminer.miner.config.ChatMode;
 import fr.raksrinana.channelpointsminer.miner.config.Configuration;
 import fr.raksrinana.channelpointsminer.miner.config.DatabaseConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.DiscordConfiguration;
 import fr.raksrinana.channelpointsminer.miner.config.StreamerDirectory;
+import fr.raksrinana.channelpointsminer.miner.config.VersionProvider;
+import fr.raksrinana.channelpointsminer.miner.config.login.BrowserConfiguration;
+import fr.raksrinana.channelpointsminer.miner.config.login.HttpLoginMethod;
 import fr.raksrinana.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
 import org.assertj.core.api.Assertions;
@@ -42,8 +47,10 @@ class ConfigurationFactoryTest{
 		var expected = Configuration.builder()
 				.accounts(List.of(AccountConfiguration.builder()
 						.username("username")
-						.password("password")
-						.use2Fa(false)
+						.loginMethod(HttpLoginMethod.builder()
+								.password("password")
+								.use2Fa(false)
+								.build())
 						.loadFollows(false)
 						.enabled(true)
 						.defaultStreamerSettings(StreamerSettings.builder()
@@ -85,8 +92,11 @@ class ConfigurationFactoryTest{
 		var expected = Configuration.builder()
 				.accounts(List.of(AccountConfiguration.builder()
 						.username("username")
-						.password("password")
-						.use2Fa(true)
+						.loginMethod(BrowserConfiguration.builder()
+								.driver(BrowserDriver.REMOTE_CHROME)
+								.remoteHost("http://selenium-hub:4444/wd/hub")
+								.userDir("/home/seluser/profiles/channelpointsminer")
+								.build())
 						.loadFollows(true)
 						.enabled(false)
 						.defaultStreamerSettings(StreamerSettings.builder()
@@ -113,6 +123,8 @@ class ConfigurationFactoryTest{
 										.maxPoolSize(15)
 										.build())
 								.build())
+						.chatMode(ChatMode.IRC)
+						.versionProvider(VersionProvider.MANIFEST)
 						.build()))
 				.build();
 		

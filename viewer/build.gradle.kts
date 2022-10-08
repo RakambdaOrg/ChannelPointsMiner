@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.springboot)
     alias(libs.plugins.springbootDependencies)
     alias(libs.plugins.jib)
+    alias(libs.plugins.testLogger)
 }
 
 configurations {
@@ -41,6 +42,12 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD_PARALLEL
+    showPassed = false
+    showPassedStandardStreams = false
 }
 
 tasks {

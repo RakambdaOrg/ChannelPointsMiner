@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.delay;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
@@ -13,6 +14,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@JsonSubTypes.Type(value = FromStartDelay.class, name = "fromStart"),
 		@JsonSubTypes.Type(value = PercentageDelay.class, name = "percentage"),
 })
+@JsonClassDescription("Prediction delay calculator")
 public interface IDelayCalculator{
 	@NotNull
 	ZonedDateTime calculate(@NotNull Event event);

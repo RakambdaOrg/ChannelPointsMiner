@@ -2,8 +2,8 @@ package fr.raksrinana.channelpointsminer.miner.miner;
 
 import fr.raksrinana.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.raksrinana.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
-import fr.raksrinana.channelpointsminer.miner.api.passport.PassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.IPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
@@ -59,7 +59,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Log4j2
 public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListener{
 	private final AccountConfiguration accountConfiguration;
-	private final PassportApi passportApi;
+	private final IPassportApi passportApi;
 	
 	private final Map<String, Streamer> streamers;
 	@Getter
@@ -95,7 +95,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	private ITwitchChatClient chatClient;
 	
 	public Miner(@NotNull AccountConfiguration accountConfiguration,
-			@NotNull PassportApi passportApi,
+			@NotNull IPassportApi passportApi,
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchPubSubWebSocketPool pubSubWebSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
@@ -140,8 +140,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 				scheduledExecutor.schedule(streamerConfigurationReload, 0, MINUTES);
 			}
 			
-			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId());
-			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId());
+			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
+			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId(gqlApi));
 		}
 	}
 	
@@ -156,7 +156,9 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			var listenMessages = analyticsConfiguration.isEnabled() && analyticsConfiguration.isRecordChatsPredictions();
 			
 			twitchLogin = passportApi.login();
-			gqlApi = ApiFactory.createGqlApi(twitchLogin);
+			var versionProvider = ApiFactory.createVersionProvider(accountConfiguration.getVersionProvider());
+			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, accountConfiguration.getLoginMethod());
+			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
 			twitchApi = ApiFactory.createTwitchApi(twitchLogin);
 			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);
 			chatClient.addChatMessageListener(new TwitchChatEventProducer(this));
@@ -222,7 +224,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
 			
 			if(streamer.getSettings().isMakePredictions()){
-				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId());
+				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
 				listenTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			}
 			else{

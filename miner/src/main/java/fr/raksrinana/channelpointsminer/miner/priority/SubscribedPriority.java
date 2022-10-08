@@ -1,8 +1,10 @@
 package fr.raksrinana.channelpointsminer.miner.priority;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.CommunityPointsMultiplier;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsMultiplier;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import lombok.AllArgsConstructor;
@@ -12,9 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
-import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode.SUB_T1;
-import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode.SUB_T2;
-import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode.SUB_T3;
+import static fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T1;
+import static fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T2;
+import static fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T3;
 
 @JsonTypeName("subscribed")
 @Getter
@@ -23,10 +25,13 @@ import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Multipli
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonClassDescription("Return a score if the logged-in user is subscribed to the streamer.")
 public class SubscribedPriority extends IStreamerPriority{
-	@JsonProperty("score2")
+	@JsonProperty(value = "score2", required = true)
+	@JsonPropertyDescription("Score for a T2 sub.")
 	private int score2;
-	@JsonProperty("score3")
+	@JsonProperty(value = "score3", required = true)
+	@JsonPropertyDescription("Score for a T3 sub.")
 	private int score3;
 	
 	@Override

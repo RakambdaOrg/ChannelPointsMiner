@@ -1,5 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.delay;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import lombok.AllArgsConstructor;
@@ -20,7 +23,10 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Log4j2
+@JsonClassDescription("Place the bet after 'percent'% of the original timer elapsed.")
 public class PercentageDelay implements IDelayCalculator{
+	@JsonProperty("percent")
+	@JsonPropertyDescription("The percentage of the timer, as a decimal value, between 0 and 1.")
 	private float percent;
 	
 	@Override

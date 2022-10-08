@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Game;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
@@ -78,7 +78,7 @@ public class SendMinutesWatched implements Runnable{
 							.channelId(streamer.getId())
 							.broadcastId(streamId.get())
 							.player(SITE_PLAYER)
-							.userId(miner.getTwitchLogin().getUserIdAsInt())
+							.userId(miner.getTwitchLogin().getUserIdAsInt(miner.getGqlApi()))
 							.game(streamer.getGame().map(Game::getName).orElse(null))
 							.build())
 					.build();

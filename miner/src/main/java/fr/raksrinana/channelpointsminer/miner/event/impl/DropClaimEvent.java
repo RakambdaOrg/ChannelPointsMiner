@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.event.impl;
 
 import fr.raksrinana.channelpointsminer.miner.api.discord.data.Field;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.raksrinana.channelpointsminer.miner.event.AbstractLoggableEvent;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
@@ -24,7 +24,7 @@ public class DropClaimEvent extends AbstractLoggableEvent{
 	@Override
 	@NotNull
 	public String getAsLog(){
-		return "Claiming drop [%s]".formatted(drop.getName());
+		return "Drop available [%s]".formatted(drop.getName());
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class DropClaimEvent extends AbstractLoggableEvent{
 	
 	@NotNull
 	protected String getEmbedDescription(){
-		return "Claiming drop";
+		return "Drop available";
 	}
 	
 	@Override

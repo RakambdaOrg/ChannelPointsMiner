@@ -1,0 +1,12 @@
+{
+  "errors": [
+    {
+      "message": "failed integrity check"
+    }
+  ],
+  "extensions": {
+    "durationMilliseconds": 2,
+    "operationName": "operation-name",
+    "requestID": "request-id"
+  }
+}

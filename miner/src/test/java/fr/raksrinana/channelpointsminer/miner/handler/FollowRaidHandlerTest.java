@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.handler;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Raid;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.request.topic.Topic;

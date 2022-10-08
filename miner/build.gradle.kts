@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.lombok)
     alias(libs.plugins.jib)
     alias(libs.plugins.gitProperties)
+    alias(libs.plugins.testLogger)
 }
 
 dependencies {
@@ -18,6 +19,7 @@ dependencies {
     implementation(libs.lang3)
     implementation(libs.websocket)
     implementation(libs.kittehIrc)
+    implementation(libs.selenide)
 
     implementation(libs.hikaricp)
     implementation(libs.mariadb)
@@ -35,6 +37,23 @@ dependencies {
     testImplementation(libs.unirestMocks)
     testImplementation(libs.bundles.jsonUnit)
     testImplementation(libs.rerunnerJupiter)
+}
+
+sourceSets {
+    create("schema") {
+        java {
+            compileClasspath += sourceSets.main.get().compileClasspath
+            compileClasspath += sourceSets.main.get().output
+
+            runtimeClasspath += sourceSets.main.get().compileClasspath
+            runtimeClasspath += sourceSets.main.get().runtimeClasspath
+            runtimeClasspath += sourceSets.main.get().output
+
+            dependencies {
+                implementation(libs.bundles.jsonschemaGenerator)
+            }
+        }
+    }
 }
 
 tasks {
@@ -88,6 +107,12 @@ application {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD_PARALLEL
+    showPassed = false
+    showPassedStandardStreams = false
 }
 
 jib {

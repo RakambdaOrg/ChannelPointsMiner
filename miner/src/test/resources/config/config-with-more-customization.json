@@ -1,28 +1,32 @@
 {
-  "accounts": [
+  "accounts" : [
     {
-      "username": "username",
-      "password": "password",
-      "use2FA": true,
-      "loadFollows": true,
-      "enabled": false,
-      "defaultStreamerSettings": {
-        "makePredictions": true,
-        "followRaid": true,
-        "participateCampaigns": true
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "browser",
+        "driver" : "REMOTE_CHROME",
+        "remoteHost" : "http://selenium-hub:4444/wd/hub",
+        "userDir" : "/home/seluser/profiles/channelpointsminer"
       },
-      "streamerConfigDirectories": [
+      "loadFollows" : true,
+      "enabled" : false,
+      "defaultStreamerSettings" : {
+        "makePredictions" : true,
+        "followRaid" : true,
+        "participateCampaigns" : true
+      },
+      "streamerConfigDirectories" : [
         {
-          "path": "streamers",
-          "recursive": true
+          "path" : "streamers",
+          "recursive" : true
         }
       ],
-      "discord": {
-        "webhookUrl": "https://discord-webhook",
-        "embeds": true
+      "discord" : {
+        "webhookUrl" : "https://discord-webhook",
+        "embeds" : true
       },
-      "reloadEvery": 15,
-      "analytics": {
+      "reloadEvery" : 15,
+      "analytics" : {
         "enabled" : true,
         "recordChatsPredictions" : true,
         "database" : {
@@ -31,7 +35,9 @@
           "password" : "pass",
           "maxPoolSize" : 15
         }
-      }
+      },
+      "chatMode" : "IRC",
+      "versionProvider" : "MANIFEST"
     }
   ]
 }

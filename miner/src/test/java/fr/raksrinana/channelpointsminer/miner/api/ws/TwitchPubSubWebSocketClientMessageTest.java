@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.ws;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ActiveMultipliersUpdated;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.ClaimClaimed;
@@ -541,23 +541,70 @@ class TwitchPubSubWebSocketClientMessageTest{
 												.creatorUnreadCount(1)
 												.summariesByDisplayType(Map.of(
 														NotificationDisplayType.CREATOR, NotificationSummaryByDisplayType.builder()
-																		.unreadSummary(Summary.builder()
-																				.count(5)
-																				.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 20, 41, 56, 957079333, UTC))
-																				.build())
-																		.unseenSummary(Summary.builder()
-																				.count(6)
-																				.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 21, 41, 56, 957079333, UTC))
-																				.build())
+																.unreadSummary(Summary.builder()
+																		.count(5)
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 20, 41, 56, 957079333, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(6)
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 21, 41, 56, 957079333, UTC))
+																		.build())
 																.build(),
 														NotificationDisplayType.VIEWER, NotificationSummaryByDisplayType.builder()
 																.unreadSummary(Summary.builder()
 																		.count(7)
-																		.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 22, 41, 56, 957079333, UTC))
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 22, 41, 56, 957079333, UTC))
 																		.build())
 																.unseenSummary(Summary.builder()
 																		.count(8)
-																		.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 23, 41, 56, 957079333, UTC))
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 23, 41, 56, 957079333, UTC))
+																		.build())
+																.build()
+												))
+												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onUpdateSummary2(WebsocketMockServer server){
+		server.send(getAllResourceContent("api/ws/updateSummary_2.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(UpdateSummary.builder()
+								.data(UpdateSummaryData.builder()
+										.summary(NotificationSummary.builder()
+												.unseenViewCount(5)
+												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 957079333, UTC))
+												.viewerUnreadCount(8)
+												.creatorUnreadCount(1)
+												.summariesByDisplayType(Map.of(
+														NotificationDisplayType.CREATOR, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(5)
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 20, 41, 56, 957079333, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(6)
+																		.lastSeen(ZonedDateTime.of(2021, 1, 1, 21, 41, 56, 957079333, UTC))
+																		.build())
+																.build(),
+														NotificationDisplayType.VIEWER, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(7)
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 22, 41, 56, 957079333, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(8)
+																		.lastSeen(ZonedDateTime.of(2021, 1, 1, 23, 41, 56, 957079333, UTC))
 																		.build())
 																.build()
 												))

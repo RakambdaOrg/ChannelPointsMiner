@@ -1,6 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.priority;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
@@ -19,8 +21,10 @@ import org.jetbrains.annotations.NotNull;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonClassDescription("Return a score if owned points are above a defined value.")
 public class PointsAbovePriority extends IStreamerPriority{
-	@JsonProperty("threshold")
+	@JsonProperty(value = "threshold", required = true)
+	@JsonPropertyDescription("Current points must strictly be above this value to give the score.")
 	private int threshold;
 	
 	@Override

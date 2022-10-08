@@ -1,7 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

@@ -1,14 +1,16 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.GQLApi;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.GQLResponse;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.inventory.InventoryData;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.DropCampaign;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Inventory;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDrop;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.TimeBasedDropSelfEdge;
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.User;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDropSelfEdge;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimEvent;
+import fr.raksrinana.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.raksrinana.channelpointsminer.miner.factory.TimeFactory;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.miner.MinerData;
@@ -47,7 +49,9 @@ class SyncInventoryTest{
 	@Mock
 	private GQLApi gqlApi;
 	@Mock
-	private GQLResponse<InventoryData> response;
+	private GQLResponse<InventoryData> inventoryDataGQLResponse;
+	@Mock
+	private GQLResponse<DropsPageClaimDropRewardsData> dropsPageClaimDropRewardsDataGQLResponse;
 	@Mock
 	private InventoryData inventoryData;
 	@Mock
@@ -69,17 +73,22 @@ class SyncInventoryTest{
 		lenient().when(miner.getStreamers()).thenReturn(List.of(streamer));
 		lenient().when(miner.getMinerData()).thenReturn(minerData);
 		
-		lenient().when(response.getData()).thenReturn(inventoryData);
+		lenient().when(inventoryDataGQLResponse.getData()).thenReturn(inventoryData);
 		lenient().when(inventoryData.getCurrentUser()).thenReturn(user);
 		lenient().when(user.getInventory()).thenReturn(inventory);
 		lenient().when(inventory.getDropCampaignsInProgress()).thenReturn(List.of(dropCampaign));
 		lenient().when(dropCampaign.getTimeBasedDrops()).thenReturn(List.of(timeBasedDrop));
 		lenient().when(timeBasedDrop.getSelf()).thenReturn(timeBasedDropSelfEdge);
 		
+		lenient().when(dropsPageClaimDropRewardsDataGQLResponse.isError()).thenReturn(false);
+		
 		lenient().when(streamer.isParticipateCampaigns()).thenReturn(true);
 		
 		lenient().when(timeBasedDropSelfEdge.isClaimed()).thenReturn(false);
 		lenient().when(timeBasedDropSelfEdge.getDropInstanceId()).thenReturn(DROP_ID);
+		
+		lenient().when(gqlApi.inventory()).thenReturn(Optional.of(inventoryDataGQLResponse));
+		lenient().when(gqlApi.dropsPageClaimDropRewards(DROP_ID)).thenReturn(Optional.of(dropsPageClaimDropRewardsDataGQLResponse));
 	}
 	
 	@Test
@@ -87,18 +96,17 @@ class SyncInventoryTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(gqlApi.inventory()).thenReturn(Optional.of(response));
 			assertDoesNotThrow(() -> tested.run());
 			
 			verify(minerData).setInventory(inventoryData);
 			verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
 			verify(miner).onEvent(new DropClaimEvent(miner, timeBasedDrop, NOW));
+			verify(miner).onEvent(new DropClaimedEvent(miner, timeBasedDrop, NOW));
 		}
 	}
 	
 	@Test
 	void updateInventoryWithNoDropId(){
-		when(gqlApi.inventory()).thenReturn(Optional.of(response));
 		when(timeBasedDropSelfEdge.getDropInstanceId()).thenReturn(null);
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -110,7 +118,6 @@ class SyncInventoryTest{
 	
 	@Test
 	void updateInventoryWithAlreadyClaimed(){
-		when(gqlApi.inventory()).thenReturn(Optional.of(response));
 		when(timeBasedDropSelfEdge.isClaimed()).thenReturn(true);
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -122,7 +129,6 @@ class SyncInventoryTest{
 	
 	@Test
 	void updateInventoryWithDataNoSelfDrop(){
-		when(gqlApi.inventory()).thenReturn(Optional.of(response));
 		when(timeBasedDrop.getSelf()).thenReturn(null);
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -134,7 +140,6 @@ class SyncInventoryTest{
 	
 	@Test
 	void updateInventoryWithDataNoDrops(){
-		when(gqlApi.inventory()).thenReturn(Optional.of(response));
 		when(dropCampaign.getTimeBasedDrops()).thenReturn(List.of());
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -146,7 +151,6 @@ class SyncInventoryTest{
 	
 	@Test
 	void updateInventoryWithDataNoCampaignsInProgress(){
-		when(gqlApi.inventory()).thenReturn(Optional.of(response));
 		when(inventory.getDropCampaignsInProgress()).thenReturn(List.of());
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -158,7 +162,6 @@ class SyncInventoryTest{
 	
 	@Test
 	void updateInventoryWithDataNoInventory(){
-		when(gqlApi.inventory()).thenReturn(Optional.of(response));
 		when(user.getInventory()).thenReturn(null);
 		
 		assertDoesNotThrow(() -> tested.run());
@@ -210,5 +213,37 @@ class SyncInventoryTest{
 		verify(minerData, never()).setInventory(any());
 		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
 		verify(miner, never()).onEvent(any());
+	}
+	
+	@Test
+	void updateInventoryWithClaimError(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(dropsPageClaimDropRewardsDataGQLResponse.isError()).thenReturn(true);
+			
+			assertDoesNotThrow(() -> tested.run());
+			
+			verify(minerData).setInventory(inventoryData);
+			verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
+			verify(miner).onEvent(new DropClaimEvent(miner, timeBasedDrop, NOW));
+			verify(miner, never()).onEvent(any(DropClaimedEvent.class));
+		}
+	}
+	
+	@Test
+	void updateInventoryWithResponseEmpty(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(gqlApi.dropsPageClaimDropRewards(DROP_ID)).thenReturn(Optional.empty());
+			
+			assertDoesNotThrow(() -> tested.run());
+			
+			verify(minerData).setInventory(inventoryData);
+			verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
+			verify(miner).onEvent(new DropClaimEvent(miner, timeBasedDrop, NOW));
+			verify(miner, never()).onEvent(any(DropClaimedEvent.class));
+		}
 	}
 }

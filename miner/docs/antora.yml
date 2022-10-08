@@ -1,0 +1,5 @@
+name: miner
+title: Miner
+version: true
+nav:
+  - modules/ROOT/nav.adoc

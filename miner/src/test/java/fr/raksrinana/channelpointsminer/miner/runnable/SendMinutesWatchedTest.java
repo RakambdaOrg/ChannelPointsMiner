@@ -1,6 +1,7 @@
 package fr.raksrinana.channelpointsminer.miner.runnable;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.Game;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
@@ -52,6 +53,8 @@ class SendMinutesWatchedTest{
 	@Mock
 	private TwitchApi twitchApi;
 	@Mock
+	private GQLApi gqlApi;
+	@Mock
 	private Streamer streamer;
 	@Mock
 	private TwitchLogin twitchLogin;
@@ -67,8 +70,9 @@ class SendMinutesWatchedTest{
 		lenient().when(miner.getTwitchApi()).thenReturn(twitchApi);
 		lenient().when(miner.getStreamers()).thenReturn(List.of(streamer));
 		lenient().when(miner.getTwitchLogin()).thenReturn(twitchLogin);
+		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		
-		lenient().when(twitchLogin.getUserIdAsInt()).thenReturn(USER_ID);
+		lenient().when(twitchLogin.getUserIdAsInt(gqlApi)).thenReturn(USER_ID);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
 		lenient().when(streamer.getSpadeUrl()).thenReturn(spadeUrl);

@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.miner;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.inventory.InventoryData;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

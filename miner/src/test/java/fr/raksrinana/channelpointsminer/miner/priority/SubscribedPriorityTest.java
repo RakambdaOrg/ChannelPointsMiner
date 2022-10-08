@@ -1,6 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.priority;
 
-import fr.raksrinana.channelpointsminer.miner.api.gql.data.types.CommunityPointsMultiplier;
+import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsMultiplier;
 import fr.raksrinana.channelpointsminer.miner.miner.IMiner;
 import fr.raksrinana.channelpointsminer.miner.streamer.Streamer;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
@@ -11,9 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.List;
-import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode.SUB_T1;
-import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode.SUB_T2;
-import static fr.raksrinana.channelpointsminer.miner.api.gql.data.types.MultiplierReasonCode.SUB_T3;
+import static fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T1;
+import static fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T2;
+import static fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T3;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 

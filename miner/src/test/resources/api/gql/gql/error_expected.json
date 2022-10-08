@@ -1,0 +1,12 @@
+{
+  "errors": [
+    {
+      "message": "service timeout"
+    }
+  ],
+  "extensions": {
+    "durationMilliseconds": 2,
+    "operationName": "operation-name",
+    "requestID": "request-id"
+  }
+}

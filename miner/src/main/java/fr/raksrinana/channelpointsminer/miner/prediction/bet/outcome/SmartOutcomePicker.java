@@ -1,5 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
@@ -26,7 +29,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Log4j2
+@JsonClassDescription("Choose the outcome with the most users. However, if the two most picked outcomes have a user count similar, choose the outcome with the least points (higher odds).")
 public class SmartOutcomePicker implements IOutcomePicker{
+	@JsonProperty(value = "percentageGap", required = true)
+	@JsonPropertyDescription("The percent gap of the user count, as decimal, between 0 and 1. (i.e. Setting this to 0.1, will mean that the condition switches states when the difference between sides is 10%, so 45% of the users on one side and 55% on the other).")
 	private float percentageGap;
 	
 	@Override

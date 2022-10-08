@@ -1,0 +1,51 @@
+= Docker
+
+You can use the official image link:https://hub.docker.com/r/mrcraftcod/channel-points-miner[mrcraftcod/channel-points-miner,window="_blank"].
+Main branch as well as develop branch are available with their respective tags.
+
+Sometimes some experimental branches are also built to be experimented with.
+
+.Basic docker-compose example
+[source,yml]
+----
+version: "3"
+
+services:
+  miner:
+    image: mrcraftcod/channel-points-miner:latest
+    command:
+      - "--settings"
+      - "/usr/src/app/config.json"
+    volumes:
+      - ./authentication:/usr/src/app/authentication
+      - ./streamers:/usr/src/app/streamers
+      - ./config.json:/usr/src/app/config.json:ro
+----
+
+.xref:configuration/logger.adoc[Custom logger] docker-compose example
+[source,yml]
+----
+version: "3"
+
+services:
+  miner:
+    image: mrcraftcod/channel-points-miner:latest
+    command:
+      - "--settings"
+      - "/usr/src/app/config.json"
+    environment:
+      JDK_JAVA_OPTIONS: "-Dlog4j.configurationFile=/usr/src/app/log4j2.xml"
+    volumes:
+      - ./authentication:/usr/src/app/authentication
+      - ./streamers:/usr/src/app/streamers
+      - ./config.json:/usr/src/app/config.json:ro
+      - ./log4j2.xml:/usr/src/app/log4j2.xml:ro
+----
+
+[WARNING]
+====
+If you have 2FA enabled or using selenium, you'll have to enter information in the console for the first run in order to log in.
+
+As Docker doesn't give an interactive shell by default you'll have to run the container in interactive mode yourself the first time.
+More can be read about it in link:https://github.com/RakSrinaNa/ChannelPointsMiner/issues/87#issuecomment-988276214[#87].
+====

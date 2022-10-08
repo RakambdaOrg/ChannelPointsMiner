@@ -9,10 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +23,10 @@ public class Summary{
 	private int count;
 	@JsonProperty("last_read_all")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
-	private ZonedDateTime lastSeenAt;
+	@Nullable
+	private ZonedDateTime lastReadAll;
+	@JsonProperty("last_seen")
+	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
+	@Nullable
+	private ZonedDateTime lastSeen;
 }
