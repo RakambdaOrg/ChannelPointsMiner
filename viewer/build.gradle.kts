@@ -44,6 +44,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD_PARALLEL
+    showPassed = false
+    showPassedStandardStreams = false
+}
+
 tasks {
     test {
         useJUnitPlatform()

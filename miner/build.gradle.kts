@@ -109,6 +109,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD_PARALLEL
+    showPassed = false
+    showPassedStandardStreams = false
+}
+
 jib {
     from {
         image = "eclipse-temurin:17-jdk"
