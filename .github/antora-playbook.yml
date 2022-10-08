@@ -15,6 +15,11 @@ asciidoc:
     page-pagination: ''
 runtime:
   fetch: true
+  log:
+    level: all
+output:
+  clean: true
+  dir: ./antora-docs
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
