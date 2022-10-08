@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,18 +15,18 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v2
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Install Node.js
+        uses: actions/setup-node@v2
         with:
-          ruby-version: 2.7
-      - name: Setup asciidoctor
-        uses: reitzig/actions-asciidoctor@v2.0.0
-      - name: Build pages
-        run: asciidoctor README.adoc
+          node-version: '16'
+      - name: Install Antora
+        run: npm i antora asciidoctor-kroki
+      - name: Generate Site
+        run: npx antora .github/antora-playbook.yml
       - name: Prepare upload
         run: |
           mkdir pages
-          cp README.html pages/index.html
+          cp -R .github/antora-docs/ pages/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

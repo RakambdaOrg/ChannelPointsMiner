@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.priority;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.gql.data.types.Channel;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @SuperBuilder
 @NoArgsConstructor
 @Log4j2
+@JsonClassDescription("Return a score if a drop campaign may be progressed by watching this stream.")
 public class DropsPriority extends IStreamerPriority{
 	@Override
 	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){

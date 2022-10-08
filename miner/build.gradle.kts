@@ -38,6 +38,23 @@ dependencies {
     testImplementation(libs.rerunnerJupiter)
 }
 
+sourceSets {
+    create("schema") {
+        java {
+            compileClasspath += sourceSets.main.get().compileClasspath
+            compileClasspath += sourceSets.main.get().output
+
+            runtimeClasspath += sourceSets.main.get().compileClasspath
+            runtimeClasspath += sourceSets.main.get().runtimeClasspath
+            runtimeClasspath += sourceSets.main.get().output
+
+            dependencies {
+                implementation(libs.bundles.jsonschemaGenerator)
+            }
+        }
+    }
+}
+
 tasks {
     processResources {
         expand(project.properties)

@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet.action;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Predictor;
 import fr.raksrinana.channelpointsminer.miner.prediction.bet.Placement;
@@ -20,6 +21,7 @@ import java.util.Comparator;
 @Builder
 @AllArgsConstructor
 @Log4j2
+@JsonClassDescription("Ensure that the amount placed is lower than the top predictor.")
 public class StealthPredictionAction implements IPredictionAction{
 	@Override
 	public void perform(@NotNull Placement placement) throws BetPlacementException{

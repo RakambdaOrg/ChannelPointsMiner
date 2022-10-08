@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Predictor;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 @AllArgsConstructor
 @Log4j2
+@JsonClassDescription("Choose the outcome with the biggest predictor.")
 public class BiggestPredictorOutcomePicker implements IOutcomePicker{
 	@Override
 	@NotNull

@@ -1,6 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.config;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,9 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString
+@JsonClassDescription("Global configuration.")
 public class Configuration{
 	@NotNull
-	@JsonProperty("accounts")
-	@Comment(value = "List of account configurations.")
+	@JsonProperty(value = "accounts", required = true)
+	@JsonPropertyDescription("List of account configurations.")
 	private List<AccountConfiguration> accounts;
 }

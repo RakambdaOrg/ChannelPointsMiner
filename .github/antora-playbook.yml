@@ -1,0 +1,23 @@
+site:
+  title: ChannelPointsMiner
+  url: https://raksrinana.github.io/ChannelPointsMiner/
+  start_page: miner::index.adoc
+content:
+  sources:
+    - url: https://github.com/RakSrinaNa/ChannelPointsMiner.git
+      branches: [ doc/antora ]
+      start_paths:
+        - miner/docs
+        - viewer/docs
+asciidoc:
+  extensions:
+    - asciidoctor-kroki
+runtime:
+  fetch: true
+output:
+  clean: true
+  dir: ./antora-docs
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true

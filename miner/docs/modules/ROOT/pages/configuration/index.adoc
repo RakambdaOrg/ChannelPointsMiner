@@ -1,0 +1,43 @@
+= Configuration
+
+Configuration is split into several parts.
+First a global configuration that'll define the accounts to use for mining as well as default settings for each channel mined.
+Then each mined channel can override the default settings.
+
+== Streamers to mine
+
+You have two options to load streamers in the mining list:
+
+* Be specific and define streamer settings for each streamer you want to watch.
+For this simply add a JSON file withing one of the streamer config directories with the name of the streamer (eg: `my_streamer.json`).
+The content of the file will override the default streamer settings for the keys that are redefined.
+If you want to use the default streamer settings simply use an empty file or put an empty JSON object in the file (ie: `{}`).
+* Load them from the follows list.
+Every follow will be loaded and default settings will be applied to them.
+
+== JSON Schema
+
+Schema provide descriptions for all fields.
+You can also validate your configuration with the provided schemas (there's some online tools like link:https://www.jsonschemavalidator.net[]).
+
+=== Global configuration
+
+.Global configuration JSON schema
+[%collapsible]
+====
+[source,json]
+----
+include::example$global-config-schema.json[]
+----
+====
+
+=== Streamer configuration
+
+.Streamer configuration JSON schema
+[%collapsible]
+====
+[source,json]
+----
+include::example$streamer-config-schema.json[]
+----
+====

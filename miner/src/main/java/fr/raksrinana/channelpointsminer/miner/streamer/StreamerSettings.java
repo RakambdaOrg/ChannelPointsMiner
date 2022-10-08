@@ -1,9 +1,11 @@
 package fr.raksrinana.channelpointsminer.miner.streamer;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import fr.raksrinana.channelpointsminer.miner.priority.IStreamerPriority;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,34 +25,44 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 @ToString
+@JsonClassDescription("Streamer settings")
 public class StreamerSettings{
 	@JsonProperty("enabled")
+	@JsonPropertyDescription("Enable mining for this streamer. Default: true")
 	@Builder.Default
 	private boolean enabled = true;
 	@JsonProperty("makePredictions")
+	@JsonPropertyDescription("Place predictions. Default: false")
 	@Builder.Default
 	private boolean makePredictions = false;
 	@JsonProperty("followRaid")
+	@JsonPropertyDescription("Follow raids to get bonus points. Default: false")
 	@Builder.Default
 	private boolean followRaid = false;
 	@JsonProperty("participateCampaigns")
+	@JsonPropertyDescription("Participate in campaigns and claim rewards (drops). Default: false")
 	@Builder.Default
 	private boolean participateCampaigns = false;
 	@JsonProperty("claimMoments")
+	@JsonPropertyDescription("Claim moments. Default: false")
 	@Builder.Default
 	private boolean claimMoments = false;
-	@JsonProperty("joinIrc")
+	@JsonProperty("joinChat")
+	@JsonPropertyDescription("Join chat. Default: false")
 	@Builder.Default
 	private boolean joinIrc = false;
 	@JsonProperty("index")
+	@JsonPropertyDescription("The streamer index. This value is used when streamers have the same score from the defined priorities, the one with the lowest index will be picked first. Default: 2147483647")
 	@Builder.Default
 	private int index = Integer.MAX_VALUE;
 	@JsonProperty("predictions")
+	@JsonPropertyDescription("Prediction settings.")
+	@JsonMerge
 	@NotNull
 	@Builder.Default
-	@JsonMerge
 	private PredictionSettings predictions = new PredictionSettings();
 	@JsonProperty("priorities")
+	@JsonPropertyDescription("A list of conditions that, if met, will prioritize this streamer.")
 	@Builder.Default
 	@NotNull
 	private List<IStreamerPriority> priorities = new ArrayList<>();

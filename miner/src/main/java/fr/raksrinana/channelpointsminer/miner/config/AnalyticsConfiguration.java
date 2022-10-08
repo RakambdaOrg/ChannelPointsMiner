@@ -1,6 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.config;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,17 +15,18 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 @Builder
 @ToString
+@JsonClassDescription("Analytics settings define a way to collect data on your twitch account as time passes.")
 public class AnalyticsConfiguration{
 	@JsonProperty("enabled")
-	@Comment(value = "Enable or disable data collection")
+	@JsonPropertyDescription("Enable or disable data collection. Default: false")
 	@Builder.Default
 	private boolean enabled = false;
 	@JsonProperty("database")
-	@Comment(value = "Database settings")
+	@JsonPropertyDescription("Database settings.")
 	@Nullable
 	private DatabaseConfiguration database;
 	@JsonProperty("recordChatsPredictions")
-	@Comment(value = "Record other chat members predictions.")
+	@JsonPropertyDescription("Record other chat members predictions. Default: false")
 	@Builder.Default
 	private boolean recordChatsPredictions = false;
 }

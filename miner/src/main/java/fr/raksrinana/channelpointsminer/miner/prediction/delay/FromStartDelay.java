@@ -1,5 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.delay;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import lombok.AllArgsConstructor;
@@ -20,7 +23,10 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Log4j2
+@JsonClassDescription("Place the bet a certain amount of time after the beginning of the original prediction.")
 public class FromStartDelay implements IDelayCalculator{
+	@JsonProperty(value = "seconds", required = true)
+	@JsonPropertyDescription("Number of seconds after the start to place the bet.")
 	private int seconds;
 	
 	@Override

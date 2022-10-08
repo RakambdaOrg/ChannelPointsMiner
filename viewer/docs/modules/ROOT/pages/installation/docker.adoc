@@ -1,0 +1,22 @@
+= Docker
+
+You can use the official image link:https://hub.docker.com/r/mrcraftcod/channel-points-miner-viewer[mrcraftcod/channel-points-miner-viewer,window="_blank"].
+Main branch as well as develop branch are available with their respective tags.
+
+Sometimes some experimental branches are also built to be experimented with.
+
+Here's an example dockerfile:
+
+.Basic docker-compose example
+[source,yml]
+----
+version: "3"
+
+services:
+  viewer:
+    image: mrcraftcod/channel-points-miner-viewer:latest
+    environment:
+        JDK_JAVA_OPTIONS: "-Dspring.config.location=file:/usr/src/app/application-docker.yml -Dspring.profiles.active=docker"
+    volumes:
+      - ./application-docker.yml:/usr/src/app/application-docker.yml:ro
+----

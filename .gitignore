@@ -7,6 +7,8 @@
 /target
 bin/
 
+/.github/antora-docs
+
 *.iml
 /analytics.db
 /config.json
