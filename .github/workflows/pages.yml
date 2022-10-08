@@ -27,7 +27,7 @@ jobs:
       - name: Prepare upload
         run: |
           mkdir pages
-          cp -R .github/antora-docs/ pages/
+          cp -R .github/antora-docs/ pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
