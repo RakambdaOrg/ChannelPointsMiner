@@ -15,11 +15,6 @@ asciidoc:
     page-pagination: ''
 runtime:
   fetch: true
-  log:
-    format: pretty
-    level: all
-    destination:
-      file: stdout
 output:
   clean: true
   dir: ./antora-docs
