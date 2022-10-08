@@ -17,6 +17,8 @@ runtime:
   fetch: true
   log:
     level: all
+    destination:
+      file: stdout
 output:
   clean: true
   dir: ./antora-docs
