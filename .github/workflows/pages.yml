@@ -21,6 +21,7 @@ jobs:
           playbook: '.github/antora-playbook.yml'
       - name: Prepare upload
         run: |
+          ls -R
           mkdir pages
           cp -R docs-site/build/site pages/
       - name: Upload artifact
