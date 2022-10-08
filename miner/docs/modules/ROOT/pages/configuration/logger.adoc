@@ -1,0 +1,29 @@
+= Logger
+
+You can define yourself how the logs looks like by supplying your own link:https://logging.apache.org/log4j/2.x/manual/configuration.html[Log4j2 configuration file].
+
+Some examples are provided in the `src/examples/loggers` folder.
+
+When you configure your link:https://logging.apache.org/log4j/2.x/manual/layouts.html[patterns] you'll of course have access to all the default fields possible like the date, message, etc.
+In addition to that the context will be populated with some keys depending on the available data (in the case of the Pattern layout, see `%X`).
+These keys are listed below:
+
+[cols="1,3"]
+|===
+|Key |Description
+
+|account_name
+|The account used to do the mining.
+
+|streamer_name
+|The name of the streamer for which the message is linked to.
+
+|websocket_id
+|The id of the websocket that is at the origin of the message sent/received on the websocket.
+
+|websocket_topic
+|Topic name of the message received on the websocket.
+
+|event_id
+|Event id of a prediction.
+|===

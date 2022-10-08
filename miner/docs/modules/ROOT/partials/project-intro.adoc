@@ -1,0 +1,19 @@
+The main objective of this miner is to acquire Twitch channel points automatically.
+Other forms of point, like those provided by bots through IRC (Streamlabs, etc.), isn't in the scope of the miner.
+
+* Watch streams for you, earning the baseline points as you watch.
+* Get the watch streak points by watching streams regularly.
+* Claim bonus points when they are available.
+* Follow raids.
+* Participate and claim link:https://www.twitch.tv/drops/campaigns[campaigns].
+* Join IRC chat.
+* Participate in predictions and record peoples predictions.
+* Claim link:https://help.twitch.tv/s/article/moments[moments].
+
+Limits:
+
+* Twitch makes it so that only 2 streamers can be watched at once.
+However, actions that are not watching are not limited.
+This includes raids and predictions.
+
+This project heavily inspired by link:https://github.com/Tkd-Alex/Twitch-Channel-Points-Miner-v2[Tkd-Alex/Twitch-Channel-Points-Miner-v2,window="_blank"], just doing it my own way.

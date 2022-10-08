@@ -6,6 +6,9 @@
 /streamers
 /target
 bin/
+/.github/antora-docs
+
+/.github/antora-docs
 
 *.iml
 /analytics.db

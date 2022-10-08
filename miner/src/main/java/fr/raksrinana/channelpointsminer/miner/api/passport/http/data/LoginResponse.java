@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.api.passport.data;
+package fr.raksrinana.channelpointsminer.miner.api.passport.http.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

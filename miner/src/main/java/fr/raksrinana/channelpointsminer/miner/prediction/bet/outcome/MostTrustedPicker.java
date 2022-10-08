@@ -1,5 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet.outcome;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.raksrinana.channelpointsminer.miner.database.IDatabase;
@@ -25,12 +28,19 @@ import java.util.Comparator;
 @NoArgsConstructor
 @AllArgsConstructor
 @Log4j2
+@JsonClassDescription("Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordChatsPredictions to be activated.")
 public class MostTrustedPicker implements IOutcomePicker{
 	
+	@JsonProperty("minTotalBetsPlacedByUser")
+	@JsonPropertyDescription("Only user with at least this number of bets are considered in the calculation. Default: 5")
 	@Builder.Default
 	private int minTotalBetsPlacedByUser = 5;
+	@JsonProperty("minTotalBetsPlacedOnPrediction")
+	@JsonPropertyDescription("Need at least x bets placed to bet on this prediction. Default: 10")
 	@Builder.Default
 	private int minTotalBetsPlacedOnPrediction = 10;
+	@JsonProperty("minTotalBetsPlacedOnOutcome")
+	@JsonPropertyDescription("Need at least x bets placed the chosen outcome. Default: 5")
 	@Builder.Default
 	private int minTotalBetsPlacedOnOutcome = 5;
 	

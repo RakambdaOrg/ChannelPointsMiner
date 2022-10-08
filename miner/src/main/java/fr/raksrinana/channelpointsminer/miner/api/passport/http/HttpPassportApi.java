@@ -1,13 +1,16 @@
-package fr.raksrinana.channelpointsminer.miner.api.passport;
+package fr.raksrinana.channelpointsminer.miner.api.passport.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import fr.raksrinana.channelpointsminer.miner.api.passport.data.LoginRequest;
-import fr.raksrinana.channelpointsminer.miner.api.passport.data.LoginResponse;
+import fr.raksrinana.channelpointsminer.miner.api.passport.IPassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingAuthy2FA;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingTwitchGuard;
+import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginRequest;
+import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginResponse;
+import fr.raksrinana.channelpointsminer.miner.config.login.HttpLoginMethod;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.UnirestInstance;
@@ -26,7 +29,7 @@ import static kong.unirest.core.ContentType.APPLICATION_JSON;
 import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 
 @Log4j2
-public class PassportApi{
+public class HttpPassportApi implements IPassportApi{
 	public static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String ENDPOINT = "https://passport.twitch.tv";
 	private final UnirestInstance unirest;
@@ -35,18 +38,13 @@ public class PassportApi{
 	private final boolean ask2FA;
 	private final Path userAuthenticationFile;
 	
-	/**
-	 * @param username             Username of the user.
-	 * @param password             Password of the user.
-	 * @param authenticationFolder File containing authentication to restore.
-	 */
-	public PassportApi(@NotNull UnirestInstance unirest, @NotNull String username, @NotNull String password, @NotNull Path authenticationFolder, boolean ask2FA){
+	public HttpPassportApi(@NotNull UnirestInstance unirest, @NotNull String username, @NotNull HttpLoginMethod httpLoginMethod){
 		this.unirest = unirest;
 		this.username = username;
-		this.password = password;
-		this.ask2FA = ask2FA;
 		
-		userAuthenticationFile = authenticationFolder.resolve(username.toLowerCase(Locale.ROOT) + ".json");
+		password = httpLoginMethod.getPassword();
+		ask2FA = httpLoginMethod.isUse2Fa();
+		userAuthenticationFile = httpLoginMethod.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
 	}
 	
 	/**

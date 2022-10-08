@@ -1,0 +1,3 @@
+= Miner
+
+include::partial$project-intro.adoc[]

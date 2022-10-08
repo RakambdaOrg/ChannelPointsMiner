@@ -1,6 +1,8 @@
 package fr.raksrinana.channelpointsminer.miner.priority;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -30,8 +32,10 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @ToString
 @EqualsAndHashCode
 @SuperBuilder
+@JsonClassDescription("Priorities is a way to prioritize streamers among each others to mine one over another based on some conditions.")
 public abstract class IStreamerPriority{
-	@JsonProperty("score")
+	@JsonProperty(value = "score", required = true)
+	@JsonPropertyDescription("Score to give.")
 	private int score;
 	
 	public abstract int getScore(@NotNull IMiner miner, @NotNull Streamer streamer);

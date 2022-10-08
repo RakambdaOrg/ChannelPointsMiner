@@ -5,6 +5,7 @@ log4j2-slf4j-version = "2.19.0"
 unirest-version = "4.0.0-RC4"
 picocli-version = "4.6.3"
 jackson-version = "2.13.4"
+jsonschema-generator-version = "4.27.0"
 httpclient-version = "4.5.13"
 lang3-version = "3.12.0"
 jetbrains-annotations-version = "23.0.0"
@@ -21,6 +22,7 @@ mariadb-version = "3.0.8"
 sqlite-version = "3.39.3.0"
 rerunner-jupiter-version = "2.1.6"
 flyway-version = "9.4.0"
+selenide-version = "6.7.4"
 
 shadow-version = "7.1.2"
 names-version = "0.42.0"
@@ -29,6 +31,7 @@ jib-version = "3.3.0"
 git-properties-version = "2.4.1"
 springboot-version = "2.7.4"
 springboot-dependencies-version = "1.0.14.RELEASE"
+test-logger-version = "3.2.0"
 
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
@@ -41,6 +44,8 @@ picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-ver
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson-version" }
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jackson-version" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-version" }
+jsonschema-generator = { group = "com.github.victools", name = "jsonschema-generator", version.ref = "jsonschema-generator-version" }
+jsonschema-module-jackson = { group = "com.github.victools", name = "jsonschema-module-jackson", version.ref = "jsonschema-generator-version" }
 httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "httpclient-version" }
 lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
@@ -51,6 +56,7 @@ mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.re
 sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-version" }
 flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway-version" }
 flyway-mysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway-version" }
+selenide = { group = "com.codeborne", name = "selenide", version.ref = "selenide-version" }
 
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
@@ -70,6 +76,7 @@ jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]
 log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-objectmapper-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
+jsonschemaGenerator = ["jsonschema-generator", "jsonschema-module-jackson"]
 junit = ["junit-api", "junit-params"]
 mockito = ["mockito-core", "mockito-inline", "mockito-junit"]
 jsonUnit = ["json-unit", "json-unit-assertj"]
@@ -83,3 +90,4 @@ jib = { id = "com.google.cloud.tools.jib", version.ref = "jib-version" }
 gitProperties = { id = "com.gorylenko.gradle-git-properties", version.ref = "git-properties-version" }
 springboot = { id = "org.springframework.boot", version.ref = "springboot-version" }
 springbootDependencies = { id = "io.spring.dependency-management", version.ref = "springboot-dependencies-version" }
+testLogger = { id = "com.adarshr.test-logger", version.ref = "test-logger-version" }

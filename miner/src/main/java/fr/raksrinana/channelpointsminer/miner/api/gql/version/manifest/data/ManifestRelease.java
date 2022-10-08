@@ -31,5 +31,6 @@ public class ManifestRelease{
 	private String stage;
 	@JsonProperty("files")
 	@NotNull
+	@Builder.Default
 	private List<String> files = new ArrayList<>();
 }

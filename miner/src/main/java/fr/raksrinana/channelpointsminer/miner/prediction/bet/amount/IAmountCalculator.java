@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.prediction.bet.amount;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
@@ -13,6 +14,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@JsonSubTypes.Type(value = ConstantAmount.class, name = "constant"),
 		@JsonSubTypes.Type(value = PercentageAmount.class, name = "percentage"),
 })
+@JsonClassDescription("Prediction amount calculator. The minimum amount that can be placed is 10.")
 public interface IAmountCalculator{
 	int calculateAmount(@NotNull BettingPrediction bettingPrediction, @NotNull Outcome outcome) throws BetPlacementException;
 }

@@ -1,4 +1,4 @@
-package fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http;
+package fr.raksrinana.channelpointsminer.miner.api.gql.integrity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

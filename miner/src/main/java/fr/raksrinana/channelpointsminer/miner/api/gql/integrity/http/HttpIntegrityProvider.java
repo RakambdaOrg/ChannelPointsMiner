@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
+import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.VersionException;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
