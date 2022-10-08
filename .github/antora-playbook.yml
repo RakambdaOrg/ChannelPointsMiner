@@ -1,0 +1,21 @@
+site:
+  title: ChannelPointsMiner
+  url: https://raksrinana.github.io/ChannelPointsMiner/
+  start_page: miner::index.adoc
+content:
+  sources:
+    - url: https://gitlab.com/RakSrinaNa/ChannelPointsMiner.git
+      branches: [ main, develop, doc/antora ]
+      start_path: docs
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: '-'
+    page-pagination: ''
+runtime:
+  fetch: true
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
