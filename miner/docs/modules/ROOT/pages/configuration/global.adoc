@@ -6,6 +6,15 @@ Schema of the file is available in the xref:configuration/index.adoc[Configurati
 
 Examples of this file can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
 
+== Login method
+
+[WARNING]
+====
+Twitch changed their authentication method in September 2022, now requiring calls to an integrity endpoint.
+Old methods using HTTP may not work anymore.
+You may therefore want to use the BROWSER method, requiring a selenium node/grid to be available.
+====
+
 == Streamer directories
 
 To override streamer settings for a given streamer, you can place a JSON file within one of the defined directories, named by the streamer name and containing the overrides.
