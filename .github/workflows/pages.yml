@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/antora
   workflow_dispatch:
 
 jobs:
