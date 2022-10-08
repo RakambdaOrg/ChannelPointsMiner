@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.lombok)
     alias(libs.plugins.jib)
     alias(libs.plugins.gitProperties)
+    alias(libs.plugins.testLogger)
 }
 
 dependencies {

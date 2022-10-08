@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.springboot)
     alias(libs.plugins.springbootDependencies)
     alias(libs.plugins.jib)
+    alias(libs.plugins.testLogger)
 }
 
 configurations {
