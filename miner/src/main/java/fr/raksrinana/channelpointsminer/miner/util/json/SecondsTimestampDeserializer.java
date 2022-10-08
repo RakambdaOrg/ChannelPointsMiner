@@ -6,8 +6,12 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 public class SecondsTimestampDeserializer extends StdDeserializer<Instant>{
+	
+	public static final BigDecimal MILLISECONDS_IN_SECOND = new BigDecimal(1000);
+	
 	protected SecondsTimestampDeserializer(){
 		this(null);
 	}
@@ -18,11 +22,12 @@ public class SecondsTimestampDeserializer extends StdDeserializer<Instant>{
 	
 	@Override
 	public Instant deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
-		var value = p.getValueAsDouble(-1D);
-		if(value < 0){
-			return null;
-		}
-		var bigDecimal = new BigDecimal(value);
-		return Instant.ofEpochSecond(bigDecimal.longValue());
+		return Optional.ofNullable(p.getValueAsString())
+				.filter(n -> !n.isBlank())
+				.map(BigDecimal::new)
+				.map(n -> n.multiply(MILLISECONDS_IN_SECOND))
+				.map(BigDecimal::longValue)
+				.map(Instant::ofEpochMilli)
+				.orElse(null);
 	}
 }
