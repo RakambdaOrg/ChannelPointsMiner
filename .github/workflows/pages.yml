@@ -16,11 +16,9 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Antora build
-        uses: rgn/antora-build-action@v1
+        uses: rgn/antora-build-action@v0.1
         with:
           playbook: '.github/antora-playbook.yml'
-      - name: Setup asciidoctor
-        uses: reitzig/actions-asciidoctor@v2.0.0
       - name: Prepare upload
         run: |
           mkdir pages
