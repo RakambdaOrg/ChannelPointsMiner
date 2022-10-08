@@ -4,7 +4,7 @@ site:
   start_page: miner::index.adoc
 content:
   sources:
-    - url: https://gitlab.com/RakSrinaNa/ChannelPointsMiner.git
+    - url: https://github.com/RakSrinaNa/ChannelPointsMiner.git
       branches: [ main, develop, doc/antora ]
       start_path: docs
 asciidoc:
