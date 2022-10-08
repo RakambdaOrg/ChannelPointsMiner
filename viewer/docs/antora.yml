@@ -1,5 +1,5 @@
 name: viewer
 title: Viewer
-version: ~
+version: true
 nav:
   - modules/ROOT/nav.adoc
