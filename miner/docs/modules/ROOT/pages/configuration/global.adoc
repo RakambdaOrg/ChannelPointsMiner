@@ -12,7 +12,7 @@ Examples of this file can be found in link:https://github.com/RakSrinaNa/Channel
 ====
 Twitch changed their authentication method in September 2022, now requiring calls to an integrity endpoint.
 Old methods using `HTTP` may not work anymore.
-You may therefore want to use the `BROWSER` method, requiring a selenium node/grid to be available.
+You may therefore want to use the `BROWSER` method, requiring a selenium node/grid to be available (beware of `SE_NODE_GRID_URL` as CDP connection is required).
 ====
 
 == Streamer directories
