@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +77,24 @@ class BrowserPassportApiTest{
 	}
 	
 	@Test
+	void loginIsExtractedWithCookies() throws LoginException, IOException{
+		try(var browserFactory = mockStatic(BrowserFactory.class)){
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			
+			var pathStr = "/path/to/cookies.json";
+			when(browserConfiguration.getCookiesPath()).thenReturn(pathStr);
+			
+			assertThat(tested.login()).isEqualTo(TwitchLogin.builder()
+					.username(USERNAME)
+					.accessToken(ACCESS_TOKEN)
+					.cookies(COOKIES)
+					.build());
+			
+			verify(browserController).login(Paths.get(pathStr));
+		}
+	}
+	
+	@Test
 	void exceptionBecauseNoLogin(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
 			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
@@ -101,7 +121,7 @@ class BrowserPassportApiTest{
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
 			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
 			
-			doThrow(new LoginException("For tests")).when(browserController).login();
+			doThrow(new LoginException("For tests")).when(browserController).login(null);
 			
 			assertThrows(LoginException.class, tested::login);
 		}
@@ -114,7 +134,7 @@ class BrowserPassportApiTest{
 			
 			when(browser.setup()).thenThrow(new RuntimeException("For tests"));
 			
-			assertThrows(RuntimeException.class, () -> tested.login());
+			assertThrows(RuntimeException.class, tested::login);
 		}
 	}
 }
