@@ -632,6 +632,10 @@
                         "type" : "string",
                         "description" : "Binary of the browser to use. Used only if not using a REMOTE_XXX driver."
                       },
+                      "cookiesPath" : {
+                        "type" : "string",
+                        "description" : "Path to a JSON file containing your exported cookies."
+                      },
                       "disableShm" : {
                         "type" : "boolean",
                         "description" : "Disable SHM usage. Default: false"
