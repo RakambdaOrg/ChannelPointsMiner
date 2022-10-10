@@ -314,7 +314,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	@Override
 	@NotNull
 	public String getUsername(){
-		return accountConfiguration.getUsername();
+		return twitchLogin.getUsername();
 	}
 	
 	@Override
