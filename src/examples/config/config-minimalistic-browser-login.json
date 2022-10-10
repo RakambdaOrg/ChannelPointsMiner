@@ -5,7 +5,7 @@
       "loginMethod" : {
         "type" : "browser",
         "driver" : "CHROME",
-        "userDir" : "/home/seluser/profiles/channelpointsminer-rsndiscord"
+        "userDir" : "/home/seluser/profiles/channelpointsminer-username"
       },
       "loadFollows" : true
     }
