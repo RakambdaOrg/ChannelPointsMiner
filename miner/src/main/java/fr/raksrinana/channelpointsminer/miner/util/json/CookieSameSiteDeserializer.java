@@ -18,12 +18,9 @@ public class CookieSameSiteDeserializer extends StdDeserializer<String>{
 	@Override
 	public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
 		var value = p.getValueAsString();
-		if(Objects.isNull(value) || value.isBlank()){
-			return null;
-		}
 		if(Objects.equals("no_restriction", value)){
 			return "None";
 		}
-		return value;
+		return "Lax";
 	}
 }

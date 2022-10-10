@@ -11,10 +11,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ParallelizableTest
 class CookieSameSiteDeserializerTest extends DeserializerTest<String>{
+	
+	public static final String DEFAULT_VALUE = "Lax";
+	
 	private static Stream<Arguments> mappings(){
 		return Stream.of(
 				Arguments.arguments("no_restriction", "None"),
-				Arguments.arguments("other", "other")
+				Arguments.arguments("unspecified", DEFAULT_VALUE),
+				Arguments.arguments("other", DEFAULT_VALUE)
 		);
 	}
 	
@@ -26,7 +30,7 @@ class CookieSameSiteDeserializerTest extends DeserializerTest<String>{
 	
 	@Test
 	void empty(){
-		assertThat(deserialize("\"\"")).isNull();
+		assertThat(deserialize("\"\"")).isEqualTo(DEFAULT_VALUE);
 	}
 	
 	@Override
