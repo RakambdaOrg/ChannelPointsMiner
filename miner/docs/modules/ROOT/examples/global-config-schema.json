@@ -1,541 +1,541 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$defs": {
-    "Path": {
-      "type": "object"
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "$defs" : {
+    "Path" : {
+      "type" : "object"
     }
   },
-  "type": "object",
-  "properties": {
-    "accounts": {
-      "description": "List of account configurations.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "analytics": {
-            "allOf": [
+  "type" : "object",
+  "properties" : {
+    "accounts" : {
+      "description" : "List of account configurations.",
+      "type" : "array",
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "analytics" : {
+            "allOf" : [
               {
-                "type": "object",
-                "properties": {
-                  "database": {
-                    "allOf": [
+                "type" : "object",
+                "properties" : {
+                  "database" : {
+                    "allOf" : [
                       {
-                        "type": "object",
-                        "properties": {
-                          "jdbcUrl": {
-                            "type": "string",
-                            "description": "JDBC connection URL."
+                        "type" : "object",
+                        "properties" : {
+                          "jdbcUrl" : {
+                            "type" : "string",
+                            "description" : "JDBC connection URL."
                           },
-                          "maxPoolSize": {
-                            "type": "integer",
-                            "description": "Maximum number of connections to the database. Default: 10"
+                          "maxPoolSize" : {
+                            "type" : "integer",
+                            "description" : "Maximum number of connections to the database. Default: 10"
                           },
-                          "password": {
-                            "type": "string",
-                            "description": "Database password."
+                          "password" : {
+                            "type" : "string",
+                            "description" : "Database password."
                           },
-                          "username": {
-                            "type": "string",
-                            "description": "Database username."
+                          "username" : {
+                            "type" : "string",
+                            "description" : "Database username."
                           }
                         },
-                        "description": "Database configuration."
+                        "description" : "Database configuration."
                       }, {
-                        "description": "Database settings."
+                        "description" : "Database settings."
                       }
                     ]
                   },
-                  "enabled": {
-                    "type": "boolean",
-                    "description": "Enable or disable data collection. Default: false"
+                  "enabled" : {
+                    "type" : "boolean",
+                    "description" : "Enable or disable data collection. Default: false"
                   },
-                  "recordChatsPredictions": {
-                    "type": "boolean",
-                    "description": "Record other chat members predictions. Default: false"
+                  "recordChatsPredictions" : {
+                    "type" : "boolean",
+                    "description" : "Record other chat members predictions. Default: false"
                   }
                 },
-                "description": "Analytics settings define a way to collect data on your twitch account as time passes."
+                "description" : "Analytics settings define a way to collect data on your twitch account as time passes."
               }, {
-                "description": "Analytics settings, recording account's evolution, bets, predictions."
+                "description" : "Analytics settings, recording account's evolution, bets, predictions."
               }
             ]
           },
-          "chatMode": {
-            "allOf": [
+          "chatMode" : {
+            "allOf" : [
               {
-                "type": "string",
-                "enum": ["WS", "IRC"],
-                "description": "Way of joining Twitch's chat."
+                "type" : "string",
+                "enum" : ["WS", "IRC"],
+                "description" : "Way of joining Twitch's chat."
               }, {
-                "description": "Method used to join chat. Default: WS"
+                "description" : "Method used to join chat. Default: WS"
               }
             ]
           },
-          "defaultStreamerSettings": {
-            "allOf": [
+          "defaultStreamerSettings" : {
+            "allOf" : [
               {
-                "type": "object",
-                "properties": {
-                  "claimMoments": {
-                    "type": "boolean",
-                    "description": "Claim moments. Default: false"
+                "type" : "object",
+                "properties" : {
+                  "claimMoments" : {
+                    "type" : "boolean",
+                    "description" : "Claim moments. Default: false"
                   },
-                  "enabled": {
-                    "type": "boolean",
-                    "description": "Enable mining for this streamer. Default: true"
+                  "enabled" : {
+                    "type" : "boolean",
+                    "description" : "Enable mining for this streamer. Default: true"
                   },
-                  "followRaid": {
-                    "type": "boolean",
-                    "description": "Follow raids to get bonus points. Default: false"
+                  "followRaid" : {
+                    "type" : "boolean",
+                    "description" : "Follow raids to get bonus points. Default: false"
                   },
-                  "index": {
-                    "type": "integer",
-                    "description": "The streamer index. This value is used when streamers have the same score from the defined priorities, the one with the lowest index will be picked first. Default: 2147483647"
+                  "index" : {
+                    "type" : "integer",
+                    "description" : "The streamer index. This value is used when streamers have the same score from the defined priorities, the one with the lowest index will be picked first. Default: 2147483647"
                   },
-                  "joinChat": {
-                    "type": "boolean",
-                    "description": "Join chat. Default: false"
+                  "joinChat" : {
+                    "type" : "boolean",
+                    "description" : "Join chat. Default: false"
                   },
-                  "makePredictions": {
-                    "type": "boolean",
-                    "description": "Place predictions. Default: false"
+                  "makePredictions" : {
+                    "type" : "boolean",
+                    "description" : "Place predictions. Default: false"
                   },
-                  "participateCampaigns": {
-                    "type": "boolean",
-                    "description": "Participate in campaigns and claim rewards (drops). Default: false"
+                  "participateCampaigns" : {
+                    "type" : "boolean",
+                    "description" : "Participate in campaigns and claim rewards (drops). Default: false"
                   },
-                  "predictions": {
-                    "allOf": [
+                  "predictions" : {
+                    "allOf" : [
                       {
-                        "type": "object",
-                        "properties": {
-                          "actions": {
-                            "description": "Actions to perform before a bet is placed.",
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "description": "Ensure that the amount placed is lower than the top predictor.",
-                              "properties": {
-                                "type": {
-                                  "const": "stealth"
+                        "type" : "object",
+                        "properties" : {
+                          "actions" : {
+                            "description" : "Actions to perform before a bet is placed.",
+                            "type" : "array",
+                            "items" : {
+                              "type" : "object",
+                              "description" : "Ensure that the amount placed is lower than the top predictor.",
+                              "properties" : {
+                                "type" : {
+                                  "const" : "stealth"
                                 }
                               },
-                              "required": ["type"]
+                              "required" : ["type"]
                             }
                           },
-                          "amountCalculator": {
-                            "anyOf": [
+                          "amountCalculator" : {
+                            "anyOf" : [
                               {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "properties": {
-                                      "amount": {
-                                        "type": "integer",
-                                        "description": "Amount to place."
+                                    "type" : "object",
+                                    "properties" : {
+                                      "amount" : {
+                                        "type" : "integer",
+                                        "description" : "Amount to place."
                                       }
                                     },
-                                    "description": "Always bet the same amount."
+                                    "description" : "Always bet the same amount."
                                   }, {
-                                    "type": "object",
-                                    "properties": {
-                                      "type": {
-                                        "const": "constant"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "constant"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }
                                 ],
-                                "description": "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+                                "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "properties": {
-                                      "max": {
-                                        "type": "integer",
-                                        "description": "Maximum number of points."
+                                    "type" : "object",
+                                    "properties" : {
+                                      "max" : {
+                                        "type" : "integer",
+                                        "description" : "Maximum number of points."
                                       },
-                                      "percentage": {
-                                        "type": "number",
-                                        "description": "Percentage of your owned points to place, as a decimal value, between 0 and 1."
+                                      "percentage" : {
+                                        "type" : "number",
+                                        "description" : "Percentage of your owned points to place, as a decimal value, between 0 and 1."
                                       }
                                     },
-                                    "description": "Place a percentage of your points (with a limit)."
+                                    "description" : "Place a percentage of your points (with a limit)."
                                   }, {
-                                    "type": "object",
-                                    "properties": {
-                                      "type": {
-                                        "const": "percentage"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "percentage"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }
                                 ],
-                                "description": "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+                                "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
                               }
                             ]
                           },
-                          "delayCalculator": {
-                            "anyOf": [
+                          "delayCalculator" : {
+                            "anyOf" : [
                               {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "properties": {
-                                      "seconds": {
-                                        "type": "integer",
-                                        "description": "Number of seconds before the end to place the bet."
+                                    "type" : "object",
+                                    "properties" : {
+                                      "seconds" : {
+                                        "type" : "integer",
+                                        "description" : "Number of seconds before the end to place the bet."
                                       }
                                     },
-                                    "description": "Place the bet a certain amount of time before the end of the original prediction."
+                                    "description" : "Place the bet a certain amount of time before the end of the original prediction."
                                   }, {
-                                    "type": "object",
-                                    "properties": {
-                                      "type": {
-                                        "const": "fromEnd"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "fromEnd"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }
                                 ],
-                                "description": "How to calculate when to place the bet. Default: 10s from end"
+                                "description" : "How to calculate when to place the bet. Default: 10s from end"
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "properties": {
-                                      "seconds": {
-                                        "type": "integer",
-                                        "description": "Number of seconds after the start to place the bet."
+                                    "type" : "object",
+                                    "properties" : {
+                                      "seconds" : {
+                                        "type" : "integer",
+                                        "description" : "Number of seconds after the start to place the bet."
                                       }
                                     },
-                                    "description": "Place the bet a certain amount of time after the beginning of the original prediction."
+                                    "description" : "Place the bet a certain amount of time after the beginning of the original prediction."
                                   }, {
-                                    "type": "object",
-                                    "properties": {
-                                      "type": {
-                                        "const": "fromStart"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "fromStart"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }
                                 ],
-                                "description": "How to calculate when to place the bet. Default: 10s from end"
+                                "description" : "How to calculate when to place the bet. Default: 10s from end"
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "properties": {
-                                      "percent": {
-                                        "type": "number",
-                                        "description": "The percentage of the timer, as a decimal value, between 0 and 1."
+                                    "type" : "object",
+                                    "properties" : {
+                                      "percent" : {
+                                        "type" : "number",
+                                        "description" : "The percentage of the timer, as a decimal value, between 0 and 1."
                                       }
                                     },
-                                    "description": "Place the bet after 'percent'% of the original timer elapsed."
+                                    "description" : "Place the bet after 'percent'% of the original timer elapsed."
                                   }, {
-                                    "type": "object",
-                                    "properties": {
-                                      "type": {
-                                        "const": "percentage"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "percentage"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }
                                 ],
-                                "description": "How to calculate when to place the bet. Default: 10s from end"
+                                "description" : "How to calculate when to place the bet. Default: 10s from end"
                               }
                             ]
                           },
-                          "minimumPointsRequired": {
-                            "type": "integer",
-                            "description": "Minimum amount of points to have to place a bet. If this threshold is not reached, no bet is placed. Default: fromEnd(10)"
+                          "minimumPointsRequired" : {
+                            "type" : "integer",
+                            "description" : "Minimum amount of points to have to place a bet. If this threshold is not reached, no bet is placed. Default: fromEnd(10)"
                           },
-                          "outcomePicker": {
-                            "anyOf": [
+                          "outcomePicker" : {
+                            "anyOf" : [
                               {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "description": "Choose the outcome with the most users.",
-                                    "properties": {
-                                      "type": {
-                                        "const": "mostUsers"
+                                    "type" : "object",
+                                    "description" : "Choose the outcome with the most users.",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "mostUsers"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }, {
-                                    "description": "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                                    "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
                                   }
                                 ]
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "description": "Choose the outcome with the least users.",
-                                    "properties": {
-                                      "type": {
-                                        "const": "leastUsers"
+                                    "type" : "object",
+                                    "description" : "Choose the outcome with the least users.",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "leastUsers"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }, {
-                                    "description": "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                                    "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
                                   }
                                 ]
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "description": "Choose the outcome with the most points. This is the same as 'the outcome with lower odds'.",
-                                    "properties": {
-                                      "type": {
-                                        "const": "mostPoints"
+                                    "type" : "object",
+                                    "description" : "Choose the outcome with the most points. This is the same as 'the outcome with lower odds'.",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "mostPoints"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }, {
-                                    "description": "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                                    "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
                                   }
                                 ]
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "description": "Choose the outcome with the least points. his is the same as 'the outcome with higher odds'.",
-                                    "properties": {
-                                      "type": {
-                                        "const": "leastPoints"
+                                    "type" : "object",
+                                    "description" : "Choose the outcome with the least points. his is the same as 'the outcome with higher odds'.",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "leastPoints"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }, {
-                                    "description": "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                                    "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
                                   }
                                 ]
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "properties": {
-                                      "percentageGap": {
-                                        "type": "number",
-                                        "description": "The percent gap of the user count, as decimal, between 0 and 1. (i.e. Setting this to 0.1, will mean that the condition switches states when the difference between sides is 10%, so 45% of the users on one side and 55% on the other)."
+                                    "type" : "object",
+                                    "properties" : {
+                                      "percentageGap" : {
+                                        "type" : "number",
+                                        "description" : "The percent gap of the user count, as decimal, between 0 and 1. (i.e. Setting this to 0.1, will mean that the condition switches states when the difference between sides is 10%, so 45% of the users on one side and 55% on the other)."
                                       }
                                     },
-                                    "description": "Choose the outcome with the most users. However, if the two most picked outcomes have a user count similar, choose the outcome with the least points (higher odds)."
+                                    "description" : "Choose the outcome with the most users. However, if the two most picked outcomes have a user count similar, choose the outcome with the least points (higher odds)."
                                   }, {
-                                    "type": "object",
-                                    "properties": {
-                                      "type": {
-                                        "const": "smart"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "smart"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }
                                 ],
-                                "description": "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                                "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "description": "Choose the outcome with the biggest predictor.",
-                                    "properties": {
-                                      "type": {
-                                        "const": "biggestPredictor"
+                                    "type" : "object",
+                                    "description" : "Choose the outcome with the biggest predictor.",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "biggestPredictor"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }, {
-                                    "description": "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                                    "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
                                   }
                                 ]
                               }, {
-                                "allOf": [
+                                "allOf" : [
                                   {
-                                    "type": "object",
-                                    "properties": {
-                                      "minTotalBetsPlacedByUser": {
-                                        "type": "integer",
-                                        "description": "Only user with at least this number of bets are considered in the calculation. Default: 5"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "minTotalBetsPlacedByUser" : {
+                                        "type" : "integer",
+                                        "description" : "Only user with at least this number of bets are considered in the calculation. Default: 5"
                                       },
-                                      "minTotalBetsPlacedOnOutcome": {
-                                        "type": "integer",
-                                        "description": "Need at least x bets placed the chosen outcome. Default: 5"
+                                      "minTotalBetsPlacedOnOutcome" : {
+                                        "type" : "integer",
+                                        "description" : "Need at least x bets placed the chosen outcome. Default: 5"
                                       },
-                                      "minTotalBetsPlacedOnPrediction": {
-                                        "type": "integer",
-                                        "description": "Need at least x bets placed to bet on this prediction. Default: 10"
+                                      "minTotalBetsPlacedOnPrediction" : {
+                                        "type" : "integer",
+                                        "description" : "Need at least x bets placed to bet on this prediction. Default: 10"
                                       }
                                     },
-                                    "description": "Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordChatsPredictions to be activated."
+                                    "description" : "Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordChatsPredictions to be activated."
                                   }, {
-                                    "type": "object",
-                                    "properties": {
-                                      "type": {
-                                        "const": "mostTrusted"
+                                    "type" : "object",
+                                    "properties" : {
+                                      "type" : {
+                                        "const" : "mostTrusted"
                                       }
                                     },
-                                    "required": ["type"]
+                                    "required" : ["type"]
                                   }
                                 ],
-                                "description": "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                                "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
                               }
                             ]
                           }
                         },
-                        "description": "Prediction settings"
+                        "description" : "Prediction settings"
                       }, {
-                        "description": "Prediction settings."
+                        "description" : "Prediction settings."
                       }
                     ]
                   },
-                  "priorities": {
-                    "description": "A list of conditions that, if met, will prioritize this streamer.",
-                    "type": "array",
-                    "items": {
-                      "anyOf": [
+                  "priorities" : {
+                    "description" : "A list of conditions that, if met, will prioritize this streamer.",
+                    "type" : "array",
+                    "items" : {
+                      "anyOf" : [
                         {
-                          "allOf": [
+                          "allOf" : [
                             {
-                              "type": "object",
-                              "properties": {
-                                "score": {
-                                  "type": "integer",
-                                  "description": "Score to give."
+                              "type" : "object",
+                              "properties" : {
+                                "score" : {
+                                  "type" : "integer",
+                                  "description" : "Score to give."
                                 }
                               },
-                              "description": "Adds a constant value to the score of the streamer."
+                              "description" : "Adds a constant value to the score of the streamer."
                             }, {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "const": "constant"
+                              "type" : "object",
+                              "properties" : {
+                                "type" : {
+                                  "const" : "constant"
                                 }
                               },
-                              "required": ["type"]
+                              "required" : ["type"]
                             }
                           ]
                         }, {
-                          "allOf": [
+                          "allOf" : [
                             {
-                              "type": "object",
-                              "properties": {
-                                "score": {
-                                  "type": "integer",
-                                  "description": "Score to give."
+                              "type" : "object",
+                              "properties" : {
+                                "score" : {
+                                  "type" : "integer",
+                                  "description" : "Score to give."
                                 },
-                                "score2": {
-                                  "type": "integer",
-                                  "description": "Score for a T2 sub."
+                                "score2" : {
+                                  "type" : "integer",
+                                  "description" : "Score for a T2 sub."
                                 },
-                                "score3": {
-                                  "type": "integer",
-                                  "description": "Score for a T3 sub."
+                                "score3" : {
+                                  "type" : "integer",
+                                  "description" : "Score for a T3 sub."
                                 }
                               },
-                              "description": "Return a score if the logged-in user is subscribed to the streamer."
+                              "description" : "Return a score if the logged-in user is subscribed to the streamer."
                             }, {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "const": "subscribed"
+                              "type" : "object",
+                              "properties" : {
+                                "type" : {
+                                  "const" : "subscribed"
                                 }
                               },
-                              "required": ["type"]
+                              "required" : ["type"]
                             }
                           ]
                         }, {
-                          "allOf": [
+                          "allOf" : [
                             {
-                              "type": "object",
-                              "properties": {
-                                "score": {
-                                  "type": "integer",
-                                  "description": "Score to give."
+                              "type" : "object",
+                              "properties" : {
+                                "score" : {
+                                  "type" : "integer",
+                                  "description" : "Score to give."
                                 },
-                                "threshold": {
-                                  "type": "integer",
-                                  "description": "Current points must strictly be above this value to give the score."
+                                "threshold" : {
+                                  "type" : "integer",
+                                  "description" : "Current points must strictly be above this value to give the score."
                                 }
                               },
-                              "description": "Return a score if owned points are above a defined value."
+                              "description" : "Return a score if owned points are above a defined value."
                             }, {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "const": "pointsAbove"
+                              "type" : "object",
+                              "properties" : {
+                                "type" : {
+                                  "const" : "pointsAbove"
                                 }
                               },
-                              "required": ["type"]
+                              "required" : ["type"]
                             }
                           ]
                         }, {
-                          "allOf": [
+                          "allOf" : [
                             {
-                              "type": "object",
-                              "properties": {
-                                "score": {
-                                  "type": "integer",
-                                  "description": "Score to give."
+                              "type" : "object",
+                              "properties" : {
+                                "score" : {
+                                  "type" : "integer",
+                                  "description" : "Score to give."
                                 },
-                                "threshold": {
-                                  "type": "integer",
-                                  "description": "Current points must strictly be below this value to give the score."
+                                "threshold" : {
+                                  "type" : "integer",
+                                  "description" : "Current points must strictly be below this value to give the score."
                                 }
                               },
-                              "description": "Return a score if owned points are below a defined value."
+                              "description" : "Return a score if owned points are below a defined value."
                             }, {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "const": "pointsBelow"
+                              "type" : "object",
+                              "properties" : {
+                                "type" : {
+                                  "const" : "pointsBelow"
                                 }
                               },
-                              "required": ["type"]
+                              "required" : ["type"]
                             }
                           ]
                         }, {
-                          "allOf": [
+                          "allOf" : [
                             {
-                              "type": "object",
-                              "properties": {
-                                "score": {
-                                  "type": "integer",
-                                  "description": "Score to give."
+                              "type" : "object",
+                              "properties" : {
+                                "score" : {
+                                  "type" : "integer",
+                                  "description" : "Score to give."
                                 }
                               },
-                              "description": "Return a score if the streamer has a potential watch streak to claim."
+                              "description" : "Return a score if the streamer has a potential watch streak to claim."
                             }, {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "const": "watchStreak"
+                              "type" : "object",
+                              "properties" : {
+                                "type" : {
+                                  "const" : "watchStreak"
                                 }
                               },
-                              "required": ["type"]
+                              "required" : ["type"]
                             }
                           ]
                         }, {
-                          "allOf": [
+                          "allOf" : [
                             {
-                              "type": "object",
-                              "properties": {
-                                "score": {
-                                  "type": "integer",
-                                  "description": "Score to give."
+                              "type" : "object",
+                              "properties" : {
+                                "score" : {
+                                  "type" : "integer",
+                                  "description" : "Score to give."
                                 }
                               },
-                              "description": "Return a score if a drop campaign may be progressed by watching this stream."
+                              "description" : "Return a score if a drop campaign may be progressed by watching this stream."
                             }, {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "const": "drops"
+                              "type" : "object",
+                              "properties" : {
+                                "type" : {
+                                  "const" : "drops"
                                 }
                               },
-                              "required": ["type"]
+                              "required" : ["type"]
                             }
                           ]
                         }
@@ -543,187 +543,191 @@
                     }
                   }
                 },
-                "description": "Streamer settings"
+                "description" : "Streamer settings"
               }, {
-                "description": "Default streamer settings."
+                "description" : "Default streamer settings."
               }
             ]
           },
-          "discord": {
-            "type": "object",
-            "properties": {
-              "embeds": {
-                "type": "boolean",
-                "description": "Use embeds in the messages or not. Default: false"
+          "discord" : {
+            "type" : "object",
+            "properties" : {
+              "embeds" : {
+                "type" : "boolean",
+                "description" : "Use embeds in the messages or not. Default: false"
               },
-              "webhookUrl": {
-                "type": "object",
-                "properties": {
-                  "authority": {
-                    "type": "string"
+              "webhookUrl" : {
+                "type" : "object",
+                "properties" : {
+                  "authority" : {
+                    "type" : "string"
                   },
-                  "file": {
-                    "type": "string"
+                  "file" : {
+                    "type" : "string"
                   },
-                  "host": {
-                    "type": "string"
+                  "host" : {
+                    "type" : "string"
                   },
-                  "port": {
-                    "type": "integer"
+                  "port" : {
+                    "type" : "integer"
                   },
-                  "protocol": {
-                    "type": "string"
+                  "protocol" : {
+                    "type" : "string"
                   },
-                  "ref": {
-                    "type": "string"
+                  "ref" : {
+                    "type" : "string"
                   }
                 },
-                "description": "Discord webhook url to publish events to."
+                "description" : "Discord webhook url to publish events to."
               }
             },
-            "description": "Discord settings to send notifications."
+            "description" : "Discord settings to send notifications."
           },
-          "enabled": {
-            "type": "boolean",
-            "description": "If the account is marked as enabled it'll be mined. Default: true"
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "If the account is marked as enabled it'll be mined. Default: true"
           },
-          "loadFollows": {
-            "type": "boolean",
-            "description": "Load streamers to scrape from follow list. Default: false"
+          "loadFollows" : {
+            "type" : "boolean",
+            "description" : "Load streamers to scrape from follow list. Default: false"
           },
-          "loginMethod": {
-            "anyOf": [
+          "loginMethod" : {
+            "anyOf" : [
               {
-                "allOf": [
+                "allOf" : [
                   {
-                    "type": "object",
-                    "properties": {
-                      "authenticationFolder": {
-                        "$ref": "#/$defs/Path",
-                        "description": "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication"
+                    "type" : "object",
+                    "properties" : {
+                      "authenticationFolder" : {
+                        "$ref" : "#/$defs/Path",
+                        "description" : "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication"
                       },
-                      "password": {
-                        "type": "string",
-                        "description": "Password of your Twitch account."
+                      "password" : {
+                        "type" : "string",
+                        "description" : "Password of your Twitch account."
                       },
-                      "use2FA": {
-                        "type": "boolean",
-                        "description": "If this account uses 2FA set this to true to directly ask for it. Default: false"
+                      "use2FA" : {
+                        "type" : "boolean",
+                        "description" : "If this account uses 2FA set this to true to directly ask for it. Default: false"
                       }
                     },
-                    "description": "Login though Twitch's Passport API."
+                    "description" : "Login though Twitch's Passport API."
                   }, {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "const": "http"
+                    "type" : "object",
+                    "properties" : {
+                      "type" : {
+                        "const" : "http"
                       }
                     },
-                    "required": ["type"]
+                    "required" : ["type"]
                   }
                 ],
-                "description": "Login method to use."
+                "description" : "Login method to use."
               }, {
-                "allOf": [
+                "allOf" : [
                   {
-                    "type": "object",
-                    "properties": {
-                      "binary": {
-                        "type": "string",
-                        "description": "Binary of the browser to use. Used only if not using a REMOTE_XXX driver."
+                    "type" : "object",
+                    "properties" : {
+                      "binary" : {
+                        "type" : "string",
+                        "description" : "Binary of the browser to use. Used only if not using a REMOTE_XXX driver."
                       },
-                      "disableShm": {
-                        "type": "boolean",
-                        "description": "Disable SHM usage. Default: false"
+                      "cookiesPath" : {
+                        "type" : "string",
+                        "description" : "Path to a JSON file containing your exported cookies."
                       },
-                      "driver": {
-                        "allOf": [
+                      "disableShm" : {
+                        "type" : "boolean",
+                        "description" : "Disable SHM usage. Default: false"
+                      },
+                      "driver" : {
+                        "allOf" : [
                           {
-                            "type": "string",
-                            "enum": ["CHROME", "FIREFOX", "REMOTE_CHROME", "REMOTE_FIREFOX"],
-                            "description": "Selenium driver to use."
+                            "type" : "string",
+                            "enum" : ["CHROME", "FIREFOX", "REMOTE_CHROME", "REMOTE_FIREFOX"],
+                            "description" : "Selenium driver to use."
                           }, {
-                            "description": "Driver to use. Default: CHROME"
+                            "description" : "Driver to use. Default: CHROME"
                           }
                         ]
                       },
-                      "headless": {
-                        "type": "boolean",
-                        "description": "Run browser headless. Not recommended. Default: false"
+                      "headless" : {
+                        "type" : "boolean",
+                        "description" : "Run browser headless. Not recommended. Default: false"
                       },
-                      "remoteHost": {
-                        "type": "string",
-                        "description": "Remote host of the selenium grid. Must be defined if using REMOTE_XXX driver."
+                      "remoteHost" : {
+                        "type" : "string",
+                        "description" : "Remote host of the selenium grid. Must be defined if using REMOTE_XXX driver."
                       },
-                      "screenshots": {
-                        "type": "boolean",
-                        "description": "Take screenshots on error. Default: false"
+                      "screenshots" : {
+                        "type" : "boolean",
+                        "description" : "Take screenshots on error. Default: false"
                       },
-                      "userAgent": {
-                        "type": "string",
-                        "description": "User-Agent to use. Default: use controlled browser User-Agent"
+                      "userAgent" : {
+                        "type" : "string",
+                        "description" : "User-Agent to use. Default: use controlled browser User-Agent"
                       },
-                      "userDir": {
-                        "type": "string",
-                        "description": "User directory to use. Should be a different one per account used to mine."
+                      "userDir" : {
+                        "type" : "string",
+                        "description" : "User directory to use. Should be a different one per account used to mine."
                       }
                     },
-                    "description": "Login though controlled browser (selenium)."
+                    "description" : "Login though controlled browser (selenium)."
                   }, {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "const": "browser"
+                    "type" : "object",
+                    "properties" : {
+                      "type" : {
+                        "const" : "browser"
                       }
                     },
-                    "required": ["type"]
+                    "required" : ["type"]
                   }
                 ],
-                "description": "Login method to use."
+                "description" : "Login method to use."
               }
             ]
           },
-          "reloadEvery": {
-            "type": "integer",
-            "description": "Reload streamer settings every x minutes. Zero or negative value disables it. Default: 0"
+          "reloadEvery" : {
+            "type" : "integer",
+            "description" : "Reload streamer settings every x minutes. Zero or negative value disables it. Default: 0"
           },
-          "streamerConfigDirectories": {
-            "description": "Paths containing overrides for streamer configurations.",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "path": {
-                  "$ref": "#/$defs/Path",
-                  "description": "Path to a folder that contains streamer configurations."
+          "streamerConfigDirectories" : {
+            "description" : "Paths containing overrides for streamer configurations.",
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "path" : {
+                  "$ref" : "#/$defs/Path",
+                  "description" : "Path to a folder that contains streamer configurations."
                 },
-                "recursive": {
-                  "type": "boolean",
-                  "description": "If set to true, this folder will be scanned recursively. Default: false"
+                "recursive" : {
+                  "type" : "boolean",
+                  "description" : "If set to true, this folder will be scanned recursively. Default: false"
                 }
               },
-              "description": "Folder used to override streamer configurations."
+              "description" : "Folder used to override streamer configurations."
             }
           },
-          "username": {
-            "type": "string",
-            "description": "Mining account's username."
+          "username" : {
+            "type" : "string",
+            "description" : "Mining account's username."
           },
-          "versionProvider": {
-            "allOf": [
+          "versionProvider" : {
+            "allOf" : [
               {
-                "type": "string",
-                "enum": ["MANIFEST", "WEBPAGE"],
-                "description": "Way to get current Twitch's version."
+                "type" : "string",
+                "enum" : ["MANIFEST", "WEBPAGE"],
+                "description" : "Way to get current Twitch's version."
               }, {
-                "description": "Method used to get twitch version. Default: WEBPAGE"
+                "description" : "Method used to get twitch version. Default: WEBPAGE"
               }
             ]
           }
         },
-        "description": "Mining account configuration."
+        "description" : "Mining account configuration."
       }
     }
   },
-  "description": "Global configuration."
+  "description" : "Global configuration."
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import fr.raksrinana.channelpointsminer.miner.util.json.CookieSameSiteDeserializer;
 import fr.raksrinana.channelpointsminer.miner.util.json.SecondsTimestampDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,11 +35,12 @@ public class CookieData{
 	private boolean hostOnly;
 	@JsonProperty("httpOnly")
 	private boolean httpOnly;
-	@JsonProperty("name")
+	@JsonProperty(value = "name", required = true)
 	private String name;
 	@JsonProperty("path")
 	private String path;
 	@JsonProperty("sameSite")
+	@JsonDeserialize(using = CookieSameSiteDeserializer.class)
 	private String sameSite;
 	@JsonProperty("secure")
 	private boolean secure;
@@ -46,7 +48,7 @@ public class CookieData{
 	private boolean session;
 	@JsonProperty("storeId")
 	private String storeId;
-	@JsonProperty("value")
+	@JsonProperty(value = "value", required = true)
 	private String value;
 	
 	@Nullable

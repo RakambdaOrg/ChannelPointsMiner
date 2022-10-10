@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Log4j2
@@ -24,7 +25,9 @@ public class BrowserPassportApi implements IPassportApi{
 		log.info("Logging in");
 		try(var browser = BrowserFactory.createBrowser(browserConfiguration)){
 			var controller = browser.setup();
-			controller.login();
+			var cookiesPath = Optional.ofNullable(browserConfiguration.getCookiesPath()).map(Paths::get).orElse(null);
+			
+			controller.login(cookiesPath);
 			return extractPassportInfo(browser.getDriver().manage());
 		}
 		catch(IOException e){

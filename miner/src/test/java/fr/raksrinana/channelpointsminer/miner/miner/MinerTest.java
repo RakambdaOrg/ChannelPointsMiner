@@ -74,6 +74,7 @@ import static org.mockito.Mockito.when;
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class MinerTest{
+	private static final String USERNAME = "username";
 	private static final String STREAMER_USERNAME = "streamer-username";
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String USER_ID = "user-id";
@@ -132,6 +133,7 @@ class MinerTest{
 	void setUp() throws LoginException, IOException{
 		tested = new Miner(accountConfiguration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService, database);
 		
+		lenient().when(accountConfiguration.getUsername()).thenReturn(USERNAME);
 		lenient().when(accountConfiguration.getReloadEvery()).thenReturn(0);
 		lenient().when(accountConfiguration.isLoadFollows()).thenReturn(false);
 		lenient().when(accountConfiguration.getChatMode()).thenReturn(CHAT_MODE);
@@ -145,6 +147,7 @@ class MinerTest{
 		lenient().when(streamerSettings.isFollowRaid()).thenReturn(false);
 		lenient().when(streamerSettings.isMakePredictions()).thenReturn(false);
 		lenient().when(streamerSettings.isJoinIrc()).thenReturn(false);
+		lenient().when(twitchLogin.getUsername()).thenReturn(USERNAME);
 		lenient().when(twitchLogin.fetchUserId(gqlApi)).thenReturn(USER_ID);
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		
@@ -297,6 +300,19 @@ class MinerTest{
 			verify(twitchChatClient, never()).join(any());
 			verify(scheduledExecutorService).schedule(eq(streamerConfigurationReload), anyLong(), any());
 			verify(twitchChatClient).addChatMessageListener(any());
+		}
+	}
+	
+	@Test
+	void wrongAccountLoggedIn(){
+		try(var apiFactory = mockStatic(ApiFactory.class)){
+			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
+			
+			when(twitchLogin.getUsername()).thenReturn("wrong");
+			
+			var caught = assertThrows(IllegalStateException.class, () -> tested.start());
+			
+			assertThat(caught).hasRootCauseMessage("Failed to log in, expected account username but was wrong");
 		}
 	}
 	
