@@ -13,9 +13,10 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Cookie;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -44,6 +45,10 @@ public class BrowserController{
 	}
 	
 	public void login() throws LoginException, IOException{
+		login(null);
+	}
+	
+	public void login(@Nullable Path cookiesPath) throws LoginException, IOException{
 		log.info("Logging in");
 		openTurboPage();
 		
@@ -53,7 +58,7 @@ public class BrowserController{
 		}
 		
 		var manager = driver.getWebDriver().manage();
-		var userInput = askUserLogin();
+		var userInput = askUserLogin(cookiesPath);
 		if(Objects.nonNull(userInput)){
 			JacksonUtils.read(userInput, new TypeReference<List<CookieData>>(){})
 					.stream()
@@ -69,11 +74,14 @@ public class BrowserController{
 	
 	@SneakyThrows
 	@Nullable
-	private String askUserLogin(){
+	private String askUserLogin(@Nullable Path cookiesFile){
 		log.error("Not logged in, please input cookies");
 		
-		var cookiesFile = Paths.get("/cookies.json");
-		if(Files.exists(cookiesFile)){
+		if(Objects.nonNull(cookiesFile)){
+			log.info("User defined cookies file, using it");
+			if(!Files.exists(cookiesFile)){
+				throw new FileNotFoundException("File does not exist: " + cookiesFile.toAbsolutePath());
+			}
 			return Files.readString(cookiesFile);
 		}
 		
