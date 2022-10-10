@@ -8,11 +8,13 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginExcep
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Cookie;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -59,10 +61,18 @@ public class BrowserController{
 		}
 	}
 	
+	@SneakyThrows
 	@NotNull
 	private String askUserLogin(){
 		log.error("Not logged in, please input cookies");
-		return CommonUtils.getUserInput("Provide your session cookies under JSON format (you can use an extension like Cookie-Editor): ");
+		try{
+			return CommonUtils.getUserInput("Provide your session cookies under JSON format (you can use an extension like Cookie-Editor): ");
+		}
+		catch(NoSuchElementException e){
+			log.warn("Couldn't get user input, seems like you're in a containerized environment. Giving you 4 minutes to manually log in into the browser manually.");
+			Thread.sleep(4 * 60 * 1000);
+			throw new RuntimeException("Failed to get user input, waited 4 minutes", e);
+		}
 	}
 	
 	private boolean isLoggedIn(){
