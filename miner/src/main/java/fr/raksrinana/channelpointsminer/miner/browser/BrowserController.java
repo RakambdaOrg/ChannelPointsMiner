@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Cookie;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -69,6 +71,12 @@ public class BrowserController{
 	@Nullable
 	private String askUserLogin(){
 		log.error("Not logged in, please input cookies");
+		
+		var cookiesFile = Paths.get("/cookies.json");
+		if(Files.exists(cookiesFile)){
+			return Files.readString(cookiesFile);
+		}
+		
 		try{
 			return CommonUtils.getUserInput("Provide your session cookies under JSON format (you can use an extension like Cookie-Editor): ");
 		}
