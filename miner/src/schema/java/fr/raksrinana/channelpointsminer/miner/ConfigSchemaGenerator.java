@@ -26,6 +26,7 @@ public class ConfigSchemaGenerator{
 		
 		var exampleFolder = Paths.get("miner/docs/modules/ROOT/examples");
 		generate(generator, Configuration.class, exampleFolder.resolve("global-config-schema.json"));
+		generate(generator, CookiesFileType.class, exampleFolder.resolve("global-config-cookies-schema.json"));
 		generate(generator, StreamerSettings.class, exampleFolder.resolve("streamer-config-schema.json"));
 	}
 	

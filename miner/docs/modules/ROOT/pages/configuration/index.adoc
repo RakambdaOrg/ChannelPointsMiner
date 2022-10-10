@@ -31,6 +31,15 @@ include::example$global-config-schema.json[]
 ----
 ====
 
+.Cookies file JSON schema
+[%collapsible]
+====
+[source,json]
+----
+include::example$global-config-cookies-schema.json[]
+----
+====
+
 === Streamer configuration
 
 .Streamer configuration JSON schema

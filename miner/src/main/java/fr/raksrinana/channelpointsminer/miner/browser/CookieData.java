@@ -35,7 +35,7 @@ public class CookieData{
 	private boolean hostOnly;
 	@JsonProperty("httpOnly")
 	private boolean httpOnly;
-	@JsonProperty("name")
+	@JsonProperty(value = "name", required = true)
 	private String name;
 	@JsonProperty("path")
 	private String path;
@@ -48,7 +48,7 @@ public class CookieData{
 	private boolean session;
 	@JsonProperty("storeId")
 	private String storeId;
-	@JsonProperty("value")
+	@JsonProperty(value = "value", required = true)
 	private String value;
 	
 	@Nullable
