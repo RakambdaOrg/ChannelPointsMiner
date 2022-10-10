@@ -156,6 +156,11 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			var listenMessages = analyticsConfiguration.isEnabled() && analyticsConfiguration.isRecordChatsPredictions();
 			
 			twitchLogin = passportApi.login();
+			
+			if(!accountConfiguration.getUsername().equalsIgnoreCase(twitchLogin.getUsername())){
+				throw new IllegalStateException("Failed to log in, expected account %s but was %s".formatted(accountConfiguration.getUsername(), twitchLogin.getUsername()));
+			}
+			
 			var versionProvider = ApiFactory.createVersionProvider(accountConfiguration.getVersionProvider());
 			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, accountConfiguration.getLoginMethod());
 			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
@@ -314,7 +319,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	@Override
 	@NotNull
 	public String getUsername(){
-		return twitchLogin.getUsername();
+		return accountConfiguration.getUsername();
 	}
 	
 	@Override
