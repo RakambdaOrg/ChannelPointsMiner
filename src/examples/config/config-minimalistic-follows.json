@@ -1,9 +1,12 @@
 {
   "accounts": [
     {
-      "username": "username",
-      "password": "password",
-      "loadFollows": true
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "http",
+        "password" : "password"
+      },
+      "loadFollows" : true
     }
   ]
 }

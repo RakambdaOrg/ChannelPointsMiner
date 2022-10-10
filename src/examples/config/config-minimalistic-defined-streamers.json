@@ -1,12 +1,15 @@
 {
   "accounts": [
     {
-      "username": "username",
-      "password": "password",
-      "streamerConfigDirectories": [
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "http",
+        "password" : "password"
+      },
+      "streamerConfigDirectories" : [
         {
-          "path": "streamers",
-          "recursive": true
+          "path" : "streamers",
+          "recursive" : true
         }
       ]
     }
