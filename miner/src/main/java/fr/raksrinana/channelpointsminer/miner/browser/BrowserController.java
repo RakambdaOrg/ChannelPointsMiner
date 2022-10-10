@@ -11,10 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Cookie;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -49,11 +51,13 @@ public class BrowserController{
 		}
 		
 		var manager = driver.getWebDriver().manage();
-		
-		JacksonUtils.read(askUserLogin(), new TypeReference<List<CookieData>>(){})
-				.stream()
-				.map(c -> new Cookie(c.getName(), c.getValue(), c.getDomain(), c.getPath(), c.getExpiry(), c.isSecure(), c.isHttpOnly(), c.getSameSite()))
-				.forEach(manager::addCookie);
+		var userInput = askUserLogin();
+		if(Objects.nonNull(userInput)){
+			JacksonUtils.read(userInput, new TypeReference<List<CookieData>>(){})
+					.stream()
+					.map(c -> new Cookie(c.getName(), c.getValue(), c.getDomain(), c.getPath(), c.getExpiry(), c.isSecure(), c.isHttpOnly(), c.getSameSite()))
+					.forEach(manager::addCookie);
+		}
 		
 		driver.refresh();
 		if(!isLoggedIn()){
@@ -62,7 +66,7 @@ public class BrowserController{
 	}
 	
 	@SneakyThrows
-	@NotNull
+	@Nullable
 	private String askUserLogin(){
 		log.error("Not logged in, please input cookies");
 		try{
@@ -71,7 +75,7 @@ public class BrowserController{
 		catch(NoSuchElementException e){
 			log.warn("Couldn't get user input, seems like you're in a containerized environment. Giving you 4 minutes to manually log in into the browser manually.");
 			Thread.sleep(4 * 60 * 1000);
-			throw new RuntimeException("Failed to get user input, waited 4 minutes", e);
+			return null;
 		}
 	}
 	
