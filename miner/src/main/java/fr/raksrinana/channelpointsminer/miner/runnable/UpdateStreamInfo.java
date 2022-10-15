@@ -73,10 +73,7 @@ public class UpdateStreamInfo implements Runnable{
 			if(Objects.isNull(streamer.getSpadeUrl())){
 				Optional.ofNullable(streamer.getChannelUrl())
 						.flatMap(miner.getTwitchApi()::getSpadeUrl)
-						.ifPresentOrElse(
-								streamer::setSpadeUrl,
-								() -> log.warn("Failed to get spade URL")
-						);
+						.ifPresent(streamer::setSpadeUrl);
 			}
 		}
 		else{

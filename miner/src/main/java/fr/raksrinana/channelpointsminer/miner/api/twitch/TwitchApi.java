@@ -25,8 +25,15 @@ public class TwitchApi{
 	
 	@NotNull
 	public Optional<URL> getSpadeUrl(@NotNull URL streamerUrl){
-		return getStreamerPageContent(streamerUrl)
-				.flatMap(content -> extractUrl(SPADE_URL_PATTERN, content).or(() -> extractSpadeFromSettings(content)));
+		return getStreamerPageContent(streamerUrl).flatMap(this::getSpadeUrlFromContent);
+	}
+	
+	private Optional<URL> getSpadeUrlFromContent(@NotNull String content){
+		var result = extractUrl(SPADE_URL_PATTERN, content).or(() -> extractSpadeFromSettings(content));
+		if(result.isEmpty()){
+			log.error("Failed to get Spade URL, content was : {}", content);
+		}
+		return result;
 	}
 	
 	@NotNull
@@ -34,6 +41,7 @@ public class TwitchApi{
 		var response = unirest.get(streamerUrl.toString()).asString();
 		
 		if(!response.isSuccess()){
+			log.warn("Failed to get streamer page content");
 			return Optional.empty();
 		}
 		
@@ -42,17 +50,23 @@ public class TwitchApi{
 	
 	@NotNull
 	private Optional<URL> extractSpadeFromSettings(@NotNull String content){
-		return extractUrl(SETTINGS_URL_PATTERN, content)
+		var settings = extractUrl(SETTINGS_URL_PATTERN, content)
 				.map(settingsUrl -> {
 					var response = unirest.get(settingsUrl.toString()).asString();
 					
 					if(!response.isSuccess()){
+						log.warn("Failed to get spade settings from {}", settingsUrl);
 						return null;
 					}
 					
 					return response.getBody();
-				})
-				.flatMap(c -> extractUrl(SPADE_URL_PATTERN, c));
+				});
+		var result = settings.flatMap(c -> extractUrl(SPADE_URL_PATTERN, c));
+		
+		if(result.isEmpty()){
+			log.info("Spade settings : {}", settings);
+		}
+		return result;
 	}
 	
 	@NotNull
