@@ -86,7 +86,7 @@ public class BrowserController{
 		}
 		
 		try{
-			return CommonUtils.getUserInput("Provide your session cookies under JSON format (you can use an extension like Cookie-Editor): ");
+			return CommonUtils.getUserInput("Provide your session cookies under JSON format (1 line only) (you can use an extension like Cookie-Editor): ");
 		}
 		catch(NoSuchElementException e){
 			log.warn("Couldn't get user input, seems like you're in a containerized environment. Giving you 4 minutes to manually log in into the browser manually.");
