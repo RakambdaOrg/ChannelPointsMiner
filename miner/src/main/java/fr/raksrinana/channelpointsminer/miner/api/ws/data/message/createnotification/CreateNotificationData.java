@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class CreateNotificationData{
 	@JsonProperty("summary")
-	@NotNull
+	@Nullable
 	private NotificationSummary summary;
 	@JsonProperty("notification")
 	@NotNull

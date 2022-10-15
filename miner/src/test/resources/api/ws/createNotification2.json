@@ -1,0 +1,7 @@
+{
+  "type" : "MESSAGE",
+  "data" : {
+    "topic" : "onsite-notifications.123456789",
+    "message" : "{\"type\":\"create-notification\",\"data\":{\"notification\":{\"user_id\":\"123456789\",\"id\":\"notification-id\",\"body\":\"notification-body\",\"body_md\":\"notification-body-md\",\"type\":\"user_drop_reward_reminder_notification\",\"render_style\":\"DEFAULT\",\"thumbnail_url\":\"https://thumbnail.com\",\"actions\":[{\"id\":\"CTA\",\"type\":\"click\",\"url\":\"https://www.twitch.tv/inventory\",\"modal_id\":\"\",\"body\":\"Open\",\"label\":\"CTA\"}],\"created_at\":\"2022-01-15T18:45:28.412342347Z\",\"updated_at\":\"2022-01-16T18:45:28.412342347Z\",\"read\":false,\"display_type\":\"VIEWER\",\"data_blocks\":[{\"id\":\"DEFAULT_BODY_TEXT\",\"type\":\"DATA_BLOCK_TYPE_TEXT\",\"content\":{\"text_block\":{\"body\":\"text-block-body\"}}},{\"id\":\"DEFAULT_THUMBNAIL_URL\",\"type\":\"DATA_BLOCK_TYPE_IMAGE\",\"content\":{\"image_block\":{\"url\":\"https://data-block-thumbnail\"}}}],\"mobile_destination_type\":\"ExternalLink\",\"mobile_destination_key\":\"https://www.twitch.tv/inventory\"},\"persistent\":true,\"toast\":false,\"display_type\":\"VIEWER\"}}"
+  }
+}
