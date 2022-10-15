@@ -37,6 +37,7 @@ class TwitchApiTest{
 	private static final String CONFIG_BODY = "<script src=\"%s\" crossorigin=\"anonymous\"></script>".formatted(CONFIG_URL);
 	private static final String SPADE_URL = "https://google.com";
 	private static final String SPADE_BODY = "azeazeazeaze\"spade_url\":\"%s\"azeazeaze".formatted(SPADE_URL);
+	private static final String SPADE_STREAMER_BODY = "azeazeazeaze\"spadeUrl\":\"%s\"azeazeaze".formatted(SPADE_URL);
 	private static final String SPADE_BODY_INVALID_FORMAT = "\"spade_url\":\"%s\"".formatted("https://google.com:-80/");
 	
 	private TwitchApi tested;
@@ -161,7 +162,7 @@ class TwitchApiTest{
 	@Test
 	void getSpadeUrlFromStreamerPage(UnirestMock unirest){
 		unirest.expect(GET, STREAMER_URL)
-				.thenReturn(SPADE_BODY)
+				.thenReturn(SPADE_STREAMER_BODY)
 				.withStatus(200);
 		
 		assertThat(tested.getSpadeUrl(streamerUrl)).isPresent()

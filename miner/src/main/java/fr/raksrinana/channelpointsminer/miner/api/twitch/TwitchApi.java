@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Log4j2
 public class TwitchApi{
 	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("(https://static.twitchcdn.net/config/settings.*?js)");
-	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade_url\":\"(.*?)\"");
+	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade(Url|_url)\":\"(.*?)\"");
 	
 	private final UnirestInstance unirest;
 	
@@ -29,7 +29,7 @@ public class TwitchApi{
 	}
 	
 	private Optional<URL> getSpadeUrlFromContent(@NotNull String content){
-		var result = extractUrl(SPADE_URL_PATTERN, content).or(() -> extractSpadeFromSettings(content));
+		var result = extractUrl(SPADE_URL_PATTERN, 2, content).or(() -> extractSpadeFromSettings(content));
 		if(result.isEmpty()){
 			log.error("Failed to get Spade URL, content was : {}", content);
 		}
@@ -50,7 +50,7 @@ public class TwitchApi{
 	
 	@NotNull
 	private Optional<URL> extractSpadeFromSettings(@NotNull String content){
-		var settings = extractUrl(SETTINGS_URL_PATTERN, content)
+		var settings = extractUrl(SETTINGS_URL_PATTERN, 1, content)
 				.map(settingsUrl -> {
 					var response = unirest.get(settingsUrl.toString()).asString();
 					
@@ -61,7 +61,7 @@ public class TwitchApi{
 					
 					return response.getBody();
 				});
-		var result = settings.flatMap(c -> extractUrl(SPADE_URL_PATTERN, c));
+		var result = settings.flatMap(c -> extractUrl(SPADE_URL_PATTERN, 2, c));
 		
 		if(result.isEmpty()){
 			log.info("Spade settings : {}", settings);
@@ -70,14 +70,14 @@ public class TwitchApi{
 	}
 	
 	@NotNull
-	private Optional<URL> extractUrl(@NotNull Pattern pattern, @NotNull String content){
+	private Optional<URL> extractUrl(@NotNull Pattern pattern, int group, @NotNull String content){
 		var matcher = pattern.matcher(content);
 		if(!matcher.find()){
 			return Optional.empty();
 		}
 		
 		try{
-			return Optional.of(URI.create(matcher.group(1)).toURL());
+			return Optional.of(URI.create(matcher.group(group)).toURL());
 		}
 		catch(MalformedURLException e){
 			log.error("Failed to parse url", e);
