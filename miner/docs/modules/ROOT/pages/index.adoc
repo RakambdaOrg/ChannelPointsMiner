@@ -1,3 +1,16 @@
 = Miner
 
 include::partial$project-intro.adoc[]
+
+[NOTE]
+====
+Over time many people complained the project isn't very accessible.
+I'm aware of it and have no intentions of changing it.
+
+First the documentation is rather technical, so it's hard to get into it, however not impossible.
+If someone really wants it, with time things can happen.
+Also, a Discord server is available where you can find help (and I mean help, not taking you by the hand and do it all for you).
+
+Secondly, it isn't designed to be a plug-and-play project.
+Instead, it is designed to be functional, even if it means making it harder to apprehend for "common people".
+====

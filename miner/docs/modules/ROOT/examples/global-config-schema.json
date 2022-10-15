@@ -1,19 +1,19 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$defs": {
-    "Path": {
-      "type": "object"
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "$defs" : {
+    "Path" : {
+      "type": "string"
     }
   },
-  "type": "object",
-  "properties": {
-    "accounts": {
-      "description": "List of account configurations.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "analytics": {
+  "type" : "object",
+  "properties" : {
+    "accounts" : {
+      "description" : "List of account configurations.",
+      "type" : "array",
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "analytics" : {
             "allOf": [
               {
                 "type": "object",
@@ -61,7 +61,7 @@
               }
             ]
           },
-          "chatMode": {
+          "chatMode" : {
             "allOf": [
               {
                 "type": "string",
@@ -72,7 +72,7 @@
               }
             ]
           },
-          "defaultStreamerSettings": {
+          "defaultStreamerSettings" : {
             "allOf": [
               {
                 "type": "object",
@@ -549,49 +549,29 @@
               }
             ]
           },
-          "discord": {
-            "type": "object",
-            "properties": {
-              "embeds": {
-                "type": "boolean",
-                "description": "Use embeds in the messages or not. Default: false"
+          "discord" : {
+            "type" : "object",
+            "properties" : {
+              "embeds" : {
+                "type" : "boolean",
+                "description" : "Use embeds in the messages or not. Default: false"
               },
-              "webhookUrl": {
-                "type": "object",
-                "properties": {
-                  "authority": {
-                    "type": "string"
-                  },
-                  "file": {
-                    "type": "string"
-                  },
-                  "host": {
-                    "type": "string"
-                  },
-                  "port": {
-                    "type": "integer"
-                  },
-                  "protocol": {
-                    "type": "string"
-                  },
-                  "ref": {
-                    "type": "string"
-                  }
-                },
+              "webhookUrl" : {
+                "type": "string",
                 "description": "Discord webhook url to publish events to."
               }
             },
-            "description": "Discord settings to send notifications."
+            "description" : "Discord settings to send notifications."
           },
-          "enabled": {
-            "type": "boolean",
-            "description": "If the account is marked as enabled it'll be mined. Default: true"
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "If the account is marked as enabled it'll be mined. Default: true"
           },
-          "loadFollows": {
-            "type": "boolean",
-            "description": "Load streamers to scrape from follow list. Default: false"
+          "loadFollows" : {
+            "type" : "boolean",
+            "description" : "Load streamers to scrape from follow list. Default: false"
           },
-          "loginMethod": {
+          "loginMethod" : {
             "anyOf": [
               {
                 "allOf": [
@@ -631,6 +611,10 @@
                       "binary": {
                         "type": "string",
                         "description": "Binary of the browser to use. Used only if not using a REMOTE_XXX driver."
+                      },
+                      "cookiesPath": {
+                        "type": "string",
+                        "description": "Path to a JSON file containing your exported cookies."
                       },
                       "disableShm": {
                         "type": "boolean",
@@ -680,36 +664,66 @@
                   }
                 ],
                 "description": "Login method to use."
+              }, {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "authenticationFolder": {
+                        "$ref": "#/$defs/Path",
+                        "description": "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication"
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "Password of your Twitch account."
+                      },
+                      "use2FA": {
+                        "type": "boolean",
+                        "description": "If this account uses 2FA set this to true to directly ask for it. Default: false"
+                      }
+                    },
+                    "description": "Login though Twitch's Passport API (as mobile)."
+                  }, {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "mobile"
+                      }
+                    },
+                    "required": ["type"]
+                  }
+                ],
+                "description": "Login method to use."
               }
             ]
           },
-          "reloadEvery": {
-            "type": "integer",
-            "description": "Reload streamer settings every x minutes. Zero or negative value disables it. Default: 0"
+          "reloadEvery" : {
+            "type" : "integer",
+            "description" : "Reload streamer settings every x minutes. Zero or negative value disables it. Default: 0"
           },
-          "streamerConfigDirectories": {
-            "description": "Paths containing overrides for streamer configurations.",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "path": {
-                  "$ref": "#/$defs/Path",
-                  "description": "Path to a folder that contains streamer configurations."
+          "streamerConfigDirectories" : {
+            "description" : "Paths containing overrides for streamer configurations.",
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "path" : {
+                  "$ref" : "#/$defs/Path",
+                  "description" : "Path to a folder that contains streamer configurations."
                 },
-                "recursive": {
-                  "type": "boolean",
-                  "description": "If set to true, this folder will be scanned recursively. Default: false"
+                "recursive" : {
+                  "type" : "boolean",
+                  "description" : "If set to true, this folder will be scanned recursively. Default: false"
                 }
               },
-              "description": "Folder used to override streamer configurations."
+              "description" : "Folder used to override streamer configurations."
             }
           },
-          "username": {
-            "type": "string",
-            "description": "Mining account's username."
+          "username" : {
+            "type" : "string",
+            "description" : "Mining account's username."
           },
-          "versionProvider": {
+          "versionProvider" : {
             "allOf": [
               {
                 "type": "string",
@@ -721,9 +735,9 @@
             ]
           }
         },
-        "description": "Mining account configuration."
+        "description" : "Mining account configuration."
       }
     }
   },
-  "description": "Global configuration."
+  "description" : "Global configuration."
 }

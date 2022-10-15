@@ -51,4 +51,7 @@ public class BrowserConfiguration implements ILoginMethod{
 	@JsonProperty("remoteHost")
 	@JsonPropertyDescription("Remote host of the selenium grid. Must be defined if using REMOTE_XXX driver.")
 	private String remoteHost;
+	@JsonProperty("cookiesPath")
+	@JsonPropertyDescription("Path to a JSON file containing your exported cookies.")
+	private String cookiesPath;
 }

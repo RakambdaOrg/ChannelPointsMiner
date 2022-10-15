@@ -45,6 +45,7 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdFromCookies(){
 		var tested = TwitchLogin.builder()
+				.twitchClient(TwitchClient.WEB)
 				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
 				.cookies(List.of(new Cookie("persistent=%s%%3A%%3Aabcdefghijklmnopqrstuvwxyz".formatted(USER_ID))))
@@ -60,6 +61,7 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdFromApi(){
 		var tested = TwitchLogin.builder()
+				.twitchClient(TwitchClient.WEB)
 				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
 				.build();
@@ -70,6 +72,7 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdSavesResult(){
 		var tested = TwitchLogin.builder()
+				.twitchClient(TwitchClient.WEB)
 				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
 				.build();
@@ -80,6 +83,7 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdFromApiNoResponse(){
 		var tested = TwitchLogin.builder()
+				.twitchClient(TwitchClient.WEB)
 				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
 				.build();
@@ -92,6 +96,7 @@ class TwitchLoginTest{
 	@Test
 	void getUserIdAsInt(){
 		var tested = TwitchLogin.builder()
+				.twitchClient(TwitchClient.WEB)
 				.accessToken(ACCESS_TOKEN)
 				.username(USERNAME)
 				.userId("123456")

@@ -1,36 +1,36 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "claimMoments": {
-      "type": "boolean",
-      "description": "Claim moments. Default: false"
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "type" : "object",
+  "properties" : {
+    "claimMoments" : {
+      "type" : "boolean",
+      "description" : "Claim moments. Default: false"
     },
-    "enabled": {
-      "type": "boolean",
-      "description": "Enable mining for this streamer. Default: true"
+    "enabled" : {
+      "type" : "boolean",
+      "description" : "Enable mining for this streamer. Default: true"
     },
-    "followRaid": {
-      "type": "boolean",
-      "description": "Follow raids to get bonus points. Default: false"
+    "followRaid" : {
+      "type" : "boolean",
+      "description" : "Follow raids to get bonus points. Default: false"
     },
-    "index": {
-      "type": "integer",
-      "description": "The streamer index. This value is used when streamers have the same score from the defined priorities, the one with the lowest index will be picked first. Default: 2147483647"
+    "index" : {
+      "type" : "integer",
+      "description" : "The streamer index. This value is used when streamers have the same score from the defined priorities, the one with the lowest index will be picked first. Default: 2147483647"
     },
-    "joinChat": {
-      "type": "boolean",
-      "description": "Join chat. Default: false"
+    "joinChat" : {
+      "type" : "boolean",
+      "description" : "Join chat. Default: false"
     },
-    "makePredictions": {
-      "type": "boolean",
-      "description": "Place predictions. Default: false"
+    "makePredictions" : {
+      "type" : "boolean",
+      "description" : "Place predictions. Default: false"
     },
-    "participateCampaigns": {
-      "type": "boolean",
-      "description": "Participate in campaigns and claim rewards (drops). Default: false"
+    "participateCampaigns" : {
+      "type" : "boolean",
+      "description" : "Participate in campaigns and claim rewards (drops). Default: false"
     },
-    "predictions": {
+    "predictions" : {
       "allOf": [
         {
           "type": "object",
@@ -316,10 +316,10 @@
         }
       ]
     },
-    "priorities": {
-      "description": "A list of conditions that, if met, will prioritize this streamer.",
-      "type": "array",
-      "items": {
+    "priorities" : {
+      "description" : "A list of conditions that, if met, will prioritize this streamer.",
+      "type" : "array",
+      "items" : {
         "anyOf": [
           {
             "allOf": [
@@ -468,5 +468,5 @@
       }
     }
   },
-  "description": "Streamer settings"
+  "description" : "Streamer settings"
 }

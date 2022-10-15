@@ -96,6 +96,7 @@ class ConfigurationFactoryTest{
 								.driver(BrowserDriver.REMOTE_CHROME)
 								.remoteHost("http://selenium-hub:4444/wd/hub")
 								.userDir("/home/seluser/profiles/channelpointsminer")
+								.cookiesPath("/path/to/cookies.json")
 								.build())
 						.loadFollows(true)
 						.enabled(false)

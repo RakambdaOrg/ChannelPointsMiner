@@ -1,0 +1,42 @@
+{
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "type" : "array",
+  "items" : {
+    "type" : "object",
+    "properties" : {
+      "domain" : {
+        "type" : "string"
+      },
+      "expirationDate" : {
+        "type" : "string"
+      },
+      "hostOnly" : {
+        "type" : "boolean"
+      },
+      "httpOnly" : {
+        "type" : "boolean"
+      },
+      "name" : {
+        "type" : "string"
+      },
+      "path" : {
+        "type" : "string"
+      },
+      "sameSite" : {
+        "type" : "string"
+      },
+      "secure" : {
+        "type" : "boolean"
+      },
+      "session" : {
+        "type" : "boolean"
+      },
+      "storeId" : {
+        "type" : "string"
+      },
+      "value" : {
+        "type" : "string"
+      }
+    }
+  }
+}
