@@ -25,9 +25,9 @@ class MobileIntegrityProviderTest{
 	private static final String X_DEVICE_ID = "x-device-id";
 	private static final String CLIENT_ID = "kd1unb4b3q4t58fwlpcbzcbnm76a8fp";
 	private static final String CLIENT_VERSION = "32d439b2-bd5b-4e35-b82a-fae10b04da70";
-	public static final String ACCEPT_TYPE = "application/vnd.twitchtv.v3+json";
-	public static final String API_CONSUMER_TYPE = "mobile; Android/1309000";
-	public static final String X_APP_VERSION = "13.9.0";
+	private static final String ACCEPT_TYPE = "application/vnd.twitchtv.v3+json";
+	private static final String API_CONSUMER_TYPE = "mobile; Android/1309000";
+	private static final String X_APP_VERSION = "13.9.0";
 	
 	private MobileIntegrityProvider tested;
 	
