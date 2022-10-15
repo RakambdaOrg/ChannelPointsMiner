@@ -15,15 +15,15 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@JsonTypeName("http")
+@JsonTypeName("mobile")
 @Getter
 @EqualsAndHashCode
 @ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonClassDescription("Login though Twitch's Passport API.")
-public class HttpLoginMethod implements ILoginMethod, IPassportApiLoginProvider{
+@JsonClassDescription("Login though Twitch's Passport API (as mobile).")
+public class MobileLoginMethod implements ILoginMethod, IPassportApiLoginProvider{
 	@NotNull
 	@JsonProperty(value = "password", required = true)
 	@JsonPropertyDescription("Password of your Twitch account.")
@@ -42,6 +42,6 @@ public class HttpLoginMethod implements ILoginMethod, IPassportApiLoginProvider{
 	@Override
 	@NotNull
 	public TwitchClient getTwitchClient(){
-		return TwitchClient.WEB;
+		return TwitchClient.MOBILE;
 	}
 }

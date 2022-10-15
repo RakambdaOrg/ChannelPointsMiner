@@ -55,6 +55,10 @@ public class TwitchLogin{
 	@Nullable
 	@ToString.Include
 	private String userId;
+	@JsonProperty("twitchClient")
+	@NotNull
+	@Getter
+	private TwitchClient twitchClient;
 	
 	public int getUserIdAsInt(@NotNull GQLApi gqlApi){
 		return Integer.parseInt(fetchUserId(gqlApi));

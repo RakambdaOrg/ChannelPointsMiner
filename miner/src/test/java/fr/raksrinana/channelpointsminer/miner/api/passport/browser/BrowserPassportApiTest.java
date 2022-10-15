@@ -1,5 +1,6 @@
 package fr.raksrinana.channelpointsminer.miner.api.passport.browser;
 
+import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.raksrinana.channelpointsminer.miner.browser.Browser;
@@ -69,6 +70,7 @@ class BrowserPassportApiTest{
 			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
 			
 			assertThat(tested.login()).isEqualTo(TwitchLogin.builder()
+					.twitchClient(TwitchClient.WEB)
 					.username(USERNAME)
 					.accessToken(ACCESS_TOKEN)
 					.cookies(COOKIES)
@@ -85,6 +87,7 @@ class BrowserPassportApiTest{
 			when(browserConfiguration.getCookiesPath()).thenReturn(pathStr);
 			
 			assertThat(tested.login()).isEqualTo(TwitchLogin.builder()
+					.twitchClient(TwitchClient.WEB)
 					.username(USERNAME)
 					.accessToken(ACCESS_TOKEN)
 					.cookies(COOKIES)

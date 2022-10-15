@@ -9,6 +9,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 @JsonSubTypes(value = {
 		@JsonSubTypes.Type(value = HttpLoginMethod.class, name = "http"),
 		@JsonSubTypes.Type(value = BrowserConfiguration.class, name = "browser"),
+		@JsonSubTypes.Type(value = MobileLoginMethod.class, name = "mobile"),
 })
 @JsonClassDescription("Login method")
 public interface ILoginMethod{
