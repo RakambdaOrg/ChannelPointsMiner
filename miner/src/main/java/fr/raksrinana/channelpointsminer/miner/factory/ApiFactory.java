@@ -41,6 +41,7 @@ public class ApiFactory{
 	
 	private static final String API_CONSUMER_TYPE_HEADER = "Api-Consumer-Type";
 	private static final String X_APP_VERSION_HEADER = "X-App-Version";
+	private static final String ACCEPT_MOBILE = "application/vnd.twitchtv.v3+json";
 	private static final String API_CONSUMER_TYPE = "mobile; Android/1309000";
 	private static final String X_APP_VERSION = "13.9.0";
 	
@@ -63,7 +64,7 @@ public class ApiFactory{
 	
 	public static void addMobileHeaders(@NotNull UnirestInstance unirest){
 		unirest.config()
-				.setDefaultHeader(HeaderNames.ACCEPT, "application/vnd.twitchtv.v3+json")
+				.setDefaultHeader(HeaderNames.ACCEPT, ACCEPT_MOBILE)
 				.setDefaultHeader(API_CONSUMER_TYPE_HEADER, API_CONSUMER_TYPE)
 				.setDefaultHeader(X_APP_VERSION_HEADER, X_APP_VERSION);
 	}
