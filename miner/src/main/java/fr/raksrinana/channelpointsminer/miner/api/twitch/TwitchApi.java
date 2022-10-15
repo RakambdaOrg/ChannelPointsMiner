@@ -18,14 +18,31 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RequiredArgsConstructor
 @Log4j2
 public class TwitchApi{
-	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("https://static.twitchcdn.net/config/settings.*?js");
+	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("(https://static.twitchcdn.net/config/settings.*?js)");
 	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade_url\":\"(.*?)\"");
 	
 	private final UnirestInstance unirest;
 	
 	@NotNull
 	public Optional<URL> getSpadeUrl(@NotNull URL streamerUrl){
-		return getSettingsUrl(streamerUrl)
+		return getStreamerPageContent(streamerUrl)
+				.flatMap(content -> extractUrl(SPADE_URL_PATTERN, content).or(() -> extractSpadeFromSettings(content)));
+	}
+	
+	@NotNull
+	private Optional<String> getStreamerPageContent(@NotNull URL streamerUrl){
+		var response = unirest.get(streamerUrl.toString()).asString();
+		
+		if(!response.isSuccess()){
+			return Optional.empty();
+		}
+		
+		return Optional.of(response.getBody());
+	}
+	
+	@NotNull
+	private Optional<URL> extractSpadeFromSettings(@NotNull String content){
+		return extractUrl(SETTINGS_URL_PATTERN, content)
 				.map(settingsUrl -> {
 					var response = unirest.get(settingsUrl.toString()).asString();
 					
@@ -33,41 +50,23 @@ public class TwitchApi{
 						return null;
 					}
 					
-					var matcher = SPADE_URL_PATTERN.matcher(response.getBody());
-					if(!matcher.find()){
-						log.error("Failed to get spade url");
-						return null;
-					}
-					
-					try{
-						return URI.create(matcher.group(1)).toURL();
-					}
-					catch(MalformedURLException e){
-						log.error("Failed to parse spade url", e);
-						return null;
-					}
-				});
+					return response.getBody();
+				})
+				.flatMap(c -> extractUrl(SPADE_URL_PATTERN, c));
 	}
 	
 	@NotNull
-	private Optional<URL> getSettingsUrl(@NotNull URL streamerUrl){
-		var response = unirest.get(streamerUrl.toString()).asString();
-		
-		if(!response.isSuccess()){
-			return Optional.empty();
-		}
-		
-		var matcher = SETTINGS_URL_PATTERN.matcher(response.getBody());
+	private Optional<URL> extractUrl(@NotNull Pattern pattern, @NotNull String content){
+		var matcher = pattern.matcher(content);
 		if(!matcher.find()){
-			log.error("Failed to get settings url");
 			return Optional.empty();
 		}
 		
 		try{
-			return Optional.of(URI.create(matcher.group()).toURL());
+			return Optional.of(URI.create(matcher.group(1)).toURL());
 		}
 		catch(MalformedURLException e){
-			log.error("Failed to parse settings url", e);
+			log.error("Failed to parse url", e);
 			return Optional.empty();
 		}
 	}

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.raksrinana.channelpointsminer.miner.api.twitch.data.PlayerEvent;
-import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
@@ -26,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
-@ParallelizableTest
+//@ParallelizableTest
 class TwitchApiTest{
 	private static final int USER_ID = 123456789;
 	private static final String BROADCAST_ID = "broadcast-id";
@@ -37,7 +36,7 @@ class TwitchApiTest{
 	private static final String CONFIG_URL = "https://static.twitchcdn.net/config/settings.sq5d4q6s54ds854c84qs.js";
 	private static final String CONFIG_BODY = "<script src=\"%s\" crossorigin=\"anonymous\"></script>".formatted(CONFIG_URL);
 	private static final String SPADE_URL = "https://google.com";
-	private static final String SPADE_BODY = "\"spade_url\":\"%s\"".formatted(SPADE_URL);
+	private static final String SPADE_BODY = "azeazeazeaze\"spade_url\":\"%s\"azeazeaze".formatted(SPADE_URL);
 	private static final String SPADE_BODY_INVALID_FORMAT = "\"spade_url\":\"%s\"".formatted("https://google.com:-80/");
 	
 	private TwitchApi tested;
@@ -152,6 +151,16 @@ class TwitchApiTest{
 				.withStatus(200);
 		
 		unirest.expect(GET, CONFIG_URL)
+				.thenReturn(SPADE_BODY)
+				.withStatus(200);
+		
+		assertThat(tested.getSpadeUrl(streamerUrl)).isPresent()
+				.get().isEqualTo(spadeUrl);
+	}
+	
+	@Test
+	void getSpadeUrlFromStreamerPage(UnirestMock unirest){
+		unirest.expect(GET, STREAMER_URL)
 				.thenReturn(SPADE_BODY)
 				.withStatus(200);
 		
