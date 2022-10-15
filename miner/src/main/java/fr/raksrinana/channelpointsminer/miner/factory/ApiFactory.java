@@ -24,6 +24,7 @@ import fr.raksrinana.channelpointsminer.miner.config.login.MobileLoginMethod;
 import fr.raksrinana.channelpointsminer.miner.log.UnirestLogger;
 import fr.raksrinana.channelpointsminer.miner.util.CommonUtils;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
+import kong.unirest.core.HeaderNames;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestInstance;
 import kong.unirest.jackson.JacksonObjectMapper;
@@ -37,6 +38,12 @@ import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public class ApiFactory{
+	
+	private static final String API_CONSUMER_TYPE_HEADER = "Api-Consumer-Type";
+	private static final String X_APP_VERSION_HEADER = "X-App-Version";
+	private static final String API_CONSUMER_TYPE = "mobile; Android/1309000";
+	private static final String X_APP_VERSION = "13.9.0";
+	
 	private static UnirestInstance createUnirestInstance(@Nullable TwitchClient twitchClient){
 		var unirest = Unirest.spawnInstance();
 		unirest.config()
@@ -54,10 +61,21 @@ public class ApiFactory{
 		return unirest;
 	}
 	
+	public static void addMobileHeaders(@NotNull UnirestInstance unirest){
+		unirest.config()
+				.setDefaultHeader(HeaderNames.ACCEPT, "application/vnd.twitchtv.v3+json")
+				.setDefaultHeader(API_CONSUMER_TYPE_HEADER, API_CONSUMER_TYPE)
+				.setDefaultHeader(X_APP_VERSION_HEADER, X_APP_VERSION);
+	}
+	
 	@NotNull
 	public static GQLApi createGqlApi(@NotNull TwitchLogin twitchLogin, @NotNull IIntegrityProvider integrityProvider){
 		var unirest = createUnirestInstance(twitchLogin.getTwitchClient());
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
+		
+		if(twitchLogin.getTwitchClient() == TwitchClient.MOBILE){
+			addMobileHeaders(unirest);
+		}
 		
 		return new GQLApi(twitchLogin, unirest, integrityProvider);
 	}
@@ -119,6 +137,7 @@ public class ApiFactory{
 		
 		var unirest = createUnirestInstance(twitchLogin.getTwitchClient());
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
+		addMobileHeaders(unirest);
 		
 		return new MobileIntegrityProvider(twitchLogin, unirest, clientSessionId, xDeviceId);
 	}

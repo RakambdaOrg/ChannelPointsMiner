@@ -37,6 +37,8 @@ class ApiFactoryTest{
 	@Mock
 	private TwitchLogin twitchLogin;
 	@Mock
+	private TwitchLogin mobileTwitchLogin;
+	@Mock
 	private IIntegrityProvider integrityProvider;
 	@Mock
 	private IVersionProvider versionProvider;
@@ -52,11 +54,17 @@ class ApiFactoryTest{
 	@BeforeEach
 	void setUp(){
 		lenient().when(twitchLogin.getTwitchClient()).thenReturn(TwitchClient.WEB);
+		lenient().when(mobileTwitchLogin.getTwitchClient()).thenReturn(TwitchClient.MOBILE);
 	}
 	
 	@Test
 	void createGqlApi(){
 		assertThat(ApiFactory.createGqlApi(twitchLogin, integrityProvider)).isNotNull().isInstanceOf(GQLApi.class);
+	}
+	
+	@Test
+	void createMobileGqlApi(){
+		assertThat(ApiFactory.createGqlApi(mobileTwitchLogin, integrityProvider)).isNotNull().isInstanceOf(GQLApi.class);
 	}
 	
 	@Test
@@ -95,8 +103,7 @@ class ApiFactoryTest{
 	
 	@Test
 	void createMobileIntegrityProvider(){
-		when(twitchLogin.getTwitchClient()).thenReturn(TwitchClient.MOBILE);
-		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, mobileLoginMethod)).isNotNull().isInstanceOf(MobileIntegrityProvider.class);
+		assertThat(ApiFactory.createIntegrityProvider(mobileTwitchLogin, versionProvider, mobileLoginMethod)).isNotNull().isInstanceOf(MobileIntegrityProvider.class);
 	}
 	
 	@Test

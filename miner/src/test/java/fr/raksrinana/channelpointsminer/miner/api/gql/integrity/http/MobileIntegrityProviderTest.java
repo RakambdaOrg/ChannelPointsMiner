@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.raksrinana.channelpointsminer.miner.factory.ApiFactory;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMock;
 import fr.raksrinana.channelpointsminer.miner.tests.UnirestMockExtension;
@@ -44,6 +45,7 @@ class MobileIntegrityProviderTest{
 		
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		
+		ApiFactory.addMobileHeaders(unirestMock.getUnirestInstance());
 		tested = new MobileIntegrityProvider(twitchLogin, unirestMock.getUnirestInstance(), CLIENT_SESSION_ID, X_DEVICE_ID);
 	}
 	
