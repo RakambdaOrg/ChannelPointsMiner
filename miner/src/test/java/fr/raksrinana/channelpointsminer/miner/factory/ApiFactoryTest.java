@@ -9,6 +9,7 @@ import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.http.MobileInteg
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
+import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.browser.BrowserPassportApi;
 import fr.raksrinana.channelpointsminer.miner.api.passport.http.HttpPassportApi;
@@ -20,11 +21,13 @@ import fr.raksrinana.channelpointsminer.miner.config.login.MobileLoginMethod;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URL;
 import java.nio.file.Paths;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +48,11 @@ class ApiFactoryTest{
 	private BrowserConfiguration browserConfiguration;
 	@Mock
 	private URL url;
+	
+	@BeforeEach
+	void setUp(){
+		lenient().when(twitchLogin.getTwitchClient()).thenReturn(TwitchClient.WEB);
+	}
 	
 	@Test
 	void createGqlApi(){
@@ -87,6 +95,7 @@ class ApiFactoryTest{
 	
 	@Test
 	void createMobileIntegrityProvider(){
+		when(twitchLogin.getTwitchClient()).thenReturn(TwitchClient.MOBILE);
 		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, mobileLoginMethod)).isNotNull().isInstanceOf(MobileIntegrityProvider.class);
 	}
 	
