@@ -22,6 +22,8 @@ import org.openqa.selenium.devtools.v104.network.model.ResponseReceived;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.net.URL;
@@ -31,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -163,6 +166,13 @@ public class Browser implements AutoCloseable{
 		
 		options.setExperimentalOption("excludeSwitches", Set.of("enable-automation"));
 		options.setExperimentalOption("useAutomationExtension", false);
+		
+		var loggingPreferences = new LoggingPreferences();
+		loggingPreferences.enable(LogType.BROWSER, Level.WARNING);
+		loggingPreferences.enable(LogType.PERFORMANCE, Level.WARNING);
+		loggingPreferences.enable(LogType.PROFILER, Level.WARNING);
+		options.setCapability(ChromeOptions.LOGGING_PREFS, loggingPreferences);
+		
 		return options;
 	}
 	
@@ -178,6 +188,7 @@ public class Browser implements AutoCloseable{
 		options.setHeadless(configuration.isHeadless());
 		Optional.ofNullable(configuration.getUserAgent()).ifPresent(ua -> options.addPreference("general.useragent.override", ua));
 		// Optional.ofNullable(configuration.getUserDir()).ifPresent(ud -> options.addArguments("-profile", ud));
+		
 		return options;
 	}
 	
