@@ -2,6 +2,7 @@ package fr.raksrinana.channelpointsminer.miner.api.passport.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import fr.raksrinana.channelpointsminer.miner.api.passport.IPassportApi;
+import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
@@ -10,7 +11,7 @@ import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingAut
 import fr.raksrinana.channelpointsminer.miner.api.passport.exceptions.MissingTwitchGuard;
 import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginRequest;
 import fr.raksrinana.channelpointsminer.miner.api.passport.http.data.LoginResponse;
-import fr.raksrinana.channelpointsminer.miner.config.login.HttpLoginMethod;
+import fr.raksrinana.channelpointsminer.miner.config.login.IPassportApiLoginProvider;
 import fr.raksrinana.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.UnirestInstance;
@@ -30,21 +31,22 @@ import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 
 @Log4j2
 public class HttpPassportApi implements IPassportApi{
-	public static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 	private static final String ENDPOINT = "https://passport.twitch.tv";
 	private final UnirestInstance unirest;
+	private final TwitchClient twitchClient;
 	private final String username;
 	private final String password;
 	private final boolean ask2FA;
 	private final Path userAuthenticationFile;
 	
-	public HttpPassportApi(@NotNull UnirestInstance unirest, @NotNull String username, @NotNull HttpLoginMethod httpLoginMethod){
+	public HttpPassportApi(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider){
+		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
 		
-		password = httpLoginMethod.getPassword();
-		ask2FA = httpLoginMethod.isUse2Fa();
-		userAuthenticationFile = httpLoginMethod.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
+		password = passportApiLoginProvider.getPassword();
+		ask2FA = passportApiLoginProvider.isUse2Fa();
+		userAuthenticationFile = passportApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
 	}
 	
 	/**
@@ -57,10 +59,16 @@ public class HttpPassportApi implements IPassportApi{
 	 */
 	@NotNull
 	public TwitchLogin login() throws LoginException, IOException{
-		var restoredAuth = restoreAuthentication();
-		if(restoredAuth.isPresent()){
+		var restoredAuthOptional = restoreAuthentication();
+		if(restoredAuthOptional.isPresent()){
 			log.info("Logged back in from authentication file");
-			return restoredAuth.get();
+			var restoredAuth = restoredAuthOptional.get();
+			
+			if(restoredAuth.getTwitchClient() != twitchClient){
+				throw new LoginException("Restored authentication is for another twitch client, use another auth folder");
+			}
+			
+			return restoredAuth;
 		}
 		
 		HttpResponse<LoginResponse> response;
@@ -69,14 +77,23 @@ public class HttpPassportApi implements IPassportApi{
 				response = twoFactorLogin();
 			}
 			else{
-				response = login(LoginRequest.builder().username(username).password(password).build());
+				response = login(LoginRequest.builder()
+						.clientId(twitchClient.getClientId())
+						.username(username)
+						.password(password)
+						.build());
 			}
 		}
 		catch(MissingAuthy2FA e){
 			response = twoFactorLogin();
 		}
 		catch(MissingTwitchGuard e){
-			response = login(LoginRequest.builder().username(username).password(password).twitchGuardCode(getUserInput("Enter TwitchGuard code:")).build());
+			response = login(LoginRequest.builder()
+					.clientId(twitchClient.getClientId())
+					.username(username)
+					.password(password)
+					.twitchGuardCode(getUserInput("Enter TwitchGuard code:"))
+					.build());
 		}
 		
 		log.info("Logged in");
@@ -110,7 +127,12 @@ public class HttpPassportApi implements IPassportApi{
 	@NotNull
 	private HttpResponse<LoginResponse> twoFactorLogin() throws LoginException{
 		var authToken = getUserInput("Enter 2FA token for user " + username + ":");
-		return login(LoginRequest.builder().username(username).password(password).authyToken(authToken).build());
+		return login(LoginRequest.builder()
+				.clientId(twitchClient.getClientId())
+				.username(username)
+				.password(password)
+				.authyToken(authToken)
+				.build());
 	}
 	
 	/**
@@ -127,7 +149,7 @@ public class HttpPassportApi implements IPassportApi{
 		log.debug("Sending passport login request");
 		var response = unirest.post(ENDPOINT + "/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
-				.header("Client-Id", CLIENT_ID)
+				.header("Client-Id", twitchClient.getClientId())
 				.body(loginRequest)
 				.asObject(LoginResponse.class);
 		
@@ -167,6 +189,7 @@ public class HttpPassportApi implements IPassportApi{
 	@NotNull
 	private TwitchLogin handleResponse(@NotNull HttpResponse<LoginResponse> response) throws IOException{
 		var twitchLogin = TwitchLogin.builder()
+				.twitchClient(twitchClient)
 				.username(username)
 				.accessToken(response.getBody().getAccessToken())
 				.cookies(response.getCookies())

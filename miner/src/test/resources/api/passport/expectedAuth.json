@@ -1,5 +1,6 @@
 {
   "username": "username",
   "accessToken": "access-token",
-  "cookies": ["yummy_cookie=choco", "yummy_cake=vanilla"]
+  "cookies": ["yummy_cookie=choco", "yummy_cake=vanilla"],
+  "twitchClient": "WEB"
 }

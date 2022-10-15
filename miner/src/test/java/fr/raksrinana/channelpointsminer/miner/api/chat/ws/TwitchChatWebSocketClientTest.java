@@ -98,7 +98,7 @@ class TwitchChatWebSocketClientTest{
 		server.reset();
 		
 		var now = Instant.now();
-		
+		Thread.sleep(10);
 		server.sendPing();
 		server.awaitMessage();
 		
