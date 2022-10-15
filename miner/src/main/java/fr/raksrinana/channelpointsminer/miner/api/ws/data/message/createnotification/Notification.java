@@ -65,7 +65,7 @@ public class Notification{
 	@NotNull
 	private NotificationDisplayType displayType;
 	@JsonProperty("category")
-	@NotNull
+	@Nullable
 	private String category;
 	@JsonProperty("mobile_destination_type")
 	@NotNull
@@ -74,4 +74,8 @@ public class Notification{
 	@JsonDeserialize(using = URLDeserializer.class)
 	@NotNull
 	private URL mobileDestinationKey;
+	@JsonProperty("data_blocks")
+	@NotNull
+	@Builder.Default
+	private List<NotificationDataBlock> dataBlocks = new ArrayList<>();
 }

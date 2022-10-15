@@ -24,8 +24,14 @@ import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimavailable
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.claimclaimed.ClaimClaimedData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.communitymoment.CommunityMomentStartData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.CreateNotificationData;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.ImageBlock;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.ImageContent;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.ImageNotificationDataBlock;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.Notification;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.NotificationAction;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.TextBlock;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.TextContent;
+import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.createnotification.TextNotificationDataBlock;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.deletenotification.DeleteNotificationData;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
 import fr.raksrinana.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
@@ -484,6 +490,69 @@ class TwitchPubSubWebSocketClientMessageTest{
 												.category("transactional")
 												.mobileDestinationType("ExternalLink")
 												.mobileDestinationKey(new URL("https://www.twitch.tv/inventory"))
+												.build())
+										.persistent(true)
+										.toast(false)
+										.displayType(NotificationDisplayType.VIEWER)
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onCreateNotification2(WebsocketMockServer server) throws MalformedURLException{
+		server.send(getAllResourceContent("api/ws/createNotification2.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(CreateNotification.builder()
+								.data(CreateNotificationData.builder()
+										.notification(Notification.builder()
+												.userId("123456789")
+												.id("notification-id")
+												.body("notification-body")
+												.bodyMd("notification-body-md")
+												.type("user_drop_reward_reminder_notification")
+												.renderStyle("DEFAULT")
+												.thumbnailUrl(new URL("https://thumbnail.com"))
+												.actions(List.of(NotificationAction.builder()
+														.id("CTA")
+														.type("click")
+														.url(new URL("https://www.twitch.tv/inventory"))
+														.modalId("")
+														.body("Open")
+														.label("CTA")
+														.build()))
+												.createdAt(ZonedDateTime.of(2022, 1, 15, 18, 45, 28, 412342347, UTC))
+												.updatedAt(ZonedDateTime.of(2022, 1, 16, 18, 45, 28, 412342347, UTC))
+												.read(false)
+												.displayType(NotificationDisplayType.VIEWER)
+												.mobileDestinationType("ExternalLink")
+												.mobileDestinationKey(new URL("https://www.twitch.tv/inventory"))
+												.dataBlocks(List.of(
+														TextNotificationDataBlock.builder()
+																.id("DEFAULT_BODY_TEXT")
+																.content(TextContent.builder()
+																		.textBlock(TextBlock.builder()
+																				.body("text-block-body")
+																				.build())
+																		.build())
+																.build(),
+														ImageNotificationDataBlock.builder()
+																.id("DEFAULT_THUMBNAIL_URL")
+																.content(ImageContent.builder()
+																		.imageBlock(ImageBlock.builder()
+																				.url(new URL("https://data-block-thumbnail"))
+																				.build())
+																		.build())
+																.build()
+												))
 												.build())
 										.persistent(true)
 										.toast(false)
