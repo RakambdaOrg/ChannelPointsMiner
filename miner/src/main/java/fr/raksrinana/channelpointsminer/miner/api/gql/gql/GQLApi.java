@@ -61,8 +61,6 @@ public class GQLApi{
 	private static final Set<String> EXPECTED_ERROR_MESSAGES = Set.of("service timeout", "service error", "server error", "service unavailable");
 	private static final Set<String> INTEGRITY_ERROR_MESSAGES = Set.of("failed integrity check");
 	
-	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
-	
 	private final TwitchLogin twitchLogin;
 	private final UnirestInstance unirest;
 	private final IIntegrityProvider integrityProvider;
@@ -80,7 +78,7 @@ public class GQLApi{
 			var response = unirest.post(ENDPOINT)
 					.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
 					.header(CLIENT_INTEGRITY_HEADER, integrity.getToken())
-					.header(CLIENT_ID_HEADER, CLIENT_ID)
+					.header(CLIENT_ID_HEADER, twitchLogin.getTwitchClient().getClientId())
 					.header(CLIENT_SESSION_ID_HEADER, integrity.getClientSessionId())
 					.header(CLIENT_VERSION_HEADER, integrity.getClientVersion())
 					.header(X_DEVICE_ID_HEADER, integrity.getXDeviceId())

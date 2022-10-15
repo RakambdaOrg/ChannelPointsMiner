@@ -3,6 +3,7 @@ package fr.raksrinana.channelpointsminer.miner.api.gql.gql;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.raksrinana.channelpointsminer.miner.api.gql.integrity.IntegrityException;
+import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.raksrinana.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.raksrinana.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.raksrinana.channelpointsminer.miner.tests.TestUtils;
@@ -101,6 +102,7 @@ public abstract class AbstractGQLTest{
 		currentClientVersion = DEFAULT_CLIENT_VERSION;
 		
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
+		lenient().when(twitchLogin.getTwitchClient()).thenReturn(TwitchClient.WEB);
 		lenient().when(integrityProvider.getIntegrity()).thenReturn(integrityData);
 		lenient().when(integrityData.getClientSessionId()).thenReturn(CLIENT_SESSION_ID);
 		lenient().when(integrityData.getXDeviceId()).thenReturn(X_DEVICE_ID);
