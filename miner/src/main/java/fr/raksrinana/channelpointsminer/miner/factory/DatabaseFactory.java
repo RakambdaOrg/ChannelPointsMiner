@@ -30,13 +30,40 @@ public class DatabaseFactory{
 		}
 		
 		var database = switch(parts[1]){
-			case "mariadb" -> new MariaDBDatabase(createDatasource(configuration, "org.mariadb.jdbc.Driver", configuration.getMaxPoolSize()));
-			case "sqlite" -> new SQLiteDatabase(createDatasource(configuration, "org.sqlite.JDBC", 1));
+			case "mariadb" -> createMariaDbDatabase(configuration);
+			case "sqlite" -> createSqliteDatabase(configuration);
 			default -> throw new IllegalStateException("Unknown JDBC type " + parts[1]);
 		};
 		
 		database.initDatabase();
 		return database;
+	}
+	
+	@NotNull
+	private static HikariConfig createHikariConfiguration(@NotNull DatabaseConfiguration configuration, String driver){
+		var config = new HikariConfig();
+		config.setJdbcUrl(configuration.getJdbcUrl());
+		config.setUsername(configuration.getUsername());
+		config.setPassword(configuration.getPassword());
+		config.setDriverClassName(driver);
+		config.setConnectionTimeout(configuration.getConnectionTimeout());
+		config.setIdleTimeout(configuration.getIdleTimeout());
+		config.setMaxLifetime(configuration.getLifetimeTimeout());
+		return config;
+	}
+	
+	@NotNull
+	private static MariaDBDatabase createMariaDbDatabase(@NotNull DatabaseConfiguration configuration){
+		var config = createHikariConfiguration(configuration, "org.mariadb.jdbc.Driver");
+		config.setMaximumPoolSize(configuration.getMaxPoolSize());
+		return new MariaDBDatabase(new HikariDataSource(config));
+	}
+	
+	@NotNull
+	private static SQLiteDatabase createSqliteDatabase(@NotNull DatabaseConfiguration configuration){
+		var config = createHikariConfiguration(configuration, "org.sqlite.JDBC");
+		config.setMaximumPoolSize(1);
+		return new SQLiteDatabase(new HikariDataSource(config));
 	}
 	
 	@NotNull
