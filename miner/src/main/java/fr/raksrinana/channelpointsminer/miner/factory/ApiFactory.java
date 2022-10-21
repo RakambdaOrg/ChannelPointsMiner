@@ -91,7 +91,10 @@ public class ApiFactory{
 	
 	@NotNull
 	public static DiscordApi createdDiscordApi(@NotNull URL webhookUrl){
-		return new DiscordApi(webhookUrl, createUnirestInstance(null));
+		var unirestInstance = createUnirestInstance(null);
+		unirestInstance.config().retryAfter(true);
+		
+		return new DiscordApi(webhookUrl, unirestInstance);
 	}
 	
 	@NotNull
