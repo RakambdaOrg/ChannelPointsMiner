@@ -3,7 +3,7 @@
     {
       "username" : "username",
       "loginMethod" : {
-        "type" : "http",
+        "type" : "mobile",
         "password" : "password",
         "use2FA" : true,
         "authenticationFolder" : "/path/to/authentication"

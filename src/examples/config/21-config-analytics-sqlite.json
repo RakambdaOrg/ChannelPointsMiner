@@ -1,18 +1,16 @@
 {
-  "accounts" : [
+  "accounts": [
     {
       "username" : "username",
       "loginMethod" : {
-        "type" : "http",
+        "type" : "mobile",
         "password" : "password"
       },
       "loadFollows" : true,
       "analytics" : {
         "enabled" : true,
         "database" : {
-          "jdbcUrl" : "jdbc:mariadb://10.0.0.0:3306/Miner",
-          "username" : "user",
-          "password" : "pass"
+          "jdbcUrl" : "jdbc:sqlite:miner.db"
         }
       }
     }

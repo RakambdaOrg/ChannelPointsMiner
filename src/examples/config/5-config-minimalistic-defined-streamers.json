@@ -3,7 +3,7 @@
     {
       "username" : "username",
       "loginMethod" : {
-        "type" : "http",
+        "type" : "mobile",
         "password" : "password"
       },
       "streamerConfigDirectories" : [
