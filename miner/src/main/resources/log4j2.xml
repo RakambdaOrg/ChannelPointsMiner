@@ -25,7 +25,7 @@
         </Routing>
     </Appenders>
     <Loggers>
-        <Logger level="trace" name="fr.raksrinana.channelpointsminer.miner" additivity="false">
+        <Logger level="info" name="fr.raksrinana.channelpointsminer.miner" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="router"/>
         </Logger>
