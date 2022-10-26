@@ -21,7 +21,7 @@ hikari-cp-version = "5.0.1"
 mariadb-version = "3.0.8"
 sqlite-version = "3.39.3.0"
 rerunner-jupiter-version = "2.1.6"
-flyway-version = "9.5.1"
+flyway-version = "9.6.0"
 selenide-version = "6.9.0"
 
 shadow-version = "7.1.2"
