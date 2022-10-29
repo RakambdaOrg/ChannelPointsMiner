@@ -4,7 +4,7 @@ The global settings, that you pass to the miner with the `--settings` argument, 
 
 Schema of the file is available in the xref:configuration/index.adoc[Configuration] page.
 
-Examples of this file can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
+Examples of this file can be found in link:https://github.com/Rakambda/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
 
 == Login method
 

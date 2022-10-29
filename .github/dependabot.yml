@@ -6,11 +6,11 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - RakSrinaNa
+      - Rakambda
   - package-ecosystem: "github-actions"
     directory: "/"
     target-branch: "develop"
     schedule:
       interval: "daily"
     reviewers:
-      - RakSrinaNa
+      - Rakambda

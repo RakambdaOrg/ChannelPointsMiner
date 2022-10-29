@@ -2,7 +2,7 @@ name: Bug report
 description: Create a report to help us improve
 labels: ["type: 🐛 bug"]
 assignees:
-  - RakSrinaNa
+  - Rakambda
 body:
   - type: textarea
     id: describing

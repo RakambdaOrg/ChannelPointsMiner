@@ -1,6 +1,6 @@
 = Channel Points Miner
 
-image:https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/RakSrinaNa/ChannelPointsMiner",window="_blank",align="center"]
+image:https://codecov.io/gh/Rakamdba/ChannelPointsMiner/branch/main/graph/badge.svg[link="https://codecov.io/gh/Rakamdba/ChannelPointsMiner",window="_blank",align="center"]
 image:https://img.shields.io/docker/pulls/mrcraftcod/channel-points-miner.svg[link="https://hub.docker.com/r/mrcraftcod/channel-points-miner",window="_blank",align="center"]
 image:https://img.shields.io/discord/1007349372444491856.svg?label=Discord&logo=Discord&colorB=7289da[link="https://discord.gg/uXWsRftdy7",window="_blank",align="center"]
 
@@ -8,7 +8,7 @@ include::miner/docs/modules/ROOT/partials/project-intro.adoc[]
 
 == Documentation
 
-Doc is available on link:https://raksrinana.github.io/ChannelPointsMiner/[pages].
+Doc is available on link:https://rakambda.github.io/ChannelPointsMiner/[pages].
 
 == Disclaimer
 
