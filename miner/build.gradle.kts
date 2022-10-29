@@ -140,7 +140,7 @@ jib {
         }
     }
     container {
-        creationTime = "USE_CURRENT_TIMESTAMP"
+        creationTime.set("USE_CURRENT_TIMESTAMP")
     }
 }
 
