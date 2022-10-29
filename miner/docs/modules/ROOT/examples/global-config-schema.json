@@ -632,7 +632,7 @@
                     "description" : "If this account uses 2FA set this to true to directly ask for it. Default: false"
                   }
                 },
-                "description" : "Login though Twitch's Passport API (as mobile)."
+                "description" : "Deprecated. Login though Twitch's Passport API (as mobile)."
               }, {
                 "type" : "object",
                 "properties" : {
