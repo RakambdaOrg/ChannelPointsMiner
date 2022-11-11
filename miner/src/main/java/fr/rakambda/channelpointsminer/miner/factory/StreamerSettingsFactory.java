@@ -76,6 +76,7 @@ public class StreamerSettingsFactory{
 						return Stream.empty();
 					}
 				})
+				.peek(p -> log.info("Found {}", p))
 				.filter(path -> path.getFileName().toString().endsWith(".json"));
 	}
 }
