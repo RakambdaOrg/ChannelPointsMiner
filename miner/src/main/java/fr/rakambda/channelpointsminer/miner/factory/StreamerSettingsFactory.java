@@ -1,6 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
+import fr.rakambda.channelpointsminer.miner.config.StreamerDirectory;
 import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,11 @@ public class StreamerSettingsFactory{
 	
 	@NotNull
 	public Stream<Path> getStreamerConfigs(){
+		var paths = accountConfiguration.getStreamerConfigDirectories().stream()
+				.map(StreamerDirectory::getPath)
+				.map(Path::toAbsolutePath)
+				.toList();
+		log.debug("Loading streamers from {}", paths);
 		return accountConfiguration.getStreamerConfigDirectories().stream()
 				.flatMap(streamerDirectory -> {
 					try{
