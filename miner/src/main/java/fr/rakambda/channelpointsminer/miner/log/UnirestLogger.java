@@ -11,13 +11,13 @@ import lombok.extern.log4j.Log4j2;
 public class UnirestLogger implements Interceptor{
 	@Override
 	public void onRequest(HttpRequest<?> request, Config config){
-		log.debug("Sending request to {}", request.getUrl());
+		log.trace("Sending request to {}", request.getUrl());
 	}
 	
 	@Override
 	public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config){
 		if(response.isSuccess()){
-			log.debug("Received successful response for {} with statusCode `{}`", request.getUrl(), response.getStatus());
+			log.trace("Received successful response for {} with statusCode `{}`", request.getUrl(), response.getStatus());
 			return;
 		}
 		

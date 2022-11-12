@@ -49,10 +49,10 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 				controller.ensureLoggedIn();
 				CommonUtils.randomSleep(10000, 1);
 				currentIntegrity = extractGQLIntegrity(browser);
-				log.info("Got new integrity token {}", currentIntegrity);
+				log.debug("Got new integrity token {}", currentIntegrity);
 				return currentIntegrity;
 			}
-			catch(Exception e){
+			catch(Throwable e){
 				throw new IntegrityException("Failed to get integrity", e);
 			}
 		}

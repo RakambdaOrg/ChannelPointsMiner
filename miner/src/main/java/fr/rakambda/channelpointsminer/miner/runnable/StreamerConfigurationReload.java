@@ -141,10 +141,7 @@ public class StreamerConfigurationReload implements Runnable{
 	@NotNull
 	private Map<String, StreamerResult> getStreamersFromConfiguration(@NotNull Collection<String> excludedNames){
 		log.debug("Loading streamers from configuration");
-		var configs = streamerSettingsFactory.getStreamerConfigs().toList();
-		log.debug("Found {} streamers", configs.size());
-		
-		return configs.stream()
+		return streamerSettingsFactory.getStreamerConfigs()
 				.map(Path::getFileName)
 				.map(Path::toString)
 				.map(name -> name.substring(0, name.length() - ".json".length()))

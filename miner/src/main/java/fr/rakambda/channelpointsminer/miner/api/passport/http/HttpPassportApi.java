@@ -188,6 +188,7 @@ public class HttpPassportApi implements IPassportApi{
 	 */
 	@NotNull
 	private TwitchLogin handleResponse(@NotNull HttpResponse<LoginResponse> response) throws IOException{
+		
 		var twitchLogin = TwitchLogin.builder()
 				.twitchClient(twitchClient)
 				.username(username)

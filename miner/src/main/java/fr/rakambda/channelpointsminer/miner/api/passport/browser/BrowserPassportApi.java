@@ -13,7 +13,9 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -41,13 +43,18 @@ public class BrowserPassportApi implements IPassportApi{
 		var username = Optional.ofNullable(manage.getCookieNamed("login")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no username found"));
 		var authToken = Optional.ofNullable(manage.getCookieNamed("auth-token")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no auth-token found"));
 		
+		var cookies = manage.getCookies().stream()
+				.map(c -> new kong.unirest.core.Cookie(c.toString()))
+				.toList();
+		
+		log.warn("Cookies found : {}", manage.getCookies().stream().map(Cookie::toString).collect(Collectors.joining(" | ")));
+		log.warn("Cookies found 2 : {}", cookies.stream().map(c -> List.of(c.getValue().getBytes()) + " //" + c).collect(Collectors.joining(" | ")));
+		
 		return TwitchLogin.builder()
 				.twitchClient(TwitchClient.WEB)
 				.username(username)
 				.accessToken(authToken)
-				.cookies(manage.getCookies().stream()
-						.map(c -> new kong.unirest.core.Cookie(c.toString()))
-						.toList())
+				.cookies(cookies)
 				.build();
 	}
 }
