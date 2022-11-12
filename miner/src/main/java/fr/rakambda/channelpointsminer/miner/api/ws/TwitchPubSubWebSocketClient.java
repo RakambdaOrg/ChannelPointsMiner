@@ -117,7 +117,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	private void send(@NotNull ITwitchWebSocketRequest request){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var data = JacksonUtils.writeAsString(request);
-			log.info("Sending WebSocket message: {}", data);
+			log.trace("Sending WebSocket message: {}", data);
 			send(data);
 		}
 		catch(JsonProcessingException e){
