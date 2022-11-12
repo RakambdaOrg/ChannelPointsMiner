@@ -13,9 +13,7 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -47,38 +45,11 @@ public class BrowserPassportApi implements IPassportApi{
 				.map(c -> new kong.unirest.core.Cookie(c.toString()))
 				.toList();
 		
-		log.warn("Cookies found 2 : {}", cookies.stream().map(c -> List.of(c.getValue().getBytes()) + " // " + c + " // " + isValidValue(c.getValue())).collect(Collectors.joining("\n")));
-		
 		return TwitchLogin.builder()
 				.twitchClient(TwitchClient.WEB)
 				.username(username)
 				.accessToken(authToken)
 				.cookies(cookies)
 				.build();
-	}
-	
-	public static boolean isValidValue(String token){
-		log.warn("Testing {}, ({})", token, token.getBytes());
-		boolean[] fieldvchar = new boolean[256];
-		for(char c = 0x21; c <= 0xFF; c++){
-			fieldvchar[c] = true;
-		}
-		fieldvchar[0x7F] = false;
-		
-		for(int i = 0; i < token.length(); i++){
-			char c = token.charAt(i);
-			if(c > 255){
-				log.error("INVALID BECAUSE C>255 : {}", c);
-				return false;
-			}
-			if(c == ' ' || c == '\t'){
-				continue;
-			}
-			else if(!fieldvchar[c]){
-				log.error("INVALID BECAUSE INVALID CHAR : {}", c);
-				return false; // forbidden byte
-			}
-		}
-		return true;
 	}
 }
