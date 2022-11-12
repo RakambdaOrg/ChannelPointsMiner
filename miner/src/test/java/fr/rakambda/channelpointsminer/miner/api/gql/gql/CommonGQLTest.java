@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(UnirestMockExtension.class)
@@ -70,6 +71,17 @@ public class CommonGQLTest extends AbstractGQLTest{
 		assertThat(thrown)
 				.hasCauseInstanceOf(IntegrityException.class)
 				.hasCause(new IntegrityException(500, "For tests"));
+	}
+	
+	@Test
+	void genericException() throws IntegrityException{
+		when(integrityProvider.getIntegrity()).thenThrow(new IllegalArgumentException("For tests"));
+		
+		var thrown = assertThrows(RuntimeException.class, () -> tested.joinRaid(RAID_ID));
+		
+		assertThat(thrown)
+				.hasCauseInstanceOf(IllegalArgumentException.class)
+				.hasCause(new IllegalArgumentException("For tests"));
 	}
 	
 	@Override
