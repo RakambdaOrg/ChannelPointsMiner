@@ -73,6 +73,7 @@ public class GQLApi{
 	@NotNull
 	private <T> Optional<GQLResponse<T>> postGqlRequest(@NotNull IGQLOperation<T> operation){
 		try{
+			log.info("Sending GQL operation {}", operation);
 			var integrity = integrityProvider.getIntegrity();
 			
 			var response = unirest.post(ENDPOINT)
@@ -89,6 +90,7 @@ public class GQLApi{
 				if(response.getStatus() == 401){
 					throw new InvalidCredentials(response.getStatus(), -1, "Invalid credentials provided");
 				}
+				log.error("Not a success: {}", response.getParsingError().stream().map(e -> e.getMessage() + " // " + e.getOriginalBody()).toList());
 				return Optional.empty();
 			}
 			
@@ -109,7 +111,8 @@ public class GQLApi{
 				return Optional.empty();
 			}
 			
-			return Optional.ofNullable(response.getBody());
+			log.debug("Body received : {}", body);
+			return Optional.ofNullable(body);
 		}
 		catch(IntegrityException | InvalidCredentials e){
 			throw new RuntimeException(e);

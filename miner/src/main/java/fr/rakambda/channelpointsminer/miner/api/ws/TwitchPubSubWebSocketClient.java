@@ -65,7 +65,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	@Override
 	public void onMessage(String messageStr){
 		try(var logContext = LogContext.empty().withSocketId(uuid)){
-			log.trace("Received Websocket message: {}", messageStr.strip());
+			log.debug("Received Websocket message: {}", messageStr.strip());
 			var message = JacksonUtils.read(messageStr, new TypeReference<ITwitchWebSocketResponse>(){});
 			log.trace("Parsed message: {}", message);
 			
@@ -117,7 +117,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	private void send(@NotNull ITwitchWebSocketRequest request){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var data = JacksonUtils.writeAsString(request);
-			log.trace("Sending WebSocket message: {}", data);
+			log.info("Sending WebSocket message: {}", data);
 			send(data);
 		}
 		catch(JsonProcessingException e){

@@ -50,6 +50,7 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 				controller.ensureLoggedIn();
 				CommonUtils.randomSleep(10000, 1);
 				currentIntegrity = extractGQLIntegrity(browser);
+				log.info("Got new integrity token {}", currentIntegrity);
 				return currentIntegrity;
 			}
 			catch(LoginException e){
