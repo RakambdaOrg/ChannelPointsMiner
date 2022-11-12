@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
+import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.rakambda.channelpointsminer.miner.browser.Browser;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.rakambda.channelpointsminer.miner.factory.BrowserFactory;
@@ -52,7 +53,7 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 				log.debug("Got new integrity token {}", currentIntegrity);
 				return currentIntegrity;
 			}
-			catch(Throwable e){
+			catch(LoginException e){
 				throw new IntegrityException("Failed to get integrity", e);
 			}
 		}
