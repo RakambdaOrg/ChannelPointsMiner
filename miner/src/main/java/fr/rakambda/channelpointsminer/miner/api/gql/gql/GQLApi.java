@@ -115,7 +115,12 @@ public class GQLApi{
 			return Optional.ofNullable(body);
 		}
 		catch(IntegrityException | InvalidCredentials e){
+			log.error("Creds error", e);
 			throw new RuntimeException(e);
+		}
+		catch(Throwable e){
+			log.error("Hmmmmmm", e);
+			throw e;
 		}
 	}
 	
