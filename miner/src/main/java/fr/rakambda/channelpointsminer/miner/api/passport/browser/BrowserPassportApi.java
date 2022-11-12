@@ -41,13 +41,15 @@ public class BrowserPassportApi implements IPassportApi{
 		var username = Optional.ofNullable(manage.getCookieNamed("login")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no username found"));
 		var authToken = Optional.ofNullable(manage.getCookieNamed("auth-token")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no auth-token found"));
 		
+		var cookies = manage.getCookies().stream()
+				.map(c -> new kong.unirest.core.Cookie(c.toString()))
+				.toList();
+		
 		return TwitchLogin.builder()
 				.twitchClient(TwitchClient.WEB)
 				.username(username)
 				.accessToken(authToken)
-				.cookies(manage.getCookies().stream()
-						.map(c -> new kong.unirest.core.Cookie(c.toString()))
-						.toList())
+				.cookies(cookies)
 				.build();
 	}
 }

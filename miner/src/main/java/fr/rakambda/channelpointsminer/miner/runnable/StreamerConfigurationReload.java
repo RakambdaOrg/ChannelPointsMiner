@@ -1,8 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
-import fr.rakambda.channelpointsminer.miner.runnable.data.StreamerResult;
-import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
-import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
@@ -11,6 +8,9 @@ import fr.rakambda.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.runnable.data.StreamerResult;
+import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
+import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

@@ -67,6 +67,7 @@ public class BrowserController{
 		}
 		
 		driver.refresh();
+		CommonUtils.randomSleep(5000, 1);
 		if(!isLoggedIn()){
 			throw new LoginException("Not logged in");
 		}

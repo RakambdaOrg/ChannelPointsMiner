@@ -73,6 +73,7 @@ public class GQLApi{
 	@NotNull
 	private <T> Optional<GQLResponse<T>> postGqlRequest(@NotNull IGQLOperation<T> operation){
 		try{
+			log.debug("Sending GQL operation {}", operation);
 			var integrity = integrityProvider.getIntegrity();
 			
 			var response = unirest.post(ENDPOINT)
@@ -109,9 +110,13 @@ public class GQLApi{
 				return Optional.empty();
 			}
 			
-			return Optional.ofNullable(response.getBody());
+			return Optional.of(body);
 		}
 		catch(IntegrityException | InvalidCredentials e){
+			throw new RuntimeException(e);
+		}
+		catch(Throwable e){
+			log.error("Unknown error during GQL request", e);
 			throw new RuntimeException(e);
 		}
 	}
