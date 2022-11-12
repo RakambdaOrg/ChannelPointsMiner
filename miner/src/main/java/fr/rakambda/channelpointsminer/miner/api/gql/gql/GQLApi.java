@@ -90,7 +90,6 @@ public class GQLApi{
 				if(response.getStatus() == 401){
 					throw new InvalidCredentials(response.getStatus(), -1, "Invalid credentials provided");
 				}
-				log.error("Not a success: {}", response.getParsingError().stream().map(e -> e.getMessage() + " // " + e.getOriginalBody()).toList());
 				return Optional.empty();
 			}
 			
@@ -111,7 +110,6 @@ public class GQLApi{
 				return Optional.empty();
 			}
 			
-			log.debug("Body received : {}", body);
 			return Optional.of(body);
 		}
 		catch(IntegrityException | InvalidCredentials e){
