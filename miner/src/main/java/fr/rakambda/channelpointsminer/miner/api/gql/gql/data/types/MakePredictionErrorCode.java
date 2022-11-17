@@ -4,8 +4,6 @@ public enum MakePredictionErrorCode{
 	NOT_ENOUGH_POINTS,
 	DUPLICATE_TRANSACTION,
 	FORBIDDEN,
-	ccccccuhretcucheddfghvvleuhjvrfjitdevtbelcbk
-	ccccccuhretcjcirtiieflfrvlgtvrceljddknckluhe
-			MULTIPLE_OUTCOMES,
+	MULTIPLE_OUTCOMES,
 	UNKNOWN
-	}
+}
