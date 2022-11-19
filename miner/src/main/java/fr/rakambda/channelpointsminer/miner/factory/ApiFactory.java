@@ -42,8 +42,11 @@ public class ApiFactory{
 	private static final String API_CONSUMER_TYPE_HEADER = "Api-Consumer-Type";
 	private static final String X_APP_VERSION_HEADER = "X-App-Version";
 	private static final String ACCEPT_MOBILE = "application/vnd.twitchtv.v3+json";
-	private static final String API_CONSUMER_TYPE = "mobile; Android/1309000";
-	private static final String X_APP_VERSION = "13.9.0";
+	private static final String API_CONSUMER_TYPE = "mobile; Android/1304010";
+	private static final String X_APP_VERSION = "13.4.1";
+	
+	private static String xDeviceId = CommonUtils.randomAlphanumeric(32);
+	;
 	
 	private static UnirestInstance createUnirestInstance(@Nullable TwitchClient twitchClient){
 		var unirest = Unirest.spawnInstance();
@@ -56,7 +59,7 @@ public class ApiFactory{
 			unirest.config().setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0");
 		}
 		else if(twitchClient == TwitchClient.MOBILE){
-			unirest.config().setDefaultHeader(USER_AGENT, "Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-N976N Build/N2G48C) tv.twitch.android.app/13.9.0/1309000");
+			unirest.config().setDefaultHeader(USER_AGENT, "Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G975N Build/N2G48C) tv.twitch.android.app/13.4.1/1304010");
 		}
 		
 		return unirest;
@@ -101,7 +104,14 @@ public class ApiFactory{
 	public static IPassportApi createPassportApi(@NotNull String username, @NotNull ILoginMethod loginMethod){
 		if(loginMethod instanceof IPassportApiLoginProvider passportApiLoginProvider){
 			var twitchClient = passportApiLoginProvider.getTwitchClient();
-			return new HttpPassportApi(twitchClient, createUnirestInstance(twitchClient), username, passportApiLoginProvider);
+			var unirest = createUnirestInstance(twitchClient);
+			
+			if(passportApiLoginProvider.getTwitchClient() == TwitchClient.MOBILE){
+				addMobileHeaders(unirest);
+				unirest.config().setDefaultHeader("X-Device-Id", xDeviceId);
+			}
+			
+			return new HttpPassportApi(twitchClient, unirest, username, passportApiLoginProvider);
 		}
 		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
 			return new BrowserPassportApi(browserConfiguration);
@@ -126,7 +136,6 @@ public class ApiFactory{
 	@NotNull
 	private static IIntegrityProvider createHttpIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider){
 		var clientSessionId = CommonUtils.randomHex(16);
-		var xDeviceId = CommonUtils.randomAlphanumeric(32);
 		
 		var unirest = createUnirestInstance(twitchLogin.getTwitchClient());
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
