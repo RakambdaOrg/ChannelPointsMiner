@@ -11,11 +11,12 @@ Examples of this file can be found in link:https://github.com/Rakambda/ChannelPo
 [WARNING]
 ====
 link:https://twitter.com/TwitchSupport/status/1575571090994102272[Twitch changed their authentication method in September 2022], now requiring calls to an integrity endpoint.
-Old methods using `HTTP` & `MOBILE` may not work anymore.
+Old methods using `HTTP` may not work anymore.
 
 Options working :
 
 * `BROWSER`: It is in my opinion the safest but is requiring a selenium node/grid to be available (beware of `SE_NODE_GRID_URL` as CDP connection is required).
+* `MOBILE`: Simulates using the Android app, easy to set up.
 ====
 
 == Streamer directories
