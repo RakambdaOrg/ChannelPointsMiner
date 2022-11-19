@@ -85,8 +85,10 @@ class ApiFactoryTest{
 	}
 	
 	@Test
-	void createMobilepPassportApi(){
+	void createMobilePassportApi(){
 		var mobileLoginMethod = mock(MobileLoginMethod.class);
+		when(mobileLoginMethod.getTwitchClient()).thenReturn(TwitchClient.MOBILE);
+		
 		when(mobileLoginMethod.getAuthenticationFolder()).thenReturn(Paths.get("."));
 		assertThat(ApiFactory.createPassportApi("user", mobileLoginMethod)).isNotNull().isInstanceOf(HttpPassportApi.class);
 	}
