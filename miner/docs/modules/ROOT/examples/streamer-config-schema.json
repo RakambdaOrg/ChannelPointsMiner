@@ -56,19 +56,17 @@
                   "amount" : {
                     "type" : "integer",
                     "description" : "Amount to place."
-                  }
-                },
-                "description" : "Always bet the same amount."
-              }, {
-                "type" : "object",
-                "properties" : {
+                  },
                   "type" : {
                     "const" : "constant"
                   }
                 },
-                "required" : [ "type" ]
-              } ],
-              "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+                "description" : "Always bet the same amount.",
+                "required" : ["type"]
+              }, {
+                "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+              }
+              ]
             }, {
               "allOf" : [ {
                 "type" : "object",
@@ -80,19 +78,17 @@
                   "percentage" : {
                     "type" : "number",
                     "description" : "Percentage of your owned points to place, as a decimal value, between 0 and 1."
-                  }
-                },
-                "description" : "Place a percentage of your points (with a limit)."
-              }, {
-                "type" : "object",
-                "properties" : {
+                  },
                   "type" : {
                     "const" : "percentage"
                   }
                 },
-                "required" : [ "type" ]
-              } ],
-              "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+                "description" : "Place a percentage of your points (with a limit).",
+                "required" : ["type"]
+              }, {
+                "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+              }
+              ]
             } ]
           },
           "delayCalculator" : {
@@ -103,19 +99,17 @@
                   "seconds" : {
                     "type" : "integer",
                     "description" : "Number of seconds before the end to place the bet."
-                  }
-                },
-                "description" : "Place the bet a certain amount of time before the end of the original prediction."
-              }, {
-                "type" : "object",
-                "properties" : {
+                  },
                   "type" : {
                     "const" : "fromEnd"
                   }
                 },
-                "required" : [ "type" ]
-              } ],
-              "description" : "How to calculate when to place the bet. Default: 10s from end"
+                "description" : "Place the bet a certain amount of time before the end of the original prediction.",
+                "required" : ["type"]
+              }, {
+                "description" : "How to calculate when to place the bet. Default: 10s from end"
+              }
+              ]
             }, {
               "allOf" : [ {
                 "type" : "object",
@@ -123,19 +117,17 @@
                   "seconds" : {
                     "type" : "integer",
                     "description" : "Number of seconds after the start to place the bet."
-                  }
-                },
-                "description" : "Place the bet a certain amount of time after the beginning of the original prediction."
-              }, {
-                "type" : "object",
-                "properties" : {
+                  },
                   "type" : {
                     "const" : "fromStart"
                   }
                 },
-                "required" : [ "type" ]
-              } ],
-              "description" : "How to calculate when to place the bet. Default: 10s from end"
+                "description" : "Place the bet a certain amount of time after the beginning of the original prediction.",
+                "required" : ["type"]
+              }, {
+                "description" : "How to calculate when to place the bet. Default: 10s from end"
+              }
+              ]
             }, {
               "allOf" : [ {
                 "type" : "object",
@@ -143,19 +135,17 @@
                   "percent" : {
                     "type" : "number",
                     "description" : "The percentage of the timer, as a decimal value, between 0 and 1."
-                  }
-                },
-                "description" : "Place the bet after 'percent'% of the original timer elapsed."
-              }, {
-                "type" : "object",
-                "properties" : {
+                  },
                   "type" : {
                     "const" : "percentage"
                   }
                 },
-                "required" : [ "type" ]
-              } ],
-              "description" : "How to calculate when to place the bet. Default: 10s from end"
+                "description" : "Place the bet after 'percent'% of the original timer elapsed.",
+                "required" : ["type"]
+              }, {
+                "description" : "How to calculate when to place the bet. Default: 10s from end"
+              }
+              ]
             } ]
           },
           "minimumPointsRequired" : {
@@ -222,19 +212,17 @@
                   "percentageGap" : {
                     "type" : "number",
                     "description" : "The percent gap of the user count, as decimal, between 0 and 1. (i.e. Setting this to 0.1, will mean that the condition switches states when the difference between sides is 10%, so 45% of the users on one side and 55% on the other)."
-                  }
-                },
-                "description" : "Choose the outcome with the most users. However, if the two most picked outcomes have a user count similar, choose the outcome with the least points (higher odds)."
-              }, {
-                "type" : "object",
-                "properties" : {
+                  },
                   "type" : {
                     "const" : "smart"
                   }
                 },
-                "required" : [ "type" ]
-              } ],
-              "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                "description" : "Choose the outcome with the most users. However, if the two most picked outcomes have a user count similar, choose the outcome with the least points (higher odds).",
+                "required" : ["type"]
+              }, {
+                "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
+              }
+              ]
             }, {
               "allOf" : [ {
                 "type" : "object",
@@ -263,19 +251,17 @@
                   "minTotalBetsPlacedOnPrediction" : {
                     "type" : "integer",
                     "description" : "Need at least x bets placed to bet on this prediction. Default: 10"
-                  }
-                },
-                "description" : "Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordChatsPredictions to be activated."
-              }, {
-                "type" : "object",
-                "properties" : {
+                  },
                   "type" : {
                     "const" : "mostTrusted"
                   }
                 },
-                "required" : [ "type" ]
-              } ],
-              "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                "description" : "Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordChatsPredictions to be activated.",
+                "required" : ["type"]
+              }, {
+                "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
+              }
+              ]
             } ]
           }
         },
@@ -288,27 +274,21 @@
       "description" : "A list of conditions that, if met, will prioritize this streamer.",
       "type" : "array",
       "items" : {
-        "anyOf" : [ {
-          "allOf" : [ {
+        "anyOf" : [
+          {
             "type" : "object",
             "properties" : {
               "score" : {
                 "type" : "integer",
                 "description" : "Score to give."
-              }
-            },
-            "description" : "Adds a constant value to the score of the streamer."
-          }, {
-            "type" : "object",
-            "properties" : {
+              },
               "type" : {
                 "const" : "constant"
               }
             },
-            "required" : [ "type" ]
-          } ]
-        }, {
-          "allOf" : [ {
+            "description" : "Adds a constant value to the score of the streamer.",
+            "required" : ["type"]
+          }, {
             "type" : "object",
             "properties" : {
               "score" : {
@@ -322,20 +302,14 @@
               "score3" : {
                 "type" : "integer",
                 "description" : "Score for a T3 sub."
-              }
-            },
-            "description" : "Return a score if the logged-in user is subscribed to the streamer."
-          }, {
-            "type" : "object",
-            "properties" : {
+              },
               "type" : {
                 "const" : "subscribed"
               }
             },
-            "required" : [ "type" ]
-          } ]
-        }, {
-          "allOf" : [ {
+            "description" : "Return a score if the logged-in user is subscribed to the streamer.",
+            "required" : ["type"]
+          }, {
             "type" : "object",
             "properties" : {
               "score" : {
@@ -345,20 +319,14 @@
               "threshold" : {
                 "type" : "integer",
                 "description" : "Current points must strictly be above this value to give the score."
-              }
-            },
-            "description" : "Return a score if owned points are above a defined value."
-          }, {
-            "type" : "object",
-            "properties" : {
+              },
               "type" : {
                 "const" : "pointsAbove"
               }
             },
-            "required" : [ "type" ]
-          } ]
-        }, {
-          "allOf" : [ {
+            "description" : "Return a score if owned points are above a defined value.",
+            "required" : ["type"]
+          }, {
             "type" : "object",
             "properties" : {
               "score" : {
@@ -368,57 +336,40 @@
               "threshold" : {
                 "type" : "integer",
                 "description" : "Current points must strictly be below this value to give the score."
-              }
-            },
-            "description" : "Return a score if owned points are below a defined value."
-          }, {
-            "type" : "object",
-            "properties" : {
+              },
               "type" : {
                 "const" : "pointsBelow"
               }
             },
-            "required" : [ "type" ]
-          } ]
-        }, {
-          "allOf" : [ {
+            "description" : "Return a score if owned points are below a defined value.",
+            "required" : ["type"]
+          }, {
             "type" : "object",
             "properties" : {
               "score" : {
                 "type" : "integer",
                 "description" : "Score to give."
-              }
-            },
-            "description" : "Return a score if the streamer has a potential watch streak to claim."
-          }, {
-            "type" : "object",
-            "properties" : {
+              },
               "type" : {
                 "const" : "watchStreak"
               }
             },
-            "required" : [ "type" ]
-          } ]
-        }, {
-          "allOf" : [ {
+            "description" : "Return a score if the streamer has a potential watch streak to claim.",
+            "required" : ["type"]
+          }, {
             "type" : "object",
             "properties" : {
               "score" : {
                 "type" : "integer",
                 "description" : "Score to give."
-              }
-            },
-            "description" : "Return a score if a drop campaign may be progressed by watching this stream."
-          }, {
-            "type" : "object",
-            "properties" : {
+              },
               "type" : {
                 "const" : "drops"
               }
             },
-            "required" : [ "type" ]
+            "description" : "Return a score if a drop campaign may be progressed by watching this stream.",
+            "required" : ["type"]
           } ]
-        } ]
       }
     }
   },

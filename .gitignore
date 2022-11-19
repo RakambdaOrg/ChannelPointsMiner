@@ -12,5 +12,5 @@ bin/
 
 *.iml
 /analytics.db
-/config.json
+/config*.json
 /log4j2.xml

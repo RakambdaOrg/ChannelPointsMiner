@@ -22,8 +22,7 @@ import java.nio.file.Paths;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonClassDescription("Deprecated. Login though Twitch's Passport API (as mobile).")
-@Deprecated
+@JsonClassDescription("Login though Twitch's Passport API (as mobile).")
 public class MobileLoginMethod implements ILoginMethod, IPassportApiLoginProvider{
 	@NotNull
 	@JsonProperty(value = "password", required = true)
