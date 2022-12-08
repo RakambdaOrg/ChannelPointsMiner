@@ -22,7 +22,7 @@ mariadb-version = "3.1.0"
 sqlite-version = "3.40.0.0"
 rerunner-jupiter-version = "2.1.6"
 flyway-version = "9.9.0"
-selenide-version = "6.10.1"
+selenide-version = "6.10.2"
 
 shadow-version = "7.1.2"
 names-version = "0.44.0"
