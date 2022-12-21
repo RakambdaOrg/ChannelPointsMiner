@@ -22,18 +22,13 @@ import java.nio.file.Paths;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonClassDescription("Deprecated. Login though Twitch's Passport API (as mobile).")
-@Deprecated
-public class MobileLoginMethod implements ILoginMethod, IPassportApiLoginProvider{
+@JsonClassDescription("Login though Twitch's Oauth API (as android tv).")
+public class TvLoginMethod implements ILoginMethod, IOauthApiLoginProvider{
 	@NotNull
 	@JsonProperty(value = "password", required = true)
 	@JsonPropertyDescription("Password of your Twitch account.")
 	@ToString.Exclude
 	private String password;
-	@JsonProperty("use2FA")
-	@JsonPropertyDescription("If this account uses 2FA set this to true to directly ask for it. Default: false")
-	@Builder.Default
-	private boolean use2Fa = false;
 	@NotNull
 	@JsonProperty("authenticationFolder")
 	@JsonPropertyDescription(value = "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication")
@@ -43,6 +38,6 @@ public class MobileLoginMethod implements ILoginMethod, IPassportApiLoginProvide
 	@Override
 	@NotNull
 	public TwitchClient getTwitchClient(){
-		return TwitchClient.MOBILE;
+		return TwitchClient.ANDROID_TV;
 	}
 }

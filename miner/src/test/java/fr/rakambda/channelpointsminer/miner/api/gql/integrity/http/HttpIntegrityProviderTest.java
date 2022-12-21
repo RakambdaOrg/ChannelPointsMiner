@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.Instant;
+import java.util.Optional;
 import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -142,7 +143,10 @@ class HttpIntegrityProviderTest{
 		unirestMock.verifyAll();
 	}
 	
-	private void assertValidData(IntegrityData integrity){
+	private void assertValidData(Optional<IntegrityData> integrityDataOptional){
+		assertThat(integrityDataOptional).isPresent();
+		var integrity = integrityDataOptional.get();
+		
 		assertThat(integrity).isNotNull();
 		assertThat(integrity.getToken()).isEqualTo(currentIntegrityToken);
 		assertThat(integrity.getExpiration()).isEqualTo(currentIntegrityExpiration);

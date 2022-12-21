@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.passport.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import fr.rakambda.channelpointsminer.miner.api.passport.IPassportApi;
+import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
@@ -30,7 +30,7 @@ import static kong.unirest.core.ContentType.APPLICATION_JSON;
 import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 
 @Log4j2
-public class HttpPassportApi implements IPassportApi{
+public class HttpLoginProvider implements ILoginProvider{
 	private static final String ENDPOINT = "https://passport.twitch.tv";
 	private final UnirestInstance unirest;
 	private final TwitchClient twitchClient;
@@ -39,7 +39,7 @@ public class HttpPassportApi implements IPassportApi{
 	private final boolean ask2FA;
 	private final Path userAuthenticationFile;
 	
-	public HttpPassportApi(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider){
+	public HttpLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;

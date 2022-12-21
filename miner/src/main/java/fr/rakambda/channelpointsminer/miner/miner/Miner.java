@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.miner;
 import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.rakambda.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
-import fr.rakambda.channelpointsminer.miner.api.passport.IPassportApi;
+import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
@@ -59,7 +59,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Log4j2
 public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListener{
 	private final AccountConfiguration accountConfiguration;
-	private final IPassportApi passportApi;
+	private final ILoginProvider passportApi;
 	
 	private final Map<String, Streamer> streamers;
 	@Getter
@@ -95,7 +95,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	private ITwitchChatClient chatClient;
 	
 	public Miner(@NotNull AccountConfiguration accountConfiguration,
-			@NotNull IPassportApi passportApi,
+			@NotNull ILoginProvider passportApi,
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
 			@NotNull TwitchPubSubWebSocketPool pubSubWebSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,

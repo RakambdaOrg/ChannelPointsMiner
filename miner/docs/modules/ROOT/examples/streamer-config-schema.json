@@ -369,7 +369,8 @@
             },
             "description" : "Return a score if a drop campaign may be progressed by watching this stream.",
             "required" : ["type"]
-          } ]
+          }
+        ]
       }
     }
   },

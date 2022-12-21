@@ -21,7 +21,7 @@ public class MinerFactory{
 			
 			var miner = new Miner(
 					config,
-					ApiFactory.createPassportApi(config.getUsername(), config.getLoginMethod()),
+					ApiFactory.createLoginProvider(config.getUsername(), config.getLoginMethod()),
 					new StreamerSettingsFactory(config),
 					new TwitchPubSubWebSocketPool(50),
 					Executors.newScheduledThreadPool(4),

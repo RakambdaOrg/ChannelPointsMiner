@@ -37,7 +37,7 @@ class BrowserPassportApiTest{
 	);
 	
 	@InjectMocks
-	private BrowserPassportApi tested;
+	private BrowserLoginProvider tested;
 	
 	@Mock
 	private BrowserConfiguration browserConfiguration;

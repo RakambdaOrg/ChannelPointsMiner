@@ -50,7 +50,7 @@ class HttpPassportApiTest{
 	@TempDir
 	private Path authFolder;
 	
-	private HttpPassportApi tested;
+	private HttpLoginProvider tested;
 	
 	@Mock
 	private HttpLoginMethod httpLoginMethod;
@@ -65,7 +65,7 @@ class HttpPassportApiTest{
 		lenient().when(httpLoginMethod.getAuthenticationFolder()).thenReturn(authFolder);
 		lenient().when(httpLoginMethod.isUse2Fa()).thenReturn(false);
 		
-		tested = new HttpPassportApi(TwitchClient.WEB, unirestMock.getUnirestInstance(), USERNAME, httpLoginMethod);
+		tested = new HttpLoginProvider(TwitchClient.WEB, unirestMock.getUnirestInstance(), USERNAME, httpLoginMethod);
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ class HttpPassportApiTest{
 			commonUtils.when(() -> CommonUtils.getUserInput(anyString())).thenReturn(TWO_FACTOR);
 			
 			when(httpLoginMethod.isUse2Fa()).thenReturn(true);
-			tested = new HttpPassportApi(TwitchClient.WEB, unirest.getUnirestInstance(), USERNAME, httpLoginMethod);
+			tested = new HttpLoginProvider(TwitchClient.WEB, unirest.getUnirestInstance(), USERNAME, httpLoginMethod);
 			
 			unirest.expect(POST, "https://passport.twitch.tv/login")
 					.header(CONTENT_TYPE, APPLICATION_JSON.toString())

@@ -6,21 +6,25 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.browser.BrowserIntegrityProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.http.HttpIntegrityProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.http.MobileIntegrityProvider;
+import fr.rakambda.channelpointsminer.miner.api.gql.integrity.http.NoIntegrityProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
-import fr.rakambda.channelpointsminer.miner.api.passport.IPassportApi;
+import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserPassportApi;
-import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpPassportApi;
+import fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserLoginProvider;
+import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpLoginProvider;
+import fr.rakambda.channelpointsminer.miner.api.passport.oauth.OauthLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.config.VersionProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.login.HttpLoginMethod;
 import fr.rakambda.channelpointsminer.miner.config.login.ILoginMethod;
+import fr.rakambda.channelpointsminer.miner.config.login.IOauthApiLoginProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.IPassportApiLoginProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.MobileLoginMethod;
+import fr.rakambda.channelpointsminer.miner.config.login.TvLoginMethod;
 import fr.rakambda.channelpointsminer.miner.log.UnirestLogger;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
@@ -40,13 +44,13 @@ import static lombok.AccessLevel.PRIVATE;
 public class ApiFactory{
 	
 	private static final String API_CONSUMER_TYPE_HEADER = "Api-Consumer-Type";
+	private static final String DEVICE_ID = "Device-Id";
 	private static final String X_APP_VERSION_HEADER = "X-App-Version";
 	private static final String ACCEPT_MOBILE = "application/vnd.twitchtv.v3+json";
 	private static final String API_CONSUMER_TYPE = "mobile; Android/1304010";
 	private static final String X_APP_VERSION = "13.4.1";
 	
 	private static String xDeviceId = CommonUtils.randomAlphanumeric(32);
-	;
 	
 	private static UnirestInstance createUnirestInstance(@Nullable TwitchClient twitchClient){
 		var unirest = Unirest.spawnInstance();
@@ -80,6 +84,9 @@ public class ApiFactory{
 		if(twitchLogin.getTwitchClient() == TwitchClient.MOBILE){
 			addMobileHeaders(unirest);
 		}
+		if(twitchLogin.getTwitchClient() == TwitchClient.ANDROID_TV){
+			unirest.config().setDefaultHeader(DEVICE_ID, xDeviceId);
+		}
 		
 		return new GQLApi(twitchLogin, unirest, integrityProvider);
 	}
@@ -101,7 +108,7 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static IPassportApi createPassportApi(@NotNull String username, @NotNull ILoginMethod loginMethod){
+	public static ILoginProvider createLoginProvider(@NotNull String username, @NotNull ILoginMethod loginMethod){
 		if(loginMethod instanceof IPassportApiLoginProvider passportApiLoginProvider){
 			var twitchClient = passportApiLoginProvider.getTwitchClient();
 			var unirest = createUnirestInstance(twitchClient);
@@ -111,10 +118,16 @@ public class ApiFactory{
 				unirest.config().setDefaultHeader("X-Device-Id", xDeviceId);
 			}
 			
-			return new HttpPassportApi(twitchClient, unirest, username, passportApiLoginProvider);
+			return new HttpLoginProvider(twitchClient, unirest, username, passportApiLoginProvider);
+		}
+		if(loginMethod instanceof IOauthApiLoginProvider oauthApiLoginProvider){
+			var twitchClient = oauthApiLoginProvider.getTwitchClient();
+			var unirest = createUnirestInstance(twitchClient);
+			
+			return new OauthLoginProvider(twitchClient, unirest, username, oauthApiLoginProvider);
 		}
 		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
-			return new BrowserPassportApi(browserConfiguration);
+			return new BrowserLoginProvider(browserConfiguration);
 		}
 		throw new IllegalStateException("Unknown login method");
 	}
@@ -126,6 +139,9 @@ public class ApiFactory{
 		}
 		if(loginMethod instanceof MobileLoginMethod){
 			return createMobileIntegrityProvider(twitchLogin);
+		}
+		if(loginMethod instanceof TvLoginMethod){
+			return new NoIntegrityProvider();
 		}
 		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
 			return createBrowserIntegrityProvider(browserConfiguration);

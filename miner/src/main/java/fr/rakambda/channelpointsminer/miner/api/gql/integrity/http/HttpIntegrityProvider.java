@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.VersionException;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.UnirestInstance;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class HttpIntegrityProvider implements IIntegrityProvider{
 	private static final String CLIENT_VERSION_HEADER = "Client-Version";
 	private static final String X_DEVICE_ID_HEADER = "X-Device-ID";
 	
-	private static final String CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+	private static final String CLIENT_ID = TwitchClient.WEB.getClientId();
 	private static final String DEFAULT_CLIENT_VERSION = "ef928475-9403-42f2-8a34-55784bd08e16";
 	
 	private final TwitchLogin twitchLogin;
@@ -39,10 +41,10 @@ public class HttpIntegrityProvider implements IIntegrityProvider{
 	
 	@Override
 	@NotNull
-	public IntegrityData getIntegrity() throws IntegrityException{
+	public Optional<IntegrityData> getIntegrity() throws IntegrityException{
 		synchronized(this){
 			if(Objects.nonNull(currentIntegrity) && currentIntegrity.getExpiration().minus(Duration.ofMinutes(5)).isAfter(TimeFactory.now())){
-				return currentIntegrity;
+				return Optional.of(currentIntegrity);
 			}
 			
 			var clientVersion = getClientVersion();
@@ -73,7 +75,7 @@ public class HttpIntegrityProvider implements IIntegrityProvider{
 					.clientVersion(clientVersion)
 					.xDeviceId(xDeviceId)
 					.build();
-			return currentIntegrity;
+			return Optional.of(currentIntegrity);
 		}
 	}
 	

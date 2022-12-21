@@ -76,13 +76,17 @@ public class GQLApi{
 			log.debug("Sending GQL operation {}", operation);
 			var integrity = integrityProvider.getIntegrity();
 			
-			var response = unirest.post(ENDPOINT)
+			var request = unirest.post(ENDPOINT)
 					.header(AUTHORIZATION, "OAuth " + twitchLogin.getAccessToken())
-					.header(CLIENT_INTEGRITY_HEADER, integrity.getToken())
-					.header(CLIENT_ID_HEADER, twitchLogin.getTwitchClient().getClientId())
-					.header(CLIENT_SESSION_ID_HEADER, integrity.getClientSessionId())
-					.header(CLIENT_VERSION_HEADER, integrity.getClientVersion())
-					.header(X_DEVICE_ID_HEADER, integrity.getXDeviceId())
+					.header(CLIENT_ID_HEADER, twitchLogin.getTwitchClient().getClientId());
+			
+			integrity.ifPresent(i -> request
+					.header(CLIENT_INTEGRITY_HEADER, i.getToken())
+					.header(CLIENT_SESSION_ID_HEADER, i.getClientSessionId())
+					.header(CLIENT_VERSION_HEADER, i.getClientVersion())
+					.header(X_DEVICE_ID_HEADER, i.getXDeviceId()));
+			
+			var response = request
 					.body(operation)
 					.asObject(operation.getResponseType());
 			

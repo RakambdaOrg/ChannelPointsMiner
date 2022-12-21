@@ -10,6 +10,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 		@JsonSubTypes.Type(value = HttpLoginMethod.class, name = "http"),
 		@JsonSubTypes.Type(value = BrowserConfiguration.class, name = "browser"),
 		@JsonSubTypes.Type(value = MobileLoginMethod.class, name = "mobile"),
+		@JsonSubTypes.Type(value = TvLoginMethod.class, name = "tv"),
 })
 @JsonClassDescription("Login method")
 public interface ILoginMethod{
