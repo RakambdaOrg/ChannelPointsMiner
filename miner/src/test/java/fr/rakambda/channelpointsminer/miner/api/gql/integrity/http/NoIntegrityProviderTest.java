@@ -1,11 +1,11 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.integrity.http;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException;
-import org.assertj.core.api.Assertions;
+import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
+@ParallelizableTest
 class NoIntegrityProviderTest{
 	private static final NoIntegrityProvider tested = new NoIntegrityProvider();
 	

@@ -13,6 +13,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.version.webpage.WebpageVersi
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLoginCacher;
 import fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.OauthLoginProvider;
@@ -36,6 +37,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Objects;
 import static kong.unirest.core.HeaderNames.USER_AGENT;
 import static lombok.AccessLevel.PRIVATE;
@@ -118,13 +120,17 @@ public class ApiFactory{
 				unirest.config().setDefaultHeader("X-Device-Id", xDeviceId);
 			}
 			
-			return new HttpLoginProvider(twitchClient, unirest, username, passportApiLoginProvider);
+			var cachePath = passportApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
+			TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
+			return new HttpLoginProvider(twitchClient, unirest, username, passportApiLoginProvider, cacher);
 		}
 		if(loginMethod instanceof IOauthApiLoginProvider oauthApiLoginProvider){
 			var twitchClient = oauthApiLoginProvider.getTwitchClient();
 			var unirest = createUnirestInstance(twitchClient);
 			
-			return new OauthLoginProvider(twitchClient, unirest, username, oauthApiLoginProvider);
+			var cachePath = oauthApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
+			TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
+			return new OauthLoginProvider(twitchClient, unirest, username, cacher);
 		}
 		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
 			return new BrowserLoginProvider(browserConfiguration);

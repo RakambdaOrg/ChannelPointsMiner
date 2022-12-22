@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLoginCacher;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.data.DeviceResponse;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.data.TokenResponse;
@@ -36,14 +37,13 @@ public class OauthLoginProvider implements ILoginProvider{
 	private final TwitchClient twitchClient;
 	private final UnirestInstance unirest;
 	private final String username;
-	private final Path userAuthenticationFile;
+	private final TwitchLoginCacher twitchLoginCacher;
 	
-	public OauthLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IOauthApiLoginProvider oauthApiLoginProvider){
+	public OauthLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull TwitchLoginCacher twitchLoginCacher){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
-		
-		userAuthenticationFile = oauthApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
+		this.twitchLoginCacher = twitchLoginCacher;
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class OauthLoginProvider implements ILoginProvider{
 	 */
 	@NotNull
 	public TwitchLogin login() throws LoginException, IOException{
-		var restoredAuthOptional = restoreAuthentication();
+		var restoredAuthOptional = twitchLoginCacher.restoreAuthentication();
 		if(restoredAuthOptional.isPresent()){
 			log.info("Logged back in from authentication file");
 			var restoredAuth = restoredAuthOptional.get();
@@ -136,23 +136,6 @@ public class OauthLoginProvider implements ILoginProvider{
 	}
 	
 	/**
-	 * Restore authentication from a file.
-	 *
-	 * @return {@link TwitchLogin} if authentication was restored, empty otherwise.
-	 *
-	 * @throws IOException Failed to read authentication file.
-	 */
-	@NotNull
-	private Optional<TwitchLogin> restoreAuthentication() throws IOException{
-		if(!Files.exists(userAuthenticationFile)){
-			return Optional.empty();
-		}
-		
-		var twitchLogin = JacksonUtils.read(Files.newInputStream(userAuthenticationFile), new TypeReference<TwitchLogin>(){});
-		return Optional.of(twitchLogin);
-	}
-	
-	/**
 	 * @param response Response.
 	 *
 	 * @return {@link TwitchLogin}.
@@ -167,19 +150,7 @@ public class OauthLoginProvider implements ILoginProvider{
 				.accessToken(response.getAccessToken())
 				.cookies(List.of())
 				.build();
-		saveAuthentication(twitchLogin);
+		twitchLoginCacher.saveAuthentication(twitchLogin);
 		return twitchLogin;
-	}
-	
-	/**
-	 * Save authentication received from response into a file.
-	 *
-	 * @param twitchLogin Authentication to save.
-	 *
-	 * @throws IOException File failed to write.
-	 */
-	private void saveAuthentication(@NotNull TwitchLogin twitchLogin) throws IOException{
-		Files.createDirectories(userAuthenticationFile.getParent());
-		JacksonUtils.write(Files.newOutputStream(userAuthenticationFile, CREATE, TRUNCATE_EXISTING), twitchLogin);
 	}
 }
