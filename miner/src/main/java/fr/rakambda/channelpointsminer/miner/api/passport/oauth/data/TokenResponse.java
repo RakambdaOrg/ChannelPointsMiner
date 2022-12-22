@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.api.passport.oauth.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,7 @@ public class TokenResponse{
 	@Nullable
 	private String message;
 	
+	@JsonIgnore
 	public boolean isAuthorizationPending(){
 		return Optional.ofNullable(message).map(m -> Objects.equals(m, "authorization_pending")).orElse(false);
 	}
