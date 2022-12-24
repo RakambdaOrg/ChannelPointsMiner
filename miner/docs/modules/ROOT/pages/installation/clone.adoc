@@ -9,37 +9,3 @@ You can use the vendor of your choice (I personally use link:https://adoptium.ne
 4. Run with `config.json` as the configuration
 * Default: `java -jar miner/build/libs/miner-shaded.jar --settings config.json`
 * With your own xref:configuration/logger.adoc[logger]: `java -Dlog4j.configurationFile=log4j2.xml -jar miner/build/libs/miner-shaded.jar --settings config.json`
-
-== Known issues
-
-=== Unknown HttpClient factory netty
-
-If you get an error that ressembles what is in the error details, you may want to add `-D"webdriver.http.factory=selenide-netty-client-factory"` to the startup command (effectively having something like `java -D"webdriver.http.factory=selenide-netty-client-factory" -jar /path/to/miner.jar --settings config.json`)
-
-.Error details
-[%collapsible]
-====
-[source]
-----
-Exception in thread "main" java.lang.ExceptionInInitializerError
-    at org.openqa.selenium.remote.HttpCommandExecutor.getDefaultClientFactory(HttpCommandExecutor.java:62)
-    at org.openqa.selenium.remote.HttpCommandExecutor.<init>(HttpCommandExecutor.java:87)
-    at org.openqa.selenium.remote.service.DriverCommandExecutor.<init>(DriverCommandExecutor.java:80)
-    at org.openqa.selenium.chromium.ChromiumDriverCommandExecutor.<init>(ChromiumDriverCommandExecutor.java:35)
-    at org.openqa.selenium.chrome.ChromeDriver$ChromeDriverCommandExecutor.<init>(ChromeDriver.java:93)
-    at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:81)
-    at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:70)
-    at fr.rakambda.channelpointsminer.miner.browser.Browser.getChromeDriver(Browser.java:129)
-    at fr.rakambda.channelpointsminer.miner.browser.Browser.buildDriver(Browser.java:118)
-    at fr.rakambda.channelpointsminer.miner.browser.Browser.setup(Browser.java:57)
-    at fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserPassportApi.login(BrowserPassportApi.java:28)
-    at fr.rakambda.channelpointsminer.miner.miner.Miner.login(Miner.java:158)
-    at fr.rakambda.channelpointsminer.miner.miner.Miner.start(Miner.java:128)
-    at fr.rakambda.channelpointsminer.miner.MinerApplication.main(MinerApplication.java:41)
-Caused by: java.lang.IllegalArgumentException: Unknown HttpClient factory netty
-    at org.openqa.selenium.remote.http.HttpClient$Factory.create(HttpClient.java:57)
-    at org.openqa.selenium.remote.http.HttpClient$Factory.createDefault(HttpClient.java:73)
-    at org.openqa.selenium.remote.HttpCommandExecutor$DefaultClientFactoryHolder.<clinit>(HttpCommandExecutor.java:58)
-    ... 14 more
-----
-====
