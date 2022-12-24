@@ -1,0 +1,18 @@
+{
+  "accounts": [
+    {
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
+      },
+      "loadFollows" : true,
+      "analytics" : {
+        "enabled" : true,
+        "database" : {
+          "jdbcUrl" : "jdbc:sqlite:miner.db"
+        }
+      }
+    }
+  ]
+}

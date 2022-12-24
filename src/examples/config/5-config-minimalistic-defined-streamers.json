@@ -1,0 +1,17 @@
+{
+  "accounts": [
+    {
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
+      },
+      "streamerConfigDirectories" : [
+        {
+          "path" : "streamers",
+          "recursive" : true
+        }
+      ]
+    }
+  ]
+}

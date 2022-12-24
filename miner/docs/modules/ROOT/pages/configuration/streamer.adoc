@@ -3,7 +3,7 @@
 Streamer settings define settings for a particular streamer.
 Each streamer setting will be defined in a json file named with the username of the streamer (eg: `streamer_username.json`).
 
-Examples can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/miner/src/test/resources/factory[miner/src/test/resources/factory,window="_blank"].
+Examples can be found in link:https://github.com/Rakambda/ChannelPointsMiner/blob/main/miner/src/test/resources/factory[miner/src/test/resources/factory,window="_blank"].
 
 == Priorities [[priorities]]
 

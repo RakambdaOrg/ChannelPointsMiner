@@ -1,0 +1,29 @@
+{
+  "accounts" : [
+    {
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
+      },
+      "loadFollows" : true,
+      "enabled" : false,
+      "defaultStreamerSettings" : {
+        "makePredictions" : true,
+        "followRaid" : true,
+        "participateCampaigns" : true
+      },
+      "streamerConfigDirectories" : [
+        {
+          "path" : "streamers",
+          "recursive" : true
+        }
+      ],
+      "discord" : {
+        "webhookUrl" : "https://discord-webhook",
+        "embeds" : true
+      },
+      "reloadEvery" : 15
+    }
+  ]
+}

@@ -4,19 +4,19 @@ The global settings, that you pass to the miner with the `--settings` argument, 
 
 Schema of the file is available in the xref:configuration/index.adoc[Configuration] page.
 
-Examples of this file can be found in link:https://github.com/RakSrinaNa/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
+Examples of this file can be found in link:https://github.com/Rakambda/ChannelPointsMiner/blob/main/src/examples/config[src/examples/config,window="_blank"].
 
 == Login method
 
 [WARNING]
 ====
-Twitch changed their authentication method in September 2022, now requiring calls to an integrity endpoint.
-Old methods using `HTTP` may not work anymore.
+link:https://twitter.com/TwitchSupport/status/1575571090994102272[Twitch changed their authentication method in September 2022], now requiring calls to an integrity endpoint.
+Old methods using `HTTP` or `MOBILE` may not work anymore.
 
-Two options are now working :
+Options working :
 
-* `BROWSER` : It is in my opinion the safest but is requiring a selenium node/grid to be available (beware of `SE_NODE_GRID_URL` as CDP connection is required).
-* `MOBILE` : Used the same way as `HTTP` previously but has lots of hardcoded values so the bot may be detected more easily.
+* `BROWSER`: It is in my opinion the safest but is requiring a selenium node/grid to be available (beware of `SE_NODE_GRID_URL` as CDP connection is required).
+* `TV`: Simulates using the Android TV app, easy to set up.
 ====
 
 == Streamer directories

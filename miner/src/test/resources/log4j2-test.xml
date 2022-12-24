@@ -6,7 +6,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger level="trace" name="fr.raksrinana.channelpointsminer" additivity="false">
+        <Logger level="trace" name="fr.rakambda.channelpointsminer" additivity="false">
             <AppenderRef ref="console"/>
         </Logger>
         <Root level="warn" additivity="false">

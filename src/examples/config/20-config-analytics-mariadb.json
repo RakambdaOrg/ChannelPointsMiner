@@ -1,0 +1,20 @@
+{
+  "accounts" : [
+    {
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
+      },
+      "loadFollows" : true,
+      "analytics" : {
+        "enabled" : true,
+        "database" : {
+          "jdbcUrl" : "jdbc:mariadb://10.0.0.0:3306/Miner",
+          "username" : "user",
+          "password" : "pass"
+        }
+      }
+    }
+  ]
+}

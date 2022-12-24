@@ -1,0 +1,43 @@
+{
+  "accounts" : [
+    {
+      "username" : "username",
+      "loginMethod" : {
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
+      },
+      "streamerConfigDirectories" : [
+        {
+          "path" : "streamers",
+          "recursive" : true
+        }
+      ]
+    },
+    {
+      "username" : "username2",
+      "loginMethod" : {
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
+      },
+      "streamerConfigDirectories" : [
+        {
+          "path" : "streamers2",
+          "recursive" : true
+        }
+      ]
+    },
+    {
+      "username" : "username3",
+      "loginMethod" : {
+        "type" : "mobile",
+        "password" : "password3"
+      },
+      "streamerConfigDirectories" : [
+        {
+          "path" : "streamers",
+          "recursive" : true
+        }
+      ]
+    }
+  ]
+}
