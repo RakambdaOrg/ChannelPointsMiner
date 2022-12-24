@@ -1,6 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.api.passport.browser;
 
-import fr.rakambda.channelpointsminer.miner.api.passport.IPassportApi;
+import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Log4j2
 @RequiredArgsConstructor
-public class BrowserPassportApi implements IPassportApi{
+public class BrowserLoginProvider implements ILoginProvider{
 	private final BrowserConfiguration browserConfiguration;
 	
 	@Override

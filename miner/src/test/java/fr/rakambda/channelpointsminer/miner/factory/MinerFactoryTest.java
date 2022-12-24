@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.api.discord.DiscordApi;
-import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpPassportApi;
+import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpLoginProvider;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.AnalyticsConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.DatabaseConfiguration;
@@ -41,7 +41,7 @@ class MinerFactoryTest{
 	@Mock
 	private AccountConfiguration accountConfiguration;
 	@Mock
-	private HttpPassportApi passportApi;
+	private HttpLoginProvider passportApi;
 	@Mock
 	private DiscordApi discordApi;
 	@Mock
@@ -68,7 +68,7 @@ class MinerFactoryTest{
 	@Test
 	void nominal(){
 		try(var apiFactory = mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
 			
 			var miner = MinerFactory.create(accountConfiguration);
 			
@@ -94,7 +94,7 @@ class MinerFactoryTest{
 		try(var apiFactory = mockStatic(ApiFactory.class)){
 			var discordWebhook = new URL("https://discord-webhook");
 			
-			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
 			apiFactory.when(() -> ApiFactory.createdDiscordApi(discordWebhook)).thenReturn(discordApi);
 			
 			when(discordConfiguration.getUrl()).thenReturn(discordWebhook);
@@ -123,7 +123,7 @@ class MinerFactoryTest{
 	void nominalWithAnalytics() throws SQLException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var databaseFactory = mockStatic(DatabaseFactory.class)){
-			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
 			databaseFactory.when(() -> DatabaseFactory.createDatabase(databaseConfiguration)).thenReturn(database);
 			databaseFactory.when(() -> DatabaseFactory.createDatabaseHandler(database)).thenReturn(databaseEventHandler);
 			
@@ -156,7 +156,7 @@ class MinerFactoryTest{
 	void nominalWithAnalyticsException(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var databaseFactory = mockStatic(DatabaseFactory.class)){
-			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
 			databaseFactory.when(() -> DatabaseFactory.createDatabase(null)).thenThrow(new SQLException("For tests"));
 			
 			assertThrows(IllegalStateException.class, () -> MinerFactory.create(accountConfiguration));
@@ -166,7 +166,7 @@ class MinerFactoryTest{
 	@Test
 	void nominalWithAnalyticsButNoDatabase(){
 		try(var apiFactory = mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.createPassportApi(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
 			when(analyticsConfiguration.getDatabase()).thenReturn(null);

@@ -449,7 +449,8 @@
                         },
                         "description" : "Return a score if a drop campaign may be progressed by watching this stream.",
                         "required" : ["type"]
-                      } ]
+                      }
+                    ]
                   }
                 }
               },
@@ -582,13 +583,37 @@
                     "const" : "mobile"
                   }
                 },
-                "description" : "Login though Twitch's Passport API (as mobile).",
+                "description" : "Deprecated. Login though Twitch's Passport API (as mobile).",
                 "required" : ["type"]
               }, {
                 "description" : "Login method to use."
               }
               ]
-            } ]
+            }, {
+              "allOf" : [
+                {
+                  "type" : "object",
+                  "properties" : {
+                    "authenticationFolder" : {
+                      "$ref" : "#/$defs/Path",
+                      "description" : "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication"
+                    },
+                    "password" : {
+                      "type" : "string",
+                      "description" : "Password of your Twitch account."
+                    },
+                    "type" : {
+                      "const" : "tv"
+                    }
+                  },
+                  "description" : "Login though Twitch's Oauth API (as android tv).",
+                  "required" : ["type"]
+                }, {
+                  "description" : "Login method to use."
+                }
+              ]
+            }
+            ]
           },
           "reloadEvery" : {
             "type" : "integer",

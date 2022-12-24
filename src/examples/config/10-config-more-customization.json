@@ -3,10 +3,8 @@
     {
       "username" : "username",
       "loginMethod" : {
-        "type" : "mobile",
-        "password" : "password",
-        "use2FA" : true,
-        "authenticationFolder" : "/path/to/authentication"
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
       },
       "loadFollows" : true,
       "enabled" : false,

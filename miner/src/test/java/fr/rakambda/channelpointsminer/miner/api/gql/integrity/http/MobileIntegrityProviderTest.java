@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.api.gql.integrity.http;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.factory.ApiFactory;
 import fr.rakambda.channelpointsminer.miner.tests.TestUtils;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.Instant;
+import java.util.Optional;
 import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,6 +45,7 @@ class MobileIntegrityProviderTest{
 	void setUp(UnirestMock unirestMock){
 		this.unirestMock = unirestMock;
 		
+		lenient().when(twitchLogin.getTwitchClient()).thenReturn(TwitchClient.MOBILE);
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		
 		ApiFactory.addMobileHeaders(unirestMock.getUnirestInstance());
@@ -113,7 +116,10 @@ class MobileIntegrityProviderTest{
 		unirestMock.verifyAll();
 	}
 	
-	private void assertValidData(IntegrityData integrity){
+	private void assertValidData(Optional<IntegrityData> integrityDataOptional){
+		assertThat(integrityDataOptional).isPresent();
+		var integrity = integrityDataOptional.get();
+		
 		assertThat(integrity).isNotNull();
 		assertThat(integrity.getToken()).isEqualTo(currentIntegrityToken);
 		assertThat(integrity.getExpiration()).isEqualTo(currentIntegrityExpiration);

@@ -3,8 +3,8 @@
     {
       "username" : "username",
       "loginMethod" : {
-        "type" : "mobile",
-        "password" : "password"
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
       },
       "streamerConfigDirectories" : [
         {
@@ -16,8 +16,8 @@
     {
       "username" : "username2",
       "loginMethod" : {
-        "type" : "mobile",
-        "password" : "password2"
+        "type" : "tv",
+        "authenticationFolder" : "authentication/tv"
       },
       "streamerConfigDirectories" : [
         {

@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.api.passport.http;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import fr.rakambda.channelpointsminer.miner.api.passport.IPassportApi;
+import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLoginCacher;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.InvalidCredentials;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
@@ -19,10 +19,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import static fr.rakambda.channelpointsminer.miner.util.CommonUtils.getUserInput;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -30,23 +27,23 @@ import static kong.unirest.core.ContentType.APPLICATION_JSON;
 import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 
 @Log4j2
-public class HttpPassportApi implements IPassportApi{
+public class HttpLoginProvider implements ILoginProvider{
 	private static final String ENDPOINT = "https://passport.twitch.tv";
 	private final UnirestInstance unirest;
 	private final TwitchClient twitchClient;
 	private final String username;
+	private final TwitchLoginCacher twitchLoginCacher;
 	private final String password;
 	private final boolean ask2FA;
-	private final Path userAuthenticationFile;
 	
-	public HttpPassportApi(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider){
+	public HttpLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider, @NotNull TwitchLoginCacher twitchLoginCacher){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
+		this.twitchLoginCacher = twitchLoginCacher;
 		
 		password = passportApiLoginProvider.getPassword();
 		ask2FA = passportApiLoginProvider.isUse2Fa();
-		userAuthenticationFile = passportApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
 	}
 	
 	/**
@@ -59,7 +56,7 @@ public class HttpPassportApi implements IPassportApi{
 	 */
 	@NotNull
 	public TwitchLogin login() throws LoginException, IOException{
-		var restoredAuthOptional = restoreAuthentication();
+		var restoredAuthOptional = twitchLoginCacher.restoreAuthentication();
 		if(restoredAuthOptional.isPresent()){
 			log.info("Logged back in from authentication file");
 			var restoredAuth = restoredAuthOptional.get();
@@ -98,23 +95,6 @@ public class HttpPassportApi implements IPassportApi{
 		
 		log.info("Logged in");
 		return handleResponse(response);
-	}
-	
-	/**
-	 * Restore authentication from a file.
-	 *
-	 * @return {@link TwitchLogin} if authentication was restored, empty otherwise.
-	 *
-	 * @throws IOException Failed to read authentication file.
-	 */
-	@NotNull
-	private Optional<TwitchLogin> restoreAuthentication() throws IOException{
-		if(!Files.exists(userAuthenticationFile)){
-			return Optional.empty();
-		}
-		
-		var twitchLogin = JacksonUtils.read(Files.newInputStream(userAuthenticationFile), new TypeReference<TwitchLogin>(){});
-		return Optional.of(twitchLogin);
 	}
 	
 	/**
@@ -194,19 +174,7 @@ public class HttpPassportApi implements IPassportApi{
 				.accessToken(response.getBody().getAccessToken())
 				.cookies(response.getCookies())
 				.build();
-		saveAuthentication(twitchLogin);
+		twitchLoginCacher.saveAuthentication(twitchLogin);
 		return twitchLogin;
-	}
-	
-	/**
-	 * Save authentication received from response into a file.
-	 *
-	 * @param twitchLogin Authentication to save.
-	 *
-	 * @throws IOException File failed to write.
-	 */
-	private void saveAuthentication(@NotNull TwitchLogin twitchLogin) throws IOException{
-		Files.createDirectories(userAuthenticationFile.getParent());
-		JacksonUtils.write(Files.newOutputStream(userAuthenticationFile, CREATE, TRUNCATE_EXISTING), twitchLogin);
 	}
 }

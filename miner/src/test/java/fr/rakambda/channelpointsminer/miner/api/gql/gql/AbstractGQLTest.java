@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.Optional;
 import static kong.unirest.core.HttpMethod.POST;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -103,7 +104,7 @@ public abstract class AbstractGQLTest{
 		
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
 		lenient().when(twitchLogin.getTwitchClient()).thenReturn(TwitchClient.WEB);
-		lenient().when(integrityProvider.getIntegrity()).thenReturn(integrityData);
+		lenient().when(integrityProvider.getIntegrity()).thenReturn(Optional.of(integrityData));
 		lenient().when(integrityData.getClientSessionId()).thenReturn(CLIENT_SESSION_ID);
 		lenient().when(integrityData.getXDeviceId()).thenReturn(X_DEVICE_ID);
 		lenient().when(integrityData.getClientVersion()).thenReturn(DEFAULT_CLIENT_VERSION);

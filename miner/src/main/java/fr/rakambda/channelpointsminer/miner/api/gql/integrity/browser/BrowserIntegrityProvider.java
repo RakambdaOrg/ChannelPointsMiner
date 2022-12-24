@@ -38,10 +38,10 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 	
 	@Override
 	@NotNull
-	public IntegrityData getIntegrity() throws IntegrityException{
+	public Optional<IntegrityData> getIntegrity() throws IntegrityException{
 		synchronized(this){
 			if(Objects.nonNull(currentIntegrity) && currentIntegrity.getExpiration().minus(Duration.ofMinutes(5)).isAfter(TimeFactory.now())){
-				return currentIntegrity;
+				return Optional.of(currentIntegrity);
 			}
 			
 			log.info("Querying new integrity token");
@@ -51,7 +51,7 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 				CommonUtils.randomSleep(10000, 1);
 				currentIntegrity = extractGQLIntegrity(browser);
 				log.debug("Got new integrity token {}", currentIntegrity);
-				return currentIntegrity;
+				return Optional.of(currentIntegrity);
 			}
 			catch(LoginException e){
 				throw new IntegrityException("Failed to get integrity", e);

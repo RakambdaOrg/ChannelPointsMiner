@@ -105,7 +105,7 @@ class BrowserIntegrityProviderTest{
 			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
 			jacksonUtils.when(() -> JacksonUtils.read(eq(RESPONSE_BODY), any(TypeReference.class))).thenReturn(INTEGRITY_RESPONSE);
 			
-			assertThat(tested.getIntegrity()).isEqualTo(IntegrityData.builder()
+			assertThat(tested.getIntegrity()).contains(IntegrityData.builder()
 					.clientSessionId(CLIENT_SESSION_ID)
 					.clientVersion(CLIENT_VERSION)
 					.token(TOKEN)

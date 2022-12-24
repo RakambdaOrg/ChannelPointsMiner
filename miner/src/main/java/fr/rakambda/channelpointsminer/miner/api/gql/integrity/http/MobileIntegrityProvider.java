@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.UnirestInstance;
@@ -12,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 import static kong.unirest.core.HeaderNames.AUTHORIZATION;
 
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class MobileIntegrityProvider implements IIntegrityProvider{
 	private static final String CLIENT_VERSION_HEADER = "Client-Version";
 	private static final String X_DEVICE_ID_HEADER = "X-Device-ID";
 	
-	private static final String CLIENT_ID = "kd1unb4b3q4t58fwlpcbzcbnm76a8fp";
+	private static final String CLIENT_ID = TwitchClient.MOBILE.getClientId();
 	private static final String CLIENT_VERSION = "32d439b2-bd5b-4e35-b82a-fae10b04da70";
 	
 	private final TwitchLogin twitchLogin;
@@ -36,10 +38,10 @@ public class MobileIntegrityProvider implements IIntegrityProvider{
 	
 	@Override
 	@NotNull
-	public IntegrityData getIntegrity() throws IntegrityException{
+	public Optional<IntegrityData> getIntegrity() throws IntegrityException{
 		synchronized(this){
 			if(Objects.nonNull(currentIntegrity) && currentIntegrity.getExpiration().minus(Duration.ofMinutes(5)).isAfter(TimeFactory.now())){
-				return currentIntegrity;
+				return Optional.of(currentIntegrity);
 			}
 			
 			log.info("Querying new integrity token");
@@ -68,7 +70,7 @@ public class MobileIntegrityProvider implements IIntegrityProvider{
 					.clientVersion(CLIENT_VERSION)
 					.xDeviceId(xDeviceId)
 					.build();
-			return currentIntegrity;
+			return Optional.of(currentIntegrity);
 		}
 	}
 	
