@@ -93,6 +93,9 @@ tasks {
         archiveBaseName.set(project.name)
         archiveClassifier.set("shaded")
         archiveVersion.set("")
+
+        exclude("META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.SF")
+        mergeServiceFiles()
     }
 }
 
