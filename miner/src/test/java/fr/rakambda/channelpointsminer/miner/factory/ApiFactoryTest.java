@@ -76,6 +76,11 @@ class ApiFactoryTest{
 	}
 	
 	@Test
+	void createTvGqlApi(){
+		assertThat(ApiFactory.createGqlApi(tvTwitchLogin, integrityProvider)).isNotNull().isInstanceOf(GQLApi.class);
+	}
+	
+	@Test
 	void createTwitchApi(){
 		assertThat(ApiFactory.createTwitchApi(twitchLogin)).isNotNull().isInstanceOf(TwitchApi.class);
 	}
