@@ -8,6 +8,7 @@ jackson-version = "2.14.1"
 jsonschema-generator-version = "4.28.0"
 httpclient-version = "4.5.14"
 lang3-version = "3.12.0"
+commons-text-version = "1.10.0"
 jetbrains-annotations-version = "23.1.0"
 websocket-version = "1.5.3"
 junit-version = "5.9.1"
@@ -48,6 +49,7 @@ jsonschema-generator = { group = "com.github.victools", name = "jsonschema-gener
 jsonschema-module-jackson = { group = "com.github.victools", name = "jsonschema-module-jackson", version.ref = "jsonschema-generator-version" }
 httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "httpclient-version" }
 lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
+commonsText = { group = "org.apache.commons", name = "commons-text", version.ref = "commons-text-version" }
 jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
 websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version" }
 kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitteh-irc-version" }

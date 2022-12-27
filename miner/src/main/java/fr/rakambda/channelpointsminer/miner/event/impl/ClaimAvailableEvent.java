@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.event.impl;
 
+import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
-import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
@@ -18,25 +18,25 @@ public class ClaimAvailableEvent extends AbstractLoggableStreamerEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
+	public String getConsoleLogFormat(){
 		return "Claim available";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} {streamer} : Claim available";
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_INFO;
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
 		return "🎫";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_INFO;
-	}
-	
-	@Override
-	
-	@NotNull
-	protected String getEmbedDescription(){
-		return "Claim available";
 	}
 }

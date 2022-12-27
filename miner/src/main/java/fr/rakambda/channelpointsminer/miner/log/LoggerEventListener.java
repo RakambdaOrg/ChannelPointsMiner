@@ -16,7 +16,7 @@ public class LoggerEventListener extends EventHandlerAdapter{
 			if(event instanceof IStreamerEvent e){
 				e.getStreamerUsername().ifPresent(context::withStreamer);
 			}
-			log.info(event.getAsLog());
+			log.info(event.getConsoleLogFormat());
 		}
 	}
 }
