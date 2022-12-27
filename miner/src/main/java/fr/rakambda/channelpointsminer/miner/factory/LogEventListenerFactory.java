@@ -17,6 +17,6 @@ public class LogEventListenerFactory{
 	
 	@NotNull
 	public static IEventHandler createDiscordLogger(@NotNull DiscordApi discordApi, boolean useEmbeds){
-		return new DiscordEventListener(discordApi, useEmbeds);
+		return new DiscordEventListener(discordApi, useEmbeds, e -> true);
 	}
 }

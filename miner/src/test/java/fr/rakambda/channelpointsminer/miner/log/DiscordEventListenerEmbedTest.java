@@ -90,7 +90,7 @@ class DiscordEventListenerEmbedTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		tested = new DiscordEventListener(discordApi, true);
+		tested = new DiscordEventListener(discordApi, true, e -> true);
 		
 		var streamerProfileUrl = new URL("https://streamer-image");
 		var channelUrl = new URL("https://streamer");

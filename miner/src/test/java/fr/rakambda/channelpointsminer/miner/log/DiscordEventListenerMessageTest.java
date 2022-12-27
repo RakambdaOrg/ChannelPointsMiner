@@ -78,7 +78,7 @@ class DiscordEventListenerMessageTest{
 	
 	@BeforeEach
 	void setUp(){
-		tested = new DiscordEventListener(discordApi, false);
+		tested = new DiscordEventListener(discordApi, false, e -> true);
 		
 		lenient().when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 		lenient().when(miner.getUsername()).thenReturn(USERNAME);
