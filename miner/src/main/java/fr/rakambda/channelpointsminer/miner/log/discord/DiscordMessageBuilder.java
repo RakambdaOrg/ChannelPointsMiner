@@ -13,6 +13,7 @@ import org.apache.commons.text.lookup.StringLookup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,8 @@ public class DiscordMessageBuilder{
 	@NotNull
 	public Webhook createEmbedMessage(@NotNull ILoggableEvent event, @Nullable DiscordEventConfiguration config){
 		var fields = event.getEmbedFields().entrySet().stream()
-				.map(e -> Field.builder().name(e.getKey()).value(formatMessage(event, e.getValue())).build())
+				.sorted(Map.Entry.comparingByKey())
+				.map(e -> Field.builder().name(e.getKey()).value(formatMessage(event, "{%s}".formatted(e.getValue()))).build())
 				.collect(Collectors.toList());
 		
 		var embed = Embed.builder()

@@ -119,7 +119,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Claim available")
+						.description("[username] 🎫 streamer-name : Claim available")
 						.build()))
 				.build());
 	}
@@ -133,7 +133,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Moment available")
+						.description("[username] \uD83C\uDF96️ streamer-name : Moment available")
 						.build()))
 				.build());
 	}
@@ -147,7 +147,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Moment claimed")
+						.description("[username] 🎖️ streamer-name : Moment claimed")
 						.build()))
 				.build());
 	}
@@ -172,10 +172,10 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(GREEN.getRGB())
-						.description("Points earned")
+						.description("[username] 💰 streamer-name : Points earned [+25 | CLAIM | 200]")
+						.field(Field.builder().name("Balance").value("200").build())
 						.field(Field.builder().name("Points").value("+25").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
-						.field(Field.builder().name("Balance").value("200").build())
 						.build()))
 				.build());
 	}
@@ -200,10 +200,10 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(GREEN.getRGB())
-						.description("Points earned")
+						.description("[username] 💰 streamer-name : Points earned [+2.5K | CLAIM | 12.35M]")
+						.field(Field.builder().name("Balance").value("12.35M").build())
 						.field(Field.builder().name("Points").value("+2.5K").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
-						.field(Field.builder().name("Balance").value("12.35M").build())
 						.build()))
 				.build());
 	}
@@ -228,10 +228,10 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(GREEN.getRGB())
-						.description("Points earned")
+						.description("[username] 💰 streamer-name : Points earned [-2.5K | CLAIM | 12.35M]")
+						.field(Field.builder().name("Balance").value("12.35M").build())
 						.field(Field.builder().name("Points").value("-2.5K").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
-						.field(Field.builder().name("Balance").value("12.35M").build())
 						.build()))
 				.build());
 	}
@@ -252,7 +252,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(RED.getRGB())
-						.description("Points spent")
+						.description("[username] 💸 streamer-name : Points spent [25]")
 						.field(Field.builder().name("Balance").value("25").build())
 						.build()))
 				.build());
@@ -267,7 +267,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Stream started")
+						.description("[username] ▶️ streamer-name : Stream started")
 						.build()))
 				.build());
 	}
@@ -278,9 +278,10 @@ class DiscordMessageBuilderEmbedTest{
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
+						.author(Author.builder().name("UnknownStreamer").build())
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Stream started")
+						.description("[username] ▶️ UnknownStreamer : Stream started")
 						.build()))
 				.build());
 	}
@@ -294,7 +295,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Stream stopped")
+						.description("[username] ⏹️ streamer-name : Stream stopped")
 						.build()))
 				.build());
 	}
@@ -314,7 +315,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Prediction created")
+						.description("[username] 📑 streamer-name : Prediction created [MyTitle]")
 						.field(Field.builder().name("Title").value(title).build())
 						.build()))
 				.build());
@@ -348,9 +349,9 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet placed")
-						.field(Field.builder().name("Points placed").value("25").build())
+						.description("[username] 🪙 streamer-name : Bet placed [25 | BLUE: Out2]")
 						.field(Field.builder().name("Outcome").value("BLUE: " + outcomeName).build())
+						.field(Field.builder().name("Points placed").value("25").build())
 						.build()))
 				.build());
 	}
@@ -377,9 +378,9 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet placed")
-						.field(Field.builder().name("Points placed").value("25").build())
+						.description("[username] 🪙 streamer-name : Bet placed [25 | UnknownOutcome]")
 						.field(Field.builder().name("Outcome").value("UnknownOutcome").build())
+						.field(Field.builder().name("Points placed").value("25").build())
 						.build()))
 				.build());
 	}
@@ -405,9 +406,9 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet result")
-						.field(Field.builder().name("Type").value("WIN").build())
+						.description("[username] 🧧 streamer-name : Bet result [WIN | +40]")
 						.field(Field.builder().name("Points gained").value("+40").build())
+						.field(Field.builder().name("Type").value("WIN").build())
 						.build()))
 				.build());
 	}
@@ -431,9 +432,9 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet result")
-						.field(Field.builder().name("Type").value("REFUND").build())
+						.description("[username] 🧧 streamer-name : Bet result [REFUND | 0]")
 						.field(Field.builder().name("Points gained").value("0").build())
+						.field(Field.builder().name("Type").value("REFUND").build())
 						.build()))
 				.build());
 	}
@@ -457,9 +458,9 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet result")
-						.field(Field.builder().name("Type").value("WIN").build())
+						.description("[username] 🧧 streamer-name : Bet result [WIN | Unknown final gain, obtained +56 points]")
 						.field(Field.builder().name("Points gained").value("Unknown final gain, obtained +56 points").build())
+						.field(Field.builder().name("Type").value("WIN").build())
 						.build()))
 				.build());
 	}
@@ -475,10 +476,10 @@ class DiscordMessageBuilderEmbedTest{
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Miner started")
-						.field(Field.builder().name("Version").value(version).build())
-						.field(Field.builder().name("Commit").value(commit).build())
+						.description("[username] ✅ : Miner started with version test-version [test-commit - test-branch]")
 						.field(Field.builder().name("Branch").value(branch).build())
+						.field(Field.builder().name("Commit").value(commit).build())
+						.field(Field.builder().name("Version").value(version).build())
 						.build()))
 				.build());
 	}
@@ -492,7 +493,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Streamer added")
+						.description("[username] ➕ streamer-name : Streamer added")
 						.build()))
 				.build());
 	}
@@ -506,7 +507,7 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Streamer removed")
+						.description("[username] ➖ streamer-name : Streamer removed")
 						.build()))
 				.build());
 	}
@@ -522,8 +523,8 @@ class DiscordMessageBuilderEmbedTest{
 								.build())
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Streamer unknown")
-						.field(Field.builder().name("Username").value(STREAMER_USERNAME).build())
+						.description("[username] ❌ streamer-name : Streamer unknown")
+						.field(Field.builder().name("Streamer").value(STREAMER_USERNAME).build())
 						.build()))
 				.build());
 	}
@@ -540,7 +541,7 @@ class DiscordMessageBuilderEmbedTest{
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Drop available")
+						.description("[username] 🎁 : Drop available [drop-name]")
 						.field(Field.builder().name("Name").value(name).build())
 						.build()))
 				.build());
@@ -558,7 +559,7 @@ class DiscordMessageBuilderEmbedTest{
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Drop claimed")
+						.description("[username] \uD83C\uDF81 : Drop claimed [drop-name]")
 						.field(Field.builder().name("Name").value(name).build())
 						.build()))
 				.build());

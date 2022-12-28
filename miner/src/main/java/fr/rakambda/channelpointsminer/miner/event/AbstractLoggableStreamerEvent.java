@@ -37,6 +37,9 @@ public abstract class AbstractLoggableStreamerEvent extends AbstractLoggableEven
 		if(EventVariableKey.STREAMER.equals(key)){
 			return getStreamerUsername().orElse(UNKNOWN_STREAMER);
 		}
+		if(EventVariableKey.STREAMER_URL.equals(key)){
+			return getStreamer().map(Streamer::getChannelUrl).map(URL::toString).orElse(null);
+		}
 		if(EventVariableKey.STREAMER_PROFILE_PICTURE_URL.equals(key)){
 			return getStreamer().flatMap(Streamer::getProfileImage).map(URL::toString).orElse(null);
 		}
