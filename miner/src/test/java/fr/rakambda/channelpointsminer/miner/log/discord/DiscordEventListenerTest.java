@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Webhook;
 import fr.rakambda.channelpointsminer.miner.config.DiscordConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.DiscordEventConfiguration;
+import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.IEvent;
 import fr.rakambda.channelpointsminer.miner.event.ILoggableEvent;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Map;
+import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -65,6 +67,20 @@ class DiscordEventListenerTest{
 		var eventConfiguration = mock(DiscordEventConfiguration.class);
 		var webhook = mock(Webhook.class);
 		
+		when(discordConfiguration.getEvents()).thenReturn(Map.of(event.getClass().getSimpleName(), eventConfiguration));
+		when(discordMessageBuilder.createSimpleMessage(event, eventConfiguration)).thenReturn(webhook);
+		tested.onEvent(event);
+		
+		verify(discordApi).sendMessage(webhook);
+	}
+	
+	@Test
+	void messageIsSentStreamerEvent(){
+		var event = mock(AbstractLoggableStreamerEvent.class);
+		var eventConfiguration = mock(DiscordEventConfiguration.class);
+		var webhook = mock(Webhook.class);
+		
+		when(event.getStreamerUsername()).thenReturn(Optional.of("streamer"));
 		when(discordConfiguration.getEvents()).thenReturn(Map.of(event.getClass().getSimpleName(), eventConfiguration));
 		when(discordMessageBuilder.createSimpleMessage(event, eventConfiguration)).thenReturn(webhook);
 		tested.onEvent(event);
