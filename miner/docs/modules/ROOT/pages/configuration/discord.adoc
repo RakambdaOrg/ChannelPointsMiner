@@ -22,7 +22,7 @@ include::example$discord-filtering.json[]
 Format works the same way as <<filtering, filtering>> except that additional parameters are provided.
 
 Placeholders are expected to be between braces, example: `\{placeholder_name}`.
-List of available are available in link:https://github.com/Rakambda/ChannelPointsMiner/blob/filter/develop/miner/src/main/java/fr/rakambda/channelpointsminer/miner/event/EventVariableKey.java[EventVariableKey].
+Available values can be seen in link:https://github.com/Rakambda/ChannelPointsMiner/blob/filter/develop/miner/src/main/java/fr/rakambda/channelpointsminer/miner/event/EventVariableKey.java[EventVariableKey].
 
 NOTE: If you want to override the format of one event, you'll have to do the all as it'll also act as a filter.
 
