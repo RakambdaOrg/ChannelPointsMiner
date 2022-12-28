@@ -20,11 +20,14 @@ import java.util.stream.Collectors;
 public class DiscordMessageBuilder{
 	@NotNull
 	public Webhook createSimpleMessage(@NotNull ILoggableEvent event, @Nullable DiscordEventConfiguration config){
-		return Webhook.builder().content(formatMessage(event, event.getDefaultFormat())).build();
+		var format = Optional.ofNullable(config).map(DiscordEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
+		return Webhook.builder().content(formatMessage(event, format)).build();
 	}
 	
 	@NotNull
 	public Webhook createEmbedMessage(@NotNull ILoggableEvent event, @Nullable DiscordEventConfiguration config){
+		var format = Optional.ofNullable(config).map(DiscordEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
+		
 		var fields = event.getEmbedFields().entrySet().stream()
 				.sorted(Map.Entry.comparingByKey())
 				.map(e -> Field.builder().name(e.getKey()).value(formatMessage(event, "{%s}".formatted(e.getValue()))).build())
@@ -34,7 +37,7 @@ public class DiscordMessageBuilder{
 				.author(getEmbedAuthor(event))
 				.footer(getEmbedFooter(event))
 				.color(getEmbedColor(event))
-				.description(formatMessage(event, event.getDefaultFormat()))
+				.description(formatMessage(event, format))
 				.fields(fields)
 				.build();
 		

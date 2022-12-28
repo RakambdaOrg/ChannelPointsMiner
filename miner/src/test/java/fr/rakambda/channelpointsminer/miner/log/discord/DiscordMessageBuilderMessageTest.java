@@ -85,6 +85,17 @@ class DiscordMessageBuilderMessageTest{
 	}
 	
 	@Test
+	void onClaimAvailableWithCustomFormat(){
+		when(discordEventConfiguration.getFormat()).thenReturn("{streamer} override test");
+		
+		var webhook = tested.createSimpleMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.content("%s override test".formatted(STREAMER_USERNAME))
+				.build());
+	}
+	
+	@Test
 	void onClaimAvailable(){
 		var webhook = tested.createSimpleMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
 		

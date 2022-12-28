@@ -111,6 +111,22 @@ class DiscordMessageBuilderEmbedTest{
 	}
 	
 	@Test
+	void onClaimAvailableWithCustomFormat(){
+		when(discordEventConfiguration.getFormat()).thenReturn("{streamer} override test");
+		
+		var webhook = tested.createEmbedMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("streamer-name override test")
+						.build()))
+				.build());
+	}
+	
+	@Test
 	void onClaimAvailable(){
 		var webhook = tested.createEmbedMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
 		

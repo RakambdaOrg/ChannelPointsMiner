@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 @JsonClassDescription("Customization of the event sent.")
 public class DiscordEventConfiguration{
 	@JsonProperty("format")
-	@JsonPropertyDescription(value = "Format of the message sent. Will be either the text, or the description of the embed.")
+	@JsonPropertyDescription(value = "Format of the message sent. Will be either the text, or the description of the embed. Placeholders are between braces {example_key} . Keys can be seen in EventVariableKey class.")
 	@Nullable
 	private String format;
 }
