@@ -1,0 +1,15 @@
+{
+  "accounts" : [
+    {
+      "discord" : {
+        "embeds" : false,
+        "webhookUrl" : "https://my-webhook-url",
+        "events" : {
+          "DropClaimedEvent" : {},
+          "MinerStartedEvent" : {},
+          "PointsSpentEvent" : {}
+        }
+      }
+    }
+  ]
+}
