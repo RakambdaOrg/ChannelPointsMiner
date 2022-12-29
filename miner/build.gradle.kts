@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.bundles.jackson)
     implementation(libs.httpclient)
     implementation(libs.lang3)
+    implementation(libs.commonsText)
     implementation(libs.websocket)
     implementation(libs.kittehIrc)
     implementation(libs.selenide)

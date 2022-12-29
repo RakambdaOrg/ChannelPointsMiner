@@ -17,24 +17,25 @@ public class StreamerRemovedEvent extends AbstractLoggableStreamerEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
+	public String getConsoleLogFormat(){
 		return "Streamer removed";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} {streamer} : Streamer removed";
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_INFO;
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
 		return "➖";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_INFO;
-	}
-	
-	@Override
-	@NotNull
-	protected String getEmbedDescription(){
-		return "Streamer removed";
 	}
 }

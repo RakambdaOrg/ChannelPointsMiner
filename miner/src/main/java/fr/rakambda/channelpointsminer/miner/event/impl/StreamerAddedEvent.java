@@ -17,24 +17,25 @@ public class StreamerAddedEvent extends AbstractLoggableStreamerEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
+	public String getConsoleLogFormat(){
 		return "Streamer added";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} {streamer} : Streamer added";
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_INFO;
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
 		return "➕";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_INFO;
-	}
-	
-	@Override
-	@NotNull
-	protected String getEmbedDescription(){
-		return "Streamer added";
 	}
 }

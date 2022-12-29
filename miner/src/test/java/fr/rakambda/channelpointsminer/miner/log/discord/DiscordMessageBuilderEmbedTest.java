@@ -1,6 +1,5 @@
-package fr.rakambda.channelpointsminer.miner.log;
+package fr.rakambda.channelpointsminer.miner.log.discord;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Author;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Embed;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Field;
@@ -20,7 +19,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Predicti
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
-import fr.rakambda.channelpointsminer.miner.event.IEvent;
+import fr.rakambda.channelpointsminer.miner.config.DiscordEventConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
@@ -42,6 +41,7 @@ import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,28 +58,27 @@ import static java.awt.Color.CYAN;
 import static java.awt.Color.GREEN;
 import static java.awt.Color.PINK;
 import static java.awt.Color.RED;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
-class DiscordEventListenerEmbedTest{
+class DiscordMessageBuilderEmbedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_USERNAME = "streamer-name";
 	private static final String USERNAME = "username";
 	private static final Instant NOW = Instant.parse("2020-05-17T12:14:20.000Z");
 	private static final ZonedDateTime ZONED_NOW = ZonedDateTime.ofInstant(NOW, ZoneId.systemDefault());
 	
-	private DiscordEventListener tested;
+	@InjectMocks
+	private DiscordMessageBuilder tested;
 	
 	@Mock
-	private IMiner miner;
+	private DiscordEventConfiguration discordEventConfiguration;
 	@Mock
-	private DiscordApi discordApi;
+	private IMiner miner;
 	@Mock
 	private Streamer streamer;
 	@Mock
@@ -90,15 +89,13 @@ class DiscordEventListenerEmbedTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		tested = new DiscordEventListener(discordApi, true);
-		
 		var streamerProfileUrl = new URL("https://streamer-image");
 		var channelUrl = new URL("https://streamer");
 		
 		author = Author.builder()
 				.name(STREAMER_USERNAME)
-				.url(channelUrl)
-				.iconUrl(streamerProfileUrl)
+				.url(channelUrl.toString())
+				.iconUrl(streamerProfileUrl.toString())
 				.build();
 		footer = Footer.builder()
 				.text(USERNAME)
@@ -114,52 +111,59 @@ class DiscordEventListenerEmbedTest{
 	}
 	
 	@Test
-	void notLoggableEventIsIgnored(){
-		var event = mock(IEvent.class);
+	void onClaimAvailableWithCustomFormat(){
+		when(discordEventConfiguration.getFormat()).thenReturn("{streamer} override test");
 		
-		tested.onEvent(event);
+		var webhook = tested.createEmbedMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
 		
-		verify(discordApi, never()).sendMessage(any());
-	}
-	
-	@Test
-	void onClaimAvailable(){
-		tested.onEvent(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
-		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Claim available")
+						.description("streamer-name override test")
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onClaimAvailable(){
+		var webhook = tested.createEmbedMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("[username] 🎫 streamer-name : Claim available")
 						.build()))
 				.build());
 	}
 	
 	@Test
 	void onClaimMoment(){
-		tested.onEvent(new ClaimMomentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
+		var webhook = tested.createEmbedMessage(new ClaimMomentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Moment available")
+						.description("[username] \uD83C\uDF96️ streamer-name : Moment available")
 						.build()))
 				.build());
 	}
 	
 	@Test
 	void onClaimedMoment(){
-		tested.onEvent(new ClaimedMomentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
+		var webhook = tested.createEmbedMessage(new ClaimedMomentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Moment claimed")
+						.description("[username] 🎖️ streamer-name : Moment claimed")
 						.build()))
 				.build());
 	}
@@ -177,17 +181,17 @@ class DiscordEventListenerEmbedTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(200);
 		
-		tested.onEvent(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
+		var webhook = tested.createEmbedMessage(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(GREEN.getRGB())
-						.description("Points earned")
+						.description("[username] 💰 streamer-name : Points earned [+25 | CLAIM | 200]")
+						.field(Field.builder().name("Balance").value("200").build())
 						.field(Field.builder().name("Points").value("+25").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
-						.field(Field.builder().name("Balance").value("200").build())
 						.build()))
 				.build());
 	}
@@ -205,17 +209,17 @@ class DiscordEventListenerEmbedTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
 		
-		tested.onEvent(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
+		var webhook = tested.createEmbedMessage(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(GREEN.getRGB())
-						.description("Points earned")
+						.description("[username] 💰 streamer-name : Points earned [+2.5K | CLAIM | 12.35M]")
+						.field(Field.builder().name("Balance").value("12.35M").build())
 						.field(Field.builder().name("Points").value("+2.5K").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
-						.field(Field.builder().name("Balance").value("12.35M").build())
 						.build()))
 				.build());
 	}
@@ -233,17 +237,17 @@ class DiscordEventListenerEmbedTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
 		
-		tested.onEvent(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
+		var webhook = tested.createEmbedMessage(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(GREEN.getRGB())
-						.description("Points earned")
+						.description("[username] 💰 streamer-name : Points earned [-2.5K | CLAIM | 12.35M]")
+						.field(Field.builder().name("Balance").value("12.35M").build())
 						.field(Field.builder().name("Points").value("-2.5K").build())
 						.field(Field.builder().name("Reason").value("CLAIM").build())
-						.field(Field.builder().name("Balance").value("12.35M").build())
 						.build()))
 				.build());
 	}
@@ -257,14 +261,14 @@ class DiscordEventListenerEmbedTest{
 		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(balance.getBalance()).thenReturn(25);
 		
-		tested.onEvent(new PointsSpentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data));
+		var webhook = tested.createEmbedMessage(new PointsSpentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(RED.getRGB())
-						.description("Points spent")
+						.description("[username] 💸 streamer-name : Points spent [25]")
 						.field(Field.builder().name("Balance").value("25").build())
 						.build()))
 				.build());
@@ -272,41 +276,42 @@ class DiscordEventListenerEmbedTest{
 	
 	@Test
 	void onStreamUp(){
-		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
+		var webhook = tested.createEmbedMessage(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Stream started")
+						.description("[username] ▶️ streamer-name : Stream started")
 						.build()))
 				.build());
 	}
 	
 	@Test
 	void authorNotFound(){
-		tested.onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null, NOW));
+		var webhook = tested.createEmbedMessage(new StreamUpEvent(miner, STREAMER_ID, null, null, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
+						.author(Author.builder().name("UnknownStreamer").build())
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Stream started")
+						.description("[username] ▶️ UnknownStreamer : Stream started")
 						.build()))
 				.build());
 	}
 	
 	@Test
 	void onStreamDown(){
-		tested.onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW));
+		var webhook = tested.createEmbedMessage(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Stream stopped")
+						.description("[username] ⏹️ streamer-name : Stream stopped")
 						.build()))
 				.build());
 	}
@@ -319,14 +324,14 @@ class DiscordEventListenerEmbedTest{
 		when(event.getTitle()).thenReturn(title);
 		when(event.getCreatedAt()).thenReturn(ZONED_NOW);
 		
-		tested.onEvent(new EventCreatedEvent(miner, streamer, event));
+		var webhook = tested.createEmbedMessage(new EventCreatedEvent(miner, streamer, event), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Prediction created")
+						.description("[username] 📑 streamer-name : Prediction created [MyTitle]")
 						.field(Field.builder().name("Title").value(title).build())
 						.build()))
 				.build());
@@ -353,16 +358,16 @@ class DiscordEventListenerEmbedTest{
 		when(outcome2.getColor()).thenReturn(OutcomeColor.BLUE);
 		when(outcome2.getTitle()).thenReturn(outcomeName);
 		
-		tested.onEvent(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction));
+		var webhook = tested.createEmbedMessage(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet placed")
-						.field(Field.builder().name("Points placed").value("25").build())
+						.description("[username] 🪙 streamer-name : Bet placed [25 | BLUE: Out2]")
 						.field(Field.builder().name("Outcome").value("BLUE: " + outcomeName).build())
+						.field(Field.builder().name("Points placed").value("25").build())
 						.build()))
 				.build());
 	}
@@ -382,16 +387,16 @@ class DiscordEventListenerEmbedTest{
 		when(event.getOutcomes()).thenReturn(List.of(outcome1));
 		when(outcome1.getId()).thenReturn("bad-id");
 		
-		tested.onEvent(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction));
+		var webhook = tested.createEmbedMessage(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet placed")
-						.field(Field.builder().name("Points placed").value("25").build())
+						.description("[username] 🪙 streamer-name : Bet placed [25 | UnknownOutcome]")
 						.field(Field.builder().name("Outcome").value("UnknownOutcome").build())
+						.field(Field.builder().name("Points placed").value("25").build())
 						.build()))
 				.build());
 	}
@@ -410,16 +415,16 @@ class DiscordEventListenerEmbedTest{
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
 		
-		tested.onEvent(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData));
+		var webhook = tested.createEmbedMessage(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet result")
-						.field(Field.builder().name("Type").value("WIN").build())
+						.description("[username] 🧧 streamer-name : Bet result [WIN | +40]")
 						.field(Field.builder().name("Points gained").value("+40").build())
+						.field(Field.builder().name("Type").value("WIN").build())
 						.build()))
 				.build());
 	}
@@ -436,16 +441,16 @@ class DiscordEventListenerEmbedTest{
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.REFUND);
 		
-		tested.onEvent(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData));
+		var webhook = tested.createEmbedMessage(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet result")
-						.field(Field.builder().name("Type").value("REFUND").build())
+						.description("[username] 🧧 streamer-name : Bet result [REFUND | 0]")
 						.field(Field.builder().name("Points gained").value("0").build())
+						.field(Field.builder().name("Type").value("REFUND").build())
 						.build()))
 				.build());
 	}
@@ -462,16 +467,16 @@ class DiscordEventListenerEmbedTest{
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
 		
-		tested.onEvent(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, null, predictionResultData));
+		var webhook = tested.createEmbedMessage(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, null, predictionResultData), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(PINK.getRGB())
-						.description("Bet result")
-						.field(Field.builder().name("Type").value("WIN").build())
+						.description("[username] 🧧 streamer-name : Bet result [WIN | Unknown final gain, obtained +56 points]")
 						.field(Field.builder().name("Points gained").value("Unknown final gain, obtained +56 points").build())
+						.field(Field.builder().name("Type").value("WIN").build())
 						.build()))
 				.build());
 	}
@@ -481,61 +486,61 @@ class DiscordEventListenerEmbedTest{
 		var version = "test-version";
 		var commit = "test-commit";
 		var branch = "test-branch";
-		tested.onEvent(new MinerStartedEvent(miner, version, commit, branch, NOW));
+		var webhook = tested.createEmbedMessage(new MinerStartedEvent(miner, version, commit, branch, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Miner started")
-						.field(Field.builder().name("Version").value(version).build())
-						.field(Field.builder().name("Commit").value(commit).build())
+						.description("[username] ✅ : Miner started with version test-version [test-commit - test-branch]")
 						.field(Field.builder().name("Branch").value(branch).build())
+						.field(Field.builder().name("Commit").value(commit).build())
+						.field(Field.builder().name("Version").value(version).build())
 						.build()))
 				.build());
 	}
 	
 	@Test
 	void onStreamerAdded(){
-		tested.onEvent(new StreamerAddedEvent(miner, streamer, NOW));
+		var webhook = tested.createEmbedMessage(new StreamerAddedEvent(miner, streamer, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Streamer added")
+						.description("[username] ➕ streamer-name : Streamer added")
 						.build()))
 				.build());
 	}
 	
 	@Test
 	void onStreamerRemoved(){
-		tested.onEvent(new StreamerRemovedEvent(miner, streamer, NOW));
+		var webhook = tested.createEmbedMessage(new StreamerRemovedEvent(miner, streamer, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Streamer removed")
+						.description("[username] ➖ streamer-name : Streamer removed")
 						.build()))
 				.build());
 	}
 	
 	@Test
 	void onStreamerUnknown(){
-		tested.onEvent(new StreamerUnknownEvent(miner, STREAMER_USERNAME, NOW));
+		var webhook = tested.createEmbedMessage(new StreamerUnknownEvent(miner, STREAMER_USERNAME, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.author(Author.builder()
 								.name(STREAMER_USERNAME)
 								.build())
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Streamer unknown")
-						.field(Field.builder().name("Username").value(STREAMER_USERNAME).build())
+						.description("[username] ❌ streamer-name : Streamer unknown")
+						.field(Field.builder().name("Streamer").value(STREAMER_USERNAME).build())
 						.build()))
 				.build());
 	}
@@ -546,13 +551,13 @@ class DiscordEventListenerEmbedTest{
 		var drop = mock(TimeBasedDrop.class);
 		when(drop.getName()).thenReturn(name);
 		
-		tested.onEvent(new DropClaimEvent(miner, drop, NOW));
+		var webhook = tested.createEmbedMessage(new DropClaimEvent(miner, drop, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Drop available")
+						.description("[username] 🎁 : Drop available [drop-name]")
 						.field(Field.builder().name("Name").value(name).build())
 						.build()))
 				.build());
@@ -564,13 +569,13 @@ class DiscordEventListenerEmbedTest{
 		var drop = mock(TimeBasedDrop.class);
 		when(drop.getName()).thenReturn(name);
 		
-		tested.onEvent(new DropClaimedEvent(miner, drop, NOW));
+		var webhook = tested.createEmbedMessage(new DropClaimedEvent(miner, drop, NOW), discordEventConfiguration);
 		
-		verify(discordApi).sendMessage(Webhook.builder()
+		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("Drop claimed")
+						.description("[username] \uD83C\uDF81 : Drop claimed [drop-name]")
 						.field(Field.builder().name("Name").value(name).build())
 						.build()))
 				.build());

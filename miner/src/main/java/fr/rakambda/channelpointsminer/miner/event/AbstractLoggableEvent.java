@@ -1,32 +1,25 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Author;
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Embed;
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Field;
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Footer;
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Webhook;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import java.text.NumberFormat;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
 public abstract class AbstractLoggableEvent implements IEvent, ILoggableEvent{
-	protected static final int COLOR_INFO = Color.CYAN.getRGB();
-	protected static final int COLOR_PREDICTION = Color.PINK.getRGB();
-	protected static final int COLOR_POINTS_WON = Color.GREEN.getRGB();
-	protected static final int COLOR_POINTS_LOST = Color.RED.getRGB();
+	protected static final String COLOR_INFO = Integer.toString(Color.CYAN.getRGB());
+	protected static final String COLOR_PREDICTION = Integer.toString(Color.PINK.getRGB());
+	protected static final String COLOR_POINTS_WON = Integer.toString(Color.GREEN.getRGB());
+	protected static final String COLOR_POINTS_LOST = Integer.toString(Color.RED.getRGB());
 	
 	@EqualsAndHashCode.Exclude
 	private final ThreadLocal<NumberFormat> numberFormatLocal = ThreadLocal.withInitial(() -> {
@@ -48,55 +41,29 @@ public abstract class AbstractLoggableEvent implements IEvent, ILoggableEvent{
 		return sign + numberFormatLocal.get().format(value);
 	}
 	
-	@NotNull
 	@Override
-	public Webhook getAsWebhookEmbed(){
-		var embed = Embed.builder()
-				.author(getEmbedAuthor())
-				.footer(Footer.builder().text(miner.getUsername()).build())
-				.color(getEmbedColor())
-				.description(getEmbedDescription())
-				.fields(getEmbedFields())
-				.build();
-		return Webhook.builder()
-				.embeds(List.of(embed))
-				.build();
-	}
-	
-	@NotNull
-	@Override
-	public Webhook getAsWebhookMessage(){
-		return Webhook.builder().content(getWebhookContent()).build();
-	}
-	
-	@NotNull
-	protected String getWebhookContent(){
-		return "[%s] %s : %s".formatted(
-				miner.getUsername(),
-				getEmoji(),
-				getWebhookMessage());
-	}
-	
-	@NotNull
-	protected abstract String getEmoji();
-	
-	@NotNull
-	protected String getWebhookMessage(){
-		return getAsLog();
-	}
-	
-	@Nullable
-	protected Author getEmbedAuthor(){
+	public String lookup(String key){
+		if(EventVariableKey.USERNAME.equals(key)){
+			return getMiner().getUsername();
+		}
+		if(EventVariableKey.EMOJI.equals(key)){
+			return getEmoji();
+		}
+		if(EventVariableKey.COLOR.equals(key)){
+			return getColor();
+		}
 		return null;
 	}
 	
-	protected abstract int getEmbedColor();
-	
+	@Override
 	@NotNull
-	protected abstract String getEmbedDescription();
-	
-	@NotNull
-	protected Collection<? extends Field> getEmbedFields(){
-		return List.of();
+	public Map<String, String> getEmbedFields(){
+		return Map.of();
 	}
+	
+	@NotNull
+	protected abstract String getColor();
+	
+	@NotNull
+	protected abstract String getEmoji();
 }

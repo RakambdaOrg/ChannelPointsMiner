@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Author;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
@@ -8,6 +7,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -33,25 +33,17 @@ public abstract class AbstractLoggableStreamerEvent extends AbstractLoggableEven
 	}
 	
 	@Override
-	@NotNull
-	protected String getWebhookContent(){
-		return "[%s] %s %s : %s".formatted(
-				getMiner().getUsername(),
-				getEmoji(),
-				getStreamerUsername().orElse(UNKNOWN_STREAMER),
-				getWebhookMessage());
-	}
-	
-	@Nullable
-	@Override
-	protected Author getEmbedAuthor(){
-		return getStreamerUsername()
-				.map(username -> Author.builder().name(username)
-						.iconUrl(getStreamer().flatMap(Streamer::getProfileImage).orElse(null))
-						.url(getStreamer().map(Streamer::getChannelUrl).orElse(null))
-						.build()
-				)
-				.orElse(null);
+	public String lookup(String key){
+		if(EventVariableKey.STREAMER.equals(key)){
+			return getStreamerUsername().orElse(UNKNOWN_STREAMER);
+		}
+		if(EventVariableKey.STREAMER_URL.equals(key)){
+			return getStreamer().map(Streamer::getChannelUrl).map(URL::toString).orElse(null);
+		}
+		if(EventVariableKey.STREAMER_PROFILE_PICTURE_URL.equals(key)){
+			return getStreamer().flatMap(Streamer::getProfileImage).map(URL::toString).orElse(null);
+		}
+		return super.lookup(key);
 	}
 	
 	@Override

@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.event.impl;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Field;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
+import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
@@ -10,8 +10,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
@@ -26,36 +25,49 @@ public class PointsEarnedEvent extends AbstractLoggableStreamerEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
-		return "Points earned [%s | %s | %s]".formatted(
-				millify(pointsEarnedData.getPointGain().getTotalPoints(), true),
-				pointsEarnedData.getPointGain().getReasonCode(),
-				millify(pointsEarnedData.getBalance().getBalance(), false));
+	public String getConsoleLogFormat(){
+		return "Points earned [{points} | {reason} | {balance}]";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} {streamer} : Points earned [{points} | {reason} | {balance}]";
+	}
+	
+	@Override
+	public String lookup(String key){
+		if(EventVariableKey.POINTS.equals(key)){
+			return millify(pointsEarnedData.getPointGain().getTotalPoints(), true);
+		}
+		if(EventVariableKey.REASON.equals(key)){
+			return pointsEarnedData.getPointGain().getReasonCode().toString();
+		}
+		if(EventVariableKey.BALANCE.equals(key)){
+			return millify(pointsEarnedData.getBalance().getBalance(), false);
+		}
+		return super.lookup(key);
+	}
+	
+	@Override
+	@NotNull
+	public Map<String, String> getEmbedFields(){
+		return Map.of(
+				"Points", EventVariableKey.POINTS,
+				"Reason", EventVariableKey.REASON,
+				"Balance", EventVariableKey.BALANCE
+		);
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_POINTS_WON;
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
 		return "💰";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_POINTS_WON;
-	}
-	
-	@Override
-	@NotNull
-	protected String getEmbedDescription(){
-		return "Points earned";
-	}
-	
-	@Override
-	@NotNull
-	protected Collection<? extends Field> getEmbedFields(){
-		return List.of(
-				Field.builder().name("Points").value(millify(pointsEarnedData.getPointGain().getTotalPoints(), true)).build(),
-				Field.builder().name("Reason").value(pointsEarnedData.getPointGain().getReasonCode().toString()).build(),
-				Field.builder().name("Balance").value(millify(pointsEarnedData.getBalance().getBalance(), false)).build());
 	}
 }

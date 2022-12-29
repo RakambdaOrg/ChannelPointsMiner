@@ -1,15 +1,14 @@
 package fr.rakambda.channelpointsminer.miner.event.impl;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Field;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableEvent;
+import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
@@ -23,32 +22,39 @@ public class DropClaimedEvent extends AbstractLoggableEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
-		return "Drop claimed [%s]".formatted(drop.getName());
+	public String getConsoleLogFormat(){
+		return "Drop claimed [{drop_name}]";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} : Drop claimed [{drop_name}]";
+	}
+	
+	@Override
+	public String lookup(String key){
+		if(EventVariableKey.DROP_NAME.equals(key)){
+			return drop.getName();
+		}
+		return super.lookup(key);
+	}
+	
+	@Override
+	@NotNull
+	public Map<String, String> getEmbedFields(){
+		return Map.of("Name", EventVariableKey.DROP_NAME);
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_INFO;
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
 		return "🎁";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_INFO;
-	}
-	
-	@Override
-	
-	@NotNull
-	protected String getEmbedDescription(){
-		return "Drop claimed";
-	}
-	
-	@Override
-	@NotNull
-	protected Collection<? extends Field> getEmbedFields(){
-		return List.of(
-				Field.builder().name("Name").value(drop.getName()).build());
 	}
 }

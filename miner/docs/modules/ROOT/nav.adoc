@@ -6,3 +6,4 @@
 ** xref:configuration/global.adoc[Global]
 ** xref:configuration/streamer.adoc[Streamer]
 ** xref:configuration/logger.adoc[Logger]
+** xref:configuration/discord.adoc[Discord]
