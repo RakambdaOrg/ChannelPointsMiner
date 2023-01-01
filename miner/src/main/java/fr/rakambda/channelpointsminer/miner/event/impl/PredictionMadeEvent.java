@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.event.impl;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Field;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
+import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -13,7 +13,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -32,8 +32,46 @@ public class PredictionMadeEvent extends AbstractLoggableStreamerEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
-		return "Bet placed [%s | %s]".formatted(millify(placedPrediction.getAmount(), false), getOutcome());
+	public String getConsoleLogFormat(){
+		return "Bet placed [{prediction_points} | {prediction_outcome}]";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} {streamer} : Bet placed [{prediction_points} | {prediction_outcome}]";
+	}
+	
+	@Override
+	public String lookup(String key){
+		if(EventVariableKey.PREDICTION_POINTS.equals(key)){
+			return millify(placedPrediction.getAmount(), false);
+		}
+		if(EventVariableKey.PREDICTION_OUTCOME.equals(key)){
+			return getOutcome();
+		}
+		return super.lookup(key);
+	}
+	
+	@Override
+	@NotNull
+	public Map<String, String> getEmbedFields(){
+		return Map.of(
+				"Points placed", EventVariableKey.PREDICTION_POINTS,
+				"Outcome", EventVariableKey.PREDICTION_OUTCOME
+		);
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_PREDICTION;
+	}
+	
+	@Override
+	@NotNull
+	protected String getEmoji(){
+		return "🪙";
 	}
 	
 	@NotNull
@@ -46,30 +84,5 @@ public class PredictionMadeEvent extends AbstractLoggableStreamerEvent{
 				.findFirst()
 				.map(outcome -> outcome.getColor() + ": " + outcome.getTitle())
 				.orElse(UNKNOWN_OUTCOME);
-	}
-	
-	@Override
-	@NotNull
-	protected String getEmoji(){
-		return "🪙";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_PREDICTION;
-	}
-	
-	@Override
-	@NotNull
-	protected String getEmbedDescription(){
-		return "Bet placed";
-	}
-	
-	@Override
-	@NotNull
-	protected Collection<? extends Field> getEmbedFields(){
-		return List.of(
-				Field.builder().name("Points placed").value(millify(placedPrediction.getAmount(), false)).build(),
-				Field.builder().name("Outcome").value(getOutcome()).build());
 	}
 }

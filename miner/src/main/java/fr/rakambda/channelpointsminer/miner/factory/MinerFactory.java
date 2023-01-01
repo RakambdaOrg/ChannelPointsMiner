@@ -38,7 +38,7 @@ public class MinerFactory{
 			miner.addEventHandler(LogEventListenerFactory.createLogger());
 			if(Objects.nonNull(config.getDiscord().getUrl())){
 				var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
-				miner.addEventHandler(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord().isEmbeds()));
+				miner.addEventHandler(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord()));
 			}
 			
 			if(config.getAnalytics().isEnabled()){

@@ -18,25 +18,25 @@ public class ClaimMomentEvent extends AbstractLoggableStreamerEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
+	public String getConsoleLogFormat(){
 		return "Moment available";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} {streamer} : Moment available";
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_INFO;
 	}
 	
 	@Override
 	@NotNull
 	protected String getEmoji(){
 		return "🎖️";
-	}
-	
-	@Override
-	protected int getEmbedColor(){
-		return COLOR_INFO;
-	}
-	
-	@Override
-	
-	@NotNull
-	protected String getEmbedDescription(){
-		return "Moment available";
 	}
 }

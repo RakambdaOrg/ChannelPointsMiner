@@ -1,14 +1,13 @@
 package fr.rakambda.channelpointsminer.miner.event.impl;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Field;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
+import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
@@ -19,8 +18,20 @@ public class StreamerUnknownEvent extends AbstractLoggableStreamerEvent{
 	
 	@Override
 	@NotNull
-	public String getAsLog(){
+	public String getConsoleLogFormat(){
 		return "Streamer unknown";
+	}
+	
+	@Override
+	@NotNull
+	public String getDefaultFormat(){
+		return "[{username}] {emoji} {streamer} : Streamer unknown";
+	}
+	
+	@Override
+	@NotNull
+	protected String getColor(){
+		return COLOR_INFO;
 	}
 	
 	@Override
@@ -30,19 +41,8 @@ public class StreamerUnknownEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	protected int getEmbedColor(){
-		return COLOR_INFO;
-	}
-	
-	@Override
 	@NotNull
-	protected String getEmbedDescription(){
-		return "Streamer unknown";
-	}
-	
-	@NotNull
-	@Override
-	protected Collection<? extends Field> getEmbedFields(){
-		return List.of(Field.builder().name("Username").value(getStreamerUsername().orElseThrow()).build());
+	public Map<String, String> getEmbedFields(){
+		return Map.of("Streamer", EventVariableKey.STREAMER);
 	}
 }

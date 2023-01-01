@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
-import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
@@ -11,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -80,7 +80,13 @@ public class SyncInventory implements Runnable{
 		}
 		
 		miner.getGqlApi().dropsPageClaimDropRewards(dropInstanceId.get())
-				.filter(r -> !r.isError())
+				.filter(r -> {
+					if(!r.isError()){
+						return true;
+					}
+					log.error("Failed to claim drop due to `{}` | {}", r.getError(), r.getErrors());
+					return false;
+				})
 				.map(r -> new DropClaimedEvent(miner, timeBasedDrop, TimeFactory.now()))
 				.ifPresent(miner::onEvent);
 	}

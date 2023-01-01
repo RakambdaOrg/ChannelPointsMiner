@@ -1,15 +1,16 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
-import fr.rakambda.channelpointsminer.miner.api.discord.data.Webhook;
+import org.apache.commons.text.lookup.StringLookup;
 import org.jetbrains.annotations.NotNull;
+import java.util.Map;
 
-public interface ILoggableEvent extends IEvent{
+public interface ILoggableEvent extends IEvent, StringLookup{
 	@NotNull
-	String getAsLog();
+	String getConsoleLogFormat();
 	
 	@NotNull
-	Webhook getAsWebhookEmbed();
+	String getDefaultFormat();
 	
 	@NotNull
-	Webhook getAsWebhookMessage();
+	Map<String, String> getEmbedFields();
 }

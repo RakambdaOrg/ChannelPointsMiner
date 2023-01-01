@@ -1,0 +1,36 @@
+= Discord settings
+
+Discord settings can be customized to filter events and/or customize the format of messages sent.
+
+== Filtering [[filtering]]
+
+To filter messages, you need to provide a list of events you want to be sent, and set no customization.
+
+The name of the events can be found in link:https://github.com/Rakambda/ChannelPointsMiner/tree/develop/miner/src/main/java/fr/rakambda/channelpointsminer/miner/event/impl[miner/src/main/java/fr/rakambda/channelpointsminer/miner/event/impl] as the name of the classes (name of the file without `.java`).
+
+.Example to sent only 3 type of events with default format
+[%collapsible]
+====
+[source,json]
+----
+include::example$discord-filtering.json[]
+----
+====
+
+== Format
+
+Format works the same way as <<filtering, filtering>> except that additional parameters are provided.
+
+Placeholders are expected to be between braces, example: `\{placeholder_name}`.
+Available values can be seen in link:https://github.com/Rakambda/ChannelPointsMiner/blob/filter/develop/miner/src/main/java/fr/rakambda/channelpointsminer/miner/event/EventVariableKey.java[EventVariableKey].
+
+NOTE: If you want to override the format of one event, you'll have to do the all as it'll also act as a filter.
+
+.Example of filtering 2 events with 1 having a custom format
+[%collapsible]
+====
+[source,json]
+----
+include::example$discord-format.json[]
+----
+====

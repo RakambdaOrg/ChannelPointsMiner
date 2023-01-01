@@ -18,6 +18,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionResult
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdated;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidGoV2;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ReadNotifications;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamDown;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamUp;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.UpdateSummary;
@@ -81,6 +82,8 @@ public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandl
 	public void onUpdateSummary(@NotNull Topic topic, @NotNull UpdateSummary message){}
 	
 	public void onCommunityMomentStart(@NotNull Topic topic, @NotNull CommunityMomentStart message){}
+	
+	public void onReadNotifications(@NotNull Topic topic, @NotNull ReadNotifications message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IPubSubMessage message){
