@@ -10,9 +10,11 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
+@Log4j2
 @RequiredArgsConstructor
 public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
 	private final IMiner miner;
@@ -28,7 +30,13 @@ public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
 					.filter(response -> !response.isError())
 					.map(GQLResponse::getData)
 					.map(CommunityMomentCalloutClaimData::getMoment)
-					.filter(moment -> Objects.isNull(moment.getError()))
+					.filter(moment -> {
+						if(Objects.isNull(moment.getError())){
+							return true;
+						}
+						log.error("Failed to claim moment due to `{}`", moment.getError());
+						return false;
+					})
 					.map(moment -> new ClaimedMomentEvent(miner, channelId, username, streamer, TimeFactory.now()))
 					.ifPresent(miner::onEvent);
 		}
