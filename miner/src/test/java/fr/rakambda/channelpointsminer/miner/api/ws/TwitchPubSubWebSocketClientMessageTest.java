@@ -16,6 +16,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdate
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidCancelV2;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidGoV2;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ReadNotifications;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.UpdateSummary;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ViewCount;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.WatchPartyVod;
@@ -39,6 +40,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.Poin
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionupdated.PredictionUpdatedData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.readnotifications.ReadNotificationsData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.ActiveMultipliers;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.CommunityPointsMultiplier;
@@ -753,6 +755,55 @@ class TwitchPubSubWebSocketClientMessageTest{
 														.reasonCode(MultiplierReasonCode.SUB_T1)
 														.factor(0.2F)
 														.build()))
+												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onReadNotifications(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/readNotifications.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(ReadNotifications.builder()
+								.data(ReadNotificationsData.builder()
+										.notificationIds(List.of("notification-id"))
+										.displayType("VIEWER")
+										.summary(NotificationSummary.builder()
+												.unseenViewCount(5)
+												.lastSeenAt(ZonedDateTime.of(2021, 1, 1, 19, 41, 56, 957079333, UTC))
+												.viewerUnreadCount(8)
+												.creatorUnreadCount(1)
+												.summariesByDisplayType(Map.of(
+														NotificationDisplayType.CREATOR, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(5)
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 20, 41, 56, 957079333, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(6)
+																		.lastSeen(ZonedDateTime.of(2021, 1, 1, 21, 41, 56, 957079333, UTC))
+																		.build())
+																.build(),
+														NotificationDisplayType.VIEWER, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(7)
+																		.lastReadAll(ZonedDateTime.of(2021, 1, 1, 22, 41, 56, 957079333, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(8)
+																		.lastSeen(ZonedDateTime.of(2021, 1, 1, 23, 41, 56, 957079333, UTC))
+																		.build())
+																.build()
+												))
 												.build())
 										.build())
 								.build())
