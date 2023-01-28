@@ -21,6 +21,7 @@ kitteh-irc-version = "8.0.0"
 hikari-cp-version = "5.0.1"
 mariadb-version = "3.1.2"
 sqlite-version = "3.40.0.0"
+mysql-version = "8.0.32"
 rerunner-jupiter-version = "2.1.6"
 flyway-version = "9.12.0"
 selenide-version = "6.11.2"
@@ -56,6 +57,7 @@ kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitt
 hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari-cp-version" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb-version" }
 sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-version" }
+mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql-version" }
 flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway-version" }
 flyway-mysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway-version" }
 selenide = { group = "com.codeborne", name = "selenide", version.ref = "selenide-version" }
