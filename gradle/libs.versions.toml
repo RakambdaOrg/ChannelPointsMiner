@@ -27,7 +27,7 @@ flyway-version = "9.14.0"
 selenide-version = "6.11.2"
 
 shadow-version = "7.1.2"
-names-version = "0.44.0"
+names-version = "0.45.0"
 lombok-version = "6.6.1"
 jib-version = "3.3.1"
 git-properties-version = "2.4.1"
