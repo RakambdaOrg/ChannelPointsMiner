@@ -2,7 +2,6 @@ plugins {
     application
     jacoco
     alias(libs.plugins.shadow)
-    alias(libs.plugins.lombok)
     alias(libs.plugins.jib)
     alias(libs.plugins.gitProperties)
     alias(libs.plugins.testLogger)
@@ -29,6 +28,9 @@ dependencies {
     implementation(libs.bundles.flyway)
 
     compileOnly(libs.jetbrainsAnnotations)
+    compileOnly(libs.lombok)
+
+    annotationProcessor(libs.lombok)
 
     testImplementation(libs.bundles.junit)
     testRuntimeOnly(libs.junitEngine)
@@ -39,6 +41,10 @@ dependencies {
     testImplementation(libs.unirestMocks)
     testImplementation(libs.bundles.jsonUnit)
     testImplementation(libs.rerunnerJupiter)
+
+    testCompileOnly(libs.lombok)
+
+    testAnnotationProcessor(libs.lombok)
 }
 
 sourceSets {

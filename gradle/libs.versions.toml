@@ -25,10 +25,10 @@ mysql-version = "8.0.32"
 rerunner-jupiter-version = "2.1.6"
 flyway-version = "9.14.1"
 selenide-version = "6.11.2"
+lombok-version = "1.18.26"
 
 shadow-version = "7.1.2"
 names-version = "0.45.0"
-lombok-version = "6.6.1"
 jib-version = "3.3.1"
 git-properties-version = "2.4.1"
 springboot-version = "3.0.2"
@@ -61,6 +61,7 @@ mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql-
 flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway-version" }
 flyway-mysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway-version" }
 selenide = { group = "com.codeborne", name = "selenide", version.ref = "selenide-version" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok-version" }
 
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-version" }
 junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-version" }
@@ -89,7 +90,6 @@ assertj = ["assertj-core", "assertj-db"]
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }
 names = { id = "com.github.ben-manes.versions", version.ref = "names-version" }
-lombok = { id = "io.freefair.lombok", version.ref = "lombok-version" }
 jib = { id = "com.google.cloud.tools.jib", version.ref = "jib-version" }
 gitProperties = { id = "com.gorylenko.gradle-git-properties", version.ref = "git-properties-version" }
 springboot = { id = "org.springframework.boot", version.ref = "springboot-version" }
