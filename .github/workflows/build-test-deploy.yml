@@ -55,11 +55,11 @@ jobs:
       - name: Set gradlew executable
         run: chmod +x ./gradlew
       - name: Run tests
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: :miner:test --scan
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         if: always()
         with:
           arguments: :miner:jacocoTestReport
@@ -114,11 +114,11 @@ jobs:
       - name: Set gradlew executable
         run: chmod +x ./gradlew
       - name: Run tests
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: :viewer:test --scan
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         if: always()
         with:
           arguments: :viewer:jacocoTestReport
