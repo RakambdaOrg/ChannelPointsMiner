@@ -57,7 +57,7 @@ jobs:
       - name: Run tests
         uses: gradle/gradle-build-action@v2.1.5
         with:
-          arguments: :miner:test
+          arguments: :miner:test --scan
       - name: Generate JaCoCo report
         uses: gradle/gradle-build-action@v2.1.5
         if: always()
@@ -116,7 +116,7 @@ jobs:
       - name: Run tests
         uses: gradle/gradle-build-action@v2.1.5
         with:
-          arguments: :viewer:test
+          arguments: :viewer:test --scan
       - name: Generate JaCoCo report
         uses: gradle/gradle-build-action@v2.1.5
         if: always()
