@@ -36,7 +36,7 @@ jobs:
       - name: Build project
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: assemble
+          arguments: assemble --scan
 
   test-miner:
     name: Run miner tests
