@@ -10,8 +10,13 @@
       "createdAt": "2022-01-01T10:22:35Z",
       "expiresAt": null,
       "isPermanent": true,
-      "moderator": null,
-      "reason": "",
+      "moderator": {
+        "id": "741852963",
+        "login": "modo",
+        "displayName": "ModoName",
+        "__typename": "User"
+      },
+      "reason": "a reason",
       "__typename": "ChatRoomBanStatus"
     },
     "targetUser": {
