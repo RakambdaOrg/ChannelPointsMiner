@@ -84,6 +84,10 @@
                     "token": "emotetoken_BW",
                     "__typename": "CommunityPointsEmote"
                   },
+                  "modifier": {
+                    "id": "MOD_BW",
+                    "__typename": "CommunityPointsEmoteModifier"
+                  },
                   "modifierIconDark": {
                     "url": "https://image",
                     "url2x": "https://image2x",

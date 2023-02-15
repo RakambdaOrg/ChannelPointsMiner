@@ -10,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPoin
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsClaim;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsEmote;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsEmoteModification;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsEmoteModifier;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsEmoteVariant;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsImage;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsLastViewedContentByType;
@@ -246,6 +247,9 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                                                                         .build())
                                                                                 .modifierIconDark(communityPointsImage)
                                                                                 .modifierIconLight(communityPointsImage)
+                                                                                .modifier(CommunityPointsEmoteModifier.builder()
+                                                                                        .id("MOD_BW")
+                                                                                        .build())
                                                                                 .title("Greyscale")
                                                                                 .globallyUpdatedForIndicatorAt(ZonedDateTime.of(2019, 9, 3, 21, 0, 0, 0, UTC))
                                                                                 .build()
