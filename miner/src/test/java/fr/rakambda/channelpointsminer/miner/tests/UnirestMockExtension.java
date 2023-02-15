@@ -17,15 +17,15 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Log4j2
 public class UnirestMockExtension implements Extension, BeforeEachCallback, AfterEachCallback, ParameterResolver{
-    private final Map<String, UnirestInstance> unirestInstance = new HashMap<>();
-    private final Map<String, UnirestMock> unirestMock = new HashMap<>();
+    private final Map<String, UnirestInstance> unirestInstance = new ConcurrentHashMap<>();
+    private final Map<String, UnirestMock> unirestMock = new ConcurrentHashMap<>();
     
     @Override
     public void beforeEach(ExtensionContext context){
