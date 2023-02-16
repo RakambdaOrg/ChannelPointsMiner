@@ -23,16 +23,20 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class Inventory extends GQLType{
-	@JsonProperty("drops")
-	@JsonDeserialize(using = UnknownDeserializer.class)
-	@Nullable
-	private Object drops;
-	@JsonProperty("dropCampaignsInProgress")
-	@NotNull
-	@Builder.Default
-	private List<DropCampaign> dropCampaignsInProgress = new ArrayList<>();
-	@JsonProperty("gameEventDrops")
-	@NotNull
-	@Builder.Default
-	private List<UserDropReward> gameEventDrops = new ArrayList<>();
+    @JsonProperty("drops")
+    @JsonDeserialize(using = UnknownDeserializer.class)
+    @Nullable
+    private Object drops;
+    @JsonProperty("dropCampaignsInProgress")
+    @NotNull
+    @Builder.Default
+    private List<DropCampaign> dropCampaignsInProgress = new ArrayList<>();
+    @JsonProperty("completedRewardCampaigns")
+    @NotNull
+    @Builder.Default
+    private List<DropCampaign> completedRewardCampaigns = new ArrayList<>();
+    @JsonProperty("gameEventDrops")
+    @NotNull
+    @Builder.Default
+    private List<UserDropReward> gameEventDrops = new ArrayList<>();
 }
