@@ -13,15 +13,15 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class DropsHighlightServiceAvailableDropsOperation extends IGQLOperation<DropsHighlightServiceAvailableDropsData>{
-	public DropsHighlightServiceAvailableDropsOperation(@NotNull String channelId){
-		super("DropsHighlightService_AvailableDrops");
-		addPersistedQueryExtension(new PersistedQueryExtension(1, "b19ee96a0e79e3f8281c4108bc4c7b3f232266db6f96fd04a339ab393673a075"));
-		addVariable("channelID", channelId);
-	}
-	
-	@Override
-	@NotNull
-	public GenericType<GQLResponse<DropsHighlightServiceAvailableDropsData>> getResponseType(){
-		return new GenericType<>(){};
-	}
+    public DropsHighlightServiceAvailableDropsOperation(@NotNull String channelId){
+        super("DropsHighlightService_AvailableDrops");
+        addPersistedQueryExtension(new PersistedQueryExtension(1, "e589e213f16d9b17c6f0a8ccd18bdd6a8a6b78bc9db67a75efd43793884ff4e5"));
+        addVariable("channelID", channelId);
+    }
+    
+    @Override
+    @NotNull
+    public GenericType<GQLResponse<DropsHighlightServiceAvailableDropsData>> getResponseType(){
+        return new GenericType<>(){};
+    }
 }
