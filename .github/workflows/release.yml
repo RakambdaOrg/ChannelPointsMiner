@@ -46,9 +46,8 @@ jobs:
         run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:latest"
 
   publish-release:
-    name: Publish Miner on DockerHub
+    name: Publish Release
     runs-on: ubuntu-latest
-    concurrency: miner_docker
     permissions:
       contents: write
     steps:
