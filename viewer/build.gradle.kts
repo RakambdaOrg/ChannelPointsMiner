@@ -60,6 +60,11 @@ tasks {
             xml.required.set(true)
         }
     }
+
+    jar {
+        archiveClassifier.set("")
+        enabled = false
+    }
 }
 
 jib {
