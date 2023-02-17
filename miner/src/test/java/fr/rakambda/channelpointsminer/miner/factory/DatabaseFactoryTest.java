@@ -63,7 +63,7 @@ class DatabaseFactoryTest{
 	void createDatabaseHandler(){
 		var database = mock(IDatabase.class);
 		
-		var handler = DatabaseFactory.createDatabaseHandler(database);
+		var handler = DatabaseFactory.createDatabaseHandler(database, false);
 		assertThat(handler).isNotNull();
 	}
 }

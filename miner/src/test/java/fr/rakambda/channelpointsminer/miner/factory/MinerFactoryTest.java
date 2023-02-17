@@ -37,6 +37,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MinerFactoryTest{
 	private static final String USERNAME = "username";
+	private static final boolean RECORD_USER_PREDICTIONS = false;
 	
 	@Mock
 	private AccountConfiguration accountConfiguration;
@@ -63,6 +64,7 @@ class MinerFactoryTest{
 		lenient().when(accountConfiguration.getLoginMethod()).thenReturn(loginMethod);
 		lenient().when(accountConfiguration.getDiscord()).thenReturn(discordConfiguration);
 		lenient().when(accountConfiguration.getAnalytics()).thenReturn(analyticsConfiguration);
+		lenient().when(analyticsConfiguration.isRecordUserPredictions()).thenReturn(RECORD_USER_PREDICTIONS);
 	}
 	
 	@Test
@@ -125,7 +127,7 @@ class MinerFactoryTest{
 				var databaseFactory = mockStatic(DatabaseFactory.class)){
 			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
 			databaseFactory.when(() -> DatabaseFactory.createDatabase(databaseConfiguration)).thenReturn(database);
-			databaseFactory.when(() -> DatabaseFactory.createDatabaseHandler(database)).thenReturn(databaseEventHandler);
+			databaseFactory.when(() -> DatabaseFactory.createDatabaseHandler(database, RECORD_USER_PREDICTIONS)).thenReturn(databaseEventHandler);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
 			when(analyticsConfiguration.getDatabase()).thenReturn(databaseConfiguration);

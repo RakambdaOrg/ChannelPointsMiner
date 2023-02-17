@@ -31,7 +31,7 @@
                       },
                       "jdbcUrl" : {
                         "type" : "string",
-                        "description" : "JDBC connection URL."
+                        "description" : "JDBC connection URL. (supported: mariadb, mysql, sqlite)"
                       },
                       "lifetimeTimeout" : {
                         "type" : "integer",
@@ -59,7 +59,7 @@
                   "type" : "boolean",
                   "description" : "Enable or disable data collection. Default: false"
                 },
-                "recordChatsPredictions" : {
+                "recordUserPredictions" : {
                   "type" : "boolean",
                   "description" : "Record other chat members predictions. Default: false"
                 }
@@ -142,10 +142,13 @@
                               }
                             },
                             "description" : "Always bet the same amount.",
-                            "required" : ["type"]
-                          }, {
-                            "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
-                          }
+                            "required" : [
+                              "type"
+                            ]
+                          },
+                            {
+                              "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+                            }
                           ]
                         }, {
                           "allOf" : [ {
@@ -164,10 +167,13 @@
                               }
                             },
                             "description" : "Place a percentage of your points (with a limit).",
-                            "required" : ["type"]
-                          }, {
-                            "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
-                          }
+                            "required" : [
+                              "type"
+                            ]
+                          },
+                            {
+                              "description" : "How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)"
+                            }
                           ]
                         } ]
                       },
@@ -185,10 +191,13 @@
                               }
                             },
                             "description" : "Place the bet a certain amount of time before the end of the original prediction.",
-                            "required" : ["type"]
-                          }, {
-                            "description" : "How to calculate when to place the bet. Default: 10s from end"
-                          }
+                            "required" : [
+                              "type"
+                            ]
+                          },
+                            {
+                              "description" : "How to calculate when to place the bet. Default: 10s from end"
+                            }
                           ]
                         }, {
                           "allOf" : [ {
@@ -203,10 +212,13 @@
                               }
                             },
                             "description" : "Place the bet a certain amount of time after the beginning of the original prediction.",
-                            "required" : ["type"]
-                          }, {
-                            "description" : "How to calculate when to place the bet. Default: 10s from end"
-                          }
+                            "required" : [
+                              "type"
+                            ]
+                          },
+                            {
+                              "description" : "How to calculate when to place the bet. Default: 10s from end"
+                            }
                           ]
                         }, {
                           "allOf" : [ {
@@ -221,10 +233,13 @@
                               }
                             },
                             "description" : "Place the bet after 'percent'% of the original timer elapsed.",
-                            "required" : ["type"]
-                          }, {
-                            "description" : "How to calculate when to place the bet. Default: 10s from end"
-                          }
+                            "required" : [
+                              "type"
+                            ]
+                          },
+                            {
+                              "description" : "How to calculate when to place the bet. Default: 10s from end"
+                            }
                           ]
                         } ]
                       },
@@ -298,10 +313,13 @@
                               }
                             },
                             "description" : "Choose the outcome with the most users. However, if the two most picked outcomes have a user count similar, choose the outcome with the least points (higher odds).",
-                            "required" : ["type"]
-                          }, {
-                            "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
-                          }
+                            "required" : [
+                              "type"
+                            ]
+                          },
+                            {
+                              "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                            }
                           ]
                         }, {
                           "allOf" : [ {
@@ -337,10 +355,13 @@
                               }
                             },
                             "description" : "Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordChatsPredictions to be activated.",
-                            "required" : ["type"]
-                          }, {
-                            "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
-                          }
+                            "required" : [
+                              "type"
+                            ]
+                          },
+                            {
+                              "description" : "How to choose what outcome to place the bet on. Default: smart(0.2)"
+                            }
                           ]
                         } ]
                       }
@@ -367,8 +388,11 @@
                           }
                         },
                         "description" : "Adds a constant value to the score of the streamer.",
-                        "required" : ["type"]
-                      }, {
+                        "required" : [
+                          "type"
+                        ]
+                      },
+                      {
                         "type" : "object",
                         "properties" : {
                           "score" : {
@@ -388,8 +412,11 @@
                           }
                         },
                         "description" : "Return a score if the logged-in user is subscribed to the streamer.",
-                        "required" : ["type"]
-                      }, {
+                        "required" : [
+                          "type"
+                        ]
+                      },
+                      {
                         "type" : "object",
                         "properties" : {
                           "score" : {
@@ -405,8 +432,11 @@
                           }
                         },
                         "description" : "Return a score if owned points are above a defined value.",
-                        "required" : ["type"]
-                      }, {
+                        "required" : [
+                          "type"
+                        ]
+                      },
+                      {
                         "type" : "object",
                         "properties" : {
                           "score" : {
@@ -422,8 +452,11 @@
                           }
                         },
                         "description" : "Return a score if owned points are below a defined value.",
-                        "required" : ["type"]
-                      }, {
+                        "required" : [
+                          "type"
+                        ]
+                      },
+                      {
                         "type" : "object",
                         "properties" : {
                           "score" : {
@@ -435,8 +468,11 @@
                           }
                         },
                         "description" : "Return a score if the streamer has a potential watch streak to claim.",
-                        "required" : ["type"]
-                      }, {
+                        "required" : [
+                          "type"
+                        ]
+                      },
+                      {
                         "type" : "object",
                         "properties" : {
                           "score" : {
@@ -448,7 +484,9 @@
                           }
                         },
                         "description" : "Return a score if a drop campaign may be progressed by watching this stream.",
-                        "required" : ["type"]
+                        "required" : [
+                          "type"
+                        ]
                       }
                     ]
                   }
@@ -465,6 +503,10 @@
               "embeds" : {
                 "type" : "boolean",
                 "description" : "Use embeds in the messages or not. Default: false"
+              },
+              "events" : {
+                "type" : "object",
+                "description" : "Customize events that are sent. Key is the name of an event (can be seen in the event/impl package). Default: all events with default format"
               },
               "webhookUrl" : {
                 "type" : "string",
@@ -503,10 +545,13 @@
                   }
                 },
                 "description" : "Deprecated. Login though Twitch's Passport API (web client).",
-                "required" : ["type"]
-              }, {
-                "description" : "Login method to use."
-              }
+                "required" : [
+                  "type"
+                ]
+              },
+                {
+                  "description" : "Login method to use."
+                }
               ]
             }, {
               "allOf" : [ {
@@ -558,10 +603,13 @@
                   }
                 },
                 "description" : "Login though controlled browser (selenium).",
-                "required" : ["type"]
-              }, {
-                "description" : "Login method to use."
-              }
+                "required" : [
+                  "type"
+                ]
+              },
+                {
+                  "description" : "Login method to use."
+                }
               ]
             }, {
               "allOf" : [ {
@@ -584,35 +632,42 @@
                   }
                 },
                 "description" : "Deprecated. Login though Twitch's Passport API (as mobile).",
-                "required" : ["type"]
-              }, {
-                "description" : "Login method to use."
-              }
-              ]
-            }, {
-              "allOf" : [
+                "required" : [
+                  "type"
+                ]
+              },
                 {
-                  "type" : "object",
-                  "properties" : {
-                    "authenticationFolder" : {
-                      "$ref" : "#/$defs/Path",
-                      "description" : "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication"
-                    },
-                    "password" : {
-                      "type" : "string",
-                      "description" : "Password of your Twitch account."
-                    },
-                    "type" : {
-                      "const" : "tv"
-                    }
-                  },
-                  "description" : "Login though Twitch's Oauth API (as android tv).",
-                  "required" : ["type"]
-                }, {
                   "description" : "Login method to use."
                 }
               ]
-            }
+            },
+              {
+                "allOf" : [
+                  {
+                    "type" : "object",
+                    "properties" : {
+                      "authenticationFolder" : {
+                        "$ref" : "#/$defs/Path",
+                        "description" : "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication"
+                      },
+                      "password" : {
+                        "type" : "string",
+                        "description" : "Password of your Twitch account."
+                      },
+                      "type" : {
+                        "const" : "tv"
+                      }
+                    },
+                    "description" : "Login though Twitch's Oauth API (as android tv).",
+                    "required" : [
+                      "type"
+                    ]
+                  },
+                  {
+                    "description" : "Login method to use."
+                  }
+                ]
+              }
             ]
           },
           "reloadEvery" : {

@@ -88,7 +88,7 @@ public class DatabaseFactory{
     }
     
     @NotNull
-    public static DatabaseEventHandler createDatabaseHandler(@NotNull IDatabase database){
-        return new DatabaseEventHandler(database);
+    public static DatabaseEventHandler createDatabaseHandler(@NotNull IDatabase database, boolean recordUserPredictions){
+	    return new DatabaseEventHandler(database, recordUserPredictions);
     }
 }

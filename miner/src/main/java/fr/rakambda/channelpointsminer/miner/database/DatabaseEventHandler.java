@@ -30,7 +30,8 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	private static final double INFINITE_RETURN_RATIO = 100_000D;
 	
 	@NotNull
-	private IDatabase database;
+	private final IDatabase database;
+	private final boolean recordUserPredictions;
 	
 	@Override
 	public void onEventCreatedEvent(@NotNull EventCreatedEvent event) throws Exception{
@@ -44,10 +45,12 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 		
 		if(predictionEvent.getStatus() == EventStatus.ACTIVE){
 			log.debug("Prediction-Update: Event ACTIVE. Streamer: {}, Title: {}", streamerUsername, predictionEvent.getTitle());
-			for(var outcome : predictionEvent.getOutcomes()){
-				var badge = outcome.getBadge().getVersion();
-				for(var predictor : outcome.getTopPredictors()){
-					database.addUserPrediction(predictor.getUserDisplayName(), event.getEvent().getChannelId(), badge);
+			if(recordUserPredictions){
+				for(var outcome : predictionEvent.getOutcomes()){
+					var badge = outcome.getBadge().getVersion();
+					for(var predictor : outcome.getTopPredictors()){
+						database.addUserPrediction(predictor.getUserDisplayName(), event.getEvent().getChannelId(), badge);
+					}
 				}
 			}
 		}
