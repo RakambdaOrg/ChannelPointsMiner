@@ -387,6 +387,21 @@ class DatabaseEventHandlerTest{
 	}
 	
 	@Test
+	void onActivePredictionUpdateWithoutUserPredictions() throws SQLException{
+		tested = new DatabaseEventHandler(database, false);
+		
+		var event = mock(EventUpdatedEvent.class);
+		
+		when(event.getEvent()).thenReturn(eventData);
+		
+		when(eventData.getStatus()).thenReturn(EventStatus.ACTIVE);
+		
+		assertDoesNotThrow(() -> tested.onEvent(event));
+		
+		verify(database, never()).addUserPrediction(anyString(), anyString(), anyString());
+	}
+	
+	@Test
 	void onCancelledPredictionUpdate() throws SQLException{
 		var event = mock(EventUpdatedEvent.class);
 		
