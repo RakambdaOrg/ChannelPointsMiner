@@ -23,7 +23,6 @@ import fr.rakambda.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerAddedEvent;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +68,6 @@ class DatabaseEventHandlerTest{
 	private final static String BADGE_PREDICTION_INFO = "badges=predictions/color,sub";
 	private final static String BADGE_NO_PREDICTION_INFO = "badges=sub";
 	
-	@InjectMocks
 	private DatabaseEventHandler tested;
 	
 	@Mock
@@ -114,6 +112,8 @@ class DatabaseEventHandlerTest{
 		lenient().when(predictor4.getUserDisplayName()).thenReturn(USERNAME4);
 		lenient().when(blueOutcome.getTopPredictors()).thenReturn(List.of(predictor1, predictor2));
 		lenient().when(pinkOutcome.getTopPredictors()).thenReturn(List.of(predictor3, predictor4));
+		
+		tested = new DatabaseEventHandler(database, true);
 	}
 	
 	@Test

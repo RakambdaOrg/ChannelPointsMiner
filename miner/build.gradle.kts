@@ -53,6 +53,8 @@ sourceSets {
             compileClasspath += sourceSets.main.get().compileClasspath
             compileClasspath += sourceSets.main.get().output
 
+            annotationProcessorPath += sourceSets.main.get().annotationProcessorPath
+
             runtimeClasspath += sourceSets.main.get().compileClasspath
             runtimeClasspath += sourceSets.main.get().runtimeClasspath
             runtimeClasspath += sourceSets.main.get().output

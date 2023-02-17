@@ -29,7 +29,7 @@
       "reloadEvery" : 15,
       "analytics" : {
         "enabled" : true,
-        "recordChatsPredictions" : true,
+        "recordUserPredictions" : true,
         "database" : {
           "jdbcUrl" : "jdbcUrl",
           "username" : "user",

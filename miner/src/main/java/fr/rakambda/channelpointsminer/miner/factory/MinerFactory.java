@@ -47,7 +47,7 @@ public class MinerFactory{
 				}
 				
 				database.deleteAllUserPredictions();
-				miner.addEventHandler(DatabaseFactory.createDatabaseHandler(database));
+				miner.addEventHandler(DatabaseFactory.createDatabaseHandler(database, config.getAnalytics().isRecordUserPredictions()));
 			}
 			
 			return miner;
