@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+env:
+  APP_JAVA_VERSION: 17
+  DOCKER_MINER_IMAGE_NAME: mrcraftcod/channel-points-miner
+  DOCKER_VIEWER_IMAGE_NAME: mrcraftcod/channel-points-miner-viewer
+
+jobs:
+  publish-docker-miner:
+    name: Publish Miner on DockerHub
+    runs-on: ubuntu-latest
+    concurrency: miner_docker
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.APP_JAVA_VERSION }}
+      - name: Set gradle permissions
+        run: chmod +x gradlew
+      - name: Push latest on Docker Hub
+        run: ./gradlew :miner:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:latest"
+
+  publish-docker-viewer:
+    name: Publish Viewer on DockerHub
+    runs-on: ubuntu-latest
+    concurrency: viewer_docker
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.APP_JAVA_VERSION }}
+      - name: Set gradle permissions
+        run: chmod +x gradlew
+      - name: Push latest on Docker Hub
+        run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:latest"
+
+  publish-release:
+    name: Publish Miner on DockerHub
+    runs-on: ubuntu-latest
+    concurrency: miner_docker
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.APP_JAVA_VERSION }}
+      - name: Set gradle permissions
+        run: chmod +x gradlew
+      - name: Build project
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: assemble --scan
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          fail_on_unmatched_files: false
+          generate_release_notes: true
+          files: |
+            miner/build/libs/*-shaded.jar
+            viewer/build/libs/viewer-*.jar
