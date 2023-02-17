@@ -52,7 +52,7 @@ This includes:
 These are stored in an external database which allows any external software to access it and process it the wanted way.
 
 Several database types are supported and listed below.
-Each database (logical database for MariaDB, different file for H2/SQLite) will however represent one mined account.
+Each database (logical database for MariaDB/MySQL, different file for SQLite) will however represent one mined account.
 You'll therefore have to adjust the settings for each mined account to not point to the same one.
 
 === Analytics database [[analytics_database_settings]]

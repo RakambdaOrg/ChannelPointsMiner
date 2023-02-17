@@ -7,19 +7,21 @@ import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class ChannelPointsContextOperation extends IGQLOperation<ChannelPointsContextData>{
-	public ChannelPointsContextOperation(@NotNull String username){
-		super("ChannelPointsContext");
-		addPersistedQueryExtension(new PersistedQueryExtension(1, "9988086babc615a918a1e9a722ff41d98847acac822645209ac7379eecb27152"));
-		addVariable("channelLogin", username);
-	}
-	
-	@Override
-	@NotNull
-	public GenericType<GQLResponse<ChannelPointsContextData>> getResponseType(){
-		return new GenericType<>(){};
-	}
+    public ChannelPointsContextOperation(@NotNull String username){
+        super("ChannelPointsContext");
+        addPersistedQueryExtension(new PersistedQueryExtension(1, "1530a003a7d374b0380b79db0be0534f30ff46e61cffa2bc0e2468a909fbc024"));
+        addVariable("channelLogin", username);
+        addVariable("includeGoalTypes", List.of("CREATOR", "BOOST"));
+    }
+    
+    @Override
+    @NotNull
+    public GenericType<GQLResponse<ChannelPointsContextData>> getResponseType(){
+        return new GenericType<>(){};
+    }
 }

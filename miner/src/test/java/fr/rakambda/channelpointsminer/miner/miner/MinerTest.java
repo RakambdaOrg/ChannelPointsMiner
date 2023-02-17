@@ -140,7 +140,7 @@ class MinerTest{
 		lenient().when(accountConfiguration.getVersionProvider()).thenReturn(VERSION_PROVIDER);
 		lenient().when(accountConfiguration.getLoginMethod()).thenReturn(loginMethod);
 		lenient().when(analyticsConfiguration.isEnabled()).thenReturn(false);
-		lenient().when(analyticsConfiguration.isRecordChatsPredictions()).thenReturn(false);
+		lenient().when(analyticsConfiguration.isRecordUserPredictions()).thenReturn(false);
 		
 		lenient().when(passportApi.login()).thenReturn(twitchLogin);
 		lenient().when(streamerSettings.isFollowRaid()).thenReturn(false);
@@ -285,7 +285,7 @@ class MinerTest{
 			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
-			when(analyticsConfiguration.isRecordChatsPredictions()).thenReturn(true);
+			when(analyticsConfiguration.isRecordUserPredictions()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.start());
 			

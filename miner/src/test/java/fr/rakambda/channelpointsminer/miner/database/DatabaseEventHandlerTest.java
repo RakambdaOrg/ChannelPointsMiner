@@ -23,7 +23,6 @@ import fr.rakambda.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerAddedEvent;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +68,6 @@ class DatabaseEventHandlerTest{
 	private final static String BADGE_PREDICTION_INFO = "badges=predictions/color,sub";
 	private final static String BADGE_NO_PREDICTION_INFO = "badges=sub";
 	
-	@InjectMocks
 	private DatabaseEventHandler tested;
 	
 	@Mock
@@ -114,6 +112,8 @@ class DatabaseEventHandlerTest{
 		lenient().when(predictor4.getUserDisplayName()).thenReturn(USERNAME4);
 		lenient().when(blueOutcome.getTopPredictors()).thenReturn(List.of(predictor1, predictor2));
 		lenient().when(pinkOutcome.getTopPredictors()).thenReturn(List.of(predictor3, predictor4));
+		
+		tested = new DatabaseEventHandler(database, true);
 	}
 	
 	@Test
@@ -384,6 +384,21 @@ class DatabaseEventHandlerTest{
 		verify(database).addUserPrediction(USERNAME2, CHANNEL_ID, BADGE_1);
 		verify(database).addUserPrediction(USERNAME3, CHANNEL_ID, BADGE_2);
 		verify(database).addUserPrediction(USERNAME4, CHANNEL_ID, BADGE_2);
+	}
+	
+	@Test
+	void onActivePredictionUpdateWithoutUserPredictions() throws SQLException{
+		tested = new DatabaseEventHandler(database, false);
+		
+		var event = mock(EventUpdatedEvent.class);
+		
+		when(event.getEvent()).thenReturn(eventData);
+		
+		when(eventData.getStatus()).thenReturn(EventStatus.ACTIVE);
+		
+		assertDoesNotThrow(() -> tested.onEvent(event));
+		
+		verify(database, never()).addUserPrediction(anyString(), anyString(), anyString());
 	}
 	
 	@Test

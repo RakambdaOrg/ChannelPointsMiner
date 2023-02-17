@@ -36,7 +36,23 @@ jobs:
       - name: Build project
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: assemble
+          arguments: assemble --scan
+      - name: Upload miner jar file
+        uses: actions/upload-artifact@v3
+        with:
+          name: miner-jar
+          path: |
+            miner/build/libs/miner-shaded.jar
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload viewer jar file
+        uses: actions/upload-artifact@v3
+        with:
+          name: viewer-jar
+          path: |
+            viewer/build/libs/viewer-*.jar
+          if-no-files-found: error
+          retention-days: 14
 
   test-miner:
     name: Run miner tests
@@ -55,11 +71,11 @@ jobs:
       - name: Set gradlew executable
         run: chmod +x ./gradlew
       - name: Run tests
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         with:
-          arguments: :miner:test
+          arguments: :miner:test --scan
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         if: always()
         with:
           arguments: :miner:jacocoTestReport
@@ -114,11 +130,11 @@ jobs:
       - name: Set gradlew executable
         run: chmod +x ./gradlew
       - name: Run tests
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         with:
-          arguments: :viewer:test
+          arguments: :viewer:test --scan
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2
         if: always()
         with:
           arguments: :viewer:jacocoTestReport
@@ -176,9 +192,6 @@ jobs:
         run: chmod +x gradlew
       - name: Push branch/tag on Docker Hub
         run: ./gradlew :miner:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}"
-      - name: Push latest on Docker Hub
-        if: success() && github.ref == 'refs/heads/main'
-        run: ./gradlew :miner:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:latest"
 
   publish-viewer:
     name: Publish Viewer on DockerHub
@@ -200,6 +213,3 @@ jobs:
         run: chmod +x gradlew
       - name: Push branch/tag on Docker Hub
         run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}"
-      - name: Push latest on Docker Hub
-        if: success() && github.ref == 'refs/heads/main'
-        run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:latest"

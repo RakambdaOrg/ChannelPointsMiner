@@ -13,14 +13,15 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class InventoryOperation extends IGQLOperation<InventoryData>{
-	public InventoryOperation(){
-		super("Inventory");
-		addPersistedQueryExtension(new PersistedQueryExtension(1, "e0765ebaa8e8eeb4043cc6dfeab3eac7f682ef5f724b81367e6e55c7aef2be4c"));
-	}
-	
-	@Override
-	@NotNull
-	public GenericType<GQLResponse<InventoryData>> getResponseType(){
-		return new GenericType<>(){};
-	}
+    public InventoryOperation(){
+        super("Inventory");
+        addPersistedQueryExtension(new PersistedQueryExtension(1, "37fea486d6179047c41d0f549088a4c3a7dd60c05c70956a1490262f532dccd9"));
+        addVariable("fetchRewardCampaigns", true);
+    }
+    
+    @Override
+    @NotNull
+    public GenericType<GQLResponse<InventoryData>> getResponseType(){
+        return new GenericType<>(){};
+    }
 }

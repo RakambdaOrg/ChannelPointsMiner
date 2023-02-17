@@ -153,7 +153,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	private void login(){
 		try{
 			var analyticsConfiguration = accountConfiguration.getAnalytics();
-			var listenMessages = analyticsConfiguration.isEnabled() && analyticsConfiguration.isRecordChatsPredictions();
+			var listenMessages = analyticsConfiguration.isEnabled() && analyticsConfiguration.isRecordUserPredictions();
 			
 			twitchLogin = passportApi.login();
 			
