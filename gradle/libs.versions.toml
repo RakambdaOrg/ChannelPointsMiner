@@ -28,7 +28,7 @@ selenide-version = "6.11.2"
 lombok-version = "1.18.26"
 
 shadow-version = "7.1.2"
-names-version = "0.45.0"
+names-version = "0.46.0"
 jib-version = "3.3.1"
 git-properties-version = "2.4.1"
 springboot-version = "3.0.2"
