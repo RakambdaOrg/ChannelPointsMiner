@@ -15,7 +15,7 @@ import java.util.Objects;
 public class ChannelFollowsOperation extends IGQLOperation<ChannelFollowsData>{
 	public ChannelFollowsOperation(int limit, @NotNull String order, @Nullable String cursor){
 		super("ChannelFollows");
-		addPersistedQueryExtension(new PersistedQueryExtension(1, "4b9cb31b54b9213e5760f2f6e9e935ad09924cac2f78aac51f8a64d85f028ed0"));
+		addPersistedQueryExtension(new PersistedQueryExtension(1, "eecf815273d3d949e5cf0085cc5084cd8a1b5b7b6f7990cf43cb0beadf546907"));
 		addVariable("limit", limit);
 		addVariable("order", order);
 		if(Objects.nonNull(cursor)){
