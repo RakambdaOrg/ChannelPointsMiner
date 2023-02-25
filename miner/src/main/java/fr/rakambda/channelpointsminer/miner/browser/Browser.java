@@ -15,10 +15,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v107.network.Network;
-import org.openqa.selenium.devtools.v107.network.model.RequestId;
-import org.openqa.selenium.devtools.v107.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v107.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v110.network.Network;
+import org.openqa.selenium.devtools.v110.network.model.RequestId;
+import org.openqa.selenium.devtools.v110.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v110.network.model.ResponseReceived;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -151,7 +151,9 @@ public class Browser implements AutoCloseable{
 	@NotNull
 	private ChromeOptions getDefaultChromeOptions(@NotNull BrowserConfiguration configuration){
 		var options = new ChromeOptions();
-		options.setHeadless(configuration.isHeadless());
+		if(configuration.isHeadless()){
+			options.addArguments("--headless=new");
+		}
 		Optional.ofNullable(configuration.getUserAgent()).map("user-agent=\"%s\""::formatted).ifPresent(options::addArguments);
 		Optional.ofNullable(configuration.getUserDir()).map(ud -> ud.replace(" ", "\\ ")).map("user-data-dir=%s"::formatted).ifPresent(options::addArguments);
 		
@@ -185,9 +187,10 @@ public class Browser implements AutoCloseable{
 		
 		var options = new FirefoxOptions();
 		options.setProfile(profile);
-		options.setHeadless(configuration.isHeadless());
+		if(configuration.isHeadless()){
+			options.addArguments("-headless");
+		}
 		Optional.ofNullable(configuration.getUserAgent()).ifPresent(ua -> options.addPreference("general.useragent.override", ua));
-		// Optional.ofNullable(configuration.getUserDir()).ifPresent(ud -> options.addArguments("-profile", ud));
 		
 		return options;
 	}
