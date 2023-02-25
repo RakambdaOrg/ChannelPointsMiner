@@ -15,7 +15,7 @@ import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.devtools.v107.page.model.FrameId;
+import org.openqa.selenium.devtools.v110.page.model.FrameId;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Comparator;
