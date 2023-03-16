@@ -3,6 +3,7 @@ changelog:
     labels:
       - "type: 📚 dependencies"
       - "type: 🐛 dev bug"
+      - "sync"
   categories:
     - title: "🚀 Features"
       labels:
