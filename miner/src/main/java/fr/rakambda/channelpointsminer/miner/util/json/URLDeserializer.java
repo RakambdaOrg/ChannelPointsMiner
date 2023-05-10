@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.regex.Pattern;
 import static java.util.Objects.nonNull;
@@ -33,7 +34,7 @@ public class URLDeserializer extends StdDeserializer<URL>{
 				if(!SCHEME_PATTERN.matcher(value).matches()){
 					value = "https://" + value;
 				}
-				return new URL(value);
+				return URI.create(value).toURL();
 			}
 		}
 		catch(MalformedURLException e){
