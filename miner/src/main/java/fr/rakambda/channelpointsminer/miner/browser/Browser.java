@@ -26,6 +26,7 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -139,13 +140,13 @@ public class Browser implements AutoCloseable{
 	@SneakyThrows
 	@NotNull
 	private RemoteWebDriver getRemoteDriverChrome(@NotNull BrowserConfiguration configuration){
-		return new RemoteWebDriver(new URL(configuration.getRemoteHost()), getDefaultChromeOptions(configuration));
+		return new RemoteWebDriver(URI.create(configuration.getRemoteHost()).toURL(), getDefaultChromeOptions(configuration));
 	}
 	
 	@SneakyThrows
 	@NotNull
 	private RemoteWebDriver getRemoteDriverFirefox(@NotNull BrowserConfiguration configuration){
-		return new RemoteWebDriver(new URL(configuration.getRemoteHost()), getDefaultFirefoxOptions(configuration));
+		return new RemoteWebDriver(URI.create(configuration.getRemoteHost()).toURL(), getDefaultFirefoxOptions(configuration));
 	}
 	
 	@NotNull

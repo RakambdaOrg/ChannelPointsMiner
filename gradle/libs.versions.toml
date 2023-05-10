@@ -43,9 +43,11 @@ unirest-java = { group = "com.konghq", name = "unirest-java-core", version.ref =
 unirest-objectmapper-jackson = { group = "com.konghq", name = "unirest-objectmapper-jackson", version.ref = "unirest-version" }
 unirestMocks = { group = "com.konghq", name = "unirest-mocks", version.ref = "unirest-version" }
 picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-version" }
-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson-version" }
-jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jackson-version" }
-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-version" }
+jacksonBom = { group = "com.fasterxml.jackson", name = "jackson-bom", version.ref = "jackson-version"}
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core" }
+jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind" }
+jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310" }
 jsonschema-generator = { group = "com.github.victools", name = "jsonschema-generator", version.ref = "jsonschema-generator-version" }
 jsonschema-module-jackson = { group = "com.github.victools", name = "jsonschema-module-jackson", version.ref = "jsonschema-generator-version" }
 httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "httpclient-version" }
@@ -77,7 +79,7 @@ json-unit-assertj = { group = "net.javacrumbs.json-unit", name = "json-unit-asse
 rerunnerJupiter = { group = "io.github.artsok", name = "rerunner-jupiter", version.ref = "rerunner-jupiter-version" }
 
 [bundles]
-jackson = ["jackson-core", "jackson-annotations", "jackson-databind"]
+jackson = ["jackson-core", "jackson-annotations", "jackson-databind", "jackson-jsr310"]
 log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-objectmapper-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
