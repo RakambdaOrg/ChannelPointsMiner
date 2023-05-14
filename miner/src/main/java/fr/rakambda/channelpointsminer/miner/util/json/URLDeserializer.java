@@ -37,7 +37,7 @@ public class URLDeserializer extends StdDeserializer<URL>{
 				return URI.create(value).toURL();
 			}
 		}
-		catch(MalformedURLException e){
+		catch(MalformedURLException | IllegalArgumentException e){
 			log.warn("Failed to parse URL: {}", jsonParser.getValueAsString(), e);
 		}
 		return null;
