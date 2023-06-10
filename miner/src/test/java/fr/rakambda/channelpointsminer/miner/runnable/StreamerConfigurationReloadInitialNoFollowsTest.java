@@ -12,25 +12,22 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import lombok.SneakyThrows;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
@@ -86,6 +83,21 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		
 		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 		
+		verify(miner).addStreamer(expectedStreamer);
+		verify(gqlApi, never()).allChannelFollows();
+		verify(miner, never()).onEvent(any());
+	}
+
+	@Test
+	void loadFromConfigWithDuplicateNames() {
+		when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+
+		setupStreamerConfig(STREAMER_USERNAME, STREAMER_USERNAME, STREAMER_USERNAME);
+
+		assertDoesNotThrow(() -> tested.run());
+
+		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
+
 		verify(miner).addStreamer(expectedStreamer);
 		verify(gqlApi, never()).allChannelFollows();
 		verify(miner, never()).onEvent(any());

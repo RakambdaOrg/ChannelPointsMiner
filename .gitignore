@@ -14,3 +14,4 @@ bin/
 /analytics.db
 /config*.json
 /log4j2.xml
+/trace-console-logger.xml

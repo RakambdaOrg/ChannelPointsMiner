@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,6 +63,7 @@ public class StreamerSettingsFactory{
 		return accountConfiguration.getStreamerConfigDirectories().stream()
 				.flatMap(streamerDirectory -> {
 					try{
+						log.debug("Scanning for streamers in {} (recursive {})", streamerDirectory.getPath().toAbsolutePath(), streamerDirectory.isRecursive());
 						var maxDepth = streamerDirectory.isRecursive() ? Integer.MAX_VALUE : 1;
 						return Files.walk(streamerDirectory.getPath(), maxDepth);
 					}

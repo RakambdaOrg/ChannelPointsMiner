@@ -22,7 +22,6 @@ dependencies {
 
     testImplementation(libs.bundles.assertj)
     testImplementation("org.mockito:mockito-core")
-    testImplementation("org.mockito:mockito-inline")
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation(libs.awaitility)
     testImplementation(libs.bundles.jsonUnit)
