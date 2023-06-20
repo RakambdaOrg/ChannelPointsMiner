@@ -9,6 +9,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.communitymoment.
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
@@ -39,6 +40,8 @@ class ClaimMomentHandlerTest{
 	
 	@Mock
 	private IMiner miner;
+	@Mock
+	private IEventManager eventManager;
 	@Mock
 	private GQLApi gqlApi;
 	@Mock
@@ -81,8 +84,8 @@ class ClaimMomentHandlerTest{
 			tested.onCommunityMomentStart(topic, communityMomentStart);
 			
 			verify(gqlApi).claimCommunityMoment(MOMENT_ID);
-			verify(miner).onEvent(new ClaimMomentEvent(miner, CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
-			verify(miner).onEvent(new ClaimedMomentEvent(miner, CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
+			verify(eventManager).onEvent(new ClaimMomentEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
+			verify(eventManager).onEvent(new ClaimedMomentEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
 		}
 	}
 	
@@ -96,8 +99,8 @@ class ClaimMomentHandlerTest{
 			tested.onCommunityMomentStart(topic, communityMomentStart);
 			
 			verify(gqlApi).claimCommunityMoment(MOMENT_ID);
-			verify(miner).onEvent(new ClaimMomentEvent(miner, CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
-			verify(miner, never()).onEvent(any(ClaimedMomentEvent.class));
+			verify(eventManager).onEvent(new ClaimMomentEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
+			verify(eventManager, never()).onEvent(any(ClaimedMomentEvent.class));
 		}
 	}
 	
@@ -111,8 +114,8 @@ class ClaimMomentHandlerTest{
 			tested.onCommunityMomentStart(topic, communityMomentStart);
 			
 			verify(gqlApi).claimCommunityMoment(MOMENT_ID);
-			verify(miner).onEvent(new ClaimMomentEvent(miner, CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
-			verify(miner, never()).onEvent(any(ClaimedMomentEvent.class));
+			verify(eventManager).onEvent(new ClaimMomentEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
+			verify(eventManager, never()).onEvent(any(ClaimedMomentEvent.class));
 		}
 	}
 	
@@ -126,8 +129,8 @@ class ClaimMomentHandlerTest{
 			tested.onCommunityMomentStart(topic, communityMomentStart);
 			
 			verify(gqlApi).claimCommunityMoment(MOMENT_ID);
-			verify(miner).onEvent(new ClaimMomentEvent(miner, CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
-			verify(miner, never()).onEvent(any(ClaimedMomentEvent.class));
+			verify(eventManager).onEvent(new ClaimMomentEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW));
+			verify(eventManager, never()).onEvent(any(ClaimedMomentEvent.class));
 		}
 	}
 	
@@ -141,7 +144,7 @@ class ClaimMomentHandlerTest{
 			tested.onCommunityMomentStart(topic, communityMomentStart);
 			
 			verify(gqlApi).claimCommunityMoment(MOMENT_ID);
-			verify(miner).onEvent(new ClaimMomentEvent(miner, CHANNEL_ID, null, null, NOW));
+			verify(eventManager).onEvent(new ClaimMomentEvent(CHANNEL_ID, null, null, NOW));
 		}
 	}
 }

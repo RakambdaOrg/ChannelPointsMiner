@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.PredictionMadeEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -50,6 +51,8 @@ class PredictionsHandlerPredictionMadeTest{
 	@Mock
 	private IMiner miner;
 	@Mock
+	private IEventManager eventManager;
+	@Mock
 	private BetPlacer betPlacer;
 	@Mock
 	private PredictionMade predictionMade;
@@ -92,7 +95,7 @@ class PredictionsHandlerPredictionMadeTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
-		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
+		verify(eventManager).onEvent(new PredictionMadeEvent(STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
 	}
 	
 	@Test
@@ -109,7 +112,7 @@ class PredictionsHandlerPredictionMadeTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
-		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, null, null, placedPrediction));
+		verify(eventManager).onEvent(new PredictionMadeEvent(STREAMER_ID, null, null, placedPrediction));
 	}
 	
 	@Test
@@ -133,7 +136,7 @@ class PredictionsHandlerPredictionMadeTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
-		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
+		verify(eventManager).onEvent(new PredictionMadeEvent(STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
 	}
 	
 	@Test
@@ -151,6 +154,6 @@ class PredictionsHandlerPredictionMadeTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionMade));
 		assertThat(tested.getPlacedPredictions()).containsOnly(Map.entry(EVENT_ID, placedPrediction));
 		
-		verify(miner).onEvent(new PredictionMadeEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
+		verify(eventManager).onEvent(new PredictionMadeEvent(STREAMER_ID, CHANNEL_NAME, streamer, placedPrediction));
 	}
 }

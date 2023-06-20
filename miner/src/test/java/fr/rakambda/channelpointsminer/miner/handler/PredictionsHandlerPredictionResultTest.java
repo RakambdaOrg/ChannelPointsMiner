@@ -7,6 +7,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Predicti
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.PredictionResultEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -46,6 +47,8 @@ class PredictionsHandlerPredictionResultTest{
 	
 	@Mock
 	private IMiner miner;
+	@Mock
+	private IEventManager eventManager;
 	@Mock
 	private BetPlacer betPlacer;
 	@Mock
@@ -92,7 +95,7 @@ class PredictionsHandlerPredictionResultTest{
 		assertThat(tested.getPlacedPredictions()).isNotEmpty();
 		assertThat(tested.getPredictions()).isNotEmpty();
 		
-		verify(miner, never()).onEvent(any());
+		verify(eventManager, never()).onEvent(any());
 	}
 	
 	@Test
@@ -103,7 +106,7 @@ class PredictionsHandlerPredictionResultTest{
 		assertDoesNotThrow(() -> tested.handle(topic, predictionResult));
 		assertThat(tested.getPredictions()).isEmpty();
 		
-		verify(miner).onEvent(new PredictionResultEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, null, predictionResultData));
+		verify(eventManager).onEvent(new PredictionResultEvent(STREAMER_ID, CHANNEL_NAME, streamer, null, predictionResultData));
 	}
 	
 	@Test
@@ -118,7 +121,7 @@ class PredictionsHandlerPredictionResultTest{
 		assertThat(tested.getPlacedPredictions()).isEmpty();
 		assertThat(tested.getPredictions()).isEmpty();
 		
-		verify(miner).onEvent(new PredictionResultEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, predictionPlaced, predictionResultData));
+		verify(eventManager).onEvent(new PredictionResultEvent(STREAMER_ID, CHANNEL_NAME, streamer, predictionPlaced, predictionResultData));
 	}
 	
 	@Test
@@ -135,6 +138,6 @@ class PredictionsHandlerPredictionResultTest{
 		assertThat(tested.getPlacedPredictions()).isEmpty();
 		assertThat(tested.getPredictions()).isEmpty();
 		
-		verify(miner).onEvent(new PredictionResultEvent(miner, STREAMER_ID, null, null, predictionPlaced, predictionResultData));
+		verify(eventManager).onEvent(new PredictionResultEvent(STREAMER_ID, null, null, predictionPlaced, predictionResultData));
 	}
 }

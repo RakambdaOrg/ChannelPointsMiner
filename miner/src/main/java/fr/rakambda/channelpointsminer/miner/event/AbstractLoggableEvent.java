@@ -4,9 +4,10 @@ import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import java.awt.Color;
+import java.awt.*;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.util.Locale;
@@ -17,6 +18,7 @@ import java.util.Map;
 @ToString
 public abstract class AbstractLoggableEvent implements IEvent, ILoggableEvent{
 	protected static final String COLOR_INFO = Integer.toString(Color.CYAN.getRGB());
+	protected static final String COLOR_WARN = Integer.toString(Color.ORANGE.getRGB());
 	protected static final String COLOR_PREDICTION = Integer.toString(Color.PINK.getRGB());
 	protected static final String COLOR_POINTS_WON = Integer.toString(Color.GREEN.getRGB());
 	protected static final String COLOR_POINTS_LOST = Integer.toString(Color.RED.getRGB());
@@ -30,10 +32,11 @@ public abstract class AbstractLoggableEvent implements IEvent, ILoggableEvent{
 	
 	@Getter
 	@NotNull
-	private final IMiner miner;
-	@Getter
-	@NotNull
 	private final Instant instant;
+	
+	@Setter
+	@Getter
+	private IMiner miner;
 	
 	@NotNull
 	public String millify(int value, boolean includeSign){

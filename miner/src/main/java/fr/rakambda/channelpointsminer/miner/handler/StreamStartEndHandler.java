@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamUp;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamUpEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
@@ -19,7 +20,10 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @RequiredArgsConstructor
 @Log4j2
 public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
+	@NotNull
 	private final IMiner miner;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	@Override
 	public void onStreamDown(@NotNull Topic topic, @NotNull StreamDown message){
@@ -30,7 +34,7 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 		Optional.ofNullable(streamer)
 				.map(Streamer::getUsername)
 				.ifPresent(miner.getChatClient()::leave);
-		miner.onEvent(new StreamDownEvent(miner, streamerId, username, streamer, message.getServerTime()));
+		eventManager.onEvent(new StreamDownEvent(streamerId, username, streamer, message.getServerTime()));
 	}
 	
 	@Override
@@ -43,7 +47,7 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 				.filter(s -> s.getSettings().isJoinIrc())
 				.map(Streamer::getUsername)
 				.ifPresent(miner.getChatClient()::join);
-		miner.onEvent(new StreamUpEvent(miner, streamerId, username, streamer, message.getServerTime()));
+		eventManager.onEvent(new StreamUpEvent(streamerId, username, streamer, message.getServerTime()));
 	}
 	
 	private void updateStream(@NotNull Topic topic, @Nullable Streamer streamer){

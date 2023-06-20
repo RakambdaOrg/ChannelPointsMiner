@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
@@ -22,15 +23,17 @@ class PubSubMessageHandlerFactoryTest{
 	private IMiner miner;
 	@Mock
 	private BetPlacer betPlacer;
+	@Mock
+	private IEventManager eventManager;
 	
 	@Test
 	void createClaimAvailable(){
-		assertThat(PubSubMessageHandlerFactory.createClaimAvailableHandler(miner)).isNotNull().isInstanceOf(ClaimAvailableHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createClaimAvailableHandler(miner, eventManager)).isNotNull().isInstanceOf(ClaimAvailableHandler.class);
 	}
 	
 	@Test
 	void createStreamStartEndHandler(){
-		assertThat(PubSubMessageHandlerFactory.createStreamStartEndHandler(miner)).isNotNull().isInstanceOf(StreamStartEndHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createStreamStartEndHandler(miner, eventManager)).isNotNull().isInstanceOf(StreamStartEndHandler.class);
 	}
 	
 	@Test
@@ -40,16 +43,16 @@ class PubSubMessageHandlerFactoryTest{
 	
 	@Test
 	void createPredictionsHandler(){
-		assertThat(PubSubMessageHandlerFactory.createPredictionsHandler(miner, betPlacer)).isNotNull().isInstanceOf(PredictionsHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createPredictionsHandler(miner, betPlacer, eventManager)).isNotNull().isInstanceOf(PredictionsHandler.class);
 	}
 	
 	@Test
 	void createPointsHandler(){
-		assertThat(PubSubMessageHandlerFactory.createPointsHandler(miner)).isNotNull().isInstanceOf(PointsHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createPointsHandler(miner, eventManager)).isNotNull().isInstanceOf(PointsHandler.class);
 	}
 	
 	@Test
 	void createClaimMomentHandler(){
-		assertThat(PubSubMessageHandlerFactory.createClaimMomentHandler(miner)).isNotNull().isInstanceOf(ClaimMomentHandler.class);
+		assertThat(PubSubMessageHandlerFactory.createClaimMomentHandler(miner, eventManager)).isNotNull().isInstanceOf(ClaimMomentHandler.class);
 	}
 }

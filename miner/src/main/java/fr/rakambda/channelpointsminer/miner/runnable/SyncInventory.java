@@ -7,6 +7,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDropSelfEdge;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -24,6 +25,8 @@ import static java.util.Optional.ofNullable;
 public class SyncInventory implements Runnable{
 	@NotNull
 	private final IMiner miner;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	@Override
 	public void run(){
@@ -71,7 +74,7 @@ public class SyncInventory implements Runnable{
 	}
 	
 	private void claimDrop(@NotNull TimeBasedDrop timeBasedDrop){
-		miner.onEvent(new DropClaimEvent(miner, timeBasedDrop, TimeFactory.now()));
+		eventManager.onEvent(new DropClaimEvent(timeBasedDrop, TimeFactory.now()));
 		
 		var dropInstanceId = Optional.ofNullable(timeBasedDrop.getSelf()).map(TimeBasedDropSelfEdge::getDropInstanceId);
 		if(dropInstanceId.isEmpty()){
@@ -87,7 +90,7 @@ public class SyncInventory implements Runnable{
 					log.error("Failed to claim drop due to `{}` | {}", r.getError(), r.getErrors());
 					return false;
 				})
-				.map(r -> new DropClaimedEvent(miner, timeBasedDrop, TimeFactory.now()))
-				.ifPresent(miner::onEvent);
+				.map(r -> new DropClaimedEvent(timeBasedDrop, TimeFactory.now()))
+				.ifPresent(eventManager::onEvent);
 	}
 }

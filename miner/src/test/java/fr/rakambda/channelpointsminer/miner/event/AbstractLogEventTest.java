@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
-import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.rakambda.channelpointsminer.miner.event.impl.MinerStartedEvent;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.IntStream;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 @ParallelizableTest
@@ -28,7 +27,8 @@ class AbstractLogEventTest{
 	
 	@BeforeEach
 	void setUp(){
-		tested = new MinerStartedEvent(miner, "", "", "", Instant.now());
+		tested = new MinerStartedEvent("", "", "", Instant.now());
+		tested.setMiner(miner);
 	}
 	
 	@Test

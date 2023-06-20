@@ -15,10 +15,9 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topics;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
-import fr.rakambda.channelpointsminer.miner.event.IEvent;
-import fr.rakambda.channelpointsminer.miner.event.IEventHandler;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerAddedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerRemovedEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.ApiFactory;
 import fr.rakambda.channelpointsminer.miner.factory.MinerRunnableFactory;
 import fr.rakambda.channelpointsminer.miner.factory.StreamerSettingsFactory;
@@ -74,11 +73,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			@VisibleForTesting
 	})
 	private final Collection<IPubSubMessageHandler> pubSubMessageHandlers;
-	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
-			@TestOnly,
-			@VisibleForTesting
-	})
-	private final Collection<IEventHandler> eventHandlers;
+	private final IEventManager eventManager;
 	@Getter
 	private final MinerData minerData;
 	
@@ -100,7 +95,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			@NotNull TwitchPubSubWebSocketPool pubSubWebSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
 			@NotNull ExecutorService handlerExecutor,
-			@NotNull IDatabase database){
+			@NotNull IDatabase database,
+			@NotNull IEventManager eventManager){
 		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
@@ -108,10 +104,10 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
 		this.database = database;
+		this.eventManager = eventManager;
 		
 		streamers = new ConcurrentHashMap<>();
 		pubSubMessageHandlers = new ConcurrentLinkedQueue<>();
-		eventHandlers = new ConcurrentLinkedQueue<>();
 		minerData = new MinerData();
 	}
 	
@@ -132,7 +128,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
 			scheduledExecutor.scheduleAtFixedRate(getSyncInventory(), 1, 15, MINUTES);
 			
-			var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, streamerSettingsFactory, accountConfiguration.isLoadFollows());
+			var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, eventManager, streamerSettingsFactory, accountConfiguration.isLoadFollows());
 			if(accountConfiguration.getReloadEvery() > 0){
 				scheduledExecutor.scheduleWithFixedDelay(streamerConfigurationReload, 0, accountConfiguration.getReloadEvery(), MINUTES);
 			}
@@ -162,11 +158,11 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			
 			var versionProvider = ApiFactory.createVersionProvider(accountConfiguration.getVersionProvider());
-			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, accountConfiguration.getLoginMethod());
+			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, accountConfiguration.getLoginMethod(), eventManager);
 			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
 			twitchApi = ApiFactory.createTwitchApi(twitchLogin);
 			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);
-			chatClient.addChatMessageListener(new TwitchChatEventProducer(this));
+			chatClient.addChatMessageListener(new TwitchChatEventProducer(eventManager));
 		}
 		catch(CaptchaSolveRequired e){
 			throw new IllegalStateException("A captcha solve is required, please log in through your browser and solve it");
@@ -187,7 +183,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	@NotNull
 	private SyncInventory getSyncInventory(){
 		if(Objects.isNull(syncInventory)){
-			syncInventory = MinerRunnableFactory.createSyncInventory(this);
+			syncInventory = MinerRunnableFactory.createSyncInventory(this, eventManager);
 		}
 		return syncInventory;
 	}
@@ -213,7 +209,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			updateStreamerInfos(streamer);
 			
 			streamers.put(streamer.getId(), streamer);
-			onEvent(new StreamerAddedEvent(this, streamer, TimeFactory.now()));
+			eventManager.onEvent(new StreamerAddedEvent(streamer, TimeFactory.now()));
 			updateStreamer(streamer);
 		}
 	}
@@ -273,7 +269,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			removeTopic(RAID, streamer.getId());
 			chatClient.leave(streamer.getUsername());
 			
-			onEvent(new StreamerRemovedEvent(this, streamer, TimeFactory.now()));
+			eventManager.onEvent(new StreamerRemovedEvent(streamer, TimeFactory.now()));
 			return streamers.remove(streamer.getId()) != null;
 		}
 	}
@@ -322,18 +318,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		return accountConfiguration.getUsername();
 	}
 	
-	@Override
-	public void onEvent(IEvent event){
-		var values = ThreadContext.getImmutableContext();
-		var messages = ThreadContext.getImmutableStack().asList();
-		
-		eventHandlers.forEach(listener -> handlerExecutor.submit(() -> {
-			try(var ignored = LogContext.restore(values, messages)){
-				listener.onEvent(event);
-			}
-		}));
-	}
-	
 	private void removeTopic(@NotNull TopicName name, @NotNull String target){
 		pubSubWebSocketPool.removeTopic(Topic.builder().name(name).target(target).build());
 	}
@@ -354,10 +338,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		pubSubMessageHandlers.add(handler);
 	}
 	
-	public void addEventHandler(@NotNull IEventHandler handler){
-		eventHandlers.add(handler);
-	}
-	
 	@Override
 	public void close(){
 		scheduledExecutor.shutdown();
@@ -366,9 +346,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		if(!Objects.isNull(chatClient)){
 			chatClient.close();
 		}
-		for(var listener : eventHandlers){
-			listener.close();
-		}
+		eventManager.close();
 	}
 	
 	@NotNull

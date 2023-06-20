@@ -8,6 +8,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.Poin
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.PointsEarnedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PointsSpentEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
@@ -36,6 +37,8 @@ class PointsHandlerTest{
 	
 	@Mock
 	private IMiner miner;
+	@Mock
+	private IEventManager eventManager;
 	@Mock
 	private Streamer streamer;
 	@Mock
@@ -68,7 +71,7 @@ class PointsHandlerTest{
 	void pointsEarned(){
 		assertDoesNotThrow(() -> tested.handle(topic, pointsEarnedMessage));
 		
-		verify(miner).onEvent(new PointsEarnedEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, pointsEarnedData));
+		verify(eventManager).onEvent(new PointsEarnedEvent(STREAMER_ID, CHANNEL_NAME, streamer, pointsEarnedData));
 	}
 	
 	@Test
@@ -77,14 +80,14 @@ class PointsHandlerTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, pointsEarnedMessage));
 		
-		verify(miner).onEvent(new PointsEarnedEvent(miner, STREAMER_ID, null, null, pointsEarnedData));
+		verify(eventManager).onEvent(new PointsEarnedEvent(STREAMER_ID, null, null, pointsEarnedData));
 	}
 	
 	@Test
 	void pointsSpent(){
 		assertDoesNotThrow(() -> tested.handle(topic, pointsSpentMessage));
 		
-		verify(miner).onEvent(new PointsSpentEvent(miner, STREAMER_ID, CHANNEL_NAME, streamer, pointsSpentData));
+		verify(eventManager).onEvent(new PointsSpentEvent(STREAMER_ID, CHANNEL_NAME, streamer, pointsSpentData));
 	}
 	
 	@Test
@@ -93,6 +96,6 @@ class PointsHandlerTest{
 		
 		assertDoesNotThrow(() -> tested.handle(topic, pointsSpentMessage));
 		
-		verify(miner).onEvent(new PointsSpentEvent(miner, STREAMER_ID, null, null, pointsSpentData));
+		verify(eventManager).onEvent(new PointsSpentEvent(STREAMER_ID, null, null, pointsSpentData));
 	}
 }

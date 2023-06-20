@@ -22,6 +22,7 @@ import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
+import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.MinerStartedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PointsEarnedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PointsSpentEvent;
@@ -88,7 +89,9 @@ class DiscordMessageBuilderMessageTest{
 	void onClaimAvailableWithCustomFormat(){
 		when(discordEventConfiguration.getFormat()).thenReturn("{streamer} override test");
 		
-		var webhook = tested.createSimpleMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		var event = new ClaimAvailableEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("%s override test".formatted(STREAMER_USERNAME))
@@ -97,7 +100,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onClaimAvailable(){
-		var webhook = tested.createSimpleMessage(new ClaimAvailableEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		var event = new ClaimAvailableEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🎫 %s : Claim available".formatted(USERNAME, STREAMER_USERNAME))
@@ -106,7 +111,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onClaimMoment(){
-		var webhook = tested.createSimpleMessage(new ClaimMomentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		var event = new ClaimMomentEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🎖️ %s : Moment available".formatted(USERNAME, STREAMER_USERNAME))
@@ -115,7 +122,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onClaimedMoment(){
-		var webhook = tested.createSimpleMessage(new ClaimedMomentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		var event = new ClaimedMomentEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🎖️ %s : Moment claimed".formatted(USERNAME, STREAMER_USERNAME))
@@ -135,7 +144,9 @@ class DiscordMessageBuilderMessageTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(200);
 		
-		var webhook = tested.createSimpleMessage(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
+		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 💰 %s : Points earned [%+d | %s | %d]".formatted(USERNAME, STREAMER_USERNAME, 25, "CLAIM", 200))
@@ -155,7 +166,9 @@ class DiscordMessageBuilderMessageTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
 		
-		var webhook = tested.createSimpleMessage(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
+		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 💰 %s : Points earned [%s | %s | %s]".formatted(USERNAME, STREAMER_USERNAME, "+2.5K", "CLAIM", "12.35M"))
@@ -175,8 +188,10 @@ class DiscordMessageBuilderMessageTest{
 		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
 		when(balance.getBalance()).thenReturn(12345678);
 		
-		var webhook = tested.createSimpleMessage(new PointsEarnedEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
-		
+		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
+
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 💰 %s : Points earned [%s | %s | %s]".formatted(USERNAME, STREAMER_USERNAME, "-2.5K", "CLAIM", "12.35M"))
 				.build());
@@ -191,7 +206,9 @@ class DiscordMessageBuilderMessageTest{
 		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(balance.getBalance()).thenReturn(25);
 		
-		var webhook = tested.createSimpleMessage(new PointsSpentEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, data), discordEventConfiguration);
+		var event = new PointsSpentEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 💸 %s : Points spent [%d]".formatted(USERNAME, STREAMER_USERNAME, 25))
@@ -200,7 +217,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onStreamUp(){
-		var webhook = tested.createSimpleMessage(new StreamUpEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		var event = new StreamUpEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, STREAMER_USERNAME))
@@ -209,7 +228,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void authorNotFound(){
-		var webhook = tested.createSimpleMessage(new StreamUpEvent(miner, STREAMER_ID, null, null, NOW), discordEventConfiguration);
+		var event = new StreamUpEvent(STREAMER_ID, null, null, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] ▶️ %s : Stream started".formatted(USERNAME, UNKNOWN_STREAMER))
@@ -218,7 +239,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onStreamDown(){
-		var webhook = tested.createSimpleMessage(new StreamDownEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, NOW), discordEventConfiguration);
+		var event = new StreamDownEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] ⏹️ %s : Stream stopped".formatted(USERNAME, STREAMER_USERNAME))
@@ -228,12 +251,14 @@ class DiscordMessageBuilderMessageTest{
 	@Test
 	void onEventCreated(){
 		var title = "MyTitle";
-		var event = mock(Event.class);
+		var subEvent = mock(Event.class);
 		
-		when(event.getTitle()).thenReturn(title);
-		when(event.getCreatedAt()).thenReturn(ZONED_NOW);
+		when(subEvent.getTitle()).thenReturn(title);
+		when(subEvent.getCreatedAt()).thenReturn(ZONED_NOW);
 		
-		var webhook = tested.createSimpleMessage(new EventCreatedEvent(miner, streamer, event), discordEventConfiguration);
+		var event = new EventCreatedEvent(streamer, subEvent);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 📑 %s : Prediction created [%s]".formatted(USERNAME, STREAMER_USERNAME, title))
@@ -246,7 +271,7 @@ class DiscordMessageBuilderMessageTest{
 		var outcomeName = "Out2";
 		var placedPrediction = mock(PlacedPrediction.class);
 		var prediction = mock(BettingPrediction.class);
-		var event = mock(Event.class);
+		var subEvent = mock(Event.class);
 		var outcome1 = mock(Outcome.class);
 		var outcome2 = mock(Outcome.class);
 		
@@ -254,14 +279,16 @@ class DiscordMessageBuilderMessageTest{
 		when(placedPrediction.getOutcomeId()).thenReturn(outcomeId);
 		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
 		when(placedPrediction.getPredictedAt()).thenReturn(NOW);
-		when(prediction.getEvent()).thenReturn(event);
-		when(event.getOutcomes()).thenReturn(List.of(outcome1, outcome2));
+		when(prediction.getEvent()).thenReturn(subEvent);
+		when(subEvent.getOutcomes()).thenReturn(List.of(outcome1, outcome2));
 		when(outcome1.getId()).thenReturn("bad-id");
 		when(outcome2.getId()).thenReturn(outcomeId);
 		when(outcome2.getColor()).thenReturn(OutcomeColor.BLUE);
 		when(outcome2.getTitle()).thenReturn(outcomeName);
 		
-		var webhook = tested.createSimpleMessage(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction), discordEventConfiguration);
+		var event = new PredictionMadeEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🪙 %s : Bet placed [%d | %s: %s]".formatted(USERNAME, STREAMER_USERNAME, 25, "BLUE", outcomeName))
@@ -272,18 +299,20 @@ class DiscordMessageBuilderMessageTest{
 	void onPredictionMadeUnknownOutcome(){
 		var placedPrediction = mock(PlacedPrediction.class);
 		var prediction = mock(BettingPrediction.class);
-		var event = mock(Event.class);
+		var subEvent = mock(Event.class);
 		var outcome1 = mock(Outcome.class);
 		
 		when(placedPrediction.getAmount()).thenReturn(25);
 		when(placedPrediction.getOutcomeId()).thenReturn("outcome-id");
 		when(placedPrediction.getBettingPrediction()).thenReturn(prediction);
 		when(placedPrediction.getPredictedAt()).thenReturn(NOW);
-		when(prediction.getEvent()).thenReturn(event);
-		when(event.getOutcomes()).thenReturn(List.of(outcome1));
+		when(prediction.getEvent()).thenReturn(subEvent);
+		when(subEvent.getOutcomes()).thenReturn(List.of(outcome1));
 		when(outcome1.getId()).thenReturn("bad-id");
 		
-		var webhook = tested.createSimpleMessage(new PredictionMadeEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction), discordEventConfiguration);
+		var event = new PredictionMadeEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🪙 %s : Bet placed [%d | %s]".formatted(USERNAME, STREAMER_USERNAME, 25, "UnknownOutcome"))
@@ -304,7 +333,9 @@ class DiscordMessageBuilderMessageTest{
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
 		
-		var webhook = tested.createSimpleMessage(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData), discordEventConfiguration);
+		var event = new PredictionResultEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🧧 %s : Bet result [%s | +%d]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 40))
@@ -323,7 +354,9 @@ class DiscordMessageBuilderMessageTest{
 		when(prediction.getResult()).thenReturn(result);
 		when(result.getType()).thenReturn(PredictionResultType.REFUND);
 		
-		var webhook = tested.createSimpleMessage(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData), discordEventConfiguration);
+		var event = new PredictionResultEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🧧 %s : Bet result [%s | %d]".formatted(USERNAME, STREAMER_USERNAME, "REFUND", 0))
@@ -342,7 +375,9 @@ class DiscordMessageBuilderMessageTest{
 		when(result.getType()).thenReturn(PredictionResultType.WIN);
 		when(result.getPointsWon()).thenReturn(56);
 		
-		var webhook = tested.createSimpleMessage(new PredictionResultEvent(miner, STREAMER_ID, STREAMER_USERNAME, streamer, null, predictionResultData), discordEventConfiguration);
+		var event = new PredictionResultEvent(STREAMER_ID, STREAMER_USERNAME, streamer, null, predictionResultData);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🧧 %s : Bet result [%s | Unknown final gain, obtained %+d points]".formatted(USERNAME, STREAMER_USERNAME, "WIN", 56))
@@ -354,7 +389,10 @@ class DiscordMessageBuilderMessageTest{
 		var version = "test-version";
 		var commit = "test-commit";
 		var branch = "test-branch";
-		var webhook = tested.createSimpleMessage(new MinerStartedEvent(miner, version, commit, branch, NOW), discordEventConfiguration);
+		
+		var event = new MinerStartedEvent(version, commit, branch, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] ✅ : Miner started with version %s [%s - %s]".formatted(USERNAME, version, commit, branch))
@@ -363,7 +401,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onStreamerAdded(){
-		var webhook = tested.createSimpleMessage(new StreamerAddedEvent(miner, streamer, NOW), discordEventConfiguration);
+		var event = new StreamerAddedEvent(streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] ➕ %s : Streamer added".formatted(USERNAME, STREAMER_USERNAME))
@@ -372,7 +412,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onStreamerRemoved(){
-		var webhook = tested.createSimpleMessage(new StreamerRemovedEvent(miner, streamer, NOW), discordEventConfiguration);
+		var event = new StreamerRemovedEvent(streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] ➖ %s : Streamer removed".formatted(USERNAME, STREAMER_USERNAME))
@@ -381,7 +423,9 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onStreamerUnknown(){
-		var webhook = tested.createSimpleMessage(new StreamerUnknownEvent(miner, STREAMER_USERNAME, NOW), discordEventConfiguration);
+		var event = new StreamerUnknownEvent(STREAMER_USERNAME, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] ❌ %s : Streamer unknown".formatted(USERNAME, STREAMER_USERNAME))
@@ -394,7 +438,9 @@ class DiscordMessageBuilderMessageTest{
 		var drop = mock(TimeBasedDrop.class);
 		when(drop.getName()).thenReturn(name);
 		
-		var webhook = tested.createSimpleMessage(new DropClaimEvent(miner, drop, NOW), discordEventConfiguration);
+		var event = new DropClaimEvent(drop, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🎁 : Drop available [%s]".formatted(USERNAME, name))
@@ -407,10 +453,23 @@ class DiscordMessageBuilderMessageTest{
 		var drop = mock(TimeBasedDrop.class);
 		when(drop.getName()).thenReturn(name);
 		
-		var webhook = tested.createSimpleMessage(new DropClaimedEvent(miner, drop, NOW), discordEventConfiguration);
+		var event = new DropClaimedEvent(drop, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🎁 : Drop claimed [%s]".formatted(USERNAME, name))
+				.build());
+	}
+	
+	@Test
+	void onLoginRequired(){
+		var event = new LoginRequiredEvent(NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.content("[%s] ⚠️ : Login required".formatted(USERNAME))
 				.build());
 	}
 }

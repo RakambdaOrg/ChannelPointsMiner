@@ -26,6 +26,7 @@ rerunner-jupiter-version = "2.1.6"
 flyway-version = "9.20.0"
 selenide-version = "6.15.0"
 lombok-version = "1.18.28"
+jacocoVersion = "0.8.10"
 
 shadow-version = "8.1.1"
 names-version = "0.47.0"

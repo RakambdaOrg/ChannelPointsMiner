@@ -7,6 +7,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventSta
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventUpdatedEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PredictionState;
@@ -60,6 +61,8 @@ class PredictionsHandlerEventUpdatedTest{
 	
 	@Mock
 	private IMiner miner;
+	@Mock
+	private IEventManager eventManager;
 	@Mock
 	private BetPlacer betPlacer;
 	@Mock
@@ -129,8 +132,8 @@ class PredictionsHandlerEventUpdatedTest{
 			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
-			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
-			verify(miner).onEvent(new EventUpdatedEvent(miner, NOW, STREAMER_USERNAME, event));
+			verify(eventManager).onEvent(new EventCreatedEvent(streamer, event));
+			verify(eventManager).onEvent(new EventUpdatedEvent(NOW, STREAMER_USERNAME, event));
 			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}
@@ -187,7 +190,7 @@ class PredictionsHandlerEventUpdatedTest{
 			createEvent();
 			
 			assertDoesNotThrow(() -> tested.handle(topic, eventUpdated));
-			verify(miner).onEvent(new EventUpdatedEvent(miner, NOW, STREAMER_USERNAME, event));
+			verify(eventManager).onEvent(new EventUpdatedEvent(NOW, STREAMER_USERNAME, event));
 		}
 	}
 }

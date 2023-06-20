@@ -3,6 +3,7 @@ package fr.rakambda.channelpointsminer.miner.browser;
 import com.codeborne.selenide.SelenideConfig;
 import com.codeborne.selenide.SelenideDriver;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,6 @@ import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
@@ -39,7 +39,10 @@ import java.util.logging.Level;
 @Log4j2
 @RequiredArgsConstructor
 public class Browser implements AutoCloseable{
+	@NotNull
 	private final BrowserConfiguration browserConfiguration;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	@Getter
 	private WebDriver driver;
@@ -70,7 +73,7 @@ public class Browser implements AutoCloseable{
 		listenNetwork(devTools);
 		
 		selenideDriver = new SelenideDriver(config, driver, null);
-		return new BrowserController(selenideDriver);
+		return new BrowserController(selenideDriver, eventManager);
 	}
 	
 	private void setupHideJsElements(@NotNull DevTools devTools){
