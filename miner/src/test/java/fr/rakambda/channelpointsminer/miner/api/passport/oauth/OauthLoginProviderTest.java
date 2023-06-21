@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLoginCacher;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.data.DeviceResponse;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.data.TokenResponse;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMock;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
@@ -42,12 +43,14 @@ class OauthLoginProviderTest{
     
     @Mock
     private TwitchLoginCacher cacher;
+    @Mock
+    private IEventManager eventManager;
     
     @BeforeEach
     void setUp(UnirestMock unirestMock) throws IOException{
         lenient().when(cacher.restoreAuthentication()).thenReturn(Optional.empty());
         
-        tested = new OauthLoginProvider(TwitchClient.ANDROID_TV, unirestMock.getUnirestInstance(), USERNAME, cacher);
+        tested = new OauthLoginProvider(TwitchClient.ANDROID_TV, unirestMock.getUnirestInstance(), USERNAME, cacher, eventManager);
     }
     
     @Test

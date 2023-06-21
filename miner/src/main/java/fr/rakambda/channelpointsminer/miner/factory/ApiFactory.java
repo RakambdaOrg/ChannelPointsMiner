@@ -131,7 +131,7 @@ public class ApiFactory{
 			
 			var cachePath = oauthApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
 			TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
-			return new OauthLoginProvider(twitchClient, unirest, username, cacher);
+			return new OauthLoginProvider(twitchClient, unirest, username, cacher, eventManager);
 		}
 		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
 			return new BrowserLoginProvider(browserConfiguration, eventManager);

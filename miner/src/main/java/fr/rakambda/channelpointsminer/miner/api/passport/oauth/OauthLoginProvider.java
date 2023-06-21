@@ -11,6 +11,8 @@ import fr.rakambda.channelpointsminer.miner.api.passport.oauth.data.TokenRespons
 import fr.rakambda.channelpointsminer.miner.config.login.IOauthApiLoginProvider;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
+import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
 import kong.unirest.core.UnirestInstance;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -38,12 +40,14 @@ public class OauthLoginProvider implements ILoginProvider{
 	private final UnirestInstance unirest;
 	private final String username;
 	private final TwitchLoginCacher twitchLoginCacher;
+	private final IEventManager eventManager;
 	
-	public OauthLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull TwitchLoginCacher twitchLoginCacher){
+	public OauthLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull TwitchLoginCacher twitchLoginCacher, @NotNull IEventManager eventManager){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
 		this.twitchLoginCacher = twitchLoginCacher;
+		this.eventManager = eventManager;
 	}
 	
 	/**
@@ -69,6 +73,7 @@ public class OauthLoginProvider implements ILoginProvider{
 		}
 		
 		DeviceResponse deviceToken = generateDeviceToken();
+		eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now()));
 		log.info("Please open page {} and provide the following token within {}: {}",
 				deviceToken.getVerificationUri(),
 				Duration.ofSeconds(deviceToken.getExpiresIn()),
