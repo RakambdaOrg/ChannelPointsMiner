@@ -148,7 +148,11 @@ class OauthLoginProviderTest{
 	@Test
 	void deviceCodeNeverEntered(UnirestMock unirest) throws IOException{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
-			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			timeFactory.when(TimeFactory::now).thenReturn(NOW,
+					NOW.plusSeconds(1),
+					NOW.plusSeconds(4),
+					NOW.plusSeconds(6)
+			);
 			
 			setupOkDeviceRequest(unirest);
 			setupTokenRequest(unirest, 400, TokenResponse.builder().status("400").message("authorization_pending").build());
