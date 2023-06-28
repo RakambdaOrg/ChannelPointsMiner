@@ -86,7 +86,7 @@ public class HttpLoginProvider implements ILoginProvider{
 			response = twoFactorLogin();
 		}
 		catch(MissingTwitchGuard e){
-			eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now()));
+			eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "Twitch guard code required"));
 			response = login(LoginRequest.builder()
 					.clientId(twitchClient.getClientId())
 					.username(username)
@@ -108,7 +108,7 @@ public class HttpLoginProvider implements ILoginProvider{
 	 */
 	@NotNull
 	private HttpResponse<LoginResponse> twoFactorLogin() throws LoginException{
-		eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now()));
+		eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "2FA required"));
 		var authToken = getUserInput("Enter 2FA token for user " + username + ":");
 		return login(LoginRequest.builder()
 				.clientId(twitchClient.getClientId())

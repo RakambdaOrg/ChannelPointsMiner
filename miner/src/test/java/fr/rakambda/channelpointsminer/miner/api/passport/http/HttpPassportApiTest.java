@@ -53,6 +53,8 @@ class HttpPassportApiTest{
 	private static final String ACCESS_TOKEN = "access-token";
 	private static final String TWO_FACTOR = "123456";
 	private static final Instant NOW = Instant.now();
+	private static final String MESSAGE_GUARD = "Twitch guard code required";
+	private static final String MESSAGE_2FA = "2FA required";
 	
 	private HttpLoginProvider tested;
 	
@@ -103,7 +105,7 @@ class HttpPassportApiTest{
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
 			verify(cacher).saveAuthentication(expected);
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE_2FA));
 			
 			unirest.verifyAll();
 		}
@@ -204,7 +206,7 @@ class HttpPassportApiTest{
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
 			verify(cacher).saveAuthentication(expected);
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE_2FA));
 			
 			unirest.verifyAll();
 		}
@@ -249,7 +251,7 @@ class HttpPassportApiTest{
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
 			verify(cacher).saveAuthentication(expected);
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE_GUARD));
 			
 			unirest.verifyAll();
 		}
@@ -314,7 +316,7 @@ class HttpPassportApiTest{
 			
 			assertThrows(InvalidCredentials.class, () -> tested.login());
 			verify(cacher, never()).saveAuthentication(any());
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE_2FA));
 			
 			unirest.verifyAll();
 		}
@@ -343,7 +345,7 @@ class HttpPassportApiTest{
 			
 			assertThrows(InvalidCredentials.class, () -> tested.login());
 			verify(cacher, never()).saveAuthentication(any());
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE_GUARD));
 			
 			unirest.verifyAll();
 		}

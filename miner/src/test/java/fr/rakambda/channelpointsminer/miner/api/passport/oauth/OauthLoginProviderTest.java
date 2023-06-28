@@ -43,6 +43,7 @@ class OauthLoginProviderTest{
 	private static final String DEVICE_CODE = "deviceCode";
 	private static final String USER_CODE = "userCode";
 	private static final Instant NOW = Instant.parse("2022-01-05T10:52:32.000Z");
+	private static final String MESSAGE = "TV login required, open page https://verification/ and provide the following token within PT5S: userCode";
 	
 	private OauthLoginProvider tested;
 	
@@ -75,7 +76,7 @@ class OauthLoginProviderTest{
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
 			verify(cacher).saveAuthentication(expected);
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE));
 			
 			unirest.verifyAll();
 		}
@@ -112,7 +113,7 @@ class OauthLoginProviderTest{
 			
 			assertThat(tested.login()).usingRecursiveComparison().isEqualTo(expected);
 			verify(cacher).saveAuthentication(expected);
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE));
 			
 			unirest.verifyAll();
 		}
@@ -139,7 +140,7 @@ class OauthLoginProviderTest{
 			
 			assertThrows(LoginException.class, () -> tested.login());
 			verify(cacher, never()).saveAuthentication(any());
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE));
 			
 			unirest.verifyAll();
 		}
@@ -159,7 +160,7 @@ class OauthLoginProviderTest{
 			
 			assertThrows(LoginException.class, () -> tested.login());
 			verify(cacher, never()).saveAuthentication(any());
-			verify(eventManager).onEvent(new LoginRequiredEvent(NOW));
+			verify(eventManager).onEvent(new LoginRequiredEvent(NOW, MESSAGE));
 			
 			unirest.verifyAll();
 		}

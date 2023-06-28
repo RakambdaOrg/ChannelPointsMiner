@@ -464,12 +464,12 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onLoginRequired(){
-		var event = new LoginRequiredEvent(NOW);
+		var event = new LoginRequiredEvent(NOW, "message");
 		event.setMiner(miner);
 		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
-				.content("[%s] ⚠️ : Login required".formatted(USERNAME))
+				.content("[%s] ⚠️ : message".formatted(USERNAME))
 				.build());
 	}
 }

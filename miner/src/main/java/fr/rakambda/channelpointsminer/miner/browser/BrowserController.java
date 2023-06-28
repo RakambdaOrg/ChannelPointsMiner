@@ -92,7 +92,7 @@ public class BrowserController{
 		}
 		
 		try{
-			eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now()));
+			eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "Cookies input required"));
 			return CommonUtils.getUserInput("Provide your session cookies under JSON format (1 line only) (you can use an extension like Cookie-Editor): ");
 		}
 		catch(NoSuchElementException e){

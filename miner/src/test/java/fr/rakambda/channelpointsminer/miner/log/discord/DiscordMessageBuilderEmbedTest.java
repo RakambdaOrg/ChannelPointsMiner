@@ -632,7 +632,7 @@ class DiscordMessageBuilderEmbedTest{
 	
 	@Test
 	void onLoginRequired(){
-		var event = new LoginRequiredEvent(NOW);
+		var event = new LoginRequiredEvent(NOW, "message");
 		event.setMiner(miner);
 		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
 		
@@ -640,7 +640,7 @@ class DiscordMessageBuilderEmbedTest{
 				.embeds(List.of(Embed.builder()
 						.footer(footer)
 						.color(ORANGE.getRGB())
-						.description("[username] ⚠️ : Login required")
+						.description("[username] ⚠️ : message")
 						.build()))
 				.build());
 	}
