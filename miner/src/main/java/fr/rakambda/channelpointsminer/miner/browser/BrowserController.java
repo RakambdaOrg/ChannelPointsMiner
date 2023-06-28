@@ -5,6 +5,9 @@ import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
+import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
+import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,8 @@ import java.util.Objects;
 public class BrowserController{
 	@NotNull
 	private final SelenideDriver driver;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	public void ensureLoggedIn() throws LoginException{
 		openTurboPage();
@@ -87,6 +92,7 @@ public class BrowserController{
 		}
 		
 		try{
+			eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "Cookies input required"));
 			return CommonUtils.getUserInput("Provide your session cookies under JSON format (1 line only) (you can use an extension like Cookie-Editor): ");
 		}
 		catch(NoSuchElementException e){

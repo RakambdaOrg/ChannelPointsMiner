@@ -12,17 +12,16 @@ import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.MissingTwitc
 import fr.rakambda.channelpointsminer.miner.api.passport.http.data.LoginRequest;
 import fr.rakambda.channelpointsminer.miner.api.passport.http.data.LoginResponse;
 import fr.rakambda.channelpointsminer.miner.config.login.IPassportApiLoginProvider;
-import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
+import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
+import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.UnirestInstance;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Objects;
 import static fr.rakambda.channelpointsminer.miner.util.CommonUtils.getUserInput;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static kong.unirest.core.ContentType.APPLICATION_JSON;
 import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 
@@ -35,12 +34,14 @@ public class HttpLoginProvider implements ILoginProvider{
 	private final TwitchLoginCacher twitchLoginCacher;
 	private final String password;
 	private final boolean ask2FA;
+	private final IEventManager eventManager;
 	
-	public HttpLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider, @NotNull TwitchLoginCacher twitchLoginCacher){
+	public HttpLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider, @NotNull TwitchLoginCacher twitchLoginCacher, @NotNull IEventManager eventManager){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
 		this.twitchLoginCacher = twitchLoginCacher;
+		this.eventManager = eventManager;
 		
 		password = passportApiLoginProvider.getPassword();
 		ask2FA = passportApiLoginProvider.isUse2Fa();
@@ -85,6 +86,7 @@ public class HttpLoginProvider implements ILoginProvider{
 			response = twoFactorLogin();
 		}
 		catch(MissingTwitchGuard e){
+			eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "Twitch guard code required"));
 			response = login(LoginRequest.builder()
 					.clientId(twitchClient.getClientId())
 					.username(username)
@@ -106,6 +108,7 @@ public class HttpLoginProvider implements ILoginProvider{
 	 */
 	@NotNull
 	private HttpResponse<LoginResponse> twoFactorLogin() throws LoginException{
+		eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "2FA required"));
 		var authToken = getUserInput("Enter 2FA token for user " + username + ":");
 		return login(LoginRequest.builder()
 				.clientId(twitchClient.getClientId())

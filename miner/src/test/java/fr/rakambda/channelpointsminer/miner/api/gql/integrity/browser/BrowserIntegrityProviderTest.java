@@ -8,6 +8,7 @@ import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginExcepti
 import fr.rakambda.channelpointsminer.miner.browser.Browser;
 import fr.rakambda.channelpointsminer.miner.browser.BrowserController;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.BrowserFactory;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import org.mockito.InjectMocks;
@@ -58,6 +59,8 @@ class BrowserIntegrityProviderTest{
 	@Mock
 	private BrowserConfiguration browserConfiguration;
 	@Mock
+	private IEventManager eventManager;
+	@Mock
 	private Browser browser;
 	@Mock
 	private BrowserController browserController;
@@ -101,7 +104,7 @@ class BrowserIntegrityProviderTest{
 	void integrityIsRetrieved() throws IntegrityException{
 		try(var browserFactory = mockStatic(BrowserFactory.class);
 				var jacksonUtils = mockStatic(JacksonUtils.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			jacksonUtils.when(() -> JacksonUtils.read(eq(RESPONSE_BODY), any(TypeReference.class))).thenReturn(INTEGRITY_RESPONSE);
 			
 			assertThat(tested.getIntegrity()).contains(IntegrityData.builder()
@@ -125,7 +128,7 @@ class BrowserIntegrityProviderTest{
 	@Test
 	void browserError(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(browser.setup()).thenThrow(new RuntimeException("For tests"));
 			
@@ -136,7 +139,7 @@ class BrowserIntegrityProviderTest{
 	@Test
 	void notLoggedIn() throws LoginException{
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			doThrow(new LoginException("For tests")).when(browserController).ensureLoggedIn();
 			
@@ -147,7 +150,7 @@ class BrowserIntegrityProviderTest{
 	@Test
 	void noIntegrityResponse(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(response.getUrl()).thenReturn("https://nope");
 			
@@ -158,7 +161,7 @@ class BrowserIntegrityProviderTest{
 	@Test
 	void noResponseFrameId(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(receivedResponse.getFrameId()).thenReturn(Optional.empty());
 			
@@ -169,7 +172,7 @@ class BrowserIntegrityProviderTest{
 	@Test
 	void noIntegrityRequest(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(request.getUrl()).thenReturn("https://nope");
 			
@@ -180,7 +183,7 @@ class BrowserIntegrityProviderTest{
 	@Test
 	void noRequestFrameId(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(requestWillBeSent.getFrameId()).thenReturn(Optional.empty());
 			
@@ -191,7 +194,7 @@ class BrowserIntegrityProviderTest{
 	@Test
 	void notMatchingFrameId(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(requestWillBeSent.getFrameId()).thenReturn(Optional.of(new FrameId("other")));
 			
@@ -203,7 +206,7 @@ class BrowserIntegrityProviderTest{
 	void integrityResponseReadException(){
 		try(var browserFactory = mockStatic(BrowserFactory.class);
 				var jacksonUtils = mockStatic(JacksonUtils.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			jacksonUtils.when(() -> JacksonUtils.read(anyString(), any(TypeReference.class))).thenThrow(new IOException("For tests"));
 			
 			assertThrows(IntegrityException.class, tested::getIntegrity);
@@ -214,7 +217,7 @@ class BrowserIntegrityProviderTest{
 	void noClientSessionIdCookie(){
 		try(var browserFactory = mockStatic(BrowserFactory.class);
 				var jacksonUtils = mockStatic(JacksonUtils.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			jacksonUtils.when(() -> JacksonUtils.read(eq(RESPONSE_BODY), any(TypeReference.class))).thenReturn(INTEGRITY_RESPONSE);
 			
 			lenient().when(headers.get("Client-Session-Id")).thenReturn(null);
@@ -227,7 +230,7 @@ class BrowserIntegrityProviderTest{
 	void noClientVersionCookie(){
 		try(var browserFactory = mockStatic(BrowserFactory.class);
 				var jacksonUtils = mockStatic(JacksonUtils.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			jacksonUtils.when(() -> JacksonUtils.read(eq(RESPONSE_BODY), any(TypeReference.class))).thenReturn(INTEGRITY_RESPONSE);
 			
 			lenient().when(headers.get("Client-Version")).thenReturn(null);
@@ -240,7 +243,7 @@ class BrowserIntegrityProviderTest{
 	void noXDeviceIdCookie(){
 		try(var browserFactory = mockStatic(BrowserFactory.class);
 				var jacksonUtils = mockStatic(JacksonUtils.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			jacksonUtils.when(() -> JacksonUtils.read(eq(RESPONSE_BODY), any(TypeReference.class))).thenReturn(INTEGRITY_RESPONSE);
 			
 			lenient().when(headers.get("X-Device-Id")).thenReturn(null);

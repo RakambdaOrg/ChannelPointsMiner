@@ -5,7 +5,6 @@ import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,8 +24,8 @@ public class PredictionMadeEvent extends AbstractLoggableStreamerEvent{
 	@Getter
 	private final PlacedPrediction placedPrediction;
 	
-	public PredictionMadeEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PlacedPrediction placedPrediction){
-		super(miner, streamerId, streamerUsername, streamer, placedPrediction.getPredictedAt());
+	public PredictionMadeEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PlacedPrediction placedPrediction){
+		super(streamerId, streamerUsername, streamer, placedPrediction.getPredictedAt());
 		this.placedPrediction = placedPrediction;
 	}
 	

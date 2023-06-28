@@ -8,6 +8,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.rakambda.channelpointsminer.miner.browser.Browser;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.BrowserFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
@@ -26,7 +27,10 @@ import java.util.Optional;
 @Log4j2
 public class BrowserIntegrityProvider implements IIntegrityProvider{
 	public static final String INTEGRITY_URL = "https://gql.twitch.tv/integrity";
+	@NotNull
 	private final BrowserConfiguration browserConfiguration;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	private IntegrityData currentIntegrity;
 	
@@ -45,7 +49,7 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 			}
 			
 			log.info("Querying new integrity token");
-			try(var browser = BrowserFactory.createBrowser(browserConfiguration)){
+			try(var browser = BrowserFactory.createBrowser(browserConfiguration, eventManager)){
 				var controller = browser.setup();
 				controller.ensureLoggedIn();
 				CommonUtils.randomSleep(10000, 1);

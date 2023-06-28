@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,22 +10,22 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 
+@Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public abstract class AbstractLoggableStreamerEvent extends AbstractLoggableEvent implements IStreamerEvent{
 	private static final String UNKNOWN_STREAMER = "UnknownStreamer";
 	
-	@Getter
 	private final String streamerId;
 	private final String streamerUsername;
 	private final Streamer streamer;
 	
-	public AbstractLoggableStreamerEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Instant instant){
-		this(miner, streamer.getId(), streamer.getUsername(), streamer, instant);
+	public AbstractLoggableStreamerEvent(@NotNull Streamer streamer, @NotNull Instant instant){
+		this(streamer.getId(), streamer.getUsername(), streamer, instant);
 	}
 	
-	public AbstractLoggableStreamerEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant){
-		super(miner, instant);
+	public AbstractLoggableStreamerEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant){
+		super(instant);
 		this.streamerId = streamerId;
 		this.streamerUsername = streamerUsername;
 		this.streamer = streamer;

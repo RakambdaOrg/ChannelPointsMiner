@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.claimavailable.C
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
@@ -39,6 +40,8 @@ class ClaimAvailableHandlerTest{
 	@Mock
 	private IMiner miner;
 	@Mock
+	private IEventManager eventManager;
+	@Mock
 	private GQLApi gqlApi;
 	@Mock
 	private ClaimAvailable claimAvailable;
@@ -69,7 +72,7 @@ class ClaimAvailableHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, claimAvailable));
 		
 		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
-		verify(miner).onEvent(new ClaimAvailableEvent(miner, CHANNEL_ID, CHANNEL_NAME, streamer, NOW));
+		verify(eventManager).onEvent(new ClaimAvailableEvent(CHANNEL_ID, CHANNEL_NAME, streamer, NOW));
 	}
 	
 	@Test
@@ -85,6 +88,6 @@ class ClaimAvailableHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, claimAvailable));
 		
 		verify(gqlApi).claimCommunityPoints(CHANNEL_ID, CLAIM_ID);
-		verify(miner).onEvent(new ClaimAvailableEvent(miner, CHANNEL_ID, null, null, NOW));
+		verify(eventManager).onEvent(new ClaimAvailableEvent(CHANNEL_ID, null, null, NOW));
 	}
 }

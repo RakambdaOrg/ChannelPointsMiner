@@ -124,6 +124,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+jacoco {
+    toolVersion = libs.versions.jacocoVersion.get()
+}
+
 testlogger {
     theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD_PARALLEL
     showPassed = false

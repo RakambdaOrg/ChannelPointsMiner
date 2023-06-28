@@ -13,6 +13,7 @@ import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PredictionMadeEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PredictionResultEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;
@@ -42,6 +43,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 	
 	private final IMiner miner;
 	private final BetPlacer betPlacer;
+	private final IEventManager eventManager;
 	
 	@Getter(value = PROTECTED, onMethod_ = {
 			@TestOnly,
@@ -75,7 +77,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
             
             if(Objects.nonNull(streamer)){
-                miner.onEvent(new EventUpdatedEvent(miner, TimeFactory.now(), streamer.getUsername(), event));
+	            eventManager.onEvent(new EventUpdatedEvent(TimeFactory.now(), streamer.getUsername(), event));
             }
             
             var prediction = predictions.get(event.getId());
@@ -120,7 +122,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 				log.warn("Received prediction result without result data");
 				return;
 			}
-			miner.onEvent(new PredictionResultEvent(miner, streamerId, username, streamer, placedPredictions.get(eventId), message.getData()));
+			eventManager.onEvent(new PredictionResultEvent(streamerId, username, streamer, placedPredictions.get(eventId), message.getData()));
 			predictions.remove(eventId);
 			placedPredictions.remove(eventId);
 		}
@@ -154,7 +156,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 					.build();
 			
 			placedPredictions.put(eventId, placedPrediction);
-			miner.onEvent(new PredictionMadeEvent(miner, streamerId, username, streamer, placedPrediction));
+			eventManager.onEvent(new PredictionMadeEvent(streamerId, username, streamer, placedPrediction));
 		}
 	}
 	
@@ -175,7 +177,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 			return;
 		}
 		
-		miner.onEvent(new EventCreatedEvent(miner, streamer, event));
+		eventManager.onEvent(new EventCreatedEvent(streamer, event));
 		prediction.setState(PredictionState.SCHEDULING);
 		schedulePrediction(streamer, prediction);
 	}

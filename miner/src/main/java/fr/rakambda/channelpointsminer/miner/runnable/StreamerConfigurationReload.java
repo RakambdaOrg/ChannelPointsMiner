@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerUnknownEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
@@ -14,9 +15,13 @@ import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,6 +31,8 @@ public class StreamerConfigurationReload implements Runnable {
     @NotNull
     private final IMiner miner;
     @NotNull
+    private final IEventManager eventManager;
+	@NotNull
     private final StreamerSettingsFactory streamerSettingsFactory;
     private final boolean loadFollows;
 
@@ -161,7 +168,7 @@ public class StreamerConfigurationReload implements Runnable {
                 .map(ReportMenuItemData::getUser)
                 .map(User::getId);
         if (id.isEmpty()) {
-            miner.onEvent(new StreamerUnknownEvent(miner, username, TimeFactory.now()));
+	        eventManager.onEvent(new StreamerUnknownEvent(username, TimeFactory.now()));
         }
         return id;
     }

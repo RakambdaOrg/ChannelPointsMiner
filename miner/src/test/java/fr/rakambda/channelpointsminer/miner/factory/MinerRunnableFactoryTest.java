@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.runnable.SendMinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.StreamerConfigurationReload;
@@ -20,6 +21,8 @@ class MinerRunnableFactoryTest{
 	private IMiner miner;
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
+	@Mock
+	private IEventManager eventManager;
 	
 	@Test
 	void createUpdateStreamInfo(){
@@ -41,13 +44,13 @@ class MinerRunnableFactoryTest{
 	
 	@Test
 	void createSyncInventory(){
-		Assertions.assertThat(MinerRunnableFactory.createSyncInventory(miner)).isNotNull()
+		Assertions.assertThat(MinerRunnableFactory.createSyncInventory(miner, eventManager)).isNotNull()
 				.isInstanceOf(SyncInventory.class);
 	}
 	
 	@Test
 	void createStreamerConfigurationReload(){
-		Assertions.assertThat(MinerRunnableFactory.createStreamerConfigurationReload(miner, streamerSettingsFactory, false)).isNotNull()
+		Assertions.assertThat(MinerRunnableFactory.createStreamerConfigurationReload(miner, eventManager, streamerSettingsFactory, false)).isNotNull()
 				.isInstanceOf(StreamerConfigurationReload.class);
 	}
 }

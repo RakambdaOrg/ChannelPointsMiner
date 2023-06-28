@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.eventcreated.Eve
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PredictionState;
@@ -58,6 +59,8 @@ class PredictionsHandlerEventCreatedTest{
 	
 	@Mock
 	private IMiner miner;
+	@Mock
+	private IEventManager eventManager;
 	@Mock
 	private BetPlacer betPlacer;
 	@Mock
@@ -163,7 +166,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).containsOnly(Map.entry(EVENT_ID, expectedPrediction));
 			
 			verify(miner).schedule(any(), eq(60L), eq(TimeUnit.SECONDS));
-			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
+			verify(eventManager).onEvent(new EventCreatedEvent(streamer, event));
 			verify(betPlacer).placeBet(expectedPrediction);
 		}
 	}
@@ -179,7 +182,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(5L), eq(TimeUnit.SECONDS));
-			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
+			verify(eventManager).onEvent(new EventCreatedEvent(streamer, event));
 		}
 	}
 	
@@ -194,7 +197,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).isNotEmpty();
 			
 			verify(miner).schedule(any(), eq(WINDOW_SECONDS - 60L - 5L), eq(TimeUnit.SECONDS));
-			verify(miner).onEvent(new EventCreatedEvent(miner, streamer, event));
+			verify(eventManager).onEvent(new EventCreatedEvent(streamer, event));
 		}
 	}
 	
@@ -209,7 +212,7 @@ class PredictionsHandlerEventCreatedTest{
 			assertThat(tested.getPredictions()).hasSize(1);
 			
 			verify(miner, never()).schedule(any(), anyLong(), any());
-			verify(miner, never()).onEvent(any());
+			verify(eventManager, never()).onEvent(any());
 		}
 	}
 }

@@ -66,6 +66,10 @@ tasks {
     }
 }
 
+jacoco {
+    toolVersion = libs.versions.jacocoVersion.get()
+}
+
 jib {
     from {
         image = "eclipse-temurin:17-jdk"

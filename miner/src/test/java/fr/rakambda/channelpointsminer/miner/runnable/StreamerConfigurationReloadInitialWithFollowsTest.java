@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.StreamerSettingsFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
@@ -37,6 +38,8 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	@Mock
 	private IMiner miner;
 	@Mock
+	private IEventManager eventManager;
+	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
 	@Mock
 	private GQLApi gqlApi;
@@ -53,7 +56,7 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	
 	@BeforeEach
 	void setUp(){
-		tested = new StreamerConfigurationReload(miner, streamerSettingsFactory, true);
+		tested = new StreamerConfigurationReload(miner, eventManager, streamerSettingsFactory, true);
 		
 		lenient().when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.empty());
 		lenient().when(streamerSettingsFactory.createStreamerSettings(STREAMER_USERNAME)).thenReturn(streamerSettings);

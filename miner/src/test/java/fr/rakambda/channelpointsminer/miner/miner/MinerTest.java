@@ -19,10 +19,9 @@ import fr.rakambda.channelpointsminer.miner.config.ChatMode;
 import fr.rakambda.channelpointsminer.miner.config.VersionProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.ILoginMethod;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
-import fr.rakambda.channelpointsminer.miner.event.IEvent;
-import fr.rakambda.channelpointsminer.miner.event.IEventHandler;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerAddedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerRemovedEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.ApiFactory;
 import fr.rakambda.channelpointsminer.miner.factory.MinerRunnableFactory;
 import fr.rakambda.channelpointsminer.miner.factory.StreamerSettingsFactory;
@@ -87,6 +86,8 @@ class MinerTest{
 	@Mock
 	private AccountConfiguration accountConfiguration;
 	@Mock
+	private IEventManager eventManager;
+	@Mock
 	private AnalyticsConfiguration analyticsConfiguration;
 	@Mock
 	private ILoginProvider passportApi;
@@ -124,13 +125,11 @@ class MinerTest{
 	@Mock
 	private StreamerConfigurationReload streamerConfigurationReload;
 	@Mock
-	private IEventHandler eventHandler;
-	@Mock
 	private ILoginMethod loginMethod;
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
-		tested = new Miner(accountConfiguration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService, database);
+		tested = new Miner(accountConfiguration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService, database, eventManager);
 		
 		lenient().when(accountConfiguration.getUsername()).thenReturn(USERNAME);
 		lenient().when(accountConfiguration.getReloadEvery()).thenReturn(0);
@@ -164,12 +163,12 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, eventManager, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
 			
 			assertDoesNotThrow(() -> tested.start());
 			
@@ -192,11 +191,11 @@ class MinerTest{
 				var runnableFactory = mockStatic(MinerRunnableFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, true)).thenReturn(streamerConfigurationReload);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, eventManager, streamerSettingsFactory, true)).thenReturn(streamerConfigurationReload);
 			
 			lenient().when(accountConfiguration.getReloadEvery()).thenReturn(15);
 			lenient().when(accountConfiguration.isLoadFollows()).thenReturn(true);
@@ -219,11 +218,11 @@ class MinerTest{
 				var runnableFactory = mockStatic(MinerRunnableFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, eventManager, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
 			
 			lenient().when(accountConfiguration.getReloadEvery()).thenReturn(15);
 			
@@ -246,12 +245,12 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, eventManager, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
 			
@@ -277,12 +276,12 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, true)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
+			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, eventManager, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
 			when(analyticsConfiguration.isRecordUserPredictions()).thenReturn(true);
@@ -330,16 +329,15 @@ class MinerTest{
 	}
 	
 	@Test
-	void close() throws Exception{
+	void close(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
-			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			assertDoesNotThrow(() -> tested.close());
@@ -348,7 +346,7 @@ class MinerTest{
 			verify(executorService).shutdown();
 			verify(webSocketPool).close();
 			verify(twitchChatClient).close();
-			verify(eventHandler).close();
+			verify(eventManager).close();
 		}
 	}
 	
@@ -383,7 +381,7 @@ class MinerTest{
 				var timeFactory = mockStatic(TimeFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -392,7 +390,6 @@ class MinerTest{
 			
 			when(streamerSettings.isMakePredictions()).thenReturn(true);
 			
-			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			var streamer = mock(Streamer.class);
@@ -410,7 +407,7 @@ class MinerTest{
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventHandler).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
 	
@@ -421,7 +418,7 @@ class MinerTest{
 				var timeFactory = mockStatic(TimeFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -430,7 +427,6 @@ class MinerTest{
 			
 			when(streamerSettings.isClaimMoments()).thenReturn(true);
 			
-			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			var streamer = mock(Streamer.class);
@@ -447,7 +443,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_MOMENTS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventHandler).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
 	
@@ -458,7 +454,7 @@ class MinerTest{
 				var timeFactory = mockStatic(TimeFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -467,7 +463,6 @@ class MinerTest{
 			
 			when(streamerSettings.isFollowRaid()).thenReturn(true);
 			
-			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			var streamer = mock(Streamer.class);
@@ -484,7 +479,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventHandler).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
 	
@@ -496,7 +491,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -506,7 +501,6 @@ class MinerTest{
 			
 			lenient().when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
-			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			var streamer = mock(Streamer.class);
@@ -521,7 +515,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventHandler).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 			verify(twitchChatClient, never()).join(any());
 		}
 	}
@@ -534,7 +528,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -544,7 +538,6 @@ class MinerTest{
 			
 			lenient().when(streamerSettings.isJoinIrc()).thenReturn(true);
 			
-			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			var streamer = mock(Streamer.class);
@@ -560,7 +553,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventHandler).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 			verify(twitchChatClient).join(STREAMER_USERNAME);
 		}
 	}
@@ -572,14 +565,13 @@ class MinerTest{
 				var timeFactory = mockStatic(TimeFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			tested.addEventHandler(eventHandler);
 			tested.start();
 			
 			var streamer = mock(Streamer.class);
@@ -596,7 +588,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(eventHandler).onEvent(new StreamerAddedEvent(tested, streamer, NOW));
+			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
 	
@@ -628,7 +620,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -663,7 +655,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -675,7 +667,6 @@ class MinerTest{
 			when(streamer.getId()).thenReturn(STREAMER_ID);
 			when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
 			tested.getStreamerMap().put(STREAMER_ID, streamer);
-			tested.addEventHandler(eventHandler);
 			
 			tested.start();
 			tested.removeStreamer(streamer);
@@ -685,7 +676,7 @@ class MinerTest{
 			verify(webSocketPool).removeTopic(Topic.builder().name(COMMUNITY_MOMENTS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchChatClient).leave(STREAMER_USERNAME);
-			verify(eventHandler).onEvent(new StreamerRemovedEvent(tested, streamer, NOW));
+			verify(eventManager).onEvent(new StreamerRemovedEvent(streamer, NOW));
 		}
 	}
 	
@@ -696,13 +687,11 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			
-			tested.addEventHandler(eventHandler);
 			
 			var streamer = mock(Streamer.class);
 			when(streamer.getId()).thenReturn(STREAMER_ID);
@@ -713,7 +702,7 @@ class MinerTest{
 			
 			verify(webSocketPool, never()).removeTopic(any());
 			verify(twitchChatClient, never()).leave(any());
-			verify(eventHandler, never()).onEvent(any());
+			verify(eventManager, never()).onEvent(any());
 		}
 	}
 	
@@ -736,7 +725,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -773,7 +762,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -810,7 +799,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -845,7 +834,7 @@ class MinerTest{
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
@@ -882,34 +871,18 @@ class MinerTest{
 	}
 	
 	@Test
-	void eventHandlers(){
-		var handler1 = mock(IEventHandler.class);
-		var handler2 = mock(IEventHandler.class);
-		
-		tested.addEventHandler(handler1);
-		tested.addEventHandler(handler2);
-		
-		var event = mock(IEvent.class);
-		assertDoesNotThrow(() -> tested.onEvent(event));
-		
-		verify(executorService, times(2)).submit(any(Runnable.class));
-		verify(handler1).onEvent(event);
-		verify(handler2).onEvent(event);
-	}
-	
-	@Test
 	void requestInventorySync(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var runnableFactory = mockStatic(MinerRunnableFactory.class);
 				var ircFactory = mockStatic(TwitchChatFactory.class)){
 			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
-			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
-			runnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(tested)).thenReturn(syncInventory);
+			runnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(tested, eventManager)).thenReturn(syncInventory);
 			
 			assertDoesNotThrow(() -> tested.syncInventory());
 			

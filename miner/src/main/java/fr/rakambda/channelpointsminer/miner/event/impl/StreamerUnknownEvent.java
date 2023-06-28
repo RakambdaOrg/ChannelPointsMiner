@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.event.impl;
 
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
@@ -12,8 +11,8 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class StreamerUnknownEvent extends AbstractLoggableStreamerEvent{
-	public StreamerUnknownEvent(@NotNull IMiner miner, @NotNull String streamerUsername, @NotNull Instant instant){
-		super(miner, "-1", streamerUsername, null, instant);
+	public StreamerUnknownEvent(@NotNull String streamerUsername, @NotNull Instant instant){
+		super("-1", streamerUsername, null, instant);
 	}
 	
 	@Override

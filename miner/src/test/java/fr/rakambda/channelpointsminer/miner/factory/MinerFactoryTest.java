@@ -9,6 +9,7 @@ import fr.rakambda.channelpointsminer.miner.config.DiscordConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.login.ILoginMethod;
 import fr.rakambda.channelpointsminer.miner.database.DatabaseEventHandler;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
@@ -28,9 +29,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ParallelizableTest
@@ -57,6 +60,8 @@ class MinerFactoryTest{
 	private DatabaseEventHandler databaseEventHandler;
 	@Mock
 	private ILoginMethod loginMethod;
+	@Mock
+	private IEventManager eventManager;
 	
 	@BeforeEach
 	void setUp(){
@@ -70,9 +75,9 @@ class MinerFactoryTest{
 	@Test
 	void nominal(){
 		try(var apiFactory = mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			
-			var miner = MinerFactory.create(accountConfiguration);
+			var miner = MinerFactory.create(accountConfiguration, eventManager);
 			
 			Assertions.assertThat(miner.getPubSubMessageHandlers())
 					.hasSize(6)
@@ -83,9 +88,8 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(PointsHandler.class)
 					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
 			
-			Assertions.assertThat(miner.getEventHandlers())
-					.hasSize(1)
-					.hasAtLeastOneElementOfType(LoggerEventListener.class);
+			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
+			verifyNoMoreInteractions(eventManager);
 			
 			miner.close();
 		}
@@ -96,12 +100,12 @@ class MinerFactoryTest{
 		try(var apiFactory = mockStatic(ApiFactory.class)){
 			var discordWebhook = new URL("https://discord-webhook");
 			
-			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			apiFactory.when(() -> ApiFactory.createdDiscordApi(discordWebhook)).thenReturn(discordApi);
 			
 			when(discordConfiguration.getUrl()).thenReturn(discordWebhook);
 			
-			var miner = MinerFactory.create(accountConfiguration);
+			var miner = MinerFactory.create(accountConfiguration, eventManager);
 			
 			Assertions.assertThat(miner.getPubSubMessageHandlers())
 					.hasSize(6)
@@ -112,10 +116,9 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(PointsHandler.class)
 					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
 			
-			Assertions.assertThat(miner.getEventHandlers())
-					.hasSize(2)
-					.hasAtLeastOneElementOfType(LoggerEventListener.class)
-					.hasAtLeastOneElementOfType(DiscordEventListener.class);
+			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
+			verify(eventManager).addEventHandler(any(DiscordEventListener.class));
+			verifyNoMoreInteractions(eventManager);
 			
 			miner.close();
 		}
@@ -125,14 +128,14 @@ class MinerFactoryTest{
 	void nominalWithAnalytics() throws SQLException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var databaseFactory = mockStatic(DatabaseFactory.class)){
-			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			databaseFactory.when(() -> DatabaseFactory.createDatabase(databaseConfiguration)).thenReturn(database);
 			databaseFactory.when(() -> DatabaseFactory.createDatabaseHandler(database, RECORD_USER_PREDICTIONS)).thenReturn(databaseEventHandler);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
 			when(analyticsConfiguration.getDatabase()).thenReturn(databaseConfiguration);
 			
-			var miner = MinerFactory.create(accountConfiguration);
+			var miner = MinerFactory.create(accountConfiguration, eventManager);
 			
 			Assertions.assertThat(miner.getPubSubMessageHandlers())
 					.hasSize(6)
@@ -143,10 +146,9 @@ class MinerFactoryTest{
 					.hasAtLeastOneElementOfType(PointsHandler.class)
 					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
 			
-			Assertions.assertThat(miner.getEventHandlers())
-					.hasSize(2)
-					.hasAtLeastOneElementOfType(LoggerEventListener.class)
-					.hasAtLeastOneElementOfType(DatabaseEventHandler.class);
+			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
+			verify(eventManager).addEventHandler(any(DatabaseEventHandler.class));
+			verifyNoMoreInteractions(eventManager);
 			
 			verify(database).deleteAllUserPredictions();
 			
@@ -158,22 +160,22 @@ class MinerFactoryTest{
 	void nominalWithAnalyticsException(){
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var databaseFactory = mockStatic(DatabaseFactory.class)){
-			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			databaseFactory.when(() -> DatabaseFactory.createDatabase(null)).thenThrow(new SQLException("For tests"));
 			
-			assertThrows(IllegalStateException.class, () -> MinerFactory.create(accountConfiguration));
+			assertThrows(IllegalStateException.class, () -> MinerFactory.create(accountConfiguration, eventManager));
 		}
 	}
 	
 	@Test
 	void nominalWithAnalyticsButNoDatabase(){
 		try(var apiFactory = mockStatic(ApiFactory.class)){
-			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
 			when(analyticsConfiguration.getDatabase()).thenReturn(null);
 			
-			assertThrows(IllegalStateException.class, () -> MinerFactory.create(accountConfiguration));
+			assertThrows(IllegalStateException.class, () -> MinerFactory.create(accountConfiguration, eventManager));
 		}
 	}
 }
