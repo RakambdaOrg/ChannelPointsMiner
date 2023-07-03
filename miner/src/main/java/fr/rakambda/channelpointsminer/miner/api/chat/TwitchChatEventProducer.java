@@ -1,15 +1,15 @@
 package fr.rakambda.channelpointsminer.miner.api.chat;
 
 import fr.rakambda.channelpointsminer.miner.event.impl.ChatMessageEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class TwitchChatEventProducer implements ITwitchChatMessageListener{
 	@NotNull
-	private final IMiner miner;
+	private final IEventManager eventManager;
 	
 	@Override
 	public void onChatMessage(@NotNull String streamer, @NotNull String actor, @NotNull String message){
@@ -18,7 +18,7 @@ public class TwitchChatEventProducer implements ITwitchChatMessageListener{
 	
 	@Override
 	public void onChatMessage(@NotNull String streamer, @NotNull String actor, @NotNull String message, @NotNull String badges){
-		var event = new ChatMessageEvent(miner, TimeFactory.now(), streamer, actor, message, badges);
-		miner.onEvent(event);
+		var event = new ChatMessageEvent(TimeFactory.now(), streamer, actor, message, badges);
+		eventManager.onEvent(event);
 	}
 }

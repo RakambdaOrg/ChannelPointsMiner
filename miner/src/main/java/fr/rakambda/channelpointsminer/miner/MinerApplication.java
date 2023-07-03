@@ -3,6 +3,7 @@ package fr.rakambda.channelpointsminer.miner;
 import fr.rakambda.channelpointsminer.miner.cli.CLIHolder;
 import fr.rakambda.channelpointsminer.miner.cli.CLIParameters;
 import fr.rakambda.channelpointsminer.miner.event.impl.MinerStartedEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.EventManager;
 import fr.rakambda.channelpointsminer.miner.factory.ConfigurationFactory;
 import fr.rakambda.channelpointsminer.miner.factory.MinerFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.Executors;
 import static kong.unirest.core.HeaderNames.USER_AGENT;
 
 @Log4j2
@@ -37,9 +39,12 @@ public class MinerApplication{
 		
 		for(var accountConfiguration : accountConfigurations.getAccounts()){
 			if(accountConfiguration.isEnabled()){
-				var miner = MinerFactory.create(accountConfiguration);
+				var eventManager = new EventManager(Executors.newCachedThreadPool());
+				var miner = MinerFactory.create(accountConfiguration, eventManager);
+				eventManager.setMiner(miner);
+				
 				miner.start();
-				miner.onEvent(new MinerStartedEvent(miner, version, commitId, branch, TimeFactory.now()));
+				eventManager.onEvent(new MinerStartedEvent(version, commitId, branch, TimeFactory.now()));
 			}
 			else{
 				log.info("Account {} is disabled, skipping it", accountConfiguration.getUsername());

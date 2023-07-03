@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.event.impl;
 
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +15,8 @@ public class MinerStartedEvent extends AbstractLoggableEvent{
 	private final String commit;
 	private final String branch;
 	
-	public MinerStartedEvent(@NotNull IMiner miner, @NotNull String version, @NotNull String commit, @NotNull String branch, @NotNull Instant instant){
-		super(miner, instant);
+	public MinerStartedEvent(@NotNull String version, @NotNull String commit, @NotNull String branch, @NotNull Instant instant){
+		super(instant);
 		this.version = version;
 		this.commit = commit;
 		this.branch = branch;

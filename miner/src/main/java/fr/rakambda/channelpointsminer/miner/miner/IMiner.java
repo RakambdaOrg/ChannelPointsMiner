@@ -6,7 +6,6 @@ import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
-import fr.rakambda.channelpointsminer.miner.event.IEventHandler;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public interface IMiner extends IEventHandler{
+public interface IMiner{
 	@NotNull
 	Optional<Streamer> getStreamerById(@NotNull String id);
 	

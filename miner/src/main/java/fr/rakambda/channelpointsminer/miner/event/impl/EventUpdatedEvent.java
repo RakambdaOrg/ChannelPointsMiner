@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
@@ -16,11 +17,12 @@ import java.time.Instant;
 @Getter
 public class EventUpdatedEvent implements IEvent{
 	@NotNull
-	private final IMiner miner;
-	@NotNull
 	private final Instant instant;
 	@NotNull
 	private final String streamerUsername;
 	@NotNull
 	private final Event event;
+	
+	@Setter
+	private IMiner miner;
 }

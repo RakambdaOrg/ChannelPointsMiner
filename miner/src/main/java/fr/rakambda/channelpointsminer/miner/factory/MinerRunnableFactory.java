@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.runnable.SendMinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.StreamerConfigurationReload;
@@ -28,12 +29,12 @@ public class MinerRunnableFactory{
 	}
 	
 	@NotNull
-	public static SyncInventory createSyncInventory(@NotNull IMiner miner){
-		return new SyncInventory(miner);
+	public static SyncInventory createSyncInventory(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+		return new SyncInventory(miner, eventManager);
 	}
 	
 	@NotNull
-	public static StreamerConfigurationReload createStreamerConfigurationReload(@NotNull IMiner miner, @NotNull StreamerSettingsFactory streamerSettingsFactory, boolean loadFollows){
-		return new StreamerConfigurationReload(miner, streamerSettingsFactory, loadFollows);
+	public static StreamerConfigurationReload createStreamerConfigurationReload(@NotNull IMiner miner, @NotNull IEventManager eventManager, @NotNull StreamerSettingsFactory streamerSettingsFactory, boolean loadFollows){
+		return new StreamerConfigurationReload(miner, eventManager, streamerSettingsFactory, loadFollows);
 	}
 }

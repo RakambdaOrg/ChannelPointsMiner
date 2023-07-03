@@ -10,4 +10,6 @@ public interface IEvent{
 	
 	@NotNull
 	IMiner getMiner();
+	
+	void setMiner(@NotNull IMiner miner);
 }

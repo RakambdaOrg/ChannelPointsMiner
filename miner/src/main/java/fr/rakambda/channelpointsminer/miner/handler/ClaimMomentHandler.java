@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CommunityMomentS
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -17,7 +18,10 @@ import java.util.Objects;
 @Log4j2
 @RequiredArgsConstructor
 public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
+	@NotNull
 	private final IMiner miner;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	@Override
 	public void onCommunityMomentStart(@NotNull Topic topic, @NotNull CommunityMomentStart message){
@@ -25,7 +29,7 @@ public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
 		var streamer = miner.getStreamerById(channelId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
 		try(var ignored = LogContext.with(miner).withStreamer(streamer)){
-			miner.onEvent(new ClaimMomentEvent(miner, channelId, username, streamer, TimeFactory.now()));
+			eventManager.onEvent(new ClaimMomentEvent(channelId, username, streamer, TimeFactory.now()));
 			miner.getGqlApi().claimCommunityMoment(message.getData().getMomentId())
 					.filter(response -> !response.isError())
 					.map(GQLResponse::getData)
@@ -37,8 +41,8 @@ public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
 						log.error("Failed to claim moment due to `{}`", moment.getError());
 						return false;
 					})
-					.map(moment -> new ClaimedMomentEvent(miner, channelId, username, streamer, TimeFactory.now()))
-					.ifPresent(miner::onEvent);
+					.map(moment -> new ClaimedMomentEvent(channelId, username, streamer, TimeFactory.now()))
+					.ifPresent(eventManager::onEvent);
 		}
 	}
 }

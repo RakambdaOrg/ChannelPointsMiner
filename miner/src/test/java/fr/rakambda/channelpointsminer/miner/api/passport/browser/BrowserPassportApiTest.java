@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginExcepti
 import fr.rakambda.channelpointsminer.miner.browser.Browser;
 import fr.rakambda.channelpointsminer.miner.browser.BrowserController;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.BrowserFactory;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -42,6 +43,8 @@ class BrowserPassportApiTest{
 	@Mock
 	private BrowserConfiguration browserConfiguration;
 	@Mock
+	private IEventManager eventManager;
+	@Mock
 	private Browser browser;
 	@Mock
 	private BrowserController browserController;
@@ -67,7 +70,7 @@ class BrowserPassportApiTest{
 	@Test
 	void loginIsExtracted() throws LoginException{
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			assertThat(tested.login()).isEqualTo(TwitchLogin.builder()
 					.twitchClient(TwitchClient.WEB)
@@ -81,7 +84,7 @@ class BrowserPassportApiTest{
 	@Test
 	void loginIsExtractedWithCookies() throws LoginException, IOException{
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			var pathStr = "/path/to/cookies.json";
 			when(browserConfiguration.getCookiesPath()).thenReturn(pathStr);
@@ -100,7 +103,7 @@ class BrowserPassportApiTest{
 	@Test
 	void exceptionBecauseNoLogin(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(manager.getCookieNamed("login")).thenReturn(null);
 			
@@ -111,7 +114,7 @@ class BrowserPassportApiTest{
 	@Test
 	void exceptionBecauseNoAuth(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(manager.getCookieNamed("auth-token")).thenReturn(null);
 			
@@ -122,7 +125,7 @@ class BrowserPassportApiTest{
 	@Test
 	void onExceptionLoggingIn() throws LoginException, IOException{
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			doThrow(new LoginException("For tests")).when(browserController).login(null);
 			
@@ -133,7 +136,7 @@ class BrowserPassportApiTest{
 	@Test
 	void onExceptionCreatingBrowser(){
 		try(var browserFactory = mockStatic(BrowserFactory.class)){
-			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration)).thenReturn(browser);
+			browserFactory.when(() -> BrowserFactory.createBrowser(browserConfiguration, eventManager)).thenReturn(browser);
 			
 			when(browser.setup()).thenThrow(new RuntimeException("For tests"));
 			

@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
@@ -16,13 +17,13 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class PubSubMessageHandlerFactory{
 	@NotNull
-	public static IPubSubMessageHandler createClaimAvailableHandler(@NotNull IMiner miner){
-		return new ClaimAvailableHandler(miner);
+	public static IPubSubMessageHandler createClaimAvailableHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+		return new ClaimAvailableHandler(miner, eventManager);
 	}
 	
 	@NotNull
-	public static IPubSubMessageHandler createStreamStartEndHandler(@NotNull IMiner miner){
-		return new StreamStartEndHandler(miner);
+	public static IPubSubMessageHandler createStreamStartEndHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+		return new StreamStartEndHandler(miner, eventManager);
 	}
 	
 	@NotNull
@@ -31,17 +32,17 @@ public class PubSubMessageHandlerFactory{
 	}
 	
 	@NotNull
-	public static IPubSubMessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer){
-		return new PredictionsHandler(miner, betPlacer);
+	public static IPubSubMessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer, @NotNull IEventManager eventManager){
+		return new PredictionsHandler(miner, betPlacer, eventManager);
 	}
 	
 	@NotNull
-	public static IPubSubMessageHandler createPointsHandler(@NotNull IMiner miner){
-		return new PointsHandler(miner);
+	public static IPubSubMessageHandler createPointsHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+		return new PointsHandler(miner, eventManager);
 	}
 	
 	@NotNull
-	public static IPubSubMessageHandler createClaimMomentHandler(@NotNull IMiner miner){
-		return new ClaimMomentHandler(miner);
+	public static IPubSubMessageHandler createClaimMomentHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+		return new ClaimMomentHandler(miner, eventManager);
 	}
 }

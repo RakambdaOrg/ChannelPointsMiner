@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.BrowserFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,13 +19,16 @@ import java.util.Optional;
 @Log4j2
 @RequiredArgsConstructor
 public class BrowserLoginProvider implements ILoginProvider{
+	@NotNull
 	private final BrowserConfiguration browserConfiguration;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	@Override
 	@NotNull
 	public TwitchLogin login() throws LoginException{
 		log.info("Logging in");
-		try(var browser = BrowserFactory.createBrowser(browserConfiguration)){
+		try(var browser = BrowserFactory.createBrowser(browserConfiguration, eventManager)){
 			var controller = browser.setup();
 			var cookiesPath = Optional.ofNullable(browserConfiguration.getCookiesPath()).map(Paths::get).orElse(null);
 			

@@ -26,6 +26,7 @@ import fr.rakambda.channelpointsminer.miner.config.login.IOauthApiLoginProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.IPassportApiLoginProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.MobileLoginMethod;
 import fr.rakambda.channelpointsminer.miner.config.login.TvLoginMethod;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.log.UnirestLogger;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
@@ -110,7 +111,7 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static ILoginProvider createLoginProvider(@NotNull String username, @NotNull ILoginMethod loginMethod){
+	public static ILoginProvider createLoginProvider(@NotNull String username, @NotNull ILoginMethod loginMethod, @NotNull IEventManager eventManager){
 		if(loginMethod instanceof IPassportApiLoginProvider passportApiLoginProvider){
 			var twitchClient = passportApiLoginProvider.getTwitchClient();
 			var unirest = createUnirestInstance(twitchClient);
@@ -122,7 +123,7 @@ public class ApiFactory{
 			
 			var cachePath = passportApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
 			TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
-			return new HttpLoginProvider(twitchClient, unirest, username, passportApiLoginProvider, cacher);
+			return new HttpLoginProvider(twitchClient, unirest, username, passportApiLoginProvider, cacher, eventManager);
 		}
 		if(loginMethod instanceof IOauthApiLoginProvider oauthApiLoginProvider){
 			var twitchClient = oauthApiLoginProvider.getTwitchClient();
@@ -130,16 +131,16 @@ public class ApiFactory{
 			
 			var cachePath = oauthApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
 			TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
-			return new OauthLoginProvider(twitchClient, unirest, username, cacher);
+			return new OauthLoginProvider(twitchClient, unirest, username, cacher, eventManager);
 		}
 		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
-			return new BrowserLoginProvider(browserConfiguration);
+			return new BrowserLoginProvider(browserConfiguration, eventManager);
 		}
 		throw new IllegalStateException("Unknown login method");
 	}
 	
 	@NotNull
-	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @NotNull ILoginMethod loginMethod){
+	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @NotNull ILoginMethod loginMethod, @NotNull IEventManager eventManager){
 		if(loginMethod instanceof HttpLoginMethod){
 			return createHttpIntegrityProvider(twitchLogin, versionProvider);
 		}
@@ -150,7 +151,7 @@ public class ApiFactory{
 			return new NoIntegrityProvider();
 		}
 		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
-			return createBrowserIntegrityProvider(browserConfiguration);
+			return createBrowserIntegrityProvider(browserConfiguration, eventManager);
 		}
 		throw new IllegalStateException("Unknown login method");
 	}
@@ -178,8 +179,8 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	private static IIntegrityProvider createBrowserIntegrityProvider(@NotNull BrowserConfiguration configuration){
-		return new BrowserIntegrityProvider(configuration);
+	private static IIntegrityProvider createBrowserIntegrityProvider(@NotNull BrowserConfiguration configuration, @NotNull IEventManager eventManager){
+		return new BrowserIntegrityProvider(configuration, eventManager);
 	}
 	
 	@NotNull

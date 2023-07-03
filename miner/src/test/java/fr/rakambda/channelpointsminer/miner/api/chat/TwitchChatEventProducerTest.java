@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.api.chat;
 
 import fr.rakambda.channelpointsminer.miner.event.impl.ChatMessageEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -28,7 +28,7 @@ class TwitchChatEventProducerTest{
 	private TwitchChatEventProducer tested;
 	
 	@Mock
-	private IMiner miner;
+	private IEventManager eventManager;
 	
 	@Test
 	void onMessage(){
@@ -37,8 +37,8 @@ class TwitchChatEventProducerTest{
 			
 			assertDoesNotThrow(() -> tested.onChatMessage(STREAMER_NAME, ACTOR, MESSAGE));
 			
-			var expectedEvent = new ChatMessageEvent(miner, NOW, STREAMER_NAME, ACTOR, MESSAGE, "");
-			verify(miner).onEvent(expectedEvent);
+			var expectedEvent = new ChatMessageEvent(NOW, STREAMER_NAME, ACTOR, MESSAGE, "");
+			verify(eventManager).onEvent(expectedEvent);
 		}
 	}
 	
@@ -48,8 +48,8 @@ class TwitchChatEventProducerTest{
 			factory.when(TimeFactory::now).thenReturn(NOW);
 			assertDoesNotThrow(() -> tested.onChatMessage(STREAMER_NAME, ACTOR, MESSAGE, BADGE));
 			
-			var expectedEvent = new ChatMessageEvent(miner, NOW, STREAMER_NAME, ACTOR, MESSAGE, BADGE);
-			verify(miner).onEvent(expectedEvent);
+			var expectedEvent = new ChatMessageEvent(NOW, STREAMER_NAME, ACTOR, MESSAGE, BADGE);
+			verify(eventManager).onEvent(expectedEvent);
 		}
 	}
 }

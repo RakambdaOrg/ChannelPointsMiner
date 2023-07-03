@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamUp;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamUpEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
@@ -38,6 +39,8 @@ class StreamStartEndHandlerTest{
 	
 	@Mock
 	private IMiner miner;
+	@Mock
+	private IEventManager eventManager;
 	@Mock
 	private Streamer streamer;
 	@Mock
@@ -75,7 +78,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
-		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_NAME, streamer, NOW));
+		verify(eventManager).onEvent(new StreamUpEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
 		verify(chatClient, never()).join(any());
 	}
 	
@@ -93,7 +96,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
-		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, STREAMER_NAME, streamer, NOW));
+		verify(eventManager).onEvent(new StreamUpEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
 		verify(chatClient).join(STREAMER_NAME);
 	}
 	
@@ -104,7 +107,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamUpMessage));
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
-		verify(miner).onEvent(new StreamUpEvent(miner, STREAMER_ID, null, null, NOW));
+		verify(eventManager).onEvent(new StreamUpEvent(STREAMER_ID, null, null, NOW));
 		verify(chatClient, never()).join(any());
 	}
 	
@@ -121,7 +124,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamDownMessage));
 		
 		verify(miner).updateStreamerInfos(streamer);
-		verify(miner).onEvent(new StreamDownEvent(miner, STREAMER_ID, STREAMER_NAME, streamer, NOW));
+		verify(eventManager).onEvent(new StreamDownEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
 		verify(chatClient).leave(STREAMER_NAME);
 	}
 	
@@ -132,7 +135,7 @@ class StreamStartEndHandlerTest{
 		assertDoesNotThrow(() -> tested.handle(topic, streamDownMessage));
 		
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
-		verify(miner).onEvent(new StreamDownEvent(miner, STREAMER_ID, null, null, NOW));
+		verify(eventManager).onEvent(new StreamDownEvent(STREAMER_ID, null, null, NOW));
 		verify(chatClient, never()).leave(any());
 	}
 }

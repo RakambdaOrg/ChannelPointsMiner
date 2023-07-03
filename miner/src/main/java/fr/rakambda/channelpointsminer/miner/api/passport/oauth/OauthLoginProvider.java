@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.api.passport.oauth;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
@@ -8,25 +7,19 @@ import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLoginCacher;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.data.DeviceResponse;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.data.TokenResponse;
-import fr.rakambda.channelpointsminer.miner.config.login.IOauthApiLoginProvider;
+import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
-import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.UnirestInstance;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 @Log4j2
 public class OauthLoginProvider implements ILoginProvider{
@@ -38,12 +31,14 @@ public class OauthLoginProvider implements ILoginProvider{
 	private final UnirestInstance unirest;
 	private final String username;
 	private final TwitchLoginCacher twitchLoginCacher;
+	private final IEventManager eventManager;
 	
-	public OauthLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull TwitchLoginCacher twitchLoginCacher){
+	public OauthLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull TwitchLoginCacher twitchLoginCacher, @NotNull IEventManager eventManager){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
 		this.twitchLoginCacher = twitchLoginCacher;
+		this.eventManager = eventManager;
 	}
 	
 	/**
@@ -69,6 +64,10 @@ public class OauthLoginProvider implements ILoginProvider{
 		}
 		
 		DeviceResponse deviceToken = generateDeviceToken();
+		eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "TV login required, open page %s and provide the following token within %s: %s".formatted(
+				deviceToken.getVerificationUri(),
+				Duration.ofSeconds(deviceToken.getExpiresIn()),
+				deviceToken.getUserCode())));
 		log.info("Please open page {} and provide the following token within {}: {}",
 				deviceToken.getVerificationUri(),
 				Duration.ofSeconds(deviceToken.getExpiresIn()),

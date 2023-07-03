@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.event.impl;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
@@ -15,8 +14,8 @@ import java.util.Map;
 public class DropClaimedEvent extends AbstractLoggableEvent{
 	private final TimeBasedDrop drop;
 	
-	public DropClaimedEvent(@NotNull IMiner miner, @NotNull TimeBasedDrop drop, @NotNull Instant instant){
-		super(miner, instant);
+	public DropClaimedEvent(@NotNull TimeBasedDrop drop, @NotNull Instant instant){
+		super(instant);
 		this.drop = drop;
 	}
 	

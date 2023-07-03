@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.event.impl;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,8 +14,8 @@ import java.util.Map;
 public class EventCreatedEvent extends AbstractLoggableStreamerEvent{
 	private final Event event;
 	
-	public EventCreatedEvent(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull Event event){
-		super(miner, streamer, event.getCreatedAt().toInstant());
+	public EventCreatedEvent(@NotNull Streamer streamer, @NotNull Event event){
+		super(streamer, event.getCreatedAt().toInstant());
 		this.event = event;
 	}
 	

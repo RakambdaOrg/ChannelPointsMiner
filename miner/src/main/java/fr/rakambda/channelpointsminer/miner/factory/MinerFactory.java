@@ -3,6 +3,7 @@ package fr.rakambda.channelpointsminer.miner.factory;
 import com.zaxxer.hikari.pool.HikariPool;
 import fr.rakambda.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,31 +15,32 @@ import java.util.concurrent.Executors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinerFactory{
 	@NotNull
-	public static Miner create(@NotNull AccountConfiguration config){
+	public static Miner create(@NotNull AccountConfiguration config, @NotNull IEventManager eventManager){
 		try{
 			var dbConfig = config.getAnalytics().getDatabase();
 			var database = DatabaseFactory.createDatabase(dbConfig);
 			
 			var miner = new Miner(
 					config,
-					ApiFactory.createLoginProvider(config.getUsername(), config.getLoginMethod()),
+					ApiFactory.createLoginProvider(config.getUsername(), config.getLoginMethod(), eventManager),
 					new StreamerSettingsFactory(config),
 					new TwitchPubSubWebSocketPool(50),
 					Executors.newScheduledThreadPool(4),
 					Executors.newCachedThreadPool(),
-					database);
+					database,
+					eventManager);
 			
-			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimAvailableHandler(miner));
-			miner.addPubSubHandler(PubSubMessageHandlerFactory.createStreamStartEndHandler(miner));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimAvailableHandler(miner, eventManager));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createStreamStartEndHandler(miner, eventManager));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createFollowRaidHandler(miner));
-			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner)));
-			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPointsHandler(miner));
-			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimMomentHandler(miner));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner), eventManager));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPointsHandler(miner, eventManager));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimMomentHandler(miner, eventManager));
 			
-			miner.addEventHandler(LogEventListenerFactory.createLogger());
+			eventManager.addEventHandler(LogEventListenerFactory.createLogger());
 			if(Objects.nonNull(config.getDiscord().getUrl())){
 				var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
-				miner.addEventHandler(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord()));
+				eventManager.addEventHandler(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord()));
 			}
 			
 			if(config.getAnalytics().isEnabled()){
@@ -47,7 +49,7 @@ public class MinerFactory{
 				}
 				
 				database.deleteAllUserPredictions();
-				miner.addEventHandler(DatabaseFactory.createDatabaseHandler(database, config.getAnalytics().isRecordUserPredictions()));
+				eventManager.addEventHandler(DatabaseFactory.createDatabaseHandler(database, config.getAnalytics().isRecordUserPredictions()));
 			}
 			
 			return miner;

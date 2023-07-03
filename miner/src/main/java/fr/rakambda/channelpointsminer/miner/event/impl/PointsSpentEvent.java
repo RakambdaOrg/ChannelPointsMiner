@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.event.impl;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.PointsSpentData;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
-import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,8 +17,8 @@ public class PointsSpentEvent extends AbstractLoggableStreamerEvent{
 	@Getter
 	private final PointsSpentData pointsSpentData;
 	
-	public PointsSpentEvent(@NotNull IMiner miner, @NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PointsSpentData pointsSpentData){
-		super(miner, streamerId, streamerUsername, streamer, pointsSpentData.getTimestamp().toInstant());
+	public PointsSpentEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PointsSpentData pointsSpentData){
+		super(streamerId, streamerUsername, streamer, pointsSpentData.getTimestamp().toInstant());
 		this.pointsSpentData = pointsSpentData;
 	}
 	

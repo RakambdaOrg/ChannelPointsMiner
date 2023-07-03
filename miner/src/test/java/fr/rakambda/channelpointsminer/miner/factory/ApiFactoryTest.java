@@ -21,6 +21,7 @@ import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.login.HttpLoginMethod;
 import fr.rakambda.channelpointsminer.miner.config.login.MobileLoginMethod;
 import fr.rakambda.channelpointsminer.miner.config.login.TvLoginMethod;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -55,6 +56,8 @@ class ApiFactoryTest{
 	private TvLoginMethod tvLoginMethod;
 	@Mock
 	private BrowserConfiguration browserConfiguration;
+	@Mock
+	private IEventManager eventManager;
 	@Mock
 	private URL url;
 	
@@ -94,7 +97,7 @@ class ApiFactoryTest{
 	void createHttpPassportApi(){
 		var httpLoginMethod = mock(HttpLoginMethod.class);
 		when(httpLoginMethod.getAuthenticationFolder()).thenReturn(Paths.get("."));
-		assertThat(ApiFactory.createLoginProvider("user", httpLoginMethod)).isNotNull().isInstanceOf(HttpLoginProvider.class);
+		assertThat(ApiFactory.createLoginProvider("user", httpLoginMethod, eventManager)).isNotNull().isInstanceOf(HttpLoginProvider.class);
 	}
 	
 	@Test
@@ -103,7 +106,7 @@ class ApiFactoryTest{
 		when(mobileLoginMethod.getTwitchClient()).thenReturn(TwitchClient.MOBILE);
 		
 		when(mobileLoginMethod.getAuthenticationFolder()).thenReturn(Paths.get("."));
-		assertThat(ApiFactory.createLoginProvider("user", mobileLoginMethod)).isNotNull().isInstanceOf(HttpLoginProvider.class);
+		assertThat(ApiFactory.createLoginProvider("user", mobileLoginMethod, eventManager)).isNotNull().isInstanceOf(HttpLoginProvider.class);
 	}
 	
 	@Test
@@ -112,32 +115,32 @@ class ApiFactoryTest{
 		when(mobileLoginMethod.getTwitchClient()).thenReturn(TwitchClient.ANDROID_TV);
 		
 		when(mobileLoginMethod.getAuthenticationFolder()).thenReturn(Paths.get("."));
-		assertThat(ApiFactory.createLoginProvider("user", mobileLoginMethod)).isNotNull().isInstanceOf(OauthLoginProvider.class);
+		assertThat(ApiFactory.createLoginProvider("user", mobileLoginMethod, eventManager)).isNotNull().isInstanceOf(OauthLoginProvider.class);
 	}
 	
 	@Test
 	void createBrowserPassportApi(){
-		assertThat(ApiFactory.createLoginProvider("user", browserConfiguration)).isNotNull().isInstanceOf(BrowserLoginProvider.class);
+		assertThat(ApiFactory.createLoginProvider("user", browserConfiguration, eventManager)).isNotNull().isInstanceOf(BrowserLoginProvider.class);
 	}
 	
 	@Test
 	void createHttpIntegrityProvider(){
-		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, httpLoginMethod)).isNotNull().isInstanceOf(HttpIntegrityProvider.class);
+		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, httpLoginMethod, eventManager)).isNotNull().isInstanceOf(HttpIntegrityProvider.class);
 	}
 	
 	@Test
 	void createMobileIntegrityProvider(){
-		assertThat(ApiFactory.createIntegrityProvider(mobileTwitchLogin, versionProvider, mobileLoginMethod)).isNotNull().isInstanceOf(MobileIntegrityProvider.class);
+		assertThat(ApiFactory.createIntegrityProvider(mobileTwitchLogin, versionProvider, mobileLoginMethod, eventManager)).isNotNull().isInstanceOf(MobileIntegrityProvider.class);
 	}
 	
 	@Test
 	void createTvIntegrityProvider(){
-		assertThat(ApiFactory.createIntegrityProvider(tvTwitchLogin, versionProvider, tvLoginMethod)).isNotNull().isInstanceOf(NoIntegrityProvider.class);
+		assertThat(ApiFactory.createIntegrityProvider(tvTwitchLogin, versionProvider, tvLoginMethod, eventManager)).isNotNull().isInstanceOf(NoIntegrityProvider.class);
 	}
 	
 	@Test
 	void createBrowserIntegrityProvider(){
-		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, browserConfiguration)).isNotNull().isInstanceOf(BrowserIntegrityProvider.class);
+		assertThat(ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, browserConfiguration, eventManager)).isNotNull().isInstanceOf(BrowserIntegrityProvider.class);
 	}
 	
 	@Test
