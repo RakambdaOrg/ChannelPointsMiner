@@ -27,18 +27,18 @@ jobs:
         with:
           arguments: |
             :miner:jib
-            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
-            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
-            -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}"
+            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.image=${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
         uses: gradle/gradle-build-action@v2
         with:
           arguments: |
             :miner:jib
-            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
-            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
-            -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:latest"
+            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.image=${DOCKER_MINER_IMAGE_NAME}:latest
 
   publish-viewer:
     name: Publish Viewer on DockerHub
@@ -58,15 +58,15 @@ jobs:
         with:
           arguments: |
             :viewer:jib
-            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
-            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
-            -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}"
+            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.image=${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
         uses: gradle/gradle-build-action@v2
         with:
           arguments: |
             :viewer:jib
-            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
-            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
-            -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:latest"
+            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.image=${DOCKER_VIEWER_IMAGE_NAME}:latest
