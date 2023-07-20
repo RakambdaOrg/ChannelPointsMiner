@@ -29,6 +29,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:

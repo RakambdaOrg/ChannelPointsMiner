@@ -31,12 +31,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradlew executable
-        run: chmod +x ./gradlew
+
       - name: Build project
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: assemble --scan
+          arguments: |
+            assemble
+            --scan
+
       - name: Upload miner jar file
         uses: actions/upload-artifact@v3
         with:
@@ -68,12 +70,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradlew executable
-        run: chmod +x ./gradlew
+
       - name: Run tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :miner:test --scan
+          arguments: |
+            :miner:test
+            --scan
+
       - name: Generate JaCoCo report
         uses: gradle/gradle-build-action@v2
         if: always()
@@ -127,12 +131,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradlew executable
-        run: chmod +x ./gradlew
+
       - name: Run tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :viewer:test --scan
+          arguments: |
+            :viewer:test
+            --scan
+
       - name: Generate JaCoCo report
         uses: gradle/gradle-build-action@v2
         if: always()
@@ -188,10 +194,15 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradle permissions
-        run: chmod +x gradlew
+
       - name: Push branch/tag on Docker Hub
-        run: ./gradlew :miner:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :miner:jib
+            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
+            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
+            -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}"
 
   publish-viewer:
     name: Publish Viewer on DockerHub
@@ -209,7 +220,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradle permissions
-        run: chmod +x gradlew
+
       - name: Push branch/tag on Docker Hub
-        run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :viewer:jib
+            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
+            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
+            -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}"

@@ -1,4 +1,3 @@
-
 name: Manually deploy docker
 
 on:
@@ -22,13 +21,24 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradle permissions
-        run: chmod +x gradlew
+
       - name: Push branch/tag on Docker Hub
-        run: ./gradlew :miner:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :miner:jib
+            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
+            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
+            -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}"
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
-        run: ./gradlew :miner:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:latest"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :miner:jib
+            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
+            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
+            -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:latest"
 
   publish-viewer:
     name: Publish Viewer on DockerHub
@@ -42,10 +52,21 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradle permissions
-        run: chmod +x gradlew
+
       - name: Push branch/tag on Docker Hub
-        run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :viewer:jib
+            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
+            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
+            -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}"
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
-        run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:latest"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :viewer:jib
+            -Dorg.gradle.project.dockerUsername="${{ secrets.DOCKER_USERNAME }}"
+            -Dorg.gradle.project.dockerPassword="${{ secrets.DOCKER_TOKEN }}"
+            -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:latest"
