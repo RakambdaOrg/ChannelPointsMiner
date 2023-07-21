@@ -27,8 +27,8 @@ jobs:
         with:
           arguments: |
             :miner:jib
-            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
@@ -36,8 +36,8 @@ jobs:
         with:
           arguments: |
             :miner:jib
-            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${DOCKER_MINER_IMAGE_NAME}:latest
 
   publish-viewer:
@@ -58,8 +58,8 @@ jobs:
         with:
           arguments: |
             :viewer:jib
-            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
@@ -67,6 +67,6 @@ jobs:
         with:
           arguments: |
             :viewer:jib
-            -DdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -DdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
+            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${DOCKER_VIEWER_IMAGE_NAME}:latest
