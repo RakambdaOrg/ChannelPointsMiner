@@ -7,9 +7,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefit;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMock;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -68,10 +66,6 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
                                                 .build()))
                                         .build()))
                                 .build())
-                        .currentUser(User.builder()
-                                .id("987654321")
-                                .inventory(Inventory.builder().build())
-                                .build())
                         .build())
                 .build();
         
@@ -94,10 +88,6 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
                         .channel(Channel.builder()
                                 .id("123456789")
                                 .build())
-                        .currentUser(User.builder()
-                                .id("987654321")
-                                .inventory(Inventory.builder().build())
-                                .build())
                         .build())
                 .build();
         
@@ -110,6 +100,6 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
     
     @Override
     protected String getValidRequest(){
-        return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"e589e213f16d9b17c6f0a8ccd18bdd6a8a6b78bc9db67a75efd43793884ff4e5\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
+	    return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"9a62a09bce5b53e26e64a671e530bc599cb6aab1e5ba3cbd5d85966d3940716f\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
     }
 }
