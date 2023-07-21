@@ -4,14 +4,6 @@
       "id": "123456789",
       "viewerDropCampaigns": null,
       "__typename": "Channel"
-    },
-    "currentUser": {
-      "id": "987654321",
-      "inventory": {
-        "gameEventDrops": [],
-        "__typename": "Inventory"
-      },
-      "__typename": "User"
     }
   },
   "extensions": {
