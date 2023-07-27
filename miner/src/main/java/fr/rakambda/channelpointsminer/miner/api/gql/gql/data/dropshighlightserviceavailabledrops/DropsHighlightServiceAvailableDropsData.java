@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserv
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -21,7 +20,4 @@ public class DropsHighlightServiceAvailableDropsData{
 	@JsonProperty("channel")
 	@NotNull
 	private Channel channel;
-	@JsonProperty("currentUser")
-	@NotNull
-	private User currentUser;
 }

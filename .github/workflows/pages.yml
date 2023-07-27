@@ -22,6 +22,7 @@ jobs:
           node-version: '16'
       - name: Install Antora
         run: npm i antora asciidoctor-kroki
+
       - name: Generate Site
         run: npx antora .github/antora-playbook.yml
       - name: Prepare upload
@@ -29,7 +30,7 @@ jobs:
           mkdir pages
           cp -R .github/antora-docs/. pages
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: pages
 
