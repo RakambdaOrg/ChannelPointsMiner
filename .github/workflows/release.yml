@@ -69,7 +69,6 @@ jobs:
         with:
           arguments: |
             assemble
-            --scan
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
