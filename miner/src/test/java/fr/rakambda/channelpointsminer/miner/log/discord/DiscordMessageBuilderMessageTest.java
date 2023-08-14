@@ -20,7 +20,9 @@ import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimEvent;
+import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedEvent;
+import fr.rakambda.channelpointsminer.miner.event.impl.DropProgressChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.MinerStartedEvent;
@@ -459,6 +461,28 @@ class DiscordMessageBuilderMessageTest{
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🎁 : Drop claimed [%s]".formatted(USERNAME, name))
+				.build());
+	}
+	
+	@Test
+	void onDropClaimedChannel(){
+		var event = new DropClaimedChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.content("[%s] 🎁 : Drop claimed on channel %s".formatted(USERNAME, STREAMER_USERNAME))
+				.build());
+	}
+	
+	@Test
+	void onDropProgressChannel(){
+		var event = new DropProgressChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW, 26);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.content("[%s] 🎁 : Drop progress on channel %s : %s%%".formatted(USERNAME, STREAMER_USERNAME, "26"))
 				.build());
 	}
 	

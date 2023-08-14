@@ -10,6 +10,7 @@ public class EventVariableKey{
 	public static final String COLOR = "color";
 	public static final String COMMIT = "commit";
 	public static final String DROP_NAME = "drop_name";
+	public static final String DROP_PROGRESS = "drop_progress";
 	public static final String MESSAGE = "message";
 	public static final String EMOJI = "emoji";
 	public static final String POINTS = "points";

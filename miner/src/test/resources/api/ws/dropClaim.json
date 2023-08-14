@@ -1,0 +1,7 @@
+{
+  "type" : "MESSAGE",
+  "data" : {
+    "topic" : "user-drop-events.123456789",
+    "message" : "{\"type\":\"drop-claim\",\"data\":{\"drop_instance_id\":\"drop-instance-id\",\"drop_id\":\"drop-id\",\"channel_id\":\"123456789\"}}"
+  }
+}

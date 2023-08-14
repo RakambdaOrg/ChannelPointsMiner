@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
+import fr.rakambda.channelpointsminer.miner.handler.ClaimDropHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
 import fr.rakambda.channelpointsminer.miner.handler.PointsHandler;
@@ -54,5 +55,10 @@ class PubSubMessageHandlerFactoryTest{
 	@Test
 	void createClaimMomentHandler(){
 		assertThat(PubSubMessageHandlerFactory.createClaimMomentHandler(miner, eventManager)).isNotNull().isInstanceOf(ClaimMomentHandler.class);
+	}
+	
+	@Test
+	void createClaimDropHandler(){
+		assertThat(PubSubMessageHandlerFactory.createClaimDropHandler(miner, eventManager)).isNotNull().isInstanceOf(ClaimDropHandler.class);
 	}
 }
