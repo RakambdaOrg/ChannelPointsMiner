@@ -650,7 +650,7 @@ class DiscordMessageBuilderEmbedTest{
 	
 	@Test
 	void onDropProgressChannel(){
-		var event = new DropProgressChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW, 0.2f);
+		var event = new DropProgressChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW, 20);
 		event.setMiner(miner);
 		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
 		
@@ -659,8 +659,8 @@ class DiscordMessageBuilderEmbedTest{
 						.author(author)
 						.footer(footer)
 						.color(CYAN.getRGB())
-						.description("[username] \uD83C\uDF81 : Drop progress on channel streamer-name : 0.20%")
-						.field(Field.builder().name("Progress").value("0.20").build())
+						.description("[username] \uD83C\uDF81 : Drop progress on channel streamer-name : 20%")
+						.field(Field.builder().name("Progress").value("20").build())
 						.build()))
 				.build());
 	}

@@ -15,9 +15,9 @@ import java.util.Map;
 public class DropProgressChannelEvent extends AbstractLoggableStreamerEvent{
 	private final String progress;
 	
-	public DropProgressChannelEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant, float progress){
+	public DropProgressChannelEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant, int progress){
 		super(streamerId, streamerUsername, streamer, instant);
-		this.progress = "%.2f".formatted(progress);
+		this.progress = Integer.toString(progress);
 	}
 	
 	@Override

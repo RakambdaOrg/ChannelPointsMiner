@@ -477,12 +477,12 @@ class DiscordMessageBuilderMessageTest{
 	
 	@Test
 	void onDropProgressChannel(){
-		var event = new DropProgressChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW, 0.256f);
+		var event = new DropProgressChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW, 26);
 		event.setMiner(miner);
 		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
-				.content("[%s] 🎁 : Drop progress on channel %s : %s%%".formatted(USERNAME, STREAMER_USERNAME, "0.26"))
+				.content("[%s] 🎁 : Drop progress on channel %s : %s%%".formatted(USERNAME, STREAMER_USERNAME, "26"))
 				.build());
 	}
 	

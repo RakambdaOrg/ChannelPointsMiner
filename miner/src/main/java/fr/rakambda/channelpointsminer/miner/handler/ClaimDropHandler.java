@@ -29,7 +29,7 @@ public class ClaimDropHandler extends PubSubMessageHandlerAdapter{
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
 		
 		try(var ignored = LogContext.with(miner).withStreamer(streamer)){
-			var progress = message.getData().getCurrentProgressMin() / ((float) message.getData().getRequiredProgressMin());
+			var progress = 100 * message.getData().getCurrentProgressMin() / message.getData().getRequiredProgressMin();
 			var event = new DropProgressChannelEvent(channelId, username, streamer, TimeFactory.now(), progress);
 			eventManager.onEvent(event);
 		}

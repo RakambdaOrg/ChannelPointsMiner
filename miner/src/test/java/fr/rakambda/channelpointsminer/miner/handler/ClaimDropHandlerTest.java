@@ -121,7 +121,7 @@ class ClaimDropHandlerTest{
 			
 			tested.onDropProgress(topic, dropProgress);
 			
-			verify(eventManager).onEvent(new DropProgressChannelEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW, 0.25f));
+			verify(eventManager).onEvent(new DropProgressChannelEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW, 25));
 		}
 	}
 	
@@ -133,7 +133,7 @@ class ClaimDropHandlerTest{
 			
 			tested.onDropProgress(topic, dropProgress);
 			
-			verify(eventManager).onEvent(new DropProgressChannelEvent(CHANNEL_ID, null, null, NOW, 0.25f));
+			verify(eventManager).onEvent(new DropProgressChannelEvent(CHANNEL_ID, null, null, NOW, 25));
 		}
 	}
 }
