@@ -20,6 +20,7 @@ import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimEvent;
+import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
@@ -459,6 +460,17 @@ class DiscordMessageBuilderMessageTest{
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.content("[%s] 🎁 : Drop claimed [%s]".formatted(USERNAME, name))
+				.build());
+	}
+	
+	@Test
+	void onDropClaimedChannel(){
+		var event = new DropClaimedChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createSimpleMessage(event, discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.content("[%s] 🎁 : Drop claimed on channel %s".formatted(USERNAME, STREAMER_USERNAME))
 				.build());
 	}
 	

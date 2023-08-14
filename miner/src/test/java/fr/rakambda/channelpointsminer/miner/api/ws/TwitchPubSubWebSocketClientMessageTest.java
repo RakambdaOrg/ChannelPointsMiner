@@ -8,6 +8,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.Commercial;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CreateNotification;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DeleteNotification;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropClaim;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsEarned;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsSpent;
@@ -35,6 +36,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotificati
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotification.TextContent;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotification.TextNotificationDataBlock;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.deletenotification.DeleteNotificationData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.dropclaim.DropClaimData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.dropprogress.DropProgressData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
@@ -816,8 +818,8 @@ class TwitchPubSubWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onUserDropEvent(WebsocketMockServer server){
-		server.send(TestUtils.getAllResourceContent("api/ws/userDropEvent.json"));
+	void onDropProgress(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/dropProgress.json"));
 		
 		var expected = MessageResponse.builder()
 				.data(MessageData.builder()
@@ -831,6 +833,28 @@ class TwitchPubSubWebSocketClientMessageTest{
 										.channelId("123456789")
 										.currentProgressMin(1)
 										.requiredProgressMin(15)
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onDropClaimEvent(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/dropClaim.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(USER_DROP_EVENTS)
+								.target("123456789")
+								.build())
+						.message(DropClaim.builder()
+								.data(DropClaimData.builder()
+										.dropId("drop-id")
+										.channelId("123456789")
+										.dropInstanceId("drop-instance-id")
 										.build())
 								.build())
 						.build())

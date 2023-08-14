@@ -24,6 +24,7 @@ import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimEvent;
+import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.LoginRequiredEvent;
@@ -626,6 +627,22 @@ class DiscordMessageBuilderEmbedTest{
 						.color(CYAN.getRGB())
 						.description("[username] \uD83C\uDF81 : Drop claimed [drop-name]")
 						.field(Field.builder().name("Name").value(name).build())
+						.build()))
+				.build());
+	}
+	
+	@Test
+	void onDropClaimedChannel(){
+		var event = new DropClaimedChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
+		event.setMiner(miner);
+		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		
+		assertThat(webhook).isEqualTo(Webhook.builder()
+				.embeds(List.of(Embed.builder()
+						.author(author)
+						.footer(footer)
+						.color(CYAN.getRGB())
+						.description("[username] \uD83C\uDF81 : Drop claimed on channel streamer-name")
 						.build()))
 				.build());
 	}
