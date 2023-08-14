@@ -7,6 +7,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.Commercial;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CreateNotification;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DeleteNotification;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.EventCreated;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.EventUpdated;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.GlobalLastViewedContentUpdated;
@@ -84,6 +85,8 @@ public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandl
 	public void onCommunityMomentStart(@NotNull Topic topic, @NotNull CommunityMomentStart message){}
 	
 	public void onReadNotifications(@NotNull Topic topic, @NotNull ReadNotifications message){}
+	
+	public void onDropProgress(@NotNull Topic topic, @NotNull DropProgress message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IPubSubMessage message){

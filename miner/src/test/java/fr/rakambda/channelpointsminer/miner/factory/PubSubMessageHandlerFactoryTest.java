@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
+import fr.rakambda.channelpointsminer.miner.handler.ClaimDropHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
 import fr.rakambda.channelpointsminer.miner.handler.PointsHandler;
@@ -9,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.handler.PredictionsHandler;
 import fr.rakambda.channelpointsminer.miner.handler.StreamStartEndHandler;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.BetPlacer;
+import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +27,8 @@ class PubSubMessageHandlerFactoryTest{
 	private BetPlacer betPlacer;
 	@Mock
 	private IEventManager eventManager;
+	@Mock
+	private SyncInventory syncInventory;
 	
 	@Test
 	void createClaimAvailable(){
@@ -54,5 +58,10 @@ class PubSubMessageHandlerFactoryTest{
 	@Test
 	void createClaimMomentHandler(){
 		assertThat(PubSubMessageHandlerFactory.createClaimMomentHandler(miner, eventManager)).isNotNull().isInstanceOf(ClaimMomentHandler.class);
+	}
+	
+	@Test
+	void createClaimDropHandler(){
+		assertThat(PubSubMessageHandlerFactory.createClaimDropHandler(syncInventory)).isNotNull().isInstanceOf(ClaimDropHandler.class);
 	}
 }

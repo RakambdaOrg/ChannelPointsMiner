@@ -36,6 +36,7 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = CommunityMomentStart.class, name = "active"),
 		@JsonSubTypes.Type(value = ActiveMultipliersUpdated.class, name = "active-multipliers-updated"),
 		@JsonSubTypes.Type(value = ReadNotifications.class, name = "read-notifications"),
+		@JsonSubTypes.Type(value = DropProgress.class, name = "drop-progress"),
 })
 @EqualsAndHashCode
 @ToString

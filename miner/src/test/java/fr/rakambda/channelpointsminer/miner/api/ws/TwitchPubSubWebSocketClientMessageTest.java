@@ -8,6 +8,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.Commercial;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CreateNotification;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DeleteNotification;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsEarned;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsSpent;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionMade;
@@ -34,6 +35,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotificati
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotification.TextContent;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotification.TextNotificationDataBlock;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.deletenotification.DeleteNotificationData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.dropprogress.DropProgressData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.PointsSpentData;
@@ -80,6 +82,7 @@ import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Top
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.RAID;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.USER_DROP_EVENTS;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
 import static java.time.ZoneOffset.UTC;
 import static org.mockito.Mockito.timeout;
@@ -805,6 +808,29 @@ class TwitchPubSubWebSocketClientMessageTest{
 																.build()
 												))
 												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onUserDropEvent(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/userDropEvent.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(USER_DROP_EVENTS)
+								.target("123456789")
+								.build())
+						.message(DropProgress.builder()
+								.data(DropProgressData.builder()
+										.dropId("drop-id")
+										.channelId("123456789")
+										.currentProgressMin(1)
+										.requiredProgressMin(15)
 										.build())
 								.build())
 						.build())

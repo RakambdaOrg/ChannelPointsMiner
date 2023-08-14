@@ -11,6 +11,7 @@ import fr.rakambda.channelpointsminer.miner.database.DatabaseEventHandler;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
+import fr.rakambda.channelpointsminer.miner.handler.ClaimDropHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
 import fr.rakambda.channelpointsminer.miner.handler.PointsHandler;
@@ -18,8 +19,9 @@ import fr.rakambda.channelpointsminer.miner.handler.PredictionsHandler;
 import fr.rakambda.channelpointsminer.miner.handler.StreamStartEndHandler;
 import fr.rakambda.channelpointsminer.miner.log.LoggerEventListener;
 import fr.rakambda.channelpointsminer.miner.log.discord.DiscordEventListener;
+import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
-import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +30,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -62,6 +66,8 @@ class MinerFactoryTest{
 	private ILoginMethod loginMethod;
 	@Mock
 	private IEventManager eventManager;
+	@Mock
+	private SyncInventory syncInventory;
 	
 	@BeforeEach
 	void setUp(){
@@ -74,19 +80,23 @@ class MinerFactoryTest{
 	
 	@Test
 	void nominal(){
-		try(var apiFactory = mockStatic(ApiFactory.class)){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var minerRunnableFactory = mockStatic(MinerRunnableFactory.class)){
 			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
+			minerRunnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(any(IMiner.class), eq(eventManager))).thenReturn(syncInventory);
 			
 			var miner = MinerFactory.create(accountConfiguration, eventManager);
 			
-			Assertions.assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(6)
+			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
+			assertThat(miner.getPubSubMessageHandlers())
+					.hasSize(7)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class)
-					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
+					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verifyNoMoreInteractions(eventManager);
@@ -97,24 +107,28 @@ class MinerFactoryTest{
 	
 	@Test
 	void nominalWithDiscord() throws MalformedURLException{
-		try(var apiFactory = mockStatic(ApiFactory.class)){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var minerRunnableFactory = mockStatic(MinerRunnableFactory.class)){
 			var discordWebhook = new URL("https://discord-webhook");
 			
 			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			apiFactory.when(() -> ApiFactory.createdDiscordApi(discordWebhook)).thenReturn(discordApi);
+			minerRunnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(any(IMiner.class), eq(eventManager))).thenReturn(syncInventory);
 			
 			when(discordConfiguration.getUrl()).thenReturn(discordWebhook);
 			
 			var miner = MinerFactory.create(accountConfiguration, eventManager);
 			
-			Assertions.assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(6)
+			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
+			assertThat(miner.getPubSubMessageHandlers())
+					.hasSize(7)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class)
-					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
+					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verify(eventManager).addEventHandler(any(DiscordEventListener.class));
@@ -127,24 +141,28 @@ class MinerFactoryTest{
 	@Test
 	void nominalWithAnalytics() throws SQLException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
-				var databaseFactory = mockStatic(DatabaseFactory.class)){
+				var databaseFactory = mockStatic(DatabaseFactory.class);
+				var minerRunnableFactory = mockStatic(MinerRunnableFactory.class)){
 			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			databaseFactory.when(() -> DatabaseFactory.createDatabase(databaseConfiguration)).thenReturn(database);
 			databaseFactory.when(() -> DatabaseFactory.createDatabaseHandler(database, RECORD_USER_PREDICTIONS)).thenReturn(databaseEventHandler);
+			minerRunnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(any(IMiner.class), eq(eventManager))).thenReturn(syncInventory);
 			
 			when(analyticsConfiguration.isEnabled()).thenReturn(true);
 			when(analyticsConfiguration.getDatabase()).thenReturn(databaseConfiguration);
 			
 			var miner = MinerFactory.create(accountConfiguration, eventManager);
 			
-			Assertions.assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(6)
+			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
+			assertThat(miner.getPubSubMessageHandlers())
+					.hasSize(7)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class)
-					.hasAtLeastOneElementOfType(ClaimMomentHandler.class);
+					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verify(eventManager).addEventHandler(any(DatabaseEventHandler.class));
