@@ -4,9 +4,12 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropClaim;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.dropclaim.DropClaimData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.dropprogress.DropProgressData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedChannelEvent;
+import fr.rakambda.channelpointsminer.miner.event.impl.DropProgressChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -34,6 +37,8 @@ class ClaimDropHandlerTest{
 	private static final String CHANNEL_ID = "channel-id";
 	private static final String CHANNEL_USERNAME = "channel-username";
 	private static final Instant NOW = Instant.parse("2022-05-15T12:02:14.000Z");
+	private static final int CURRENT_PROGRESS = 1;
+	private static final int REQUIRED_PROGRESS = 4;
 	
 	@InjectMocks
 	private ClaimDropHandler tested;
@@ -52,6 +57,10 @@ class ClaimDropHandlerTest{
 	private DropClaim dropClaim;
 	@Mock
 	private DropClaimData dropClaimData;
+	@Mock
+	private DropProgress dropProgress;
+	@Mock
+	private DropProgressData dropProgressData;
 	
 	@Mock
 	private GQLResponse<DropsPageClaimDropRewardsData> dropsPageClaimDropRewardsDataGQLResponse;
@@ -61,6 +70,10 @@ class ClaimDropHandlerTest{
 		lenient().when(dropClaim.getData()).thenReturn(dropClaimData);
 		lenient().when(dropClaimData.getChannelId()).thenReturn(CHANNEL_ID);
 		lenient().when(dropClaimData.getDropInstanceId()).thenReturn(DROP_INSTANCE_ID);
+		lenient().when(dropProgress.getData()).thenReturn(dropProgressData);
+		lenient().when(dropProgressData.getChannelId()).thenReturn(CHANNEL_ID);
+		lenient().when(dropProgressData.getCurrentProgressMin()).thenReturn(CURRENT_PROGRESS);
+		lenient().when(dropProgressData.getRequiredProgressMin()).thenReturn(REQUIRED_PROGRESS);
 		
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getStreamerById(CHANNEL_ID)).thenReturn(Optional.of(streamer));
@@ -81,11 +94,46 @@ class ClaimDropHandlerTest{
 	}
 	
 	@Test
+	void dropClaimUnknownStreamer(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			lenient().when(miner.getStreamerById(CHANNEL_ID)).thenReturn(Optional.empty());
+			
+			tested.onDropClaim(topic, dropClaim);
+			
+			verify(eventManager).onEvent(new DropClaimedChannelEvent(CHANNEL_ID, null, null, NOW));
+		}
+	}
+	
+	@Test
 	void dropClaimError(){
 		when(dropsPageClaimDropRewardsDataGQLResponse.isError()).thenReturn(true);
 		
 		tested.onDropClaim(topic, dropClaim);
 		
 		verify(eventManager, never()).onEvent(any(DropClaimedChannelEvent.class));
+	}
+	
+	@Test
+	void dropProgress(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			tested.onDropProgress(topic, dropProgress);
+			
+			verify(eventManager).onEvent(new DropProgressChannelEvent(CHANNEL_ID, CHANNEL_USERNAME, streamer, NOW, 0.25f));
+		}
+	}
+	
+	@Test
+	void dropProgressUnknownStreamer(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			lenient().when(miner.getStreamerById(CHANNEL_ID)).thenReturn(Optional.empty());
+			
+			tested.onDropProgress(topic, dropProgress);
+			
+			verify(eventManager).onEvent(new DropProgressChannelEvent(CHANNEL_ID, null, null, NOW, 0.25f));
+		}
 	}
 }

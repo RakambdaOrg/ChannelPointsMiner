@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropClaim;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedChannelEvent;
+import fr.rakambda.channelpointsminer.miner.event.impl.DropProgressChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
@@ -23,7 +24,15 @@ public class ClaimDropHandler extends PubSubMessageHandlerAdapter{
 	
 	@Override
 	public void onDropProgress(@NotNull Topic topic, @NotNull DropProgress message){
-		super.onDropProgress(topic, message);
+		var channelId = message.getData().getChannelId();
+		var streamer = miner.getStreamerById(channelId).orElse(null);
+		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
+		
+		try(var ignored = LogContext.with(miner).withStreamer(streamer)){
+			var progress = message.getData().getCurrentProgressMin() / ((float) message.getData().getRequiredProgressMin());
+			var event = new DropProgressChannelEvent(channelId, username, streamer, TimeFactory.now(), progress);
+			eventManager.onEvent(event);
+		}
 	}
 	
 	@Override
