@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.rakambda.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
@@ -185,6 +186,9 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
+		if(name == USER_DROP_EVENTS && twitchLogin.getTwitchClient() == TwitchClient.ANDROID_TV){
+			return;
+		}
 		pubSubWebSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
 	}
 	

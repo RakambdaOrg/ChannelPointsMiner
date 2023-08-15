@@ -26,8 +26,11 @@ import org.jetbrains.annotations.NotNull;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -40,6 +43,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	private final Collection<ITwitchPubSubWebSocketListener> listeners;
 	@Getter
 	private final String uuid;
+	private final Map<String, ListenTopicRequest> listenRequests;
 	
 	@Getter
 	private Instant lastPong;
@@ -47,6 +51,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	public TwitchPubSubWebSocketClient(@NotNull URI uri){
 		super(uri);
 		uuid = UUID.randomUUID().toString();
+		listenRequests = new HashMap<>();
 		
 		setConnectionLostTimeout(0);
 		topics = new HashSet<>();
@@ -73,6 +78,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 				if(responseMessage.hasError()){
 					log.error("Received error response {}", responseMessage);
 					if(Objects.equals("ERR_BADAUTH", responseMessage.getError())){
+						Optional.ofNullable(listenRequests.get(responseMessage.getNonce())).ifPresent(req -> log.error("Request that had bad auth: {}", req));
 						close(GOING_AWAY, "Invalid credentials");
 					}
 				}
@@ -143,7 +149,9 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	public void listenTopic(@NotNull Topics topics){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			if(this.topics.add(topics)){
-				send(new ListenTopicRequest(topics));
+				var request = new ListenTopicRequest(topics);
+				listenRequests.put(request.getNonce(), request);
+				send(request);
 			}
 		}
 	}

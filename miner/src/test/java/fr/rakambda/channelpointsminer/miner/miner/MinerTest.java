@@ -46,6 +46,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient.ANDROID_TV;
+import static fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient.WEB;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
@@ -150,6 +152,7 @@ class MinerTest{
 		lenient().when(twitchLogin.getUsername()).thenReturn(USERNAME);
 		lenient().when(twitchLogin.fetchUserId(gqlApi)).thenReturn(USER_ID);
 		lenient().when(twitchLogin.getAccessToken()).thenReturn(ACCESS_TOKEN);
+		lenient().when(twitchLogin.getTwitchClient()).thenReturn(WEB);
 		
 		lenient().when(executorService.submit(any(Runnable.class))).thenAnswer(invocation -> {
 			var runnable = invocation.getArgument(0, Runnable.class);
@@ -596,6 +599,41 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
 			verify(webSocketPool).listenTopic(Topics.buildFromName(USER_DROP_EVENTS, STREAMER_ID, ACCESS_TOKEN));
+			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
+		}
+	}
+	
+	@Test
+	void addStreamerOnAndroid(){
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var runnableFactory = mockStatic(MinerRunnableFactory.class);
+				var timeFactory = mockStatic(TimeFactory.class)){
+			apiFactory.when(() -> ApiFactory.createTwitchApi(twitchLogin)).thenReturn(twitchApi);
+			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
+			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
+			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
+			
+			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
+			
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(twitchLogin.getTwitchClient()).thenReturn(ANDROID_TV);
+			
+			tested.start();
+			
+			var streamer = mock(Streamer.class);
+			when(streamer.getId()).thenReturn(STREAMER_ID);
+			when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
+			when(streamer.getSettings()).thenReturn(streamerSettings);
+			when(streamer.isStreaming()).thenReturn(false);
+			
+			assertDoesNotThrow(() -> tested.addStreamer(streamer));
+			
+			assertThat(tested.getStreamers()).hasSize(1)
+					.first().usingRecursiveComparison().isEqualTo(streamer);
+			
+			verify(updateStreamInfo).run(streamer);
+			verify(webSocketPool, never()).listenTopic(Topics.buildFromName(USER_DROP_EVENTS, STREAMER_ID, ACCESS_TOKEN));
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
