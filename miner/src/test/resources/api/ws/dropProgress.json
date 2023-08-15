@@ -2,6 +2,6 @@
   "type" : "MESSAGE",
   "data" : {
     "topic" : "user-drop-events.123456789",
-    "message" : "{\"type\":\"drop-progress\",\"data\":{\"drop_id\":\"drop-id\",\"channel_id\":\"123456789\",\"current_progress_min\":1,\"required_progress_min\":15}}"
+    "message" : "{\"type\":\"drop-progress\",\"data\":{\"drop_id\":\"drop-id\",\"channel_id\":\"987654321\",\"current_progress_min\":1,\"required_progress_min\":15}}"
   }
 }

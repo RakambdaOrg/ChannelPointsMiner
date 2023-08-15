@@ -4,7 +4,6 @@ import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.rakambda.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
-import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
@@ -142,6 +141,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			
 			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
+			listenTopic(USER_DROP_EVENTS, getTwitchLogin().fetchUserId(gqlApi));
 			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId(gqlApi));
 		}
 	}
@@ -186,9 +186,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
-		if(name == USER_DROP_EVENTS && twitchLogin.getTwitchClient() == TwitchClient.ANDROID_TV){
-			return;
-		}
 		pubSubWebSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
 	}
 	
@@ -223,7 +220,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			
 			listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
-			listenTopic(USER_DROP_EVENTS, streamer.getId());
 			
 			if(streamer.getSettings().isMakePredictions()){
 				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
@@ -268,7 +264,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			removeTopic(COMMUNITY_MOMENTS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
-			removeTopic(USER_DROP_EVENTS, streamer.getId());
 			chatClient.leave(streamer.getUsername());
 			
 			eventManager.onEvent(new StreamerRemovedEvent(streamer, TimeFactory.now()));
