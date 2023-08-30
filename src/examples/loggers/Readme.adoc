@@ -1,4 +1,4 @@
-rakambda= Loggers
+= Loggers
 
 == console_only.xml [[console_only]]
 
