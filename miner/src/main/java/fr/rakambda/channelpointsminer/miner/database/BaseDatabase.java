@@ -10,10 +10,10 @@ import lombok.extern.log4j.Log4j2;
 import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -120,22 +120,18 @@ public abstract class BaseDatabase implements IDatabase{
 			}
 			
 			try(var addUserStatement = conn.prepareStatement("""
-					INSERT INTO `PredictionUser`(`Username`, `ChannelID`) VALUES (?, ?)""", Statement.RETURN_GENERATED_KEYS)){
+					INSERT INTO `PredictionUser`(`Username`, `ChannelID`) VALUES (?, ?) RETURNING `ID`;""")) {
 				addUserStatement.setString(1, username);
 				addUserStatement.setString(2, channelId);
-				var insertResult = addUserStatement.executeUpdate();
-				if(insertResult <= 0){
-					throw new SQLException("Failed to create new prediction user");
+				try (var generatedKeys = addUserStatement.executeQuery()) {
+					if (!generatedKeys.next()) {
+						throw new SQLException("Failed to get new prediction user id");
+					}
+
+					var userId = generatedKeys.getInt(1);
+					log.debug("Added new prediction user '{}' for channel '{}' : {}", username, channelId, userId);
+					return userId;
 				}
-				
-				var generatedKeys = addUserStatement.getGeneratedKeys();
-				if(!generatedKeys.next()){
-					throw new SQLException("Failed to get new prediction user id");
-				}
-				
-				var userId = generatedKeys.getInt(1);
-				log.debug("Added new prediction user '{}' for channel '{}' : {}", username, channelId, userId);
-				return userId;
 			}
 		}
 		finally{
