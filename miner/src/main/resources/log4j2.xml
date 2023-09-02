@@ -6,8 +6,8 @@
         </Console>
         <RollingFile
                 name="file"
-                fileName="\${sys:user.home}/logs/${project.name}.log"
-                filePattern="\${sys:user.home}/logs/${project.name}.log.%d{yyyy-MM-dd}.gz"
+                fileName="logs/${project.name}.log"
+                filePattern="logs/${project.name}.log.%d{yyyy-MM-dd}.gz"
                 ignoreExceptions="false">
             <PatternLayout>
                 <Pattern>%date{ISO8601} %level [%thread] %logger{1.} %X - %message%n</Pattern>
