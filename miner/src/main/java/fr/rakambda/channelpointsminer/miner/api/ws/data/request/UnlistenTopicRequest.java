@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topics;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.Getter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
+@ToString(callSuper = true)
 @Getter
 public class UnlistenTopicRequest extends ITwitchWebSocketRequest{
 	private static final int NONCE_LENGTH = 30;

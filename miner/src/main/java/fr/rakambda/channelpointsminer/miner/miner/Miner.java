@@ -30,6 +30,7 @@ import fr.rakambda.channelpointsminer.miner.runnable.UpdateStreamInfo;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +52,7 @@ import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Top
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.RAID;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.USER_DROP_EVENTS;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -78,6 +80,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	private final MinerData minerData;
 	
 	private UpdateStreamInfo updateStreamInfo;
+	@Setter
+	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {@TestOnly})
 	private SyncInventory syncInventory;
 	
 	@Getter
@@ -126,7 +130,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
 			scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendMinutesWatched(this), 0, 1, MINUTES);
 			scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
-			scheduledExecutor.scheduleAtFixedRate(getSyncInventory(), 1, 15, MINUTES);
+			scheduledExecutor.scheduleAtFixedRate(syncInventory, 1, 15, MINUTES);
 			
 			var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, eventManager, streamerSettingsFactory, accountConfiguration.isLoadFollows());
 			if(accountConfiguration.getReloadEvery() > 0){
@@ -137,6 +141,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			
 			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
+			listenTopic(USER_DROP_EVENTS, getTwitchLogin().fetchUserId(gqlApi));
 			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId(gqlApi));
 		}
 	}
@@ -178,14 +183,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
 		}
 		return updateStreamInfo;
-	}
-	
-	@NotNull
-	private SyncInventory getSyncInventory(){
-		if(Objects.isNull(syncInventory)){
-			syncInventory = MinerRunnableFactory.createSyncInventory(this, eventManager);
-		}
-		return syncInventory;
 	}
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){

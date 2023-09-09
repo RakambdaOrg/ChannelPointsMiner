@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
+import fr.rakambda.channelpointsminer.miner.handler.ClaimDropHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
 import fr.rakambda.channelpointsminer.miner.handler.IPubSubMessageHandler;
@@ -44,5 +45,10 @@ public class PubSubMessageHandlerFactory{
 	@NotNull
 	public static IPubSubMessageHandler createClaimMomentHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
 		return new ClaimMomentHandler(miner, eventManager);
+	}
+	
+	@NotNull
+	public static IPubSubMessageHandler createClaimDropHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+		return new ClaimDropHandler(miner, eventManager);
 	}
 }

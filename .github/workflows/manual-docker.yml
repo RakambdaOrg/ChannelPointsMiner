@@ -3,11 +3,6 @@ name: Manually deploy docker
 on:
   workflow_dispatch:
 
-env:
-  APP_JAVA_VERSION: 17
-  DOCKER_MINER_IMAGE_NAME: mrcraftcod/channel-points-miner
-  DOCKER_VIEWER_IMAGE_NAME: mrcraftcod/channel-points-miner-viewer
-
 jobs:
   publish-miner:
     name: Publish Miner on DockerHub
@@ -15,25 +10,25 @@ jobs:
     concurrency: miner_docker
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
+          java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Calculate miner image name
         id: miner-image-name
         run: |
-          echo "IMAGE_NAME=${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
-          echo "IMAGE_NAME_LATEST=${DOCKER_MINER_IMAGE_NAME}:latest" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_MINER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME_LATEST=${{ vars.DOCKER_IMAGE_MINER }}:latest" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
         uses: gradle/gradle-build-action@v2
         with:
           arguments: |
             :miner:jib
-            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
@@ -41,8 +36,8 @@ jobs:
         with:
           arguments: |
             :miner:jib
-            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME_LATEST }}
 
   publish-viewer:
@@ -51,7 +46,7 @@ jobs:
     concurrency: viewer_docker
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
@@ -61,15 +56,15 @@ jobs:
       - name: Calculate viewer image name
         id: viewer-image-name
         run: |
-          echo "IMAGE_NAME=${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
-          echo "IMAGE_NAME_LATEST=${DOCKER_VIEWER_IMAGE_NAME}:latest" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_VIEWER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_NAME_LATEST=${{ vars.DOCKER_IMAGE_VIEWER }}:latest" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
         uses: gradle/gradle-build-action@v2
         with:
           arguments: |
             :viewer:jib
-            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
@@ -77,6 +72,6 @@ jobs:
         with:
           arguments: |
             :viewer:jib
-            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME_LATEST }}

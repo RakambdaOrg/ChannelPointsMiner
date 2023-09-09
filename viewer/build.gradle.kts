@@ -12,13 +12,16 @@ configurations {
     }
 }
 
+ext["junit-jupiter.version"] = libs.versions.junitVersion.get()
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    testImplementation(libs.bundles.junit)
-    testRuntimeOnly(libs.junitEngine)
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 
     testImplementation(libs.bundles.assertj)
     testImplementation("org.mockito:mockito-core")
@@ -86,12 +89,6 @@ jib {
                 os = "linux"
                 architecture = "arm"
             }
-        }
-    }
-    to {
-        auth {
-            username = project.findProperty("dockerUsername").toString()
-            password = project.findProperty("dockerPassword").toString()
         }
     }
     container {

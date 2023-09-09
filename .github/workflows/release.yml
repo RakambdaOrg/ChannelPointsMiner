@@ -5,11 +5,6 @@ on:
     tags:
       - "*.*.*"
 
-env:
-  APP_JAVA_VERSION: 17
-  DOCKER_MINER_IMAGE_NAME: mrcraftcod/channel-points-miner
-  DOCKER_VIEWER_IMAGE_NAME: mrcraftcod/channel-points-miner-viewer
-
 jobs:
   publish-docker-miner:
     name: Publish Miner on DockerHub
@@ -17,16 +12,21 @@ jobs:
     concurrency: miner_docker
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradle permissions
-        run: chmod +x gradlew
+          java-version: ${{ vars.JAVA_VERSION }}
+
       - name: Push latest on Docker Hub
-        run: ./gradlew :miner:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_MINER_IMAGE_NAME}:latest"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :miner:jib
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.image=${{ vars.DOCKER_IMAGE_MINER }}:latest
 
   publish-docker-viewer:
     name: Publish Viewer on DockerHub
@@ -34,16 +34,21 @@ jobs:
     concurrency: viewer_docker
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradle permissions
-        run: chmod +x gradlew
+          java-version: ${{ vars.JAVA_VERSION }}
+
       - name: Push latest on Docker Hub
-        run: ./gradlew :viewer:jib -PdockerUsername=${{ secrets.DOCKER_USERNAME }} -PdockerPassword=${{ secrets.DOCKER_TOKEN }} -Djib.to.image="${DOCKER_VIEWER_IMAGE_NAME}:latest"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            :viewer:jib
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.image=${{ vars.DOCKER_IMAGE_VIEWER }}:latest
 
   publish-release:
     name: Publish Release
@@ -52,18 +57,18 @@ jobs:
       contents: write
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
-      - name: Set gradle permissions
-        run: chmod +x gradlew
+          java-version: ${{ vars.JAVA_VERSION }}
+
       - name: Build project
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: assemble --scan
+          arguments: |
+            assemble
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

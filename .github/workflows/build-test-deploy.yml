@@ -12,25 +12,20 @@ on:
       - develop
   workflow_dispatch:
 
-env:
-  APP_JAVA_VERSION: 17
-  DOCKER_MINER_IMAGE_NAME: mrcraftcod/channel-points-miner
-  DOCKER_VIEWER_IMAGE_NAME: mrcraftcod/channel-points-miner-viewer
-
 jobs:
   build:
     name: Build project
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
+          java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Build project
         uses: gradle/gradle-build-action@v2
@@ -62,14 +57,14 @@ jobs:
     needs: build
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
+          java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Run tests
         uses: gradle/gradle-build-action@v2
@@ -84,7 +79,7 @@ jobs:
         with:
           arguments: :miner:jacocoTestReport
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: 'miner/build/test-results/test/*.xml'
@@ -123,14 +118,14 @@ jobs:
     needs: build
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
+          java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Run tests
         uses: gradle/gradle-build-action@v2
@@ -145,7 +140,7 @@ jobs:
         with:
           arguments: :viewer:jacocoTestReport
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: 'viewer/build/test-results/test/*.xml'
@@ -188,23 +183,23 @@ jobs:
     concurrency: miner_docker
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
+          java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Calculate miner image name
         id: miner-image-name
-        run: echo "IMAGE_NAME=${DOCKER_MINER_IMAGE_NAME}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
+        run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_MINER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
         uses: gradle/gradle-build-action@v2
         with:
           arguments: |
             :miner:jib
-            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
 
   publish-viewer:
@@ -217,21 +212,21 @@ jobs:
     concurrency: viewer_docker
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ env.APP_JAVA_VERSION }}
+          java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Calculate viewer image name
         id: viewer-image-name
-        run: echo "IMAGE_NAME=${DOCKER_VIEWER_IMAGE_NAME}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
+        run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_VIEWER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
         uses: gradle/gradle-build-action@v2
         with:
           arguments: |
             :viewer:jib
-            -PdockerUsername=${{ secrets.DOCKER_USERNAME }}
-            -PdockerPassword=${{ secrets.DOCKER_TOKEN }}
+            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
             -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}

@@ -2,7 +2,9 @@ package fr.rakambda.channelpointsminer.miner.api.ws.data.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 @Getter
 public abstract class ITwitchWebSocketRequest{
 	@JsonProperty("type")

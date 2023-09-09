@@ -30,12 +30,16 @@ public class MinerFactory{
 					database,
 					eventManager);
 			
+			var syncInventory = MinerRunnableFactory.createSyncInventory(miner, eventManager);
+			miner.setSyncInventory(syncInventory);
+			
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimAvailableHandler(miner, eventManager));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createStreamStartEndHandler(miner, eventManager));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createFollowRaidHandler(miner));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPredictionsHandler(miner, BetPlacerFactory.created(miner), eventManager));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPointsHandler(miner, eventManager));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimMomentHandler(miner, eventManager));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimDropHandler(miner, eventManager));
 			
 			eventManager.addEventHandler(LogEventListenerFactory.createLogger());
 			if(Objects.nonNull(config.getDiscord().getUrl())){
