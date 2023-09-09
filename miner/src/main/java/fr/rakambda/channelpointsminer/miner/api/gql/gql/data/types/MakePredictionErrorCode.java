@@ -7,5 +7,6 @@ public enum MakePredictionErrorCode{
 	MULTIPLE_OUTCOMES,
 	MUST_ACCEPT_TOS,
 	NOT_ENOUGH_POINTS,
+	RATE_LIMITED,
 	UNKNOWN
 }
