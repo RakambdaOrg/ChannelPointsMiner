@@ -3,7 +3,7 @@
 Running the project this way requires Java 17+ JDK to be installed.
 You can use the vendor of your choice (I personally use link:https://adoptium.net[Temurin]).
 
-1. Clone this repository `git clone git@github.com:RakSrinaNa/ChannelPointsMiner.git`.
+1. Clone this repository `git clone git@github.com:RakambdaOrg/ChannelPointsMiner.git`.
 2. Get into the cloned directory `cd ChannelPointsMiner`.
 3. Build the jar `./gradlew build -x test`
 4. Run with `config.json` as the configuration
