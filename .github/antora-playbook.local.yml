@@ -1,6 +1,6 @@
 site:
   title: ChannelPointsMiner
-  url: https://rakambda.github.io/ChannelPointsMiner/
+  url: https://rakambdaorg.github.io/ChannelPointsMiner/
   start_page: miner::index.adoc
 content:
   sources:

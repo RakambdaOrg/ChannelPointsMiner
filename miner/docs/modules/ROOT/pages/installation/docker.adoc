@@ -47,5 +47,5 @@ services:
 If you have 2FA enabled or using selenium, you'll have to enter information in the console for the first run in order to log in.
 
 As Docker doesn't give an interactive shell by default you'll have to run the container in interactive mode yourself the first time.
-More can be read about it in link:https://github.com/Rakambda/ChannelPointsMiner/issues/87#issuecomment-988276214[#87].
+More can be read about it in link:https://github.com/RakambdaOrg/ChannelPointsMiner/issues/87#issuecomment-988276214[#87].
 ====

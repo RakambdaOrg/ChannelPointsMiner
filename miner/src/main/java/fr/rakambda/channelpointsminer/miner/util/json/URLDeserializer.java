@@ -38,7 +38,7 @@ public class URLDeserializer extends StdDeserializer<URL>{
 			}
 		}
 		catch(MalformedURLException | IllegalArgumentException e){
-			log.warn("Failed to parse URL: {}", jsonParser.getValueAsString(), e);
+			log.warn("Failed to parse URL: {} at {} in {}", jsonParser.getValueAsString(), jsonParser.getCurrentName(), jsonParser.getCurrentLocation(), e);
 		}
 		return null;
 	}

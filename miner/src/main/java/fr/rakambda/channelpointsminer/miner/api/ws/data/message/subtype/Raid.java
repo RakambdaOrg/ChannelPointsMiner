@@ -1,8 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.rakambda.channelpointsminer.miner.util.json.URLDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -10,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import java.net.URL;
 
 @Getter
 @NoArgsConstructor
@@ -38,9 +35,8 @@ public class Raid{
 	@NotNull
 	private String targetDisplayName;
 	@JsonProperty("target_profile_image")
-	@JsonDeserialize(using = URLDeserializer.class)
 	@NotNull
-	private URL targetProfileImage;
+	private String targetProfileImage;
 	@JsonProperty("transition_jitter_seconds")
 	private int transitionJitterSeconds;
 	@JsonProperty("force_raid_now_seconds")
