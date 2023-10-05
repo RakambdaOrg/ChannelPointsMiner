@@ -510,30 +510,6 @@ class StreamerTest{
 	}
 	
 	@Test
-	void getTags(){
-		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
-		when(user.getStream()).thenReturn(stream);
-		when(stream.getTags()).thenReturn(List.of(tag));
-		
-		assertThat(tested.getTags()).containsExactlyInAnyOrder(tag);
-	}
-	
-	@Test
-	void getTagsNoStream(){
-		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
-		when(user.getStream()).thenReturn(null);
-		
-		assertThat(tested.getTags()).isEmpty();
-	}
-	
-	@Test
-	void getTagsNoChannelData(){
-		tested.setVideoPlayerStreamInfoOverlayChannel(null);
-		
-		assertThat(tested.getTags()).isEmpty();
-	}
-	
-	@Test
 	void getIndex(){
 		var index = 6;
 		when(settings.getIndex()).thenReturn(index);
