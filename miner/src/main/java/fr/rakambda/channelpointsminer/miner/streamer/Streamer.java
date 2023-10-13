@@ -10,7 +10,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPoin
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsProperties;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Stream;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Tag;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
@@ -190,15 +189,6 @@ public class Streamer{
 		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
 				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
 				.map(User::getProfileImageUrl);
-	}
-	
-	@NotNull
-	public List<Tag> getTags(){
-		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
-				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
-				.map(User::getStream)
-				.map(Stream::getTags)
-				.orElse(List.of());
 	}
 	
 	public boolean isParticipateCampaigns(){

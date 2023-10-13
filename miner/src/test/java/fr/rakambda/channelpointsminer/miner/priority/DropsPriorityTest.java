@@ -54,7 +54,6 @@ class DropsPriorityTest{
 	void setUp(){
 		lenient().when(streamer.isParticipateCampaigns()).thenReturn(true);
 		lenient().when(streamer.isStreamingGame()).thenReturn(true);
-		lenient().when(streamer.getTags()).thenReturn(List.of(tag));
 		
 		lenient().when(tag.getId()).thenReturn(DROPS_TAG_ID);
 		
@@ -91,17 +90,6 @@ class DropsPriorityTest{
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
 			
 			when(streamer.isStreamingGame()).thenReturn(false);
-			
-			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
-		}
-	}
-	
-	@Test
-	void withoutDropsTag(){
-		try(var timeFactory = mockStatic(TimeFactory.class)){
-			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
-			
-			when(streamer.getTags()).thenReturn(List.of());
 			
 			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
 		}
