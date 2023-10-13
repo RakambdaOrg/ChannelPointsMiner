@@ -6,7 +6,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightservi
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Tag;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -19,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 
 @JsonTypeName("drops")
@@ -35,8 +33,7 @@ public class DropsPriority extends IStreamerPriority{
 	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
 		if(streamer.isParticipateCampaigns()
 				&& streamer.isStreamingGame()
-				&& hasCampaigns(streamer)
-				&& hasDropsTag(streamer)){
+				&& hasCampaigns(streamer)){
 			return getScore();
 		}
 		
@@ -50,11 +47,6 @@ public class DropsPriority extends IStreamerPriority{
 				.stream()
 				.flatMap(Collection::stream)
 				.anyMatch(this::isValidCampaign);
-	}
-	
-	private boolean hasDropsTag(@NotNull Streamer streamer){
-		return streamer.getTags().stream()
-				.anyMatch(tag -> Objects.equals(tag.getId(), Tag.DROPS_TAG_ID));
 	}
 	
 	private boolean isValidCampaign(@NotNull DropCampaign dropCampaign){
