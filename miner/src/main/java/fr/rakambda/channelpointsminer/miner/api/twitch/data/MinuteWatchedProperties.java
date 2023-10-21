@@ -18,6 +18,9 @@ public class MinuteWatchedProperties{
 	@JsonProperty("channel_id")
 	@NotNull
 	private String channelId;
+	@JsonProperty("channel")
+	@NotNull
+	private String channel;
 	@JsonProperty("broadcast_id")
 	@NotNull
 	private String broadcastId;
@@ -29,4 +32,9 @@ public class MinuteWatchedProperties{
 	@JsonProperty("game")
 	@Nullable
 	private String game;
+	@JsonProperty("game_id")
+	@Nullable
+	private String gameId;
+	@JsonProperty("live")
+	private boolean live;
 }
