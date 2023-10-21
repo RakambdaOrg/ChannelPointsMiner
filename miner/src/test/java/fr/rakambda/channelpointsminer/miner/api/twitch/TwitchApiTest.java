@@ -31,8 +31,10 @@ class TwitchApiTest{
     private static final int USER_ID = 123456789;
     private static final String BROADCAST_ID = "broadcast-id";
     private static final String CHANNEL_ID = "channel-id";
+	private static final String CHANNEL_NAME = "channel-name";
     private static final String PLAYER = "player";
     private static final String GAME = "game";
+	private static final String GAME_ID = "game-id";
     private static final String STREAMER_URL = "https://google.com/streamer";
     private static final String CONFIG_URL = "https://static.twitchcdn.net/config/settings.sq5d4q6s54ds854c84qs.js";
     private static final String CONFIG_BODY = "<script src=\"%s\" crossorigin=\"anonymous\"></script>".formatted(CONFIG_URL);
@@ -56,8 +58,8 @@ class TwitchApiTest{
     
     @Test
     void sendMinutesWatched(UnirestMock unirest){
-        var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
-                .formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
+	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"live\":true,\"player\":\"%s\",\"user_id\":%d}}]"
+			    .formatted(BROADCAST_ID, CHANNEL_NAME, CHANNEL_ID, PLAYER, USER_ID);
         var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
         
         unirest.expect(POST, SPADE_URL)
@@ -70,7 +72,9 @@ class TwitchApiTest{
                         .userId(USER_ID)
                         .broadcastId(BROADCAST_ID)
                         .channelId(CHANNEL_ID)
+		                .channel(CHANNEL_NAME)
                         .player(PLAYER)
+		                .live(true)
                         .build())
                 .build();
         assertThat(tested.sendPlayerEvents(spadeUrl, request)).isTrue();
@@ -80,8 +84,8 @@ class TwitchApiTest{
     
     @Test
     void sendMinutesWatchedWithGame(UnirestMock unirest){
-        var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"game\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
-                .formatted(BROADCAST_ID, CHANNEL_ID, GAME, PLAYER, USER_ID);
+	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"game\":\"%s\",\"game_id\":\"%s\",\"live\":true,\"player\":\"%s\",\"user_id\":%d}}]"
+			    .formatted(BROADCAST_ID, CHANNEL_NAME, CHANNEL_ID, GAME, GAME_ID, PLAYER, USER_ID);
         var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
         
         unirest.expect(POST, SPADE_URL)
@@ -93,9 +97,12 @@ class TwitchApiTest{
                 .properties(MinuteWatchedProperties.builder()
                         .userId(USER_ID)
                         .broadcastId(BROADCAST_ID)
-                        .channelId(CHANNEL_ID)
-                        .player(PLAYER)
+		                .channelId(CHANNEL_ID)
+		                .channel(CHANNEL_NAME)
+		                .player(PLAYER)
                         .game(GAME)
+		                .gameId(GAME_ID)
+		                .live(true)
                         .build())
                 .build();
         assertThat(tested.sendPlayerEvents(spadeUrl, request)).isTrue();
@@ -105,8 +112,8 @@ class TwitchApiTest{
     
     @Test
     void sendMinutesWatchedNotSuccess(UnirestMock unirest){
-        var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel_id\":\"%s\",\"player\":\"%s\",\"user_id\":%d}}]"
-                .formatted(BROADCAST_ID, CHANNEL_ID, PLAYER, USER_ID);
+	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"live\":true,\"player\":\"%s\",\"user_id\":%d}}]"
+			    .formatted(BROADCAST_ID, CHANNEL_NAME, CHANNEL_ID, PLAYER, USER_ID);
         var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
         
         unirest.expect(POST, SPADE_URL)
@@ -119,7 +126,9 @@ class TwitchApiTest{
                         .userId(USER_ID)
                         .broadcastId(BROADCAST_ID)
                         .channelId(CHANNEL_ID)
+		                .channel(CHANNEL_NAME)
                         .player(PLAYER)
+		                .live(true)
                         .build())
                 .build();
         assertThat(tested.sendPlayerEvents(spadeUrl, request)).isFalse();
@@ -139,7 +148,9 @@ class TwitchApiTest{
                             .userId(USER_ID)
                             .broadcastId(BROADCAST_ID)
                             .channelId(CHANNEL_ID)
+		                    .channel(CHANNEL_NAME)
                             .player(PLAYER)
+		                    .live(true)
                             .build())
                     .build();
             assertThat(tested.sendPlayerEvents(spadeUrl, request)).isFalse();

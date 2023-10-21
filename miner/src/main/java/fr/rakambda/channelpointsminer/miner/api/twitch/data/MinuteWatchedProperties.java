@@ -15,20 +15,15 @@ import org.jetbrains.annotations.Nullable;
 @Builder
 @EqualsAndHashCode
 public class MinuteWatchedProperties{
-	@JsonProperty("channel_id")
-	@NotNull
-	private String channelId;
-	@JsonProperty("channel")
-	@NotNull
-	private String channel;
 	@JsonProperty("broadcast_id")
 	@NotNull
 	private String broadcastId;
-	@JsonProperty("player")
+	@JsonProperty("channel")
 	@NotNull
-	private String player;
-	@JsonProperty("user_id")
-	private int userId;
+	private String channel;
+	@JsonProperty("channel_id")
+	@NotNull
+	private String channelId;
 	@JsonProperty("game")
 	@Nullable
 	private String game;
@@ -37,4 +32,9 @@ public class MinuteWatchedProperties{
 	private String gameId;
 	@JsonProperty("live")
 	private boolean live;
+	@JsonProperty("player")
+	@NotNull
+	private String player;
+	@JsonProperty("user_id")
+	private int userId;
 }
