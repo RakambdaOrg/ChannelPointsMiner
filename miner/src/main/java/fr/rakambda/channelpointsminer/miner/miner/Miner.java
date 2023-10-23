@@ -140,9 +140,10 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 				scheduledExecutor.schedule(streamerConfigurationReload, 0, MINUTES);
 			}
 			
-			listenTopic(COMMUNITY_POINTS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
-			listenTopic(USER_DROP_EVENTS, getTwitchLogin().fetchUserId(gqlApi));
-			listenTopic(ONSITE_NOTIFICATIONS, getTwitchLogin().fetchUserId(gqlApi));
+			var connectedUserId = getTwitchLogin().fetchUserId(gqlApi);
+			listenTopic(COMMUNITY_POINTS_USER_V1, connectedUserId);
+			listenTopic(USER_DROP_EVENTS, connectedUserId);
+			listenTopic(ONSITE_NOTIFICATIONS, connectedUserId);
 		}
 	}
 	

@@ -76,10 +76,13 @@ public class SendMinutesWatched implements Runnable{
 			var request = MinuteWatchedEvent.builder()
 					.properties(MinuteWatchedProperties.builder()
 							.channelId(streamer.getId())
+							.channel(streamer.getUsername())
 							.broadcastId(streamId.get())
 							.player(SITE_PLAYER)
 							.userId(miner.getTwitchLogin().getUserIdAsInt(miner.getGqlApi()))
+							.gameId(streamer.getGame().map(Game::getId).orElse(null))
 							.game(streamer.getGame().map(Game::getName).orElse(null))
+							.live(true)
 							.build())
 					.build();
 			
