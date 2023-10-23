@@ -38,10 +38,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SendMinutesWatchedTest{
 	private static final String STREAMER_ID = "streamer-id";
+	private static final String STREAMER_NAME = "streamer-name";
 	private static final String STREAM_ID = "stream-id";
 	private static final String SITE_PLAYER = "site";
 	private static final int USER_ID = 123456789;
 	private static final String GAME_NAME = "game-name";
+	private static final String GAME_ID = "game-id";
 	private static final Instant NOW = Instant.parse("2021-03-25T18:12:36Z");
 	private static final int INDEX = 5;
 	
@@ -75,24 +77,30 @@ class SendMinutesWatchedTest{
 		lenient().when(twitchLogin.getUserIdAsInt(gqlApi)).thenReturn(USER_ID);
 		
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
+		lenient().when(streamer.getUsername()).thenReturn(STREAMER_NAME);
 		lenient().when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
 		lenient().when(streamer.getStreamId()).thenReturn(Optional.of(STREAM_ID));
 		lenient().when(streamer.isStreaming()).thenReturn(true);
 		lenient().when(streamer.getIndex()).thenReturn(INDEX);
+		
+		lenient().when(game.getName()).thenReturn(GAME_NAME);
+		lenient().when(game.getId()).thenReturn(GAME_ID);
 	}
 	
 	@Test
 	void sendingMinutesWatched(){
 		when(streamer.getGame()).thenReturn(Optional.of(game));
-		when(game.getName()).thenReturn(GAME_NAME);
 		
 		var expected = MinuteWatchedEvent.builder()
 				.properties(MinuteWatchedProperties.builder()
 						.channelId(STREAMER_ID)
+						.channel(STREAMER_NAME)
 						.broadcastId(STREAM_ID)
 						.player(SITE_PLAYER)
 						.userId(USER_ID)
+						.gameId(GAME_ID)
 						.game(GAME_NAME)
+						.live(true)
 						.build())
 				.build();
 		
@@ -109,15 +117,17 @@ class SendMinutesWatchedTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(streamer.getGame()).thenReturn(Optional.of(game));
-			when(game.getName()).thenReturn(GAME_NAME);
 			
 			var expected = MinuteWatchedEvent.builder()
 					.properties(MinuteWatchedProperties.builder()
 							.channelId(STREAMER_ID)
+							.channel(STREAMER_NAME)
 							.broadcastId(STREAM_ID)
 							.player(SITE_PLAYER)
 							.userId(USER_ID)
 							.game(GAME_NAME)
+							.gameId(GAME_ID)
+							.live(true)
 							.build())
 					.build();
 			
@@ -139,15 +149,17 @@ class SendMinutesWatchedTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(streamer.getGame()).thenReturn(Optional.of(game));
-			when(game.getName()).thenReturn(GAME_NAME);
 			
 			var expected = MinuteWatchedEvent.builder()
 					.properties(MinuteWatchedProperties.builder()
 							.channelId(STREAMER_ID)
+							.channel(STREAMER_NAME)
 							.broadcastId(STREAM_ID)
 							.player(SITE_PLAYER)
 							.userId(USER_ID)
 							.game(GAME_NAME)
+							.gameId(GAME_ID)
+							.live(true)
 							.build())
 					.build();
 			
@@ -187,15 +199,17 @@ class SendMinutesWatchedTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(streamer.getGame()).thenReturn(Optional.of(game));
-			when(game.getName()).thenReturn(GAME_NAME);
 			
 			var expected = MinuteWatchedEvent.builder()
 					.properties(MinuteWatchedProperties.builder()
 							.channelId(STREAMER_ID)
+							.channel(STREAMER_NAME)
 							.broadcastId(STREAM_ID)
 							.player(SITE_PLAYER)
 							.userId(USER_ID)
 							.game(GAME_NAME)
+							.gameId(GAME_ID)
+							.live(true)
 							.build())
 					.build();
 			
@@ -216,13 +230,17 @@ class SendMinutesWatchedTest{
 	@Test
 	void sendingMinutesWatchedNoGameName(){
 		when(streamer.getGame()).thenReturn(Optional.of(game));
+		when(game.getName()).thenReturn(null);
+		when(game.getId()).thenReturn(null);
 		
 		var expected = MinuteWatchedEvent.builder()
 				.properties(MinuteWatchedProperties.builder()
 						.channelId(STREAMER_ID)
+						.channel(STREAMER_NAME)
 						.broadcastId(STREAM_ID)
 						.player(SITE_PLAYER)
 						.userId(USER_ID)
+						.live(true)
 						.build())
 				.build();
 		
@@ -238,9 +256,11 @@ class SendMinutesWatchedTest{
 		var expected = MinuteWatchedEvent.builder()
 				.properties(MinuteWatchedProperties.builder()
 						.channelId(STREAMER_ID)
+						.channel(STREAMER_NAME)
 						.broadcastId(STREAM_ID)
 						.player(SITE_PLAYER)
 						.userId(USER_ID)
+						.live(true)
 						.build())
 				.build();
 		
@@ -293,11 +313,11 @@ class SendMinutesWatchedTest{
 	
 	@Test
 	void sendingMinutesWatchedSeveralStreamers() throws MalformedURLException{
-		var streamerId2 = "streamer-id-2";
 		var spadeUrl2 = new URL("https://google.com/2");
 		
 		var streamer2 = mock(Streamer.class);
-		when(streamer2.getId()).thenReturn(streamerId2);
+		when(streamer2.getId()).thenReturn("s2");
+		when(streamer2.getUsername()).thenReturn("sn2");
 		when(streamer2.getSpadeUrl()).thenReturn(spadeUrl2);
 		when(streamer2.getStreamId()).thenReturn(Optional.of(STREAM_ID));
 		when(streamer2.isStreaming()).thenReturn(true);
@@ -341,6 +361,7 @@ class SendMinutesWatchedTest{
 		var spade2 = new URL("https://spade2");
 		var s2 = mock(Streamer.class);
 		when(s2.getId()).thenReturn("s2");
+		when(s2.getUsername()).thenReturn("sn2");
 		when(s2.getSpadeUrl()).thenReturn(spade2);
 		when(s2.getStreamId()).thenReturn(Optional.of("sid2"));
 		when(s2.isStreaming()).thenReturn(true);
@@ -354,6 +375,7 @@ class SendMinutesWatchedTest{
 		var spade4 = new URL("https://spade4");
 		var s4 = mock(Streamer.class);
 		when(s4.getId()).thenReturn("s4");
+		when(s4.getUsername()).thenReturn("sn4");
 		when(s4.getSpadeUrl()).thenReturn(spade4);
 		when(s4.getStreamId()).thenReturn(Optional.of("sid4"));
 		when(s4.isStreaming()).thenReturn(true);
@@ -379,6 +401,7 @@ class SendMinutesWatchedTest{
 		var spade2 = new URL("https://spade2");
 		var s2 = mock(Streamer.class);
 		when(s2.getId()).thenReturn("s2");
+		when(s2.getUsername()).thenReturn("sn2");
 		when(s2.getSpadeUrl()).thenReturn(spade2);
 		when(s2.getStreamId()).thenReturn(Optional.of("sid2"));
 		when(s2.isStreaming()).thenReturn(true);
@@ -394,6 +417,7 @@ class SendMinutesWatchedTest{
 		var spade4 = new URL("https://spade4");
 		var s4 = mock(Streamer.class);
 		when(s4.getId()).thenReturn("s4");
+		when(s4.getUsername()).thenReturn("sn4");
 		when(s4.getSpadeUrl()).thenReturn(spade4);
 		when(s4.getStreamId()).thenReturn(Optional.of("sid4"));
 		when(s4.isStreaming()).thenReturn(true);

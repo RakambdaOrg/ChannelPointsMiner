@@ -24,7 +24,7 @@ public class UnknownDeserializer extends StdDeserializer<String>{
 		var currentLocation = jsonParser.getCurrentLocation();
 		var treeNode = jsonParser.readValueAsTree();
 		var treeNodeStr = treeNode == null ? null : treeNode.toString();
-		log.warn("Got actual value for field {} (l:{},c:{}) : {}", jsonParser.getCurrentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), treeNodeStr);
+		log.warn("Got actual value for unknown field {} (l:{},c:{}) : {}", jsonParser.getCurrentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), treeNodeStr);
 		return treeNodeStr;
 	}
 }
