@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
@@ -35,7 +35,7 @@ jobs:
             --scan
 
       - name: Upload miner jar file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: miner-jar
           path: |
@@ -43,7 +43,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload viewer jar file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: viewer-jar
           path: |
@@ -63,7 +63,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
@@ -94,7 +94,7 @@ jobs:
           flags: unittests-miner
           name: codecov-github-actions
       - name: Upload JUnit reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: junit-test-results-miner
@@ -104,7 +104,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload JaCoCo reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: jacoco-test-results-miner
@@ -126,7 +126,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
@@ -157,7 +157,7 @@ jobs:
           flags: unittests-viewer
           name: codecov-github-actions
       - name: Upload JUnit reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: junit-test-results-viewer
@@ -167,7 +167,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload JaCoCo reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: jacoco-test-results-viewer
@@ -189,7 +189,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
@@ -218,7 +218,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
