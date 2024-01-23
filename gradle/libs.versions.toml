@@ -29,7 +29,7 @@ lombok-version = "1.18.30"
 jacocoVersion = "0.8.10"
 
 shadow-version = "8.1.1"
-names-version = "0.50.0"
+names-version = "0.51.0"
 jib-version = "3.4.0"
 git-properties-version = "2.4.1"
 springboot-version = "3.2.2"
