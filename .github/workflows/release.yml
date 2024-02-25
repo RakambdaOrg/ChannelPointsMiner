@@ -20,7 +20,7 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Push latest on Docker Hub
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :miner:jib
@@ -42,7 +42,7 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Push latest on Docker Hub
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :viewer:jib
@@ -65,7 +65,7 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Build project
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             assemble

@@ -28,7 +28,7 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Build project
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             assemble
@@ -69,14 +69,14 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Run tests
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :miner:test
             --scan
 
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         if: always()
         with:
           arguments: :miner:jacocoTestReport
@@ -132,14 +132,14 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Run tests
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :viewer:test
             --scan
 
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         if: always()
         with:
           arguments: :viewer:jacocoTestReport
@@ -198,7 +198,7 @@ jobs:
         id: miner-image-name
         run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_MINER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :miner:jib
@@ -227,7 +227,7 @@ jobs:
         id: viewer-image-name
         run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_VIEWER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :viewer:jib

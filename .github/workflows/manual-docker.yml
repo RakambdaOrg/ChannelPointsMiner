@@ -23,7 +23,7 @@ jobs:
           echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_MINER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
           echo "IMAGE_NAME_LATEST=${{ vars.DOCKER_IMAGE_MINER }}:latest" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :miner:jib
@@ -32,7 +32,7 @@ jobs:
             -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :miner:jib
@@ -59,7 +59,7 @@ jobs:
           echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_VIEWER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
           echo "IMAGE_NAME_LATEST=${{ vars.DOCKER_IMAGE_VIEWER }}:latest" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :viewer:jib
@@ -68,7 +68,7 @@ jobs:
             -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: |
             :viewer:jib
