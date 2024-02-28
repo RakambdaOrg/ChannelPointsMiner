@@ -18,15 +18,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
 
       - name: Push latest on Docker Hub
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: |
-            :miner:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ vars.DOCKER_IMAGE_MINER }}:latest
+        run: |
+          ./gradlew
+          :miner:jib
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+          -Djib.to.image=${{ vars.DOCKER_IMAGE_MINER }}:latest
 
   publish-docker-viewer:
     name: Publish Viewer on DockerHub
@@ -40,15 +41,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
 
       - name: Push latest on Docker Hub
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: |
-            :viewer:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ vars.DOCKER_IMAGE_VIEWER }}:latest
+        run: |
+          ./gradlew
+          :viewer:jib
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+          -Djib.to.image=${{ vars.DOCKER_IMAGE_VIEWER }}:latest
 
   publish-release:
     name: Publish Release
@@ -63,12 +65,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
 
       - name: Build project
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: |
-            assemble
+        run: |
+          ./gradlew
+          assemble
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
