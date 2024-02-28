@@ -13,6 +13,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  dependency-submission:
+    name: Dependencies submission
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@v3.1.0
+        continue-on-error: true
+
   build:
     name: Build project
     runs-on: ubuntu-latest
@@ -27,12 +37,13 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
       - name: Build project
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            assemble
-            --scan
+        run: |
+          ./gradlew \
+          assemble \
+          --scan
 
       - name: Upload miner jar file
         uses: actions/upload-artifact@v4
@@ -67,19 +78,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
 
       - name: Run tests
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :miner:test
-            --scan
+        run: |
+          ./gradlew \
+          :miner:test \
+          --scan
 
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2
         if: always()
-        with:
-          arguments: :miner:jacocoTestReport
+        run: |
+          ./gradlew \
+          :miner:jacocoTestReport
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
         if: always()
@@ -130,19 +142,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
 
       - name: Run tests
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :viewer:test
-            --scan
+        run: |
+          ./gradlew \
+          :viewer:test \
+          --scan
 
       - name: Generate JaCoCo report
-        uses: gradle/gradle-build-action@v2
         if: always()
-        with:
-          arguments: :viewer:jacocoTestReport
+        run: |
+          ./gradlew \
+          :viewer:jacocoTestReport
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
         if: always()
@@ -193,18 +206,19 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
 
       - name: Calculate miner image name
         id: miner-image-name
         run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_MINER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :miner:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
+        run: |
+          ./gradlew \
+          :miner:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
+          -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
 
   publish-viewer:
     name: Publish Viewer on DockerHub
@@ -222,15 +236,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.0.0
 
       - name: Calculate viewer image name
         id: viewer-image-name
         run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_VIEWER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :viewer:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}
+        run: |
+          ./gradlew \
+          :viewer:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
+          -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}
