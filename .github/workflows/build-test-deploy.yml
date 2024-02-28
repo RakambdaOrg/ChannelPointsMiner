@@ -41,8 +41,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v3.0.0
       - name: Build project
         run: |
-          ./gradlew
-          assemble
+          ./gradlew \
+          assemble \
           --scan
 
       - name: Upload miner jar file
@@ -83,14 +83,14 @@ jobs:
 
       - name: Run tests
         run: |
-          ./gradlew
-          :miner:test
+          ./gradlew \
+          :miner:test \
           --scan
 
       - name: Generate JaCoCo report
         if: always()
         run: |
-          ./gradlew
+          ./gradlew \
           :miner:jacocoTestReport
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
@@ -147,14 +147,14 @@ jobs:
 
       - name: Run tests
         run: |
-          ./gradlew
-          :viewer:test
+          ./gradlew \
+          :viewer:test \
           --scan
 
       - name: Generate JaCoCo report
         if: always()
         run: |
-          ./gradlew
+          ./gradlew \
           :viewer:jacocoTestReport
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
@@ -214,10 +214,10 @@ jobs:
         run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_MINER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
         run: |
-          ./gradlew
-          :miner:jib
-          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+          ./gradlew \
+          :miner:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
           -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
 
   publish-viewer:
@@ -244,8 +244,8 @@ jobs:
         run: echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_VIEWER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
         run: |
-          ./gradlew
-          :viewer:jib
-          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+          ./gradlew \
+          :viewer:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
           -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}

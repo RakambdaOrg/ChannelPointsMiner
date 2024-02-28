@@ -23,10 +23,10 @@ jobs:
 
       - name: Push latest on Docker Hub
         run: |
-          ./gradlew
-          :miner:jib
-          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+          ./gradlew \
+          :miner:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
           -Djib.to.image=${{ vars.DOCKER_IMAGE_MINER }}:latest
 
   publish-docker-viewer:
@@ -46,10 +46,10 @@ jobs:
 
       - name: Push latest on Docker Hub
         run: |
-          ./gradlew
-          :viewer:jib
-          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
+          ./gradlew \
+          :viewer:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
           -Djib.to.image=${{ vars.DOCKER_IMAGE_VIEWER }}:latest
 
   publish-release:
@@ -70,7 +70,7 @@ jobs:
 
       - name: Build project
         run: |
-          ./gradlew
+          ./gradlew \
           assemble
       - name: Release
         uses: softprops/action-gh-release@v1
