@@ -41,6 +41,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3.0.0
       - name: Build project
         run: |
+          ./gradlew
           assemble
           --scan
 
