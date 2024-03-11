@@ -73,7 +73,7 @@ jobs:
           ./gradlew \
           assemble
       - name: Release
-        uses: softprops/action-gh-release@v2.0.1
+        uses: softprops/action-gh-release@v2.0.2
         with:
           fail_on_unmatched_files: false
           generate_release_notes: true
