@@ -24,7 +24,7 @@ sqlite-version = "3.45.2.0"
 mysql-version = "8.3.0"
 rerunner-jupiter-version = "2.1.6"
 flyway-version = "10.10.0"
-selenide-version = "7.2.2"
+selenide-version = "7.2.3"
 lombok-version = "1.18.32"
 jacocoVersion = "0.8.10"
 
