@@ -1,6 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types;
 
 public enum ContentId{
+	SEND_ANIMATED_MESSAGE,
 	SINGLE_MESSAGE_BYPASS_SUB_MODE,
 	SEND_HIGHLIGHTED_MESSAGE,
 	RANDOM_SUB_EMOTE_UNLOCK,
