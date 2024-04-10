@@ -33,7 +33,6 @@ import java.util.Map;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentId.SINGLE_MESSAGE_BYPASS_SUB_MODE;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.AUTOMATIC_REWARD;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.CUSTOM_REWARD;
-import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.RewardType.SEND_HIGHLIGHTED_MESSAGE;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,7 +86,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                                                 .defaultCost(600)
                                                                 .defaultImage(communityPointsImage)
                                                                 .minimumCost(10)
-                                                                .type(SEND_HIGHLIGHTED_MESSAGE)
+                                                                .type(6)
                                                                 .globallyUpdatedForIndicatorAt(ZonedDateTime.of(2019, 9, 3, 21, 0, 0, 0, UTC))
                                                                 .build()
                                                 ))
@@ -224,7 +223,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                                                 .defaultCost(600)
                                                                 .defaultImage(communityPointsImage)
                                                                 .minimumCost(10)
-                                                                .type(SEND_HIGHLIGHTED_MESSAGE)
+                                                                .type(6)
                                                                 .globallyUpdatedForIndicatorAt(ZonedDateTime.of(2019, 9, 3, 21, 0, 0, 0, UTC))
                                                                 .build()
                                                 ))

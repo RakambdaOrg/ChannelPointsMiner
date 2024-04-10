@@ -54,7 +54,7 @@
               "isEnabled": true,
               "isHiddenForSubs": false,
               "minimumCost": 10,
-              "type": "SEND_HIGHLIGHTED_MESSAGE",
+              "type": 6,
               "updatedForIndicatorAt": null,
               "globallyUpdatedForIndicatorAt": "2019-09-03T21:00:00Z",
               "__typename": "CommunityPointsAutomaticReward"

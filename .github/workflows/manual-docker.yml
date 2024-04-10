@@ -16,6 +16,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.2.0
 
       - name: Calculate miner image name
         id: miner-image-name
@@ -23,22 +25,20 @@ jobs:
           echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_MINER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
           echo "IMAGE_NAME_LATEST=${{ vars.DOCKER_IMAGE_MINER }}:latest" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :miner:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
+        run: |
+          ./gradlew \
+          :miner:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
+          -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :miner:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME_LATEST }}
+        run: |
+          ./gradlew \
+          :miner:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
+          -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME_LATEST }}
 
   publish-viewer:
     name: Publish Viewer on DockerHub
@@ -52,6 +52,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.APP_JAVA_VERSION }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3.2.0
 
       - name: Calculate viewer image name
         id: viewer-image-name
@@ -59,19 +61,17 @@ jobs:
           echo "IMAGE_NAME=${{ vars.DOCKER_IMAGE_VIEWER }}:${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
           echo "IMAGE_NAME_LATEST=${{ vars.DOCKER_IMAGE_VIEWER }}:latest" >> "$GITHUB_OUTPUT"
       - name: Push branch/tag on Docker Hub
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :viewer:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}
+        run: |
+          ./gradlew \
+          :viewer:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
+          -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
         if: success() && github.ref == 'refs/heads/main'
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            :viewer:jib
-            -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }}
-            -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }}
-            -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME_LATEST }}
+        run: |
+          ./gradlew \
+          :viewer:jib \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
+          -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME_LATEST }}
