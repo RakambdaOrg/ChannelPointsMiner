@@ -33,7 +33,6 @@ import java.util.Map;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentId.SINGLE_MESSAGE_BYPASS_SUB_MODE;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.AUTOMATIC_REWARD;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.CUSTOM_REWARD;
-import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.RewardType.SEND_HIGHLIGHTED_MESSAGE;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 
