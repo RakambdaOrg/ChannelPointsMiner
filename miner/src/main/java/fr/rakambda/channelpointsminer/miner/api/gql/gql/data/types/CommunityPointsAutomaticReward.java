@@ -53,8 +53,7 @@ public class CommunityPointsAutomaticReward extends GQLType{
 	@JsonProperty("minimumCost")
 	private int minimumCost;
 	@JsonProperty("type")
-	@NotNull
-	private RewardType type;
+	private int type;
 	@JsonProperty("updatedForIndicatorAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@Nullable
