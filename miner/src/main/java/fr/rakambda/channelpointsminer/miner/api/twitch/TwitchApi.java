@@ -18,7 +18,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RequiredArgsConstructor
 @Log4j2
 public class TwitchApi{
-	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("(https://static.twitchcdn.net/config/settings.*?js)");
+	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("(https://static.twitchcdn.net/config/settings.*?js|https://assets.twitch.tv/config/settings.*?.js)");
 	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade(Url|_url)\":\"(.*?)\"");
 	
 	private final UnirestInstance unirest;

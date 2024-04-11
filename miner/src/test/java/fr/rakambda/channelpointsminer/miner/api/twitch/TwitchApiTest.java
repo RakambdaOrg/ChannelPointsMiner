@@ -36,7 +36,7 @@ class TwitchApiTest{
     private static final String GAME = "game";
 	private static final String GAME_ID = "game-id";
     private static final String STREAMER_URL = "https://google.com/streamer";
-    private static final String CONFIG_URL = "https://static.twitchcdn.net/config/settings.sq5d4q6s54ds854c84qs.js";
+    private static final String CONFIG_URL = "https://assets.twitch.tv/config/settings.sq5d4q6s54ds854c84qs.js";
     private static final String CONFIG_BODY = "<script src=\"%s\" crossorigin=\"anonymous\"></script>".formatted(CONFIG_URL);
     private static final String SPADE_URL = "https://google.com";
     private static final String SPADE_BODY = "azeazeazeaze\"spade_url\":\"%s\"azeazeaze".formatted(SPADE_URL);
