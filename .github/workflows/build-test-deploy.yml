@@ -16,9 +16,16 @@ jobs:
   dependency-submission:
     name: Dependencies submission
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ vars.JAVA_VERSION }}
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@v3.2.0
         continue-on-error: true
