@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentId;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType;
 import fr.rakambda.channelpointsminer.miner.util.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.EqualsAndHashCode;
@@ -23,7 +22,7 @@ public class LastViewedContent{
 	private ContentType contentType;
 	@JsonProperty("content_id")
 	@NotNull
-	private ContentId contentId;
+	private String contentId;
 	@JsonProperty("last_viewed_at")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@Nullable
