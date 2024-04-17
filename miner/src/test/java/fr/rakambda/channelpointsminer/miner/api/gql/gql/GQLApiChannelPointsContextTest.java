@@ -295,7 +295,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                 .communityPoints(CommunityPointsUserProperties.builder()
                                         .lastViewedContent(List.of(
                                                 CommunityPointsLastViewedContentByTypeAndID.builder()
-                                                        .contentId(SINGLE_MESSAGE_BYPASS_SUB_MODE)
+                                                        .contentId("SINGLE_MESSAGE_BYPASS_SUB_MODE")
                                                         .contentType(AUTOMATIC_REWARD)
                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 6, 19, 50, 35, 443714534, UTC))
                                                         .build()
