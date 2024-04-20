@@ -23,7 +23,7 @@ import java.time.ZonedDateTime;
 public class CommunityPointsLastViewedContentByTypeAndID extends GQLType{
 	@JsonProperty("contentID")
 	@NotNull
-	private ContentId contentId;
+	private String contentId;
 	@JsonProperty("contentType")
 	@NotNull
 	private ContentType contentType;

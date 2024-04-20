@@ -30,7 +30,6 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentId.SINGLE_MESSAGE_BYPASS_SUB_MODE;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.AUTOMATIC_REWARD;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.CUSTOM_REWARD;
 import static java.time.ZoneOffset.UTC;
@@ -156,7 +155,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                 .communityPoints(CommunityPointsUserProperties.builder()
                                         .lastViewedContent(List.of(
                                                 CommunityPointsLastViewedContentByTypeAndID.builder()
-                                                        .contentId(SINGLE_MESSAGE_BYPASS_SUB_MODE)
+                                                        .contentId("SINGLE_MESSAGE_BYPASS_SUB_MODE")
                                                         .contentType(AUTOMATIC_REWARD)
                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 6, 19, 50, 35, 443714534, UTC))
                                                         .build()
@@ -296,7 +295,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                 .communityPoints(CommunityPointsUserProperties.builder()
                                         .lastViewedContent(List.of(
                                                 CommunityPointsLastViewedContentByTypeAndID.builder()
-                                                        .contentId(SINGLE_MESSAGE_BYPASS_SUB_MODE)
+                                                        .contentId("SINGLE_MESSAGE_BYPASS_SUB_MODE")
                                                         .contentType(AUTOMATIC_REWARD)
                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 6, 19, 50, 35, 443714534, UTC))
                                                         .build()
