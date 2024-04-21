@@ -4,7 +4,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.makeprediction.MakePredictionData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionError;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionErrorCode;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionPayload;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
@@ -264,7 +263,7 @@ class BetPlacerTest{
 			transactionIdFactory.when(() -> CommonUtils.randomHex(32)).thenReturn(TRANSACTION_ID);
 			
 			when(makePrediction.getError()).thenReturn(MakePredictionError.builder()
-					.code(MakePredictionErrorCode.NOT_ENOUGH_POINTS)
+					.code("NOT_ENOUGH_POINTS")
 					.build());
 			
 			assertDoesNotThrow(() -> tested.placeBet(bettingPrediction));

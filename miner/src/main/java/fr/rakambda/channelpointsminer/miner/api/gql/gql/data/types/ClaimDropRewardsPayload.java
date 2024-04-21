@@ -20,7 +20,7 @@ public class ClaimDropRewardsPayload extends GQLType{
 	@JsonProperty("isUserAccountConnected")
 	private boolean isUserAccountConnected;
 	@JsonProperty("status")
-	private ClaimDropRewardsStatus status;
+	private String status;
 	@JsonProperty("dropType")
 	private TimeBasedDrop dropType;
 }

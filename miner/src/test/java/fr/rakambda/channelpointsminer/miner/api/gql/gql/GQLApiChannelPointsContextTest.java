@@ -30,8 +30,6 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.AUTOMATIC_REWARD;
-import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType.CUSTOM_REWARD;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -63,11 +61,11 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                                         .canRedeemRewardsForFree(false)
                                                         .lastViewedContent(List.of(
                                                                 CommunityPointsLastViewedContentByType.builder()
-                                                                        .contentType(AUTOMATIC_REWARD)
+                                                                        .contentType("AUTOMATIC_REWARD")
                                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 5, 20, 59, 11, 67754116, UTC))
                                                                         .build(),
                                                                 CommunityPointsLastViewedContentByType.builder()
-                                                                        .contentType(CUSTOM_REWARD)
+                                                                        .contentType("CUSTOM_REWARD")
                                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 5, 20, 59, 11, 67754117, UTC))
                                                                         .build()
                                                         ))
@@ -156,7 +154,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                         .lastViewedContent(List.of(
                                                 CommunityPointsLastViewedContentByTypeAndID.builder()
                                                         .contentId("SINGLE_MESSAGE_BYPASS_SUB_MODE")
-                                                        .contentType(AUTOMATIC_REWARD)
+                                                        .contentType("AUTOMATIC_REWARD")
                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 6, 19, 50, 35, 443714534, UTC))
                                                         .build()
                                         ))
@@ -200,11 +198,11 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                                         .canRedeemRewardsForFree(false)
                                                         .lastViewedContent(List.of(
                                                                 CommunityPointsLastViewedContentByType.builder()
-                                                                        .contentType(AUTOMATIC_REWARD)
+                                                                        .contentType("AUTOMATIC_REWARD")
                                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 5, 20, 59, 11, 67754116, UTC))
                                                                         .build(),
                                                                 CommunityPointsLastViewedContentByType.builder()
-                                                                        .contentType(CUSTOM_REWARD)
+                                                                        .contentType("CUSTOM_REWARD")
                                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 5, 20, 59, 11, 67754117, UTC))
                                                                         .build()
                                                         ))
@@ -296,7 +294,7 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
                                         .lastViewedContent(List.of(
                                                 CommunityPointsLastViewedContentByTypeAndID.builder()
                                                         .contentId("SINGLE_MESSAGE_BYPASS_SUB_MODE")
-                                                        .contentType(AUTOMATIC_REWARD)
+                                                        .contentType("AUTOMATIC_REWARD")
                                                         .lastViewedAt(ZonedDateTime.of(2021, 10, 6, 19, 50, 35, 443714534, UTC))
                                                         .build()
                                         ))

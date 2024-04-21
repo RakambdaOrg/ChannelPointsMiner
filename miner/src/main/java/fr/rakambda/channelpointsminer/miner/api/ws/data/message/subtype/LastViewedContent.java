@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ContentType;
 import fr.rakambda.channelpointsminer.miner.util.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,7 +18,7 @@ import java.time.ZonedDateTime;
 public class LastViewedContent{
 	@JsonProperty("content_type")
 	@NotNull
-	private ContentType contentType;
+	private String contentType;
 	@JsonProperty("content_id")
 	@NotNull
 	private String contentId;

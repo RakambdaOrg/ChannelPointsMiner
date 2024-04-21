@@ -26,7 +26,7 @@ public class CommunityPointsLastViewedContentByTypeAndID extends GQLType{
 	private String contentId;
 	@JsonProperty("contentType")
 	@NotNull
-	private ContentType contentType;
+	private String contentType;
 	@JsonProperty("lastViewedAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@NotNull

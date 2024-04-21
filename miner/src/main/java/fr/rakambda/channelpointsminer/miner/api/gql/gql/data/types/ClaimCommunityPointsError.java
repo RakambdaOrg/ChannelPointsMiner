@@ -20,5 +20,5 @@ import org.jetbrains.annotations.NotNull;
 public class ClaimCommunityPointsError extends GQLType{
 	@JsonProperty("code")
 	@NotNull
-	private ClaimErrorCode code;
+	private String code;
 }
