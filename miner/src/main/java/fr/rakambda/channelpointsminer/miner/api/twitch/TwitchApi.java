@@ -91,7 +91,7 @@ public class TwitchApi{
 		}
 		while(matched && last);
 		
-		if(!matched){
+		if(Objects.nonNull(foundGroup)){
 			return Optional.empty();
 		}
 		
@@ -141,7 +141,7 @@ public class TwitchApi{
 			return Optional.empty();
 		}
 		
-		return extractUrl(M3U8_STREAM_PATTERN, 1, response.getBody());
+		return extractUrl(M3U8_STREAM_PATTERN, 1, response.getBody(), true);
 	}
 	
 	public boolean openM3u8LastChunk(@NotNull URL m3u8Url){
