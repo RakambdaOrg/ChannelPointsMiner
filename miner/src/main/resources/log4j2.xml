@@ -25,9 +25,9 @@
         </Routing>
     </Appenders>
     <Loggers>
-        <Logger level="info" name="fr.rakambda.channelpointsminer.miner" additivity="false">
+        <Logger level="trace" name="fr.rakambda.channelpointsminer.miner" additivity="false">
             <AppenderRef ref="console"/>
-            <AppenderRef ref="router"/>
+<!--            <AppenderRef ref="router"/>-->
         </Logger>
         <Root level="warn" additivity="false">
             <AppenderRef ref="console"/>

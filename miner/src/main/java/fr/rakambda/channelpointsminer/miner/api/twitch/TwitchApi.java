@@ -91,7 +91,7 @@ public class TwitchApi{
 		}
 		while(matched && last);
 		
-		if(Objects.nonNull(foundGroup)){
+		if(Objects.isNull(foundGroup)){
 			return Optional.empty();
 		}
 		
