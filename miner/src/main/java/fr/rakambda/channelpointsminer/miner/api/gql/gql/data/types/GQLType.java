@@ -59,6 +59,7 @@ import lombok.Getter;
         @JsonSubTypes.Type(value = ClaimCommunityMomentPayload.class, name = "ClaimCommunityMomentPayload"),
         @JsonSubTypes.Type(value = CommunityMoment.class, name = "CommunityMoment"),
         @JsonSubTypes.Type(value = CommunityPointsEmoteModifier.class, name = "CommunityPointsEmoteModifier"),
+        @JsonSubTypes.Type(value = StreamPlaybackAccessToken.class, name = "PlaybackAccessToken"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

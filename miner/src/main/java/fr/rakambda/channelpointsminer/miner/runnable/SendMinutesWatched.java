@@ -1,8 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
-import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
-import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -21,8 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Log4j2
 @RequiredArgsConstructor
 public class SendMinutesWatched implements Runnable{
-	private static final String SITE_PLAYER = "site";
-	
 	@NotNull
 	private final IMiner miner;
 	private final Map<String, Instant> lastSend = new ConcurrentHashMap<>();
@@ -34,7 +29,7 @@ public class SendMinutesWatched implements Runnable{
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> !streamer.isChatBanned())
-					.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
+					.filter(streamer -> Objects.nonNull(streamer.getM3u8Url()))
 					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
 					.sorted(this::compare)
 					.limit(2)
@@ -65,28 +60,11 @@ public class SendMinutesWatched implements Runnable{
 		return Integer.compare(e1.getKey().getIndex(), e2.getKey().getIndex());
 	}
 	
-	private boolean send(Streamer streamer){
+	private boolean send(@NotNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			log.debug("Sending minutes watched");
-			var streamId = streamer.getStreamId();
-			if(streamId.isEmpty()){
-				return false;
-			}
 			
-			var request = MinuteWatchedEvent.builder()
-					.properties(MinuteWatchedProperties.builder()
-							.channelId(streamer.getId())
-							.channel(streamer.getUsername())
-							.broadcastId(streamId.get())
-							.player(SITE_PLAYER)
-							.userId(miner.getTwitchLogin().getUserIdAsInt(miner.getGqlApi()))
-							.gameId(streamer.getGame().map(Game::getId).orElse(null))
-							.game(streamer.getGame().map(Game::getName).orElse(null))
-							.live(true)
-							.build())
-					.build();
-			
-			return miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
+			return miner.getTwitchApi().openM3u8LastChunk(streamer.getM3u8Url());
 		}
 	}
 	

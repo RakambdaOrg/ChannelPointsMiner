@@ -44,6 +44,7 @@ public class UpdateStreamInfo implements Runnable{
 			
 			updateVideoInfo(streamer);
 			updateSpadeUrl(streamer);
+			updateM3u8Url(streamer);
 			updateBanStatus(streamer);
 			updatePointsContext(streamer);
 			updateCampaigns(streamer);
@@ -78,6 +79,26 @@ public class UpdateStreamInfo implements Runnable{
 		}
 		else{
 			streamer.setSpadeUrl(null);
+		}
+	}
+	
+	private void updateM3u8Url(@NotNull Streamer streamer){
+		log.trace("Updating m3u8 url");
+		if(streamer.isStreaming()){
+			if(Objects.isNull(streamer.getM3u8Url())){
+				var accessToken = miner.getGqlApi().getPlaybackAccessToken(streamer.getUsername());
+				if(accessToken.isEmpty()){
+					log.warn("Failed to get playback access token for {}", streamer);
+					return;
+				}
+				var token = accessToken.get().getData().getStreamPlaybackAccessToken();
+				
+				miner.getTwitchApi().getM3u8Url(streamer.getUsername(), token.getSignature(), token.getValue())
+						.ifPresent(streamer::setM3u8Url);
+			}
+		}
+		else{
+			streamer.setM3u8Url(null);
 		}
 	}
 	

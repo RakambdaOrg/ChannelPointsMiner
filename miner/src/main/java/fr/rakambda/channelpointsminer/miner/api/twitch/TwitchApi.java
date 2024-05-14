@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -20,6 +21,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class TwitchApi{
 	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("(https://static.twitchcdn.net/config/settings.*?js|https://assets.twitch.tv/config/settings.*?.js)");
 	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade(Url|_url)\":\"(.*?)\"");
+	private static final Pattern M3U8_STREAM_PATTERN = Pattern.compile("(https://[/\\-.:\\\\,\"=\\w]*m3u8)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern M3U8_CHUNK_PATTERN = Pattern.compile("(https://video-edge-[.\\w\\-/]+\\.ts(\\?allow_stream=true)?)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	
 	private final UnirestInstance unirest;
 	
@@ -71,13 +74,29 @@ public class TwitchApi{
 	
 	@NotNull
 	private Optional<URL> extractUrl(@NotNull Pattern pattern, int group, @NotNull String content){
+		return extractUrl(pattern, group, content, false);
+	}
+	
+	@NotNull
+	private Optional<URL> extractUrl(@NotNull Pattern pattern, int group, @NotNull String content, boolean last){
 		var matcher = pattern.matcher(content);
-		if(!matcher.find()){
+		var matched = false;
+		String foundGroup = null;
+		
+		do{
+			matched = matcher.find();
+			if(matched){
+				foundGroup = matcher.group(group);
+			}
+		}
+		while(matched && last);
+		
+		if(!matched){
 			return Optional.empty();
 		}
 		
 		try{
-			return Optional.of(URI.create(matcher.group(group)).toURL());
+			return Optional.of(URI.create(foundGroup).toURL());
 		}
 		catch(MalformedURLException e){
 			log.error("Failed to parse url", e);
@@ -101,5 +120,45 @@ public class TwitchApi{
 			log.error("Failed to send minute watched", e);
 			return false;
 		}
+	}
+	
+	@NotNull
+	public Optional<URL> getM3u8Url(@NotNull String login, @NotNull String signature, @NotNull String value){
+		var response = unirest.get("https://usher.ttvnw.net/api/channel/hls/%s.m3u8".formatted(login))
+				.queryString("sig", signature)
+				.queryString("token", value)
+				.queryString("cdm", "wv")
+				.queryString("player_version", "1.22.0")
+				.queryString("player_type", "pulsar")
+				.queryString("player_backend", "mediaplayer")
+				.queryString("playlist_include_framerate", "true")
+				.queryString("allow_source", "true")
+				.queryString("transcode_mode", "cbr_v1")
+				.asString();
+		
+		if(!response.isSuccess()){
+			log.warn("Failed to get streamer M3U8 content");
+			return Optional.empty();
+		}
+		
+		return extractUrl(M3U8_STREAM_PATTERN, 1, response.getBody());
+	}
+	
+	public boolean openM3u8LastChunk(@NotNull URL m3u8Url){
+		var playlistResponse = unirest.get(m3u8Url.toString()).asString();
+		
+		if(!playlistResponse.isSuccess()){
+			log.warn("Failed to get streamer M3U8 playlist");
+			return false;
+		}
+		
+		var chunkUrl = extractUrl(M3U8_CHUNK_PATTERN, 1, playlistResponse.getBody(), true);
+		if(chunkUrl.isEmpty()){
+			log.warn("Failed to get streamer M3U8 chunk from playlist");
+			return false;
+		}
+		
+		var chunkRequest = unirest.get(chunkUrl.get().toString()).asEmpty();
+		return chunkRequest.isSuccess();
 	}
 }

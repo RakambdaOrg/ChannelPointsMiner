@@ -79,6 +79,10 @@ public class Streamer{
 	private URL spadeUrl;
 	@Getter
 	private boolean chatBanned;
+	@Nullable
+	@Setter
+	@Getter
+	private URL m3u8Url;
 	
 	public void addWatchedDuration(@NotNull Duration duration){
 		watchedDuration = watchedDuration.plus(duration);
