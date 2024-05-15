@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -42,8 +43,47 @@ class TwitchApiTest{
     private static final String SPADE_BODY = "azeazeazeaze\"spade_url\":\"%s\"azeazeaze".formatted(SPADE_URL);
     private static final String SPADE_STREAMER_BODY = "azeazeazeaze\"spadeUrl\":\"%s\"azeazeaze".formatted(SPADE_URL);
     private static final String SPADE_BODY_INVALID_FORMAT = "\"spade_url\":\"%s\"".formatted("https://google.com:-80/");
-    
-    private TwitchApi tested;
+	private static final String M3U8_SIGNATURE = "sig";
+	private static final String M3U8_VALUE = "val";
+	private static final String M3U8_URL = "https://usher.ttvnw.net/api/channel/hls/%s.m3u8".formatted(CHANNEL_NAME);
+	private static final String M3U8_BODY = """
+			#EXTM3U
+			#EXT-X-TWITCH-INFO:NODE="video-edge-a.b",MANIFEST-NODE-TYPE="weaver_cluster",MANIFEST-NODE="video-weaver.a",SUPPRESS="false",SERVER-TIME="1.1",TRANSCODESTACK="2023-Transcode-QS-V1",TRANSCODEMODE="cbr_v1",USER-IP="1.1.1.1",SERVING-ID="serv",CLUSTER="clust",ABS="true",VIDEO-SESSION-ID="12345",BROADCAST-ID="12345",STREAM-TIME="1.1",B="false",USER-COUNTRY="AA",MANIFEST-CLUSTER="clust",ORIGIN="orig",C="data",D="false"
+			#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID="480p30",NAME="480p",AUTOSELECT=YES,DEFAULT=YES
+			#EXT-X-STREAM-INF:BANDWIDTH=1427999,RESOLUTION=852x480,CODECS="avc1.4D401F,mp4a.40.2",VIDEO="480p30",FRAME-RATE=30.000
+			https://stream1.m3u8
+			#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID="360p30",NAME="360p",AUTOSELECT=YES,DEFAULT=YES
+			#EXT-X-STREAM-INF:BANDWIDTH=630000,RESOLUTION=640x360,CODECS="avc1.4D401F,mp4a.40.2",VIDEO="360p30",FRAME-RATE=30.000
+			https://stream2.m3u8
+			#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID="160p30",NAME="160p",AUTOSELECT=YES,DEFAULT=YES
+			#EXT-X-STREAM-INF:BANDWIDTH=230000,RESOLUTION=284x160,CODECS="avc1.4D401F,mp4a.40.2",VIDEO="160p30",FRAME-RATE=30.000
+			https://stream3.m3u8
+			""";
+	private static final String M3U8_CHUNK_URL = "https://video-edge-stream.test/chunk3.ts";
+	private static final String M3U8_PLAYLIST_BODY = """
+			#EXTM3U
+			#EXT-X-VERSION:3
+			#EXT-X-TARGETDURATION:6
+			#EXT-X-MEDIA-SEQUENCE:2
+			#EXT-X-TWITCH-LIVE-SEQUENCE:3
+			#EXT-X-TWITCH-ELAPSED-SECS:1.1
+			#EXT-X-TWITCH-TOTAL-SECS:2.2
+			#EXT-X-DATERANGE:ID="playlist-creation-123",CLASS="timestamp",START-DATE="2024-05-15T09:10:00.427Z",END-ON-NEXT=YES,X-SERVER-TIME="1234.00"
+			#EXT-X-DATERANGE:ID="playlist-session-123",CLASS="twitch-session",START-DATE="2024-05-15T09:10:00.427Z",END-ON-NEXT=YES,X-TV-TWITCH-SESSIONID="1234"
+			#EXT-X-DATERANGE:ID="source-123",CLASS="twitch-stream-source",START-DATE="2024-05-15T09:09:00.348Z",END-ON-NEXT=YES,X-TV-TWITCH-STREAM-SOURCE="live"
+			#EXT-X-DATERANGE:ID="trigger-123",CLASS="twitch-trigger",START-DATE="2024-05-15T09:09:00.348Z",END-ON-NEXT=YES,X-TV-TWITCH-TRIGGER-URL="https://stream3.m3u8"
+			#EXT-X-PROGRAM-DATE-TIME:2024-05-15T09:09:49.681Z
+			#EXTINF:4.167,live
+			https://video-edge-stream.test/chunk1.ts
+			#EXT-X-PROGRAM-DATE-TIME:2024-05-15T09:09:53.848Z
+			#EXTINF:4.167,live
+			https://video-edge-stream.test/chunk2.ts
+			#EXT-X-PROGRAM-DATE-TIME:2024-05-15T09:09:58.015Z
+			#EXTINF:4.166,live
+			%s
+			""".formatted(M3U8_CHUNK_URL);
+	
+	private TwitchApi tested;
     
     private URL streamerUrl;
     private URL spadeUrl;
@@ -237,4 +277,92 @@ class TwitchApiTest{
         
         assertThat(tested.getSpadeUrl(streamerUrl)).isEmpty();
     }
+    
+    @Test
+    void getM3u8Url(UnirestMock unirest) throws MalformedURLException{
+        unirest.expect(GET, M3U8_URL)
+		        .queryString("sig", M3U8_SIGNATURE)
+		        .queryString("token", M3U8_VALUE)
+		        .queryString("cdm", "wv")
+		        .queryString("player_version", "1.22.0")
+		        .queryString("player_type", "pulsar")
+		        .queryString("player_backend", "mediaplayer")
+		        .queryString("playlist_include_framerate", "true")
+		        .queryString("allow_source", "true")
+		        .queryString("transcode_mode", "cbr_v1")
+                .thenReturn(M3U8_BODY)
+                .withStatus(200);
+        
+        assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).contains(URI.create("https://stream3.m3u8").toURL());
+    }
+    
+    @Test
+    void getM3u8UrlNoUrl(UnirestMock unirest){
+        unirest.expect(GET, M3U8_URL)
+		        .queryString("sig", M3U8_SIGNATURE)
+		        .queryString("token", M3U8_VALUE)
+		        .queryString("cdm", "wv")
+		        .queryString("player_version", "1.22.0")
+		        .queryString("player_type", "pulsar")
+		        .queryString("player_backend", "mediaplayer")
+		        .queryString("playlist_include_framerate", "true")
+		        .queryString("allow_source", "true")
+		        .queryString("transcode_mode", "cbr_v1")
+                .thenReturn("")
+                .withStatus(200);
+        
+        assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
+    }
+	
+	@Test
+	void getM3u8ChunkUrl(UnirestMock unirest) throws MalformedURLException{
+		var url = URI.create("https://stream.test/streamer.m3u8").toURL();
+		
+		unirest.expect(GET, url.toString())
+				.thenReturn(M3U8_PLAYLIST_BODY)
+				.withStatus(200);
+		
+		unirest.expect(GET, M3U8_CHUNK_URL)
+				.thenReturn()
+				.withStatus(200);
+		
+		assertThat(tested.openM3u8LastChunk(url)).isTrue();
+	}
+	
+	@Test
+	void getM3u8ChunkUrlNoPlaylist(UnirestMock unirest) throws MalformedURLException{
+		var url = URI.create("https://stream.test/streamer.m3u8").toURL();
+		
+		unirest.expect(GET, url.toString())
+				.thenReturn(M3U8_PLAYLIST_BODY)
+				.withStatus(404);
+		
+		assertThat(tested.openM3u8LastChunk(url)).isFalse();
+	}
+	
+	@Test
+	void getM3u8ChunkUrlNoChunkUrl(UnirestMock unirest) throws MalformedURLException{
+		var url = URI.create("https://stream.test/streamer.m3u8").toURL();
+		
+		unirest.expect(GET, url.toString())
+				.thenReturn("")
+				.withStatus(200);
+		
+		assertThat(tested.openM3u8LastChunk(url)).isFalse();
+	}
+	
+	@Test
+	void getM3u8ChunkUrlChunkError(UnirestMock unirest) throws MalformedURLException{
+		var url = URI.create("https://stream.test/streamer.m3u8").toURL();
+		
+		unirest.expect(GET, url.toString())
+				.thenReturn(M3U8_PLAYLIST_BODY)
+				.withStatus(200);
+		
+		unirest.expect(GET, M3U8_CHUNK_URL)
+				.thenReturn()
+				.withStatus(400);
+		
+		assertThat(tested.openM3u8LastChunk(url)).isFalse();
+	}
 }

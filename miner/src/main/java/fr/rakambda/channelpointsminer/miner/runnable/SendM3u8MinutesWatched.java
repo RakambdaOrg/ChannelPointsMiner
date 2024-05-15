@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
-//TODO test
 @Log4j2
 public class SendM3u8MinutesWatched extends SendMinutesWatched{
 	public SendM3u8MinutesWatched(@NotNull IMiner miner){

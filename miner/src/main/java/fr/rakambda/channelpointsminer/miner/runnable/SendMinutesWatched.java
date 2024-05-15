@@ -1,8 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
-import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
-import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -71,32 +68,6 @@ public abstract class SendMinutesWatched implements Runnable{
 			return compareScore;
 		}
 		return Integer.compare(e1.getKey().getIndex(), e2.getKey().getIndex());
-	}
-	
-	private boolean sendSpade(Streamer streamer){
-		var streamId = streamer.getStreamId();
-		if(streamId.isEmpty()){
-			return false;
-		}
-		
-		var request = MinuteWatchedEvent.builder()
-				.properties(MinuteWatchedProperties.builder()
-						.channelId(streamer.getId())
-						.channel(streamer.getUsername())
-						.broadcastId(streamId.get())
-						.player("site")
-						.userId(miner.getTwitchLogin().getUserIdAsInt(miner.getGqlApi()))
-						.gameId(streamer.getGame().map(Game::getId).orElse(null))
-						.game(streamer.getGame().map(Game::getName).orElse(null))
-						.live(true)
-						.build())
-				.build();
-		
-		return miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
-	}
-	
-	private boolean sendM3u8(@NotNull Streamer streamer){
-		return miner.getTwitchApi().openM3u8LastChunk(streamer.getM3u8Url());
 	}
 	
 	private void updateWatchedMinutes(@NotNull Streamer streamer){

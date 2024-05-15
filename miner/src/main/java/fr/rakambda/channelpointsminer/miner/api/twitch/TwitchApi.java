@@ -123,7 +123,6 @@ public class TwitchApi{
 		}
 	}
 	
-	//TODO test
 	@NotNull
 	public Optional<URL> getM3u8Url(@NotNull String login, @NotNull String signature, @NotNull String value){
 		var response = unirest.get("https://usher.ttvnw.net/api/channel/hls/%s.m3u8".formatted(login.toLowerCase(Locale.ROOT)))
@@ -146,7 +145,6 @@ public class TwitchApi{
 		return extractUrl(M3U8_STREAM_PATTERN, 1, response.getBody(), true);
 	}
 	
-	//TODO test
 	public boolean openM3u8LastChunk(@NotNull URL m3u8Url){
 		var playlistResponse = unirest.get(m3u8Url.toString()).asString();
 		

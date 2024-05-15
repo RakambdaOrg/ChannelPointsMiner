@@ -82,7 +82,6 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	//TODO Test
 	private void updateM3u8Url(@NotNull Streamer streamer){
 		log.trace("Updating m3u8 url");
 		if(streamer.isStreaming()){
