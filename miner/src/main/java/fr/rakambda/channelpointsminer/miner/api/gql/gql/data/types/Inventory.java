@@ -34,7 +34,7 @@ public class Inventory extends GQLType{
     @JsonProperty("completedRewardCampaigns")
     @NotNull
     @Builder.Default
-    private List<DropCampaign> completedRewardCampaigns = new ArrayList<>();
+    private List<RewardCampaign> completedRewardCampaigns = new ArrayList<>();
     @JsonProperty("gameEventDrops")
     @NotNull
     @Builder.Default
