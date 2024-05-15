@@ -313,6 +313,24 @@ class TwitchApiTest{
         
         assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
     }
+    
+    @Test
+    void getM3u8UrlError(UnirestMock unirest){
+        unirest.expect(GET, M3U8_URL)
+		        .queryString("sig", M3U8_SIGNATURE)
+		        .queryString("token", M3U8_VALUE)
+		        .queryString("cdm", "wv")
+		        .queryString("player_version", "1.22.0")
+		        .queryString("player_type", "pulsar")
+		        .queryString("player_backend", "mediaplayer")
+		        .queryString("playlist_include_framerate", "true")
+		        .queryString("allow_source", "true")
+		        .queryString("transcode_mode", "cbr_v1")
+                .thenReturn("")
+                .withStatus(400);
+        
+        assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
+    }
 	
 	@Test
 	void getM3u8ChunkUrl(UnirestMock unirest) throws MalformedURLException{

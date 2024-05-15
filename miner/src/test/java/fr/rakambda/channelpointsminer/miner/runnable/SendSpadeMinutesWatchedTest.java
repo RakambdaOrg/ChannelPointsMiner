@@ -74,6 +74,11 @@ class SendSpadeMinutesWatchedTest{
 	}
 	
 	@Test
+	void hasType(){
+		assertThat(tested.getType()).isNotNull();
+	}
+	
+	@Test
 	void sendingMinutesWatched(){
 		when(streamer.getGame()).thenReturn(Optional.of(game));
 		

@@ -41,6 +41,11 @@ class SendM3u8MinutesWatchedTest {
 	}
 	
 	@Test
+	void hasType(){
+		assertThat(tested.getType()).isNotNull();
+	}
+	
+	@Test
 	void sendingMinutesWatched(){
 		when(twitchApi.openM3u8LastChunk(m3u8Url)).thenReturn(true);
 		
