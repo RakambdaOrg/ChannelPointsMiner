@@ -2,7 +2,8 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
-import fr.rakambda.channelpointsminer.miner.runnable.SendMinutesWatched;
+import fr.rakambda.channelpointsminer.miner.runnable.SendM3u8MinutesWatched;
+import fr.rakambda.channelpointsminer.miner.runnable.SendSpadeMinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.StreamerConfigurationReload;
 import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.runnable.UpdateStreamInfo;
@@ -31,9 +32,15 @@ class MinerRunnableFactoryTest{
 	}
 	
 	@Test
-	void createSendMinutesWatched(){
-		Assertions.assertThat(MinerRunnableFactory.createSendMinutesWatched(miner)).isNotNull()
-				.isInstanceOf(SendMinutesWatched.class);
+	void createSendM3u8MinutesWatched(){
+		Assertions.assertThat(MinerRunnableFactory.createSendM3u8MinutesWatched(miner)).isNotNull()
+				.isInstanceOf(SendM3u8MinutesWatched.class);
+	}
+	
+	@Test
+	void createSendSpadeMinutesWatched(){
+		Assertions.assertThat(MinerRunnableFactory.createSendSpadeMinutesWatched(miner)).isNotNull()
+				.isInstanceOf(SendSpadeMinutesWatched.class);
 	}
 	
 	@Test
