@@ -137,7 +137,7 @@ public class TwitchApi{
 				.asString();
 		
 		if(!response.isSuccess()){
-			log.warn("Failed to get streamer M3U8 content");
+			log.error("Failed to get streamer M3U8 content");
 			return Optional.empty();
 		}
 		
@@ -148,13 +148,13 @@ public class TwitchApi{
 		var playlistResponse = unirest.get(m3u8Url.toString()).asString();
 		
 		if(!playlistResponse.isSuccess()){
-			log.warn("Failed to get streamer M3U8 playlist");
+			log.error("Failed to get streamer M3U8 playlist");
 			return false;
 		}
 		
 		var chunkUrl = extractUrl(M3U8_CHUNK_PATTERN, 1, playlistResponse.getBody(), true);
 		if(chunkUrl.isEmpty()){
-			log.warn("Failed to get streamer M3U8 chunk from playlist");
+			log.error("Failed to get streamer M3U8 chunk from playlist");
 			return false;
 		}
 		

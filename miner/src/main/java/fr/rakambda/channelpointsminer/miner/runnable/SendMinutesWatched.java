@@ -1,5 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
+import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
+import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -37,10 +40,14 @@ public class SendMinutesWatched implements Runnable{
 					.toList();
 			
 			for(var streamer : toSendMinutesWatched){
-				if(send(streamer)){
-					updateWatchedMinutes(streamer);
+				try(var ignored2 = LogContext.empty().withStreamer(streamer)){
+					log.debug("Sending minutes watched");
+					
+					if(sendM3u8(streamer)){
+						updateWatchedMinutes(streamer);
+					}
+					CommonUtils.randomSleep(100, 50);
 				}
-				CommonUtils.randomSleep(100, 50);
 			}
 			
 			removeLastSend(toSendMinutesWatched);
@@ -60,12 +67,30 @@ public class SendMinutesWatched implements Runnable{
 		return Integer.compare(e1.getKey().getIndex(), e2.getKey().getIndex());
 	}
 	
-	private boolean send(@NotNull Streamer streamer){
-		try(var ignored = LogContext.empty().withStreamer(streamer)){
-			log.debug("Sending minutes watched");
-			
-			return miner.getTwitchApi().openM3u8LastChunk(streamer.getM3u8Url());
+	private boolean sendSpade(Streamer streamer){
+		var streamId = streamer.getStreamId();
+		if(streamId.isEmpty()){
+			return false;
 		}
+		
+		var request = MinuteWatchedEvent.builder()
+				.properties(MinuteWatchedProperties.builder()
+						.channelId(streamer.getId())
+						.channel(streamer.getUsername())
+						.broadcastId(streamId.get())
+						.player("site")
+						.userId(miner.getTwitchLogin().getUserIdAsInt(miner.getGqlApi()))
+						.gameId(streamer.getGame().map(Game::getId).orElse(null))
+						.game(streamer.getGame().map(Game::getName).orElse(null))
+						.live(true)
+						.build())
+				.build();
+		
+		return miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
+	}
+	
+	private boolean sendM3u8(@NotNull Streamer streamer){
+		return miner.getTwitchApi().openM3u8LastChunk(streamer.getM3u8Url());
 	}
 	
 	private void updateWatchedMinutes(@NotNull Streamer streamer){
