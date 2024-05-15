@@ -128,7 +128,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			login();
 			
 			scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
-			scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendMinutesWatched(this), 0, 1, MINUTES);
+			scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendMinutesWatched(this), 0, 30, SECONDS);
 			scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
 			scheduledExecutor.scheduleAtFixedRate(syncInventory, 1, 15, MINUTES);
 			
