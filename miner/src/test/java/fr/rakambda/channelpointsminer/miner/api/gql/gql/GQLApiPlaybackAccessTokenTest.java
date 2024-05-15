@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.getplaybackaccesstoken.GetPlaybackAccessTokenData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken.PlaybackAccessTokenData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.StreamPlaybackAccessToken;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,13 +17,13 @@ class GQLApiPlaybackAccessTokenTest extends AbstractGQLTest{
 	
 	@Test
 	void nominal(){
-		var expected = GQLResponse.<GetPlaybackAccessTokenData> builder()
+		var expected = GQLResponse.<PlaybackAccessTokenData> builder()
 				.extensions(Map.of(
 						"durationMilliseconds", 18,
 						"operationName", "PlaybackAccessToken",
 						"requestID", "request-id"
 				))
-				.data(GetPlaybackAccessTokenData.builder()
+				.data(PlaybackAccessTokenData.builder()
 						.streamPlaybackAccessToken(StreamPlaybackAccessToken.builder()
 								.value("value")
 								.signature("signature")
@@ -33,7 +33,7 @@ class GQLApiPlaybackAccessTokenTest extends AbstractGQLTest{
 		
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/playbackaccesstoken_success.json");
 		
-		assertThat(tested.getPlaybackAccessToken(LOGIN)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.playbackAccessToken(LOGIN)).isPresent().get().isEqualTo(expected);
 		
 		verifyAll();
 	}

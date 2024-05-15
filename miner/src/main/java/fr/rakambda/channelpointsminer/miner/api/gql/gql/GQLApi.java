@@ -17,8 +17,8 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightservi
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsOperation;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.getplaybackaccesstoken.GetPlaybackAccessTokenData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.getplaybackaccesstoken.GetPlaybackAccessTokenOperation;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken.PlaybackAccessTokenData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken.PlaybackAccessTokenOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.joinraid.JoinRaidData;
@@ -189,8 +189,8 @@ public class GQLApi{
     }
     
     @NotNull
-    public Optional<GQLResponse<GetPlaybackAccessTokenData>> getPlaybackAccessToken(@NotNull String login){
-        return postGqlRequest(new GetPlaybackAccessTokenOperation(login));
+    public Optional<GQLResponse<PlaybackAccessTokenData>> playbackAccessToken(@NotNull String login){
+        return postGqlRequest(new PlaybackAccessTokenOperation(login));
     }
     
     @NotNull

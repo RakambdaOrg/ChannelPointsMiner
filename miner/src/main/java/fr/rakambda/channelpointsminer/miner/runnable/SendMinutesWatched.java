@@ -48,7 +48,7 @@ public abstract class SendMinutesWatched implements Runnable{
 			
 			for(var streamer : toSendMinutesWatched){
 				try(var ignored2 = LogContext.empty().withStreamer(streamer)){
-					log.debug("Sending minutes watched");
+					log.debug("Sending {} minutes watched", getType());
 					if(send(streamer)){
 						updateWatchedMinutes(streamer);
 					}
@@ -58,10 +58,10 @@ public abstract class SendMinutesWatched implements Runnable{
 			
 			removeLastSend(toSendMinutesWatched);
 			
-			log.debug("Done all sending minutes watched");
+			log.debug("Done sending all {} minutes watched", getType());
 		}
 		catch(Exception e){
-			log.error("Failed to send all minutes watched", e);
+			log.error("Failed to send all {} minutes watched", getType(), e);
 		}
 	}
 	

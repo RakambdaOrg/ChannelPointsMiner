@@ -1,7 +1,6 @@
-package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.getplaybackaccesstoken;
+package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ClaimDropRewardsPayload;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.StreamPlaybackAccessToken;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class GetPlaybackAccessTokenData{
+public class PlaybackAccessTokenData{
 	@JsonProperty("streamPlaybackAccessToken")
 	@NotNull
 	private StreamPlaybackAccessToken streamPlaybackAccessToken;

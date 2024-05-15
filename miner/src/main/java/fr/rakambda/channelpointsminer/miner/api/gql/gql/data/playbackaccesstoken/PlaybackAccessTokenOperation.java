@@ -1,4 +1,4 @@
-package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.getplaybackaccesstoken;
+package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.IGQLOperation;
@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class GetPlaybackAccessTokenOperation extends IGQLOperation<GetPlaybackAccessTokenData>{
-	public GetPlaybackAccessTokenOperation(@NotNull String login){
+public class PlaybackAccessTokenOperation extends IGQLOperation<PlaybackAccessTokenData>{
+	public PlaybackAccessTokenOperation(@NotNull String login){
 		super("PlaybackAccessToken");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "3093517e37e4f4cb48906155bcd894150aef92617939236d2508f3375ab732ce"));
 		addVariable("isLive", true);
@@ -25,7 +25,7 @@ public class GetPlaybackAccessTokenOperation extends IGQLOperation<GetPlaybackAc
 	
 	@Override
 	@NotNull
-	public GenericType<GQLResponse<GetPlaybackAccessTokenData>> getResponseType(){
+	public GenericType<GQLResponse<PlaybackAccessTokenData>> getResponseType(){
 		return new GenericType<>(){};
 	}
 }
