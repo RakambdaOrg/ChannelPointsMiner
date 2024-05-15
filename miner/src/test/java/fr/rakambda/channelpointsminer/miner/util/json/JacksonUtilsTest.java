@@ -1,7 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -12,7 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @ParallelizableTest
 class JacksonUtilsTest{
@@ -82,10 +81,10 @@ class JacksonUtilsTest{
 				}
 				""";
 		
-		assertThrows(JsonMappingException.class, () -> JacksonUtils.read(content, new TypeReference<TestObject>(){}));
+		assertThatCode(() -> JacksonUtils.read(content, new TypeReference<TestObject>(){})).doesNotThrowAnyException();
 		
 		try(var is = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))){
-			assertThrows(JsonMappingException.class, () -> JacksonUtils.read(is, new TypeReference<TestObject>(){}));
+			assertThatCode(() -> JacksonUtils.read(is, new TypeReference<TestObject>(){})).doesNotThrowAnyException();
 		}
 	}
 	

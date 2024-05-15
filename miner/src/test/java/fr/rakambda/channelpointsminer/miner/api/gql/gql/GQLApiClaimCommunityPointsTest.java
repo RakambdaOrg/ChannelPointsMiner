@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Map;
-import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ClaimErrorCode.NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,7 +56,7 @@ class GQLApiClaimCommunityPointsTest extends AbstractGQLTest{
 				.data(ClaimCommunityPointsData.builder()
 						.claimCommunityPoints(ClaimCommunityPointsPayload.builder()
 								.error(ClaimCommunityPointsError.builder()
-										.code(NOT_FOUND)
+										.code("NOT_FOUND")
 										.build())
 								.build())
 						.build())

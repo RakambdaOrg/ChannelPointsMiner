@@ -22,7 +22,7 @@ import java.util.Comparator;
 @Builder
 @AllArgsConstructor
 @Log4j2
-@JsonClassDescription("Choose the outcome with the least points. his is the same as 'the outcome with higher odds'.")
+@JsonClassDescription("Choose the outcome with the least points. This is the same as 'the outcome with higher odds'.")
 public class LeastPointsOutcomePicker implements IOutcomePicker{
 	@Override
 	@NotNull

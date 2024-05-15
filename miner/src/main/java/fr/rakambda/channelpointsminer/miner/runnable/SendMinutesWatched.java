@@ -1,8 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
-import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
-import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -20,21 +17,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Log4j2
 @RequiredArgsConstructor
-public class SendMinutesWatched implements Runnable{
-	private static final String SITE_PLAYER = "site";
-	
+public abstract class SendMinutesWatched implements Runnable{
 	@NotNull
-	private final IMiner miner;
+	protected final IMiner miner;
 	private final Map<String, Instant> lastSend = new ConcurrentHashMap<>();
+	
+	protected abstract String getType();
+	
+	protected abstract boolean checkStreamer(Streamer streamer);
+	
+	protected abstract boolean send(Streamer streamer);
 	
 	@Override
 	public void run(){
-		log.debug("Sending all minutes watched");
+		log.debug("Starting sending {} minutes watched", getType());
+		
 		try(var ignored = LogContext.with(miner)){
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> !streamer.isChatBanned())
-					.filter(streamer -> Objects.nonNull(streamer.getSpadeUrl()))
+					.filter(this::checkStreamer)
 					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
 					.sorted(this::compare)
 					.limit(2)
@@ -42,18 +44,21 @@ public class SendMinutesWatched implements Runnable{
 					.toList();
 			
 			for(var streamer : toSendMinutesWatched){
-				if(send(streamer)){
-					updateWatchedMinutes(streamer);
+				try(var ignored2 = LogContext.empty().withStreamer(streamer)){
+					log.debug("Sending {} minutes watched", getType());
+					if(send(streamer)){
+						updateWatchedMinutes(streamer);
+					}
+					CommonUtils.randomSleep(100, 50);
 				}
-				CommonUtils.randomSleep(100, 50);
 			}
 			
 			removeLastSend(toSendMinutesWatched);
 			
-			log.debug("Done all sending minutes watched");
+			log.debug("Done sending all {} minutes watched", getType());
 		}
 		catch(Exception e){
-			log.error("Failed to send all minutes watched", e);
+			log.error("Failed to send all {} minutes watched", getType(), e);
 		}
 	}
 	
@@ -63,31 +68,6 @@ public class SendMinutesWatched implements Runnable{
 			return compareScore;
 		}
 		return Integer.compare(e1.getKey().getIndex(), e2.getKey().getIndex());
-	}
-	
-	private boolean send(Streamer streamer){
-		try(var ignored = LogContext.empty().withStreamer(streamer)){
-			log.debug("Sending minutes watched");
-			var streamId = streamer.getStreamId();
-			if(streamId.isEmpty()){
-				return false;
-			}
-			
-			var request = MinuteWatchedEvent.builder()
-					.properties(MinuteWatchedProperties.builder()
-							.channelId(streamer.getId())
-							.channel(streamer.getUsername())
-							.broadcastId(streamId.get())
-							.player(SITE_PLAYER)
-							.userId(miner.getTwitchLogin().getUserIdAsInt(miner.getGqlApi()))
-							.gameId(streamer.getGame().map(Game::getId).orElse(null))
-							.game(streamer.getGame().map(Game::getName).orElse(null))
-							.live(true)
-							.build())
-					.build();
-			
-			return miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
-		}
 	}
 	
 	private void updateWatchedMinutes(@NotNull Streamer streamer){

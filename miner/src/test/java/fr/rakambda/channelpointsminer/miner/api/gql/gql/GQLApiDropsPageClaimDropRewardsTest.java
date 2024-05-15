@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ClaimDropRewardsPayload;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ClaimDropRewardsStatus;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMock;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,7 +27,7 @@ class GQLApiDropsPageClaimDropRewardsTest extends AbstractGQLTest{
 				))
 				.data(DropsPageClaimDropRewardsData.builder()
 						.claimDropRewards(ClaimDropRewardsPayload.builder()
-								.status(ClaimDropRewardsStatus.ELIGIBLE_FOR_ALL)
+								.status("ELIGIBLE_FOR_ALL")
 								.isUserAccountConnected(false)
 								.build())
 						.build())

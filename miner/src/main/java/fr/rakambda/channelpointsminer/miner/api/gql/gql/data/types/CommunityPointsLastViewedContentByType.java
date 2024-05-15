@@ -21,7 +21,7 @@ import java.time.ZonedDateTime;
 @ToString
 public class CommunityPointsLastViewedContentByType extends GQLType{
 	@JsonProperty("contentType")
-	private ContentType contentType;
+	private String contentType;
 	@JsonProperty("lastViewedAt")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	private ZonedDateTime lastViewedAt;

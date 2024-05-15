@@ -2,23 +2,23 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
-@JsonTypeName("ClaimCommunityPointsError")
+@JsonTypeName("PlaybackAccessToken")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class ClaimCommunityPointsError extends GQLType{
-	@JsonProperty("code")
+public class StreamPlaybackAccessToken extends GQLType{
+	@JsonProperty("signature")
 	@NotNull
-	private String code;
+	private String signature;
+	@JsonProperty("value")
+	@NotNull
+	private String value;
 }

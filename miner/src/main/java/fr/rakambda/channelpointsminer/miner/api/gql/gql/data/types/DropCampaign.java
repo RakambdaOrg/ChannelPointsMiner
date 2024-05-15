@@ -67,7 +67,7 @@ public class DropCampaign extends GQLType{
 	private List<TimeBasedDrop> timeBasedDrops = new ArrayList<>();
 	@JsonProperty("status")
 	@Nullable
-	private DropCampaignStatus status;
+	private String status;
 	@JsonProperty("self")
 	@Nullable
 	private DropCampaignSelfEdge self;

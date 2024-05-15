@@ -21,6 +21,8 @@ import static com.fasterxml.jackson.annotation.PropertyAccessor.GETTER;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.SETTER;
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_TRAILING_COMMA;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
 import static com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
 import static lombok.AccessLevel.PRIVATE;
@@ -42,8 +44,8 @@ public class JacksonUtils{
 					.enable(ALLOW_TRAILING_COMMA)
 					.enable(ACCEPT_CASE_INSENSITIVE_ENUMS)
 					.enable(ALLOW_COMMENTS)
-					// .disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
-					// .disable(FAIL_ON_UNKNOWN_PROPERTIES)
+					.disable(FAIL_ON_IGNORED_PROPERTIES)
+					.disable(FAIL_ON_UNKNOWN_PROPERTIES)
 					.visibility(FIELD, ANY)
 					.visibility(GETTER, NONE)
 					.visibility(SETTER, NONE)

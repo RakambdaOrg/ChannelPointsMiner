@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.makeprediction.MakePredictionData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionError;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionErrorCode;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionPayload;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -51,7 +50,7 @@ class GQLApiMakePredictionTest extends AbstractGQLTest{
 				.data(MakePredictionData.builder()
 						.makePrediction(MakePredictionPayload.builder()
 								.error(MakePredictionError.builder()
-										.code(MakePredictionErrorCode.NOT_ENOUGH_POINTS)
+										.code("NOT_ENOUGH_POINTS")
 										.build())
 								.build())
 						.build())

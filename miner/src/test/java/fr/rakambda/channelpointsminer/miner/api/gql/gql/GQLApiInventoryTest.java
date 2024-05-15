@@ -8,7 +8,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEd
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignACL;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSelfEdge;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignStatus;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
@@ -57,7 +56,7 @@ class GQLApiInventoryTest extends AbstractGQLTest{
                                                         .endAt(ZonedDateTime.of(2021, 11, 11, 2, 0, 0, 0, UTC))
                                                         .imageUrl(new URL("https://image-1"))
                                                         .name("campaign name 1")
-                                                        .status(DropCampaignStatus.ACTIVE)
+                                                        .status("ACTIVE")
                                                         .self(DropCampaignSelfEdge.builder()
                                                                 .isAccountConnected(true)
                                                                 .build())
@@ -108,7 +107,7 @@ class GQLApiInventoryTest extends AbstractGQLTest{
                                                         .endAt(ZonedDateTime.of(2021, 11, 7, 23, 30, 0, 0, UTC))
                                                         .imageUrl(new URL("https://image2"))
                                                         .name("campaign name 2")
-                                                        .status(DropCampaignStatus.ACTIVE)
+                                                        .status("ACTIVE")
                                                         .self(DropCampaignSelfEdge.builder()
                                                                 .isAccountConnected(false)
                                                                 .build())

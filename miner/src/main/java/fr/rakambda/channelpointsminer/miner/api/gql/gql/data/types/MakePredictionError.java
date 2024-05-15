@@ -20,5 +20,5 @@ import org.jetbrains.annotations.NotNull;
 public class MakePredictionError extends GQLType{
 	@JsonProperty("code")
 	@NotNull
-	private MakePredictionErrorCode code;
+	private String code;
 }
