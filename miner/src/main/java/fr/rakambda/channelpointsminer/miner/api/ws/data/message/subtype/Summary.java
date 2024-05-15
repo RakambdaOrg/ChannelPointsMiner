@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.rakambda.channelpointsminer.miner.util.json.ISO8601ZonedDateTimeDeserializer;
-import fr.rakambda.channelpointsminer.miner.util.json.UnknownDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -30,8 +29,4 @@ public class Summary{
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@Nullable
 	private ZonedDateTime lastSeen;
-	@JsonProperty("count_by_md")
-	@Nullable
-	@JsonDeserialize(using = UnknownDeserializer.class)
-	private Object countByMd;
 }
