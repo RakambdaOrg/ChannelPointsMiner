@@ -2,7 +2,8 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
-import fr.rakambda.channelpointsminer.miner.runnable.SendMinutesWatched;
+import fr.rakambda.channelpointsminer.miner.runnable.SendM3u8MinutesWatched;
+import fr.rakambda.channelpointsminer.miner.runnable.SendSpadeMinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.StreamerConfigurationReload;
 import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.runnable.UpdateStreamInfo;
@@ -19,8 +20,12 @@ public class MinerRunnableFactory{
 	}
 	
 	@NotNull
-	public static SendMinutesWatched createSendMinutesWatched(@NotNull IMiner miner){
-		return new SendMinutesWatched(miner);
+	public static SendSpadeMinutesWatched createSendSpadeMinutesWatched(@NotNull IMiner miner){
+		return new SendSpadeMinutesWatched(miner);
+	}
+	@NotNull
+	public static SendM3u8MinutesWatched createSendM3u8MinutesWatched(@NotNull IMiner miner){
+		return new SendM3u8MinutesWatched(miner);
 	}
 	
 	@NotNull

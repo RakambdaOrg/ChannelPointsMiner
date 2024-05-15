@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
-class SendMinutesWatchedTest{
+class SendSpadeMinutesWatchedTest{
 	private static final String STREAMER_ID = "streamer-id";
 	private static final String STREAMER_NAME = "streamer-name";
 	private static final String STREAM_ID = "stream-id";
@@ -48,7 +48,7 @@ class SendMinutesWatchedTest{
 	private static final int INDEX = 5;
 	
 	@InjectMocks
-	private SendMinutesWatched tested;
+	private SendSpadeMinutesWatched tested;
 	
 	@Mock
 	private IMiner miner;

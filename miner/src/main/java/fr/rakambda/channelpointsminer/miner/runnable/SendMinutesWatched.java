@@ -20,19 +20,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Log4j2
 @RequiredArgsConstructor
-public class SendMinutesWatched implements Runnable{
+public abstract class SendMinutesWatched implements Runnable{
 	@NotNull
-	private final IMiner miner;
+	protected final IMiner miner;
 	private final Map<String, Instant> lastSend = new ConcurrentHashMap<>();
+	
+	protected abstract String getType();
+	
+	protected abstract boolean checkStreamer(Streamer streamer);
+	
+	protected abstract boolean send(Streamer streamer);
 	
 	@Override
 	public void run(){
-		log.debug("Sending all minutes watched");
+		log.debug("Starting sending {} minutes watched", getType());
+		
 		try(var ignored = LogContext.with(miner)){
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> !streamer.isChatBanned())
-					.filter(streamer -> Objects.nonNull(streamer.getM3u8Url()))
+					.filter(this::checkStreamer)
 					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
 					.sorted(this::compare)
 					.limit(2)
@@ -42,8 +49,7 @@ public class SendMinutesWatched implements Runnable{
 			for(var streamer : toSendMinutesWatched){
 				try(var ignored2 = LogContext.empty().withStreamer(streamer)){
 					log.debug("Sending minutes watched");
-					
-					if(sendM3u8(streamer)){
+					if(send(streamer)){
 						updateWatchedMinutes(streamer);
 					}
 					CommonUtils.randomSleep(100, 50);

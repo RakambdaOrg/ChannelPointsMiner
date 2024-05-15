@@ -1,0 +1,18 @@
+{
+  "data": {
+    "streamPlaybackAccessToken": {
+      "value": "value",
+      "signature": "signature",
+      "authorization": {
+        "isForbidden": false,
+        "forbiddenReasonCode": "NONE"
+      },
+      "__typename": "PlaybackAccessToken"
+    }
+  },
+  "extensions": {
+    "durationMilliseconds": 18,
+    "operationName": "PlaybackAccessToken",
+    "requestID": "request-id"
+  }
+}
