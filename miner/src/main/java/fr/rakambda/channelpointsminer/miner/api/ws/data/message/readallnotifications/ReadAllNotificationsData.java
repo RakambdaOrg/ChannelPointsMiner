@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,8 +21,8 @@ import java.util.List;
 @Builder
 public class ReadAllNotificationsData{
 	@JsonProperty("notification_ids")
-	@NotNull
-	private List<String> notificationIds = new LinkedList<>();
+	@Nullable
+	private List<String> notificationIds;
 	@JsonProperty("display_type")
 	@NotNull
 	private String displayType;

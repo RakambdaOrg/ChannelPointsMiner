@@ -18,6 +18,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdate
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidCancelV2;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidGoV2;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ReadAllNotifications;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ReadNotifications;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.UpdateSummary;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ViewCount;
@@ -44,6 +45,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.Poin
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionupdated.PredictionUpdatedData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.readallnotifications.ReadAllNotificationsData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.readnotifications.ReadNotificationsData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.ActiveMultipliers;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
@@ -818,7 +820,7 @@ class TwitchPubSubWebSocketClientMessageTest{
 	}
 	
 	@Test
-	void onReadNotifications(WebsocketMockServer server){
+	void onReadAllNotifications(WebsocketMockServer server){
 		server.send(TestUtils.getAllResourceContent("api/ws/readAllNotifications.json"));
 
 		var expected = MessageResponse.builder()
