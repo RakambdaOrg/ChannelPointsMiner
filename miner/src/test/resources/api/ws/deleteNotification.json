@@ -1,7 +1,0 @@
-{
-  "type": "MESSAGE",
-  "data": {
-    "topic": "onsite-notifications.123456789",
-    "message": "{\"type\":\"delete-notification\",\"data\":{\"notification_id\":\"notification-id\",\"summary\":{\"unseen_view_count\":5,\"last_seen_at\":\"2021-01-01T19:41:56.957079333Z\",\"viewer_unread_count\":8,\"creator_unread_count\":1},\"display_type\":\"VIEWER\"}}"
-  }
-}

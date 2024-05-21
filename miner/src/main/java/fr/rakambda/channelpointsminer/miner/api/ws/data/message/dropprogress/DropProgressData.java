@@ -16,9 +16,6 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 @Builder
 public class DropProgressData{
-	@JsonProperty("drop_id")
-	@NotNull
-	private String dropId;
 	@JsonProperty("channel_id")
 	@NotNull
 	private String channelId;

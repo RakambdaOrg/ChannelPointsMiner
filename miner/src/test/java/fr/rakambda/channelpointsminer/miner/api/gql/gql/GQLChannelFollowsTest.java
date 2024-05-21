@@ -4,10 +4,8 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.channelfollows.ChannelFollowsData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.FollowConnection;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.FollowEdge;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.FollowerEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.PageInfo;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.UserSelfConnection;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMock;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,10 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -47,16 +43,8 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 												.cursor("cursor-id")
 												.node(User.builder()
 														.id("987654321")
-														.displayName("display-name")
 														.login("login")
 														.profileImageUrl(new URL("https://profile-image"))
-														.self(UserSelfConnection.builder()
-																.canFollow(true)
-																.follower(FollowerEdge.builder()
-																		.disableNotifications(true)
-																		.followedAt(ZonedDateTime.of(2021, 9, 19, 16, 14, 15, 0, UTC))
-																		.build())
-																.build())
 														.build())
 												.build()))
 										.pageInfo(PageInfo.builder()
@@ -68,7 +56,7 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 				.build();
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/channelFollows_oneFollow.json");
 		
-		assertThat(tested.channelFollows(LIMIT, ORDER, null)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.channelFollows(LIMIT, ORDER, null)).contains(expected);
 		
 		verifyAll();
 	}
@@ -89,16 +77,8 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 												.cursor("cursor-id")
 												.node(User.builder()
 														.id("987654321")
-														.displayName("display-name")
 														.login("login")
 														.profileImageUrl(new URL("https://profile-image"))
-														.self(UserSelfConnection.builder()
-																.canFollow(true)
-																.follower(FollowerEdge.builder()
-																		.disableNotifications(true)
-																		.followedAt(ZonedDateTime.of(2021, 9, 19, 16, 14, 15, 0, UTC))
-																		.build())
-																.build())
 														.build())
 												.build()))
 										.pageInfo(PageInfo.builder()
@@ -113,7 +93,7 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 		
 		expectBodyRequestOkWithIntegrityOk(VALID_QUERY_WITH_CURSOR.formatted(cursor, LIMIT, ORDER), "api/gql/gql/channelFollows_oneFollow.json");
 		
-		assertThat(tested.channelFollows(LIMIT, ORDER, cursor)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.channelFollows(LIMIT, ORDER, cursor)).contains(expected);
 		
 		verifyAll();
 	}

@@ -20,10 +20,6 @@ import java.time.ZonedDateTime;
 @ToString
 @Builder
 public class PredictionUpdatedData{
-	@JsonProperty("timestamp")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
-	private ZonedDateTime timestamp;
 	@JsonProperty("prediction")
 	@NotNull
 	private Prediction prediction;

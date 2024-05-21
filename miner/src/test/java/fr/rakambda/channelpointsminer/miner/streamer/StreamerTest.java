@@ -9,7 +9,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPoin
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsProperties;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Stream;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Tag;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
@@ -68,8 +67,6 @@ class StreamerTest{
 	private ChannelSelfEdge channelSelfEdge;
 	@Mock
 	private CommunityPointsProperties communityPointsProperties;
-	@Mock
-	private Tag tag;
 	
 	@BeforeEach
 	void setUp(){
@@ -83,7 +80,7 @@ class StreamerTest{
 		when(user.getBroadcastSettings()).thenReturn(broadcastSettings);
 		when(broadcastSettings.getGame()).thenReturn(game);
 		
-		assertThat(tested.getGame()).isPresent().get().isEqualTo(game);
+		assertThat(tested.getGame()).contains(game);
 	}
 	
 	@Test
@@ -115,7 +112,7 @@ class StreamerTest{
 		when(user.getStream()).thenReturn(stream);
 		when(stream.getId()).thenReturn(streamId);
 		
-		assertThat(tested.getStreamId()).isPresent().get().isEqualTo(streamId);
+		assertThat(tested.getStreamId()).contains(streamId);
 	}
 	
 	@Test
@@ -217,8 +214,7 @@ class StreamerTest{
 		
 		tested.setChannelPointsContext(channelPointsContextData);
 		
-		assertThat(tested.getClaimId()).isPresent()
-				.get().isEqualTo(id);
+		assertThat(tested.getClaimId()).contains(id);
 	}
 	
 	@Test
@@ -269,8 +265,7 @@ class StreamerTest{
 		
 		tested.setChannelPointsContext(channelPointsContextData);
 		
-		assertThat(tested.getChannelPoints()).isPresent()
-				.get().isEqualTo(50);
+		assertThat(tested.getChannelPoints()).contains(50);
 	}
 	
 	@Test
@@ -524,7 +519,7 @@ class StreamerTest{
 		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
 		when(user.getProfileImageUrl()).thenReturn(profileImage);
 		
-		assertThat(tested.getProfileImage()).isPresent().get().isEqualTo(profileImage);
+		assertThat(tested.getProfileImage()).contains(profileImage);
 	}
 	
 	@Test

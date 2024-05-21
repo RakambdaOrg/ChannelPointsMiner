@@ -18,21 +18,9 @@ import java.util.List;
 @ToString
 @Builder
 public class PointGain{
-	@JsonProperty("user_id")
-	@NotNull
-	private String userId;
-	@JsonProperty("channel_id")
-	@NotNull
-	private String channelId;
 	@JsonProperty("total_points")
 	private int totalPoints;
-	@JsonProperty("baseline_points")
-	private int baselinePoints;
 	@JsonProperty("reason_code")
 	@NotNull
 	private PointReasonCode reasonCode;
-	@JsonProperty("multipliers")
-	@NotNull
-	@Builder.Default
-	private List<CommunityPointsMultiplier> multipliers = new ArrayList<>();
 }

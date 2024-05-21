@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.joinraid.JoinRaidData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.JoinRaidPayload;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -24,15 +23,12 @@ class GQLApiJoinRaidTest extends AbstractGQLTest{
 						"requestID", "request-id"
 				))
 				.data(JoinRaidData.builder()
-						.joinRaid(JoinRaidPayload.builder()
-								.raidId("raid-id")
-								.build())
 						.build())
 				.build();
 		
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/joinRaid.json");
 		
-		assertThat(tested.joinRaid(RAID_ID)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.joinRaid(RAID_ID)).contains(expected);
 		
 		verifyAll();
 	}

@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.communitymomentcalloutclaim.CommunityMomentCalloutClaimData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ClaimCommunityMomentPayload;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityMoment;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -26,16 +25,13 @@ class GQLApiClaimCommunityMomentTest extends AbstractGQLTest{
 				))
 				.data(CommunityMomentCalloutClaimData.builder()
 						.moment(ClaimCommunityMomentPayload.builder()
-								.moment(CommunityMoment.builder()
-										.id(MOMENT_ID)
-										.build())
 								.build())
 						.build())
 				.build();
 		
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/communityMomentCalloutClaim_success.json");
 		
-		assertThat(tested.claimCommunityMoment(MOMENT_ID)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.claimCommunityMoment(MOMENT_ID)).contains(expected);
 		
 		verifyAll();
 	}

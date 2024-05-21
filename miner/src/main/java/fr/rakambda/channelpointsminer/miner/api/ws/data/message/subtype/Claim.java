@@ -22,17 +22,7 @@ public class Claim{
 	@JsonProperty("id")
 	@NotNull
 	private String id;
-	@JsonProperty("user_id")
-	@NotNull
-	private String userId;
 	@JsonProperty("channel_id")
 	@NotNull
 	private String channelId;
-	@JsonProperty("point_gain")
-	@NotNull
-	private PointGain pointGain;
-	@JsonProperty("created_at")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
-	private ZonedDateTime createdAt;
 }

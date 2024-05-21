@@ -20,7 +20,4 @@ public class ChannelPointsContextData{
 	@JsonProperty("community")
 	@NotNull
 	private User community;
-	@JsonProperty("currentUser")
-	@NotNull
-	private User currentUser;
 }

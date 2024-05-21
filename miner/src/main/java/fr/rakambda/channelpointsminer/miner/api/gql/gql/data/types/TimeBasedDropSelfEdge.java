@@ -18,10 +18,6 @@ import org.jetbrains.annotations.Nullable;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class TimeBasedDropSelfEdge extends GQLType{
-	@JsonProperty("hasPreconditionsMet")
-	private boolean hasPreconditionsMet;
-	@JsonProperty("currentMinutesWatched")
-	private int currentMinutesWatched;
 	@JsonProperty("isClaimed")
 	private boolean isClaimed;
 	@JsonProperty("dropInstanceID")

@@ -17,8 +17,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class DropBenefitEdge extends GQLType{
-	@JsonProperty("benefit")
-	private DropBenefit benefit;
 	@JsonProperty("entitlementLimit")
 	private int entitlementLimit;
 	@JsonProperty("claimCount")

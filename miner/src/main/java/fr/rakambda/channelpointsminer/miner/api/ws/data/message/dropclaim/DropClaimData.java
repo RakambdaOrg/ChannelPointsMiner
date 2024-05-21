@@ -16,9 +16,6 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 @Builder
 public class DropClaimData{
-	@JsonProperty("drop_id")
-	@NotNull
-	private String dropId;
 	@JsonProperty("drop_instance_id")
 	@NotNull
 	private String dropInstanceId;

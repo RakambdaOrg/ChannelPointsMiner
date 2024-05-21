@@ -183,7 +183,7 @@ class SQLiteDatabaseTest{
 		
 		tested.createChannel(CHANNEL_ID, CHANNEL_USERNAME);
 		
-		Assertions.assertThat(tested.getStreamerIdFromName(CHANNEL_USERNAME)).isPresent().get().isEqualTo(CHANNEL_ID);
+		Assertions.assertThat(tested.getStreamerIdFromName(CHANNEL_USERNAME)).contains(CHANNEL_ID);
 	}
 	
 	@Test

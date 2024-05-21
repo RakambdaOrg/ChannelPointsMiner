@@ -4,7 +4,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightservi
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Tag;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
@@ -27,7 +26,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DropsPriorityTest{
 	private static final int SCORE = 50;
-	private static final String DROPS_TAG_ID = "c2542d6d-cd10-4532-919b-3d19f30a768b";
 	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
 	private static final int DROP_CLAIM_LIMIT = 2;
 	
@@ -44,8 +42,6 @@ class DropsPriorityTest{
 	@Mock
 	private DropCampaign dropCampaign;
 	@Mock
-	private Tag tag;
-	@Mock
 	private TimeBasedDrop timeBasedDrop;
 	@Mock
 	private DropBenefitEdge dropBenefitEdge;
@@ -54,8 +50,6 @@ class DropsPriorityTest{
 	void setUp(){
 		lenient().when(streamer.isParticipateCampaigns()).thenReturn(true);
 		lenient().when(streamer.isStreamingGame()).thenReturn(true);
-		
-		lenient().when(tag.getId()).thenReturn(DROPS_TAG_ID);
 		
 		lenient().when(streamer.getDropsHighlightServiceAvailableDrops()).thenReturn(dropsHighlightServiceAvailableDropsData);
 		lenient().when(dropsHighlightServiceAvailableDropsData.getChannel()).thenReturn(channel);
