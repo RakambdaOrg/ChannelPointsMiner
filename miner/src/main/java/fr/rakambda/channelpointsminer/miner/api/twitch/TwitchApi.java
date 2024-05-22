@@ -138,6 +138,11 @@ public class TwitchApi{
 				.asString();
 		
 		if(!response.isSuccess()){
+			if(response.getStatus() == 403){
+				log.trace("Got 403 response for m3u8 playlist, is streamer region locked? (#783)");
+				return Optional.empty();
+			}
+			
 			log.error("Failed to get streamer M3U8 content");
 			return Optional.empty();
 		}
