@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 @Log4j2
 public class UnirestLogger implements Interceptor{
 	private static final String TOKEN_URL = "https://id.twitch.tv/oauth2/token";
+	private static final String M3U8_URL = "https://usher.ttvnw.net/api/channel/hls/";
 	
 	@Override
 	public void onRequest(HttpRequest<?> request, Config config){
@@ -41,6 +42,10 @@ public class UnirestLogger implements Interceptor{
 		}
 		
 		if(request.getUrl().equals(TOKEN_URL) && response.getStatus() == 400){
+			return false;
+		}
+		
+		if(request.getUrl().startsWith(M3U8_URL) && response.getStatus() == 403){
 			return false;
 		}
 		
