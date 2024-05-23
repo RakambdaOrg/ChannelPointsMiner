@@ -28,7 +28,7 @@ import java.util.Comparator;
 @NoArgsConstructor
 @AllArgsConstructor
 @Log4j2
-@JsonClassDescription("Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordChatsPredictions to be activated.")
+@JsonClassDescription("Choose the outcome that's backed by other users with the highest average return-on-investment. Requires analytics to be enabled and recordUserPredictions to be activated.")
 public class MostTrustedPicker implements IOutcomePicker{
 	
 	@JsonProperty("minTotalBetsPlacedByUser")
