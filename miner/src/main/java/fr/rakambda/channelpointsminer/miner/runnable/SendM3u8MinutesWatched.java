@@ -18,12 +18,12 @@ public class SendM3u8MinutesWatched extends SendMinutesWatched{
 	}
 	
 	@Override
-	protected boolean checkStreamer(Streamer streamer){
+	protected boolean checkStreamer(@NotNull Streamer streamer){
 		return Objects.nonNull(streamer.getM3u8Url());
 	}
 	
 	@Override
-	protected boolean send(Streamer streamer){
+	protected boolean send(@NotNull Streamer streamer){
 		return miner.getTwitchApi().openM3u8LastChunk(streamer.getM3u8Url());
 	}
 }

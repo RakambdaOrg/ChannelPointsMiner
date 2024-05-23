@@ -24,9 +24,9 @@ public abstract class SendMinutesWatched implements Runnable{
 	
 	protected abstract String getType();
 	
-	protected abstract boolean checkStreamer(Streamer streamer);
+	protected abstract boolean checkStreamer(@NotNull Streamer streamer);
 	
-	protected abstract boolean send(Streamer streamer);
+	protected abstract boolean send(@NotNull Streamer streamer);
 	
 	@Override
 	public void run(){

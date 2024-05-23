@@ -103,6 +103,7 @@ class UpdateStreamInfoTest{
 		lenient().when(streamer.getId()).thenReturn(STREAMER_ID);
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_USERNAME);
 		lenient().when(streamer.getChannelUrl()).thenReturn(streamerUrl);
+		lenient().when(streamer.isParticipateCampaigns()).thenReturn(true);
 		lenient().when(streamer.getClaimId()).thenReturn(Optional.empty());
 		lenient().when(streamer.needUpdate()).thenReturn(true);
 		
@@ -310,6 +311,38 @@ class UpdateStreamInfoTest{
 	}
 	
 	@Test
+	void updateWithDataStreamingAndSpadeAndM3u8UrlMissingButDropsNotActivated(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(streamer.isStreaming()).thenReturn(true);
+			when(streamer.isParticipateCampaigns()).thenReturn(false);
+			when(streamer.getSpadeUrl()).thenReturn(null);
+			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
+			when(gqlApi.chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID)).thenReturn(Optional.of(gqlResponseChatRoomBanStatus));
+			when(twitchApi.getSpadeUrl(streamerUrl)).thenReturn(Optional.of(spadeUrl));
+			
+			assertDoesNotThrow(() -> tested.run());
+			
+			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
+			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(twitchApi).getSpadeUrl(streamerUrl);
+			
+			verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+			verify(streamer).setChannelPointsContext(channelPointsContextData);
+			verify(streamer).setSpadeUrl(spadeUrl);
+			verify(streamer).setM3u8Url(null);
+			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setLastUpdated(NOW);
+			verify(streamer).setChatBanned(false);
+			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
+		}
+	}
+	
+	@Test
 	void updateWithDataStreamingAndSpadeUrlMissingAndNotReturned(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
@@ -332,7 +365,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
-			verify(streamer, never()).setM3u8Url(any());
+			verify(streamer, never()).setM3u8Url(null);
 			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
