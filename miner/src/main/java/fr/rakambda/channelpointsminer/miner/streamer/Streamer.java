@@ -101,6 +101,10 @@ public class Streamer{
 		return settings.isFollowRaid();
 	}
 	
+	public boolean isExcludeSubscriberDrops(){
+		return settings.isExcludeSubscriberDrops();
+	}
+	
 	public boolean needUpdate(){
 		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
 	}

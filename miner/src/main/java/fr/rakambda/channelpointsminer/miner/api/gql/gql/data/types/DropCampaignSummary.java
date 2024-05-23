@@ -8,21 +8,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.Nullable;
 
-@JsonTypeName("DropBenefitEdge")
+@JsonTypeName("DropCampaignSummary")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class DropBenefitEdge extends GQLType{
-	@JsonProperty("benefit")
-	private DropBenefit benefit;
-	@JsonProperty("entitlementLimit")
-	private int entitlementLimit;
-	@JsonProperty("claimCount")
-	@Nullable
-	private Integer claimCount;
+public class DropCampaignSummary extends GQLType{
+	@JsonProperty("includesSubRequirement")
+	private boolean includesSubRequirement;
 }

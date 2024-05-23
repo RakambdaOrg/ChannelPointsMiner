@@ -61,6 +61,7 @@ import lombok.Getter;
         @JsonSubTypes.Type(value = CommunityPointsEmoteModifier.class, name = "CommunityPointsEmoteModifier"),
         @JsonSubTypes.Type(value = StreamPlaybackAccessToken.class, name = "PlaybackAccessToken"),
         @JsonSubTypes.Type(value = RewardCampaign.class, name = "RewardCampaign"),
+        @JsonSubTypes.Type(value = DropCampaignSummary.class, name = "DropCampaignSummary"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

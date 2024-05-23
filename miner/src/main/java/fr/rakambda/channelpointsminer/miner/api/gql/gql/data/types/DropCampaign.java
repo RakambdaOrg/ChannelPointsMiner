@@ -74,4 +74,7 @@ public class DropCampaign extends GQLType{
 	@JsonProperty("allow")
 	@Nullable
 	private DropCampaignACL allow;
+	@JsonProperty("summary")
+	@Nullable
+	private DropCampaignSummary summary;
 }

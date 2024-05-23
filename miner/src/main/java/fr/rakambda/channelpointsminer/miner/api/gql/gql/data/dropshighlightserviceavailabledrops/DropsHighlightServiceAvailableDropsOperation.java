@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class DropsHighlightServiceAvailableDropsOperation extends IGQLOperation<DropsHighlightServiceAvailableDropsData>{
     public DropsHighlightServiceAvailableDropsOperation(@NotNull String channelId){
         super("DropsHighlightService_AvailableDrops");
-	    addPersistedQueryExtension(new PersistedQueryExtension(1, "9a62a09bce5b53e26e64a671e530bc599cb6aab1e5ba3cbd5d85966d3940716f"));
+	    addPersistedQueryExtension(new PersistedQueryExtension(1, "962510a535f25f33bbf85d7767982e3bb6d1b00f84dd3c7a06d8572323dfd010"));
         addVariable("channelID", channelId);
     }
     
