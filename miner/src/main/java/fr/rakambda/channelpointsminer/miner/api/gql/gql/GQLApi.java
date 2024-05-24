@@ -201,6 +201,11 @@ public class GQLApi{
         String cursor = null;
         do{
             var response = channelFollows(100, ORDER_DESC, cursor);
+			if(response.isEmpty()){
+				log.error("Failed to load follows, response is empty");
+				break;
+			}
+			
             var followConnection = response.map(GQLResponse::getData).map(ChannelFollowsData::getUser).map(User::getFollows);
             
             followConnection.stream()

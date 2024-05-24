@@ -42,6 +42,10 @@
               "__typename": "TimeBasedDrop"
             }
           ],
+          "summary": {
+            "includesSubRequirement": true,
+            "__typename": "DropCampaignSummary"
+          },
           "__typename": "DropCampaign"
         }
       ],

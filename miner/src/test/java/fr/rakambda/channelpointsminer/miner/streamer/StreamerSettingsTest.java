@@ -22,6 +22,7 @@ class StreamerSettingsTest{
 				.makePredictions(true)
 				.participateCampaigns(true)
 				.followRaid(true)
+				.excludeSubscriberDrops(false)
 				.joinIrc(true)
 				.index(24)
 				.priorities(List.of(priority))
@@ -34,6 +35,7 @@ class StreamerSettingsTest{
 		assertThat(copy.isEnabled()).isEqualTo(tested.isEnabled());
 		assertThat(copy.isMakePredictions()).isEqualTo(tested.isMakePredictions());
 		assertThat(copy.isParticipateCampaigns()).isEqualTo(tested.isParticipateCampaigns());
+		assertThat(copy.isExcludeSubscriberDrops()).isEqualTo(tested.isExcludeSubscriberDrops());
 		assertThat(copy.isFollowRaid()).isEqualTo(tested.isFollowRaid());
 		assertThat(copy.isJoinIrc()).isEqualTo(tested.isJoinIrc());
 		assertThat(copy.getIndex()).isEqualTo(tested.getIndex());
