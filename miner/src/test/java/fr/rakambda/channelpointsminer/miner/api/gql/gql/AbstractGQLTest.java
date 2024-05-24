@@ -69,7 +69,7 @@ public abstract class AbstractGQLTest{
 		expectGqlRequest(requestBody, 200, responseBody);
 	}
 	
-	private void expectGqlRequest(String requestBody, int responseStatus, String responseBody){
+	protected void expectGqlRequest(String requestBody, int responseStatus, String responseBody){
 		unirest.expect(POST, "https://gql.twitch.tv/gql")
 				.header("Authorization", "OAuth " + ACCESS_TOKEN)
 				.header("Client-Integrity", currentIntegrityToken)
