@@ -21,12 +21,12 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 	}
 	
 	@Override
-	protected boolean checkStreamer(Streamer streamer){
+	protected boolean checkStreamer(@NotNull Streamer streamer){
 		return Objects.nonNull(streamer.getSpadeUrl());
 	}
 	
 	@Override
-	protected boolean send(Streamer streamer){
+	protected boolean send(@NotNull Streamer streamer){
 		var streamId = streamer.getStreamId();
 		if(streamId.isEmpty()){
 			return false;

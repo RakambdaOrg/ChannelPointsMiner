@@ -1,13 +1,20 @@
 package fr.rakambda.channelpointsminer.miner.priority;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefit;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Tag;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.UserDropReward;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.miner.MinerData;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
@@ -28,6 +35,7 @@ import static org.mockito.Mockito.when;
 class DropsPriorityTest{
 	private static final int SCORE = 50;
 	private static final String DROPS_TAG_ID = "c2542d6d-cd10-4532-919b-3d19f30a768b";
+	private static final String DROP_ID = "c2542d6d-cd10-4532-919b-3d19f30a768c";
 	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
 	private static final int DROP_CLAIM_LIMIT = 2;
 	
@@ -49,11 +57,26 @@ class DropsPriorityTest{
 	private TimeBasedDrop timeBasedDrop;
 	@Mock
 	private DropBenefitEdge dropBenefitEdge;
+	@Mock
+	private DropCampaignSummary dropCampaignSummary;
+	@Mock
+	private MinerData minerData;
+	@Mock
+	private InventoryData inventoryData;
+	@Mock
+	private UserDropReward userDropReward;
+	@Mock
+	private User user;
+	@Mock
+	private Inventory inventory;
+	@Mock
+	private DropBenefit dropBenefit;
 	
 	@BeforeEach
 	void setUp(){
 		lenient().when(streamer.isParticipateCampaigns()).thenReturn(true);
 		lenient().when(streamer.isStreamingGame()).thenReturn(true);
+		lenient().when(streamer.isExcludeSubscriberDrops()).thenReturn(true);
 		
 		lenient().when(tag.getId()).thenReturn(DROPS_TAG_ID);
 		
@@ -64,6 +87,9 @@ class DropsPriorityTest{
 		lenient().when(dropCampaign.getStartAt()).thenReturn(NOW.minusHours(1));
 		lenient().when(dropCampaign.getEndAt()).thenReturn(NOW.plusHours(1));
 		lenient().when(dropCampaign.getTimeBasedDrops()).thenReturn(List.of(timeBasedDrop));
+		lenient().when(dropCampaign.getSummary()).thenReturn(dropCampaignSummary);
+		
+		lenient().when(dropCampaignSummary.isIncludesSubRequirement()).thenReturn(false);
 		
 		lenient().when(timeBasedDrop.getStartAt()).thenReturn(NOW.minusMinutes(30));
 		lenient().when(timeBasedDrop.getEndAt()).thenReturn(NOW.plusMinutes(30));
@@ -71,6 +97,18 @@ class DropsPriorityTest{
 		
 		lenient().when(dropBenefitEdge.getEntitlementLimit()).thenReturn(DROP_CLAIM_LIMIT);
 		lenient().when(dropBenefitEdge.getClaimCount()).thenReturn(1);
+		lenient().when(dropBenefitEdge.getBenefit()).thenReturn(dropBenefit);
+		
+		lenient().when(dropBenefit.getId()).thenReturn(DROP_ID);
+		
+		lenient().when(miner.getMinerData()).thenReturn(minerData);
+		lenient().when(minerData.getInventory()).thenReturn(inventoryData);
+		lenient().when(inventoryData.getCurrentUser()).thenReturn(user);
+		lenient().when(user.getInventory()).thenReturn(inventory);
+		lenient().when(inventory.getGameEventDrops()).thenReturn(List.of(userDropReward));
+		
+		lenient().when(userDropReward.getId()).thenReturn(DROP_ID);
+		lenient().when(userDropReward.getTotalCount()).thenReturn(0);
 	}
 	
 	@Test
@@ -140,6 +178,17 @@ class DropsPriorityTest{
 	}
 	
 	@Test
+	void requiresSubscription(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(dropCampaignSummary.isIncludesSubRequirement()).thenReturn(true);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
 	void noDrops(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
@@ -188,7 +237,7 @@ class DropsPriorityTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
 			
-			when(dropBenefitEdge.getClaimCount()).thenReturn(DROP_CLAIM_LIMIT);
+			when(userDropReward.getTotalCount()).thenReturn(DROP_CLAIM_LIMIT);
 			
 			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
 		}
@@ -198,6 +247,17 @@ class DropsPriorityTest{
 	void valid(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+		}
+	}
+	
+	@Test
+	void validWithSubscriptionRequired(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(streamer.isExcludeSubscriberDrops()).thenReturn(false);
 			
 			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
 		}
@@ -242,6 +302,17 @@ class DropsPriorityTest{
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
 			
 			when(timeBasedDrop.getEndAt()).thenReturn(null);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
+		}
+	}
+	
+	@Test
+	void noInventoryIsSameAsZeroInInventory(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(minerData.getInventory()).thenReturn(null);
 			
 			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
 		}

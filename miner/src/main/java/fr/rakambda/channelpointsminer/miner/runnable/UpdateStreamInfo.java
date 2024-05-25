@@ -84,7 +84,7 @@ public class UpdateStreamInfo implements Runnable{
 	
 	private void updateM3u8Url(@NotNull Streamer streamer){
 		log.trace("Updating m3u8 url");
-		if(streamer.isStreaming()){
+		if(streamer.isParticipateCampaigns() && streamer.isStreaming()){
 			if(Objects.isNull(streamer.getM3u8Url())){
 				var accessToken = miner.getGqlApi().playbackAccessToken(streamer.getUsername());
 				if(accessToken.isEmpty()){

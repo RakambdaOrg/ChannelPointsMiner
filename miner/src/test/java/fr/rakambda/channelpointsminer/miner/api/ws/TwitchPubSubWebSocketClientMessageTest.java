@@ -18,6 +18,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdate
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidCancelV2;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidGoV2;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ReadAllNotifications;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ReadNotifications;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.UpdateSummary;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ViewCount;
@@ -44,6 +45,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.Poin
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionmade.PredictionMadeData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionupdated.PredictionUpdatedData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.readallnotifications.ReadAllNotificationsData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.readnotifications.ReadNotificationsData;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.ActiveMultipliers;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
@@ -817,6 +819,54 @@ class TwitchPubSubWebSocketClientMessageTest{
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
 	}
 	
+	@Test
+	void onReadAllNotifications(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/readAllNotifications.json"));
+
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(ONSITE_NOTIFICATIONS)
+								.target("123456789")
+								.build())
+						.message(ReadAllNotifications.builder()
+								.data(ReadAllNotificationsData.builder()
+										.displayType("VIEWER")
+										.summary(NotificationSummary.builder()
+												.unseenViewCount(0)
+												.lastSeenAt(ZonedDateTime.of(2024, 5, 21, 12, 1, 15, 769331187, UTC))
+												.viewerUnreadCount(0)
+												.creatorUnreadCount(0)
+												.summariesByDisplayType(Map.of(
+														NotificationDisplayType.CREATOR, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(0)
+																		.lastReadAll(ZonedDateTime.of(2024, 5, 21, 13, 1, 15, 769331187, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(0)
+																		.lastSeen(ZonedDateTime.of(2024, 5, 21, 14, 1, 15, 769331187, UTC))
+																		.build())
+																.build(),
+														NotificationDisplayType.VIEWER, NotificationSummaryByDisplayType.builder()
+																.unreadSummary(Summary.builder()
+																		.count(0)
+																		.lastReadAll(ZonedDateTime.of(2024, 5, 21, 15, 1, 15, 769331187, UTC))
+																		.build())
+																.unseenSummary(Summary.builder()
+																		.count(8)
+																		.lastSeen(ZonedDateTime.of(2024, 5, 21, 16, 1, 15, 769331187, UTC))
+																		.build())
+																.build()
+												))
+												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+
 	@Test
 	void onDropProgress(WebsocketMockServer server){
 		server.send(TestUtils.getAllResourceContent("api/ws/dropProgress.json"));

@@ -22,8 +22,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class TwitchApi{
 	private static final Pattern SETTINGS_URL_PATTERN = Pattern.compile("(https://static.twitchcdn.net/config/settings.*?js|https://assets.twitch.tv/config/settings.*?.js)");
 	private static final Pattern SPADE_URL_PATTERN = Pattern.compile("\"spade(Url|_url)\":\"(.*?)\"");
-	private static final Pattern M3U8_STREAM_PATTERN = Pattern.compile("(https://[/\\-.:\\\\,\"=\\w]*m3u8)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-	private static final Pattern M3U8_CHUNK_PATTERN = Pattern.compile("(https://(video-edge-|[.\\w\\-/]+\\.ttvnw.net)[.\\w\\-/]+\\.ts(\\?[.\\w\\-/=&]+)?)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern M3U8_STREAM_PATTERN = Pattern.compile("(https://[/\\-.:\\\\,\"=\\w]+\\.m3u8)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern M3U8_CHUNK_PATTERN = Pattern.compile("^(https://[/\\-.:\\\\,\"=\\w]+\\.ts(\\?[.\\w\\-/=&]+)?)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	
 	private final UnirestInstance unirest;
 	
@@ -138,6 +138,11 @@ public class TwitchApi{
 				.asString();
 		
 		if(!response.isSuccess()){
+			if(response.getStatus() == 403){
+				log.trace("Got 403 response for m3u8 playlist, is streamer region locked? (#783)");
+				return Optional.empty();
+			}
+			
 			log.error("Failed to get streamer M3U8 content");
 			return Optional.empty();
 		}
