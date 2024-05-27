@@ -8,6 +8,8 @@ import fr.rakambda.channelpointsminer.miner.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -43,8 +45,12 @@ public class MinerFactory{
 			
 			eventManager.addEventHandler(LogEventListenerFactory.createLogger());
 			if(Objects.nonNull(config.getDiscord().getUrl())){
-				var discordApi = ApiFactory.createdDiscordApi(config.getDiscord().getUrl());
+				var discordApi = ApiFactory.createDiscordApi(config.getDiscord().getUrl());
 				eventManager.addEventHandler(LogEventListenerFactory.createDiscordLogger(discordApi, config.getDiscord()));
+			}
+			if(Objects.nonNull(config.getTelegram().getToken())){
+				var telegramApi = ApiFactory.createTelegramApi(URI.create("https://api.telegram.org/bot%s".formatted(config.getTelegram().getToken())).toURL());
+				eventManager.addEventHandler(LogEventListenerFactory.createTelegramLogger(telegramApi, config.getTelegram()));
 			}
 			
 			if(config.getAnalytics().isEnabled()){
@@ -60,6 +66,9 @@ public class MinerFactory{
 		}
 		catch(SQLException | HikariPool.PoolInitializationException e){
 			throw new IllegalStateException("Failed to set up database", e);
+		}
+		catch(MalformedURLException e){
+			throw new IllegalStateException("Failed to create an url", e);
 		}
 	}
 }

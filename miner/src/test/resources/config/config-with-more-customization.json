@@ -26,6 +26,10 @@
         "webhookUrl" : "https://discord-webhook",
         "embeds" : true
       },
+      "telegram" : {
+        "token" : "token",
+        "chatId" : "123456789"
+      },
       "reloadEvery" : 15,
       "analytics" : {
         "enabled" : true,
