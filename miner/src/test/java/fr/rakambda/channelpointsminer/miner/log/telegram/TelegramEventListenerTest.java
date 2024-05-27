@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @ParallelizableTest
 @ExtendWith(MockitoExtension.class)
 class TelegramEventListenerTest {
-	private static final String USERNAME = "username";
+	private static final String USERNAME = "123456789";
 	
 	@InjectMocks
 	private TelegramEventListener tested;
@@ -40,7 +40,7 @@ class TelegramEventListenerTest {
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(telegramConfiguration.getUsername()).thenReturn(USERNAME);
+		lenient().when(telegramConfiguration.getChatId()).thenReturn(USERNAME);
 		lenient().when(telegramConfiguration.getEvents()).thenReturn(Map.of());
 	}
 	

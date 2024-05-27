@@ -41,6 +41,6 @@ public class TelegramEventListener extends EventHandlerAdapter{
 	
 	@NotNull
 	private Message buildMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
-		return telegramMessageBuilder.createSimpleMessage(event, config, telegramConfiguration.getUsername());
+		return telegramMessageBuilder.createSimpleMessage(event, config, telegramConfiguration.getChatId());
 	}
 }

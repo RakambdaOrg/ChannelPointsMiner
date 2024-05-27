@@ -28,7 +28,7 @@
       },
       "telegram" : {
         "token" : "token",
-        "username" : "@username"
+        "chatId" : "123456789"
       },
       "reloadEvery" : 15,
       "analytics" : {

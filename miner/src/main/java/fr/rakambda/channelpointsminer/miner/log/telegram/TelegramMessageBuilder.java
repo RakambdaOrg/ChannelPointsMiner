@@ -12,11 +12,11 @@ import java.util.Optional;
 
 public class TelegramMessageBuilder {
 	@NotNull
-	public Message createSimpleMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config, @NotNull String username){
+	public Message createSimpleMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config, @NotNull String chatId){
 		var format = Optional.ofNullable(config).map(MessageEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
 		return Message.builder()
 				.text(formatMessage(event, format))
-				.chatId(username)
+				.chatId(chatId)
 				.build();
 	}
 	

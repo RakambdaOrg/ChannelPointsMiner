@@ -116,7 +116,7 @@ class ConfigurationFactoryTest{
 								.build())
 						.telegram(TelegramConfiguration.builder()
 								.token("token")
-								.username("@username")
+								.chatId("123456789")
 								.build())
 						.reloadEvery(15)
 						.analytics(AnalyticsConfiguration.builder()
