@@ -17,6 +17,7 @@ import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLoginCacher;
 import fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.OauthLoginProvider;
+import fr.rakambda.channelpointsminer.miner.api.telegram.TelegramApi;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.config.VersionProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
@@ -103,11 +104,21 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static DiscordApi createdDiscordApi(@NotNull URL webhookUrl){
+	public static DiscordApi createDiscordApi(@NotNull URL webhookUrl){
 		var unirestInstance = createUnirestInstance(null);
 		unirestInstance.config().retryAfter(true);
 		
 		return new DiscordApi(webhookUrl, unirestInstance);
+	}
+	
+	@NotNull
+	public static TelegramApi createTelegramApi(@NotNull URL botUrl){
+		var unirestInstance = createUnirestInstance(null);
+		unirestInstance.config()
+				.defaultBaseUrl(botUrl.toString())
+				.retryAfter(true);
+		
+		return new TelegramApi(unirestInstance);
 	}
 	
 	@NotNull

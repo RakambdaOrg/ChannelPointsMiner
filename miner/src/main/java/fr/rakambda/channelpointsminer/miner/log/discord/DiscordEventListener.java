@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.log.discord;
 import fr.rakambda.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Webhook;
 import fr.rakambda.channelpointsminer.miner.config.DiscordConfiguration;
-import fr.rakambda.channelpointsminer.miner.config.DiscordEventConfiguration;
+import fr.rakambda.channelpointsminer.miner.config.MessageEventConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.EventHandlerAdapter;
 import fr.rakambda.channelpointsminer.miner.event.ILoggableEvent;
 import fr.rakambda.channelpointsminer.miner.event.IStreamerEvent;
@@ -40,7 +40,7 @@ public class DiscordEventListener extends EventHandlerAdapter{
 	}
 	
 	@NotNull
-	private Webhook buildMessage(@NotNull ILoggableEvent event, @Nullable DiscordEventConfiguration config){
+	private Webhook buildMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
 		if(discordConfiguration.isEmbeds()){
 			return discordMessageBuilder.createEmbedMessage(event, config);
 		}
