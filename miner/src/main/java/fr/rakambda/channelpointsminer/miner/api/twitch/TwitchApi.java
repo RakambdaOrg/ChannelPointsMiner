@@ -154,7 +154,7 @@ public class TwitchApi{
 		var playlistResponse = unirest.get(m3u8Url.toString()).asString();
 		
 		if(!playlistResponse.isSuccess()){
-			if(response.getStatus() == 403){
+			if(playlistResponse.getStatus() == 403){
 				log.trace("Got 403 response for m3u8 playlist, is streamer region locked? (#783)");
 				return false;
 			}
