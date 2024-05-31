@@ -14,7 +14,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ParallelizableTest
@@ -50,6 +53,17 @@ class SendM3u8MinutesWatchedTest {
 		when(twitchApi.openM3u8LastChunk(m3u8Url)).thenReturn(true);
 		
 		assertDoesNotThrow(() -> tested.send(streamer));
+		
+		verify(streamer, never()).setM3u8Url(any());
+	}
+	
+	@Test
+	void sendingMinutesWatchedFailed(){
+		when(twitchApi.openM3u8LastChunk(m3u8Url)).thenReturn(false);
+		
+		assertDoesNotThrow(() -> tested.send(streamer));
+		
+		verify(streamer).setM3u8Url(null);
 	}
 	
 	@Test
