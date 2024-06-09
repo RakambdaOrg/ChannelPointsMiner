@@ -9,22 +9,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
-@JsonTypeName("Inventory")
+@JsonTypeName("UserDropReward")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class Inventory extends GQLType{
-    @JsonProperty("dropCampaignsInProgress")
-    @NotNull
-    @Builder.Default
-    private List<DropCampaign> dropCampaignsInProgress = new ArrayList<>();    @JsonProperty("gameEventDrops")
+public class UserDropReward extends GQLType{
+	@JsonProperty("id")
 	@NotNull
-	@Builder.Default
-	private List<UserDropReward> gameEventDrops = new ArrayList<>();
+	private String id;
+	@JsonProperty("totalCount")
+	private int totalCount;
 }

@@ -20,8 +20,10 @@ import lombok.Getter;
         @JsonSubTypes.Type(value = DropCampaign.class, name = "DropCampaign"),
         @JsonSubTypes.Type(value = TimeBasedDrop.class, name = "TimeBasedDrop"),
         @JsonSubTypes.Type(value = DropBenefitEdge.class, name = "DropBenefitEdge"),
+        @JsonSubTypes.Type(value = DropBenefit.class, name = "DropBenefit"),
         @JsonSubTypes.Type(value = CommunityPointsClaim.class, name = "CommunityPointsClaim"),
         @JsonSubTypes.Type(value = TimeBasedDropSelfEdge.class, name = "TimeBasedDropSelfEdge"),
+        @JsonSubTypes.Type(value = UserDropReward.class, name = "UserDropReward"),
         @JsonSubTypes.Type(value = MakePredictionPayload.class, name = "MakePredictionPayload"),
         @JsonSubTypes.Type(value = MakePredictionError.class, name = "MakePredictionError"),
         @JsonSubTypes.Type(value = FollowConnection.class, name = "FollowConnection"),
@@ -30,7 +32,6 @@ import lombok.Getter;
         @JsonSubTypes.Type(value = ChatRoomBanStatus.class, name = "ChatRoomBanStatus"),
         @JsonSubTypes.Type(value = ClaimCommunityMomentPayload.class, name = "ClaimCommunityMomentPayload"),
         @JsonSubTypes.Type(value = StreamPlaybackAccessToken.class, name = "PlaybackAccessToken"),
-        @JsonSubTypes.Type(value = RewardCampaign.class, name = "RewardCampaign"),
         @JsonSubTypes.Type(value = DropCampaignSummary.class, name = "DropCampaignSummary"),
 })
 @EqualsAndHashCode

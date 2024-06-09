@@ -8,7 +8,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEd
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Tag;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.UserDropReward;
@@ -34,7 +33,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DropsPriorityTest{
 	private static final int SCORE = 50;
-	private static final String DROPS_TAG_ID = "c2542d6d-cd10-4532-919b-3d19f30a768b";
 	private static final String DROP_ID = "c2542d6d-cd10-4532-919b-3d19f30a768c";
 	private static final ZonedDateTime NOW = ZonedDateTime.of(2021, 10, 10, 12, 0, 0, 0, UTC);
 	private static final int DROP_CLAIM_LIMIT = 2;

@@ -39,4 +39,7 @@ public class DropCampaign extends GQLType{
 	@NotNull
 	@Builder.Default
 	private List<TimeBasedDrop> timeBasedDrops = new ArrayList<>();
+	@JsonProperty("summary")
+	@Nullable
+	private DropCampaignSummary summary;
 }
