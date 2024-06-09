@@ -19,8 +19,6 @@ import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 @RequiredArgsConstructor
 @Log4j2
 public class DiscordApi{
-	private static final int MAX_ATTEMPT = 3;
-	
 	@NotNull
 	private final URL webhookUrl;
 	@NotNull
@@ -33,33 +31,13 @@ public class DiscordApi{
 		webhook.setUsername("ChannelPointsMiner");
 		semaphore.acquire();
 		try{
-			var retryAfter = 0;
-			for(var i = 0; i < MAX_ATTEMPT; i++){
-				if(retryAfter > 0){
-					log.warn("Failed to send discord message, rate limited, retrying in {} milliseconds", retryAfter);
-				}
-				retryAfter = CompletableFuture.supplyAsync(() -> webhook, CompletableFuture.delayedExecutor(retryAfter, TimeUnit.MILLISECONDS))
-						.thenCompose(body -> unirest.post(webhookUrl.toString())
-								.header(CONTENT_TYPE, APPLICATION_JSON.toString())
-								.body(body)
-								.asObjectAsync(DiscordResponse.class)
-						)
-						.thenApply(response -> {
-							if(response.getStatus() == 204){
-								return 0;
-							}
-							
-							if(response.getStatus() == 429){
-								return response.getBody().getRetryAfter();
-							}
-							
-							log.error("Failed to send Discord message, {} => {}", response.getStatus(), response.getBody());
-							return -1;
-						})
-						.get(1, TimeUnit.MINUTES);
-				if(retryAfter <= 0){
-					break;
-				}
+			var response = unirest.post(webhookUrl.toString())
+					.header(CONTENT_TYPE, APPLICATION_JSON.toString())
+					.body(webhook)
+					.asObject(DiscordResponse.class);
+			
+			if(response.getStatus() != 204){
+				log.error("Failed to send Discord message, {} => {}", response.getStatus(), response.getBody());
 			}
 		}
 		finally{

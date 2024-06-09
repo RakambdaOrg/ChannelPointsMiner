@@ -32,6 +32,7 @@ import fr.rakambda.channelpointsminer.miner.log.UnirestLogger;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.HeaderNames;
+import kong.unirest.core.RetryStrategy;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestInstance;
 import kong.unirest.jackson.JacksonObjectMapper;
@@ -106,7 +107,7 @@ public class ApiFactory{
 	@NotNull
 	public static DiscordApi createDiscordApi(@NotNull URL webhookUrl){
 		var unirestInstance = createUnirestInstance(null);
-		unirestInstance.config().retryAfter(true);
+		unirestInstance.config().retryAfter(true, 5);
 		
 		return new DiscordApi(webhookUrl, unirestInstance);
 	}
