@@ -42,8 +42,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 testlogger {
@@ -75,7 +75,7 @@ jacoco {
 
 jib {
     from {
-        image = "eclipse-temurin:17-jdk"
+        image = "eclipse-temurin:22-jdk"
         platforms {
             platform {
                 os = "linux"
@@ -84,10 +84,6 @@ jib {
             platform {
                 os = "linux"
                 architecture = "amd64"
-            }
-            platform {
-                os = "linux"
-                architecture = "arm"
             }
         }
     }
