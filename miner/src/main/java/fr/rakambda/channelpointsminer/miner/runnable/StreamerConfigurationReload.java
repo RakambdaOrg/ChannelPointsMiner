@@ -86,10 +86,7 @@ public class StreamerConfigurationReload implements Runnable {
                                 return null;
                             }
                             var streamer = result.getStreamerSupplier().apply(settings);
-                            if (streamer.isEmpty()) {
-                                return null;
-                            }
-                            return Map.entry(oldStreamer, streamer.get());
+	                        return streamer.map(value -> Map.entry(oldStreamer, value)).orElse(null);
                         })
                 )
                 .flatMap(Optional::stream)

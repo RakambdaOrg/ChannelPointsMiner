@@ -74,23 +74,20 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 			var message = JacksonUtils.read(messageStr, new TypeReference<ITwitchWebSocketResponse>(){});
 			log.trace("Parsed message: {}", message);
 			
-			if(message instanceof ResponseResponse responseMessage){
-				if(responseMessage.hasError()){
-					log.error("Received error response {}", responseMessage);
-					if(Objects.equals("ERR_BADAUTH", responseMessage.getError())){
-						Optional.ofNullable(listenRequests.get(responseMessage.getNonce())).ifPresent(req -> log.error("Request that had bad auth: {}", req));
-						close(GOING_AWAY, "Invalid credentials");
+			switch(message){
+				case ResponseResponse responseMessage -> {
+					if(responseMessage.hasError()){
+						log.error("Received error response {}", responseMessage);
+						if(Objects.equals("ERR_BADAUTH", responseMessage.getError())){
+							Optional.ofNullable(listenRequests.get(responseMessage.getNonce())).ifPresent(req -> log.error("Request that had bad auth: {}", req));
+							close(GOING_AWAY, "Invalid credentials");
+						}
 					}
 				}
-			}
-			else if(message instanceof PongResponse){
-				onPong();
-			}
-			else if(message instanceof MessageResponse messageResponse){
-				logContext.withTopic(messageResponse.getData().getTopic());
-			}
-			else if(message instanceof ReconnectResponse){
-				close(GOING_AWAY);
+				case PongResponse ignored1 -> onPong();
+				case MessageResponse messageResponse -> logContext.withTopic(messageResponse.getData().getTopic());
+				case ReconnectResponse ignored -> close(GOING_AWAY);
+				default -> {}
 			}
 			listeners.forEach(listener -> listener.onWebSocketMessage(message));
 		}

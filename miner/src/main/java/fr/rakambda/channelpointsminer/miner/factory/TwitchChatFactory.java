@@ -13,12 +13,10 @@ public class TwitchChatFactory{
 	public static ITwitchChatClient createChat(@NotNull IMiner miner, @NotNull ChatMode chatMode, boolean listenMessages){
 		var twitchLogin = miner.getTwitchLogin();
 		
-		var chatClient = switch(chatMode){
+		return switch(chatMode){
 			case IRC -> createIrcChat(twitchLogin, listenMessages);
 			case WS -> createWsChat(twitchLogin, listenMessages);
 		};
-		
-		return chatClient;
 	}
 	
 	@NotNull
