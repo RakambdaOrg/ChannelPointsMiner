@@ -3,6 +3,7 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefit;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
@@ -26,7 +27,7 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
     private static final String STREAMER_ID = "streamer-id";
     
     @Test
-    void nominalWithDrops(UnirestMock unirest) throws MalformedURLException{
+    void nominalWithDrops(UnirestMock unirest){
         var game = Game.builder()
                 .id("159357")
                 .name("game-name")
@@ -48,6 +49,9 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
                                                 .startAt(ZonedDateTime.of(2021, 10, 4, 15, 0, 0, 0, UTC))
                                                 .endAt(ZonedDateTime.of(2021, 10, 11, 5, 0, 0, 0, UTC))
                                                 .benefitEdges(List.of(DropBenefitEdge.builder()
+		                                                .benefit(DropBenefit.builder()
+				                                                .id("benefit-id")
+				                                                .build())
                                                         .entitlementLimit(1)
                                                         .build()))
                                                 .build()))
