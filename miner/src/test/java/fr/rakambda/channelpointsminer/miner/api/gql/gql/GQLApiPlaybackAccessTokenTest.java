@@ -33,7 +33,7 @@ class GQLApiPlaybackAccessTokenTest extends AbstractGQLTest{
 		
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/playbackaccesstoken_success.json");
 		
-		assertThat(tested.playbackAccessToken(LOGIN)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.playbackAccessToken(LOGIN)).contains(expected);
 		
 		verifyAll();
 	}

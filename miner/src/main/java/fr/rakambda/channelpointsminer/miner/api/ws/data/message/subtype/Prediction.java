@@ -20,9 +20,6 @@ import java.time.ZonedDateTime;
 @ToString
 @Builder
 public class Prediction{
-	@JsonProperty("id")
-	@NotNull
-	private String id;
 	@JsonProperty("event_id")
 	@NotNull
 	private String eventId;
@@ -38,17 +35,7 @@ public class Prediction{
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@NotNull
 	private ZonedDateTime predictedAt;
-	@JsonProperty("updated_at")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
-	private ZonedDateTime updatedAt;
-	@JsonProperty("user_id")
-	@NotNull
-	private String userId;
 	@JsonProperty("result")
 	@Nullable
 	private PredictionResultPayload result;
-	@JsonProperty("user_display_name")
-	@Nullable
-	private String userDisplayName;
 }

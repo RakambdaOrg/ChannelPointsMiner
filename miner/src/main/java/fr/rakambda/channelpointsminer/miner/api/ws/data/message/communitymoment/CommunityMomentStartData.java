@@ -22,7 +22,4 @@ public class CommunityMomentStartData{
 	@JsonProperty("channel_id")
 	@NotNull
 	private String channelId;
-	@JsonProperty("clip_slug")
-	@NotNull
-	private String clipSlug;
 }

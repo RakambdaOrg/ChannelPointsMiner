@@ -14,26 +14,8 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 @ToString
 public class Predictor{
-	@JsonProperty("id")
-	private String id;
-	@JsonProperty("event_id")
-	private String eventId;
-	@JsonProperty("outcome_id")
-	private String outcomeId;
-	@JsonProperty("channel_id")
-	private String channelId;
 	@JsonProperty("points")
 	private int points;
-	@JsonProperty("predicted_at")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	private ZonedDateTime predictedAt;
-	@JsonProperty("updated_at")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	private ZonedDateTime updatedAt;
-	@JsonProperty("user_id")
-	private String userId;
-	@JsonProperty("result")
-	private Result result;
 	@JsonProperty("user_display_name")
 	private String userDisplayName;
 }

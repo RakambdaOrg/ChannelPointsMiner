@@ -16,10 +16,6 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 @ToString
 public class EventCreatedData{
-	@JsonProperty("timestamp")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
-	private ZonedDateTime timestamp;
 	@JsonProperty("event")
 	@NotNull
 	private Event event;

@@ -1,7 +1,0 @@
-{
-  "type": "MESSAGE",
-  "data": {
-    "topic": "raid.123456789",
-    "message": "{\"type\":\"raid_cancel_v2\",\"raid\":{\"id\":\"raid-id\",\"creator_id\":\"123456\",\"source_id\":\"456789\",\"target_id\":\"987654\",\"target_login\":\"target-name\",\"target_display_name\":\"target-display-name\",\"target_profile_image\":\"https://google.com/target-image\",\"transition_jitter_seconds\":0,\"force_raid_now_seconds\":90,\"viewer_count\":200}}"
-  }
-}

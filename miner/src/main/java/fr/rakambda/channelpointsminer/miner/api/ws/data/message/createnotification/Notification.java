@@ -25,57 +25,7 @@ import java.util.List;
 @ToString
 @Builder
 public class Notification{
-	@JsonProperty("user_id")
-	@NotNull
-	private String userId;
-	@JsonProperty("id")
-	@NotNull
-	private String id;
-	@JsonProperty("body")
-	@NotNull
-	private String body;
-	@JsonProperty("body_md")
-	@NotNull
-	private String bodyMd;
 	@JsonProperty("type")
 	@NotNull
 	private String type;
-	@JsonProperty("render_style")
-	@Nullable
-	private String renderStyle;
-	@JsonProperty("thumbnail_url")
-	@JsonDeserialize(using = URLDeserializer.class)
-	@NotNull
-	private URL thumbnailUrl;
-	@JsonProperty("actions")
-	@NotNull
-	@Builder.Default
-	private List<NotificationAction> actions = new ArrayList<>();
-	@JsonProperty("created_at")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
-	private ZonedDateTime createdAt;
-	@JsonProperty("updated_at")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
-	private ZonedDateTime updatedAt;
-	@JsonProperty("read")
-	private boolean read;
-	@JsonProperty("display_type")
-	@NotNull
-	private NotificationDisplayType displayType;
-	@JsonProperty("category")
-	@Nullable
-	private String category;
-	@JsonProperty("mobile_destination_type")
-	@NotNull
-	private String mobileDestinationType;
-	@JsonProperty("mobile_destination_key")
-	@JsonDeserialize(using = URLDeserializer.class)
-	@NotNull
-	private URL mobileDestinationKey;
-	@JsonProperty("data_blocks")
-	@NotNull
-	@Builder.Default
-	private List<NotificationDataBlock> dataBlocks = new ArrayList<>();
 }

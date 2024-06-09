@@ -15,8 +15,6 @@ import lombok.ToString;
 @ToString
 @Builder
 public class Balance{
-	@JsonProperty("user_id")
-	private String userId;
 	@JsonProperty("channel_id")
 	private String channelId;
 	@JsonProperty("balance")

@@ -32,23 +32,10 @@ public class Event{
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@NotNull
 	private ZonedDateTime createdAt;
-	@JsonProperty("created_by")
-	@NotNull
-	private By createdBy;
 	@JsonProperty("ended_at")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@Nullable
 	private ZonedDateTime endedAt;
-	@JsonProperty("ended_by")
-	@Nullable
-	private By endedBy;
-	@JsonProperty("locked_at")
-	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@Nullable
-	private ZonedDateTime lockedAt;
-	@JsonProperty("locked_by")
-	@Nullable
-	private By lockedBy;
 	@JsonProperty("prediction_window_seconds")
 	private int predictionWindowSeconds;
 	@JsonProperty("status")

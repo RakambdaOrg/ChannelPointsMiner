@@ -21,6 +21,4 @@ public class CommunityPointsMultiplier extends GQLType{
 	@JsonProperty("reasonCode")
 	@NotNull
 	private MultiplierReasonCode reasonCode;
-	@JsonProperty("factor")
-	private float factor;
 }

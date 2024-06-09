@@ -1,7 +1,0 @@
-{
-  "type": "MESSAGE",
-  "data": {
-    "topic": "video-playback-by-id.123456789",
-    "message": "{\"type\":\"commercial\",\"server_time\":1633971897.287128,\"length\":180,\"scheduled\":false}"
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "type": "MESSAGE",
-  "data": {
-    "topic": "onsite-notifications.123456789",
-    "message": "{\"type\":\"watchparty-vod\",\"vod\":{\"wp_id\":\"\",\"wp_type\":\"rerun\",\"increment_url\":\"https://increment_url\",\"vod_id\":\"123456\",\"title\":\"the title\",\"broadcast_type\":\"highlight\",\"viewable\":\"public\"}}"
-  }
-}

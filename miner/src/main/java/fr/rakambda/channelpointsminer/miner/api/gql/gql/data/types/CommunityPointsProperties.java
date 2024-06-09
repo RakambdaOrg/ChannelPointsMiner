@@ -30,14 +30,4 @@ public class CommunityPointsProperties extends GQLType{
 	@NotNull
 	@Builder.Default
 	private List<CommunityPointsMultiplier> activeMultipliers = new ArrayList<>();
-	@JsonProperty("canRedeemRewardsForFree")
-	private boolean canRedeemRewardsForFree;
-	@JsonProperty("lastViewedContent")
-	@NotNull
-	@Builder.Default
-	private List<CommunityPointsLastViewedContentByType> lastViewedContent = new ArrayList<>();
-	@JsonProperty("userRedemptions")
-	@NotNull
-	@Builder.Default
-	private List<CommunityPointsCustomRewardUserRedemption> userRedemptions = new ArrayList<>();
 }

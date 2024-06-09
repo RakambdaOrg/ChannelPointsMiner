@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @JsonTypeName("BroadcastSettings")
@@ -19,12 +18,6 @@ import org.jetbrains.annotations.Nullable;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class BroadcastSettings extends GQLType{
-	@JsonProperty("id")
-	@NotNull
-	private String id;
-	@JsonProperty("title")
-	@NotNull
-	private String title;
 	@JsonProperty("game")
 	@Nullable
 	private Game game;

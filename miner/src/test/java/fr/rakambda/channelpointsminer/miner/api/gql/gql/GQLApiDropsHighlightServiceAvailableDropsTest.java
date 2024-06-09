@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,7 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
     private static final String STREAMER_ID = "streamer-id";
     
     @Test
-    void nominalWithDrops(UnirestMock unirest) throws MalformedURLException{
+    void nominalWithDrops(UnirestMock unirest){
         var game = Game.builder()
                 .id("159357")
                 .name("game-name")
@@ -41,29 +40,20 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
                 ))
                 .data(DropsHighlightServiceAvailableDropsData.builder()
                         .channel(Channel.builder()
-                                .id("123456789")
                                 .viewerDropCampaigns(List.of(DropCampaign.builder()
                                         .id("campaign-id")
-                                        .name("campaign-name")
-                                        .game(game)
-                                        .detailsUrl(new URL("https://google.com/campaign-info"))
                                         .endAt(ZonedDateTime.of(2021, 10, 11, 5, 0, 0, 0, UTC))
-                                        .imageUrl(new URL("https://google.com/campaign-image"))
                                         .timeBasedDrops(List.of(TimeBasedDrop.builder()
                                                 .id("drop-id")
                                                 .name("drop-name")
                                                 .startAt(ZonedDateTime.of(2021, 10, 4, 15, 0, 0, 0, UTC))
                                                 .endAt(ZonedDateTime.of(2021, 10, 11, 5, 0, 0, 0, UTC))
                                                 .benefitEdges(List.of(DropBenefitEdge.builder()
-                                                        .benefit(DropBenefit.builder()
-                                                                .id("benefit-id")
-                                                                .name("benefit-name")
-                                                                .game(game)
-                                                                .imageAssetUrl(new URL("https://google.com/drop-image"))
-                                                                .build())
+		                                                .benefit(DropBenefit.builder()
+				                                                .id("benefit-id")
+				                                                .build())
                                                         .entitlementLimit(1)
                                                         .build()))
-                                                .requiredMinutesWatched(240)
                                                 .build()))
 				                                .summary(DropCampaignSummary.builder()
 						                                .includesSubRequirement(true)
@@ -75,7 +65,7 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
         
         expectValidRequestOkWithIntegrityOk("api/gql/gql/dropsHighlightServiceAvailableDrops_withDrops.json");
         
-        assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
+        assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).contains(expected);
         
         verifyAll();
     }
@@ -90,14 +80,13 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
                 ))
                 .data(DropsHighlightServiceAvailableDropsData.builder()
                         .channel(Channel.builder()
-                                .id("123456789")
                                 .build())
                         .build())
                 .build();
         
         expectValidRequestOkWithIntegrityOk("api/gql/gql/dropsHighlightServiceAvailableDrops_noDrops.json");
         
-        assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).isPresent().get().isEqualTo(expected);
+        assertThat(tested.dropsHighlightServiceAvailableDrops(STREAMER_ID)).contains(expected);
         
         verifyAll();
     }
