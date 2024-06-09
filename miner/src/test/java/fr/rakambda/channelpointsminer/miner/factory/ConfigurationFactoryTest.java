@@ -10,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.config.Configuration;
 import fr.rakambda.channelpointsminer.miner.config.DatabaseConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.DiscordConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.StreamerDirectory;
+import fr.rakambda.channelpointsminer.miner.config.TelegramConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.VersionProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.login.HttpLoginMethod;
@@ -112,6 +113,10 @@ class ConfigurationFactoryTest{
 						.discord(DiscordConfiguration.builder()
 								.url(new URL("https://discord-webhook"))
 								.embeds(true)
+								.build())
+						.telegram(TelegramConfiguration.builder()
+								.token("token")
+								.chatId("123456789")
 								.build())
 						.reloadEvery(15)
 						.analytics(AnalyticsConfiguration.builder()

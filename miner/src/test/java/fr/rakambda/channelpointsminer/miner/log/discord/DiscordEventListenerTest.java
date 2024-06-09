@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.log.discord;
 import fr.rakambda.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Webhook;
 import fr.rakambda.channelpointsminer.miner.config.DiscordConfiguration;
-import fr.rakambda.channelpointsminer.miner.config.DiscordEventConfiguration;
+import fr.rakambda.channelpointsminer.miner.config.MessageEventConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.IEvent;
 import fr.rakambda.channelpointsminer.miner.event.ILoggableEvent;
@@ -55,7 +55,7 @@ class DiscordEventListenerTest{
 	void eventIsFiltered(){
 		var event = mock(ILoggableEvent.class);
 		
-		when(discordConfiguration.getEvents()).thenReturn(Map.of("unknown", mock(DiscordEventConfiguration.class)));
+		when(discordConfiguration.getEvents()).thenReturn(Map.of("unknown", mock(MessageEventConfiguration.class)));
 		tested.onEvent(event);
 		
 		verify(discordApi, never()).sendMessage(any());
@@ -64,7 +64,7 @@ class DiscordEventListenerTest{
 	@Test
 	void messageIsSent(){
 		var event = mock(ILoggableEvent.class);
-		var eventConfiguration = mock(DiscordEventConfiguration.class);
+		var eventConfiguration = mock(MessageEventConfiguration.class);
 		var webhook = mock(Webhook.class);
 		
 		when(discordConfiguration.getEvents()).thenReturn(Map.of(event.getClass().getSimpleName(), eventConfiguration));
@@ -77,7 +77,7 @@ class DiscordEventListenerTest{
 	@Test
 	void messageIsSentStreamerEvent(){
 		var event = mock(AbstractLoggableStreamerEvent.class);
-		var eventConfiguration = mock(DiscordEventConfiguration.class);
+		var eventConfiguration = mock(MessageEventConfiguration.class);
 		var webhook = mock(Webhook.class);
 		
 		when(event.getStreamerUsername()).thenReturn(Optional.of("streamer"));
@@ -102,7 +102,7 @@ class DiscordEventListenerTest{
 	@Test
 	void embedIsSent(){
 		var event = mock(ILoggableEvent.class);
-		var eventConfiguration = mock(DiscordEventConfiguration.class);
+		var eventConfiguration = mock(MessageEventConfiguration.class);
 		var webhook = mock(Webhook.class);
 		
 		when(discordConfiguration.isEmbeds()).thenReturn(true);

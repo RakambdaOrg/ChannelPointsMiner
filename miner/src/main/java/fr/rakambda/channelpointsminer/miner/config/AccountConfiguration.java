@@ -51,6 +51,11 @@ public class AccountConfiguration{
 	@JsonPropertyDescription("Discord settings to send notifications.")
 	@Builder.Default
 	private DiscordConfiguration discord = new DiscordConfiguration();
+	@NotNull
+	@JsonProperty("telegram")
+	@JsonPropertyDescription("Telegram settings to send notifications.")
+	@Builder.Default
+	private TelegramConfiguration telegram = new TelegramConfiguration();
 	@JsonProperty("reloadEvery")
 	@JsonPropertyDescription("Reload streamer settings every x minutes. Zero or negative value disables it. Default: 0")
 	@Builder.Default

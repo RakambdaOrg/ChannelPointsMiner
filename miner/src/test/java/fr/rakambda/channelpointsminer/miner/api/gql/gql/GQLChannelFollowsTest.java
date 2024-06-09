@@ -118,6 +118,16 @@ class GQLChannelFollowsTest extends AbstractGQLTest{
 	}
 	
 	@Test
+	void getAllFollowsStopsWhenEmptyResponse(){
+		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_severalFollows.json");
+		expectGqlRequest(VALID_QUERY_WITH_CURSOR.formatted("cursor-id-2", ALL_LIMIT, ORDER), 403, null);
+		
+		assertThat(tested.allChannelFollows()).hasSize(2);
+		
+		verifyAll();
+	}
+	
+	@Test
 	void getAllFollowsErrorGettingCursor(){
 		expectBodyRequestOkWithIntegrityOk(VALID_QUERY.formatted(ALL_LIMIT, ORDER), "api/gql/gql/channelFollows_invalidCursor.json");
 		

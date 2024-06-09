@@ -19,7 +19,7 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Predicti
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
-import fr.rakambda.channelpointsminer.miner.config.DiscordEventConfiguration;
+import fr.rakambda.channelpointsminer.miner.config.MessageEventConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimedMomentEvent;
@@ -80,7 +80,7 @@ class DiscordMessageBuilderEmbedTest{
 	private DiscordMessageBuilder tested;
 	
 	@Mock
-	private DiscordEventConfiguration discordEventConfiguration;
+	private MessageEventConfiguration messageEventConfiguration;
 	@Mock
 	private IMiner miner;
 	@Mock
@@ -116,11 +116,11 @@ class DiscordMessageBuilderEmbedTest{
 	
 	@Test
 	void onClaimAvailableWithCustomFormat(){
-		when(discordEventConfiguration.getFormat()).thenReturn("{streamer} override test");
+		when(messageEventConfiguration.getFormat()).thenReturn("{streamer} override test");
 		
 		var event = new ClaimAvailableEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -136,7 +136,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onClaimAvailable(){
 		var event = new ClaimAvailableEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -152,7 +152,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onClaimMoment(){
 		var event = new ClaimMomentEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -168,7 +168,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onClaimedMoment(){
 		var event = new ClaimedMomentEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -195,7 +195,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -225,7 +225,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -255,7 +255,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -281,7 +281,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PointsSpentEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -298,7 +298,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onStreamUp(){
 		var event = new StreamUpEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -314,7 +314,7 @@ class DiscordMessageBuilderEmbedTest{
 	void authorNotFound(){
 		var event = new StreamUpEvent(STREAMER_ID, null, null, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -330,7 +330,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onStreamDown(){
 		var event = new StreamDownEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -352,7 +352,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new EventCreatedEvent(streamer, subEvent);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -388,7 +388,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PredictionMadeEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -419,7 +419,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PredictionMadeEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -449,7 +449,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PredictionResultEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -477,7 +477,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PredictionResultEvent(STREAMER_ID, STREAMER_USERNAME, streamer, placedPrediction, predictionResultData);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -505,7 +505,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new PredictionResultEvent(STREAMER_ID, STREAMER_USERNAME, streamer, null, predictionResultData);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -527,7 +527,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new MinerStartedEvent(version, commit, branch, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -545,7 +545,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onStreamerAdded(){
 		var event = new StreamerAddedEvent(streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -561,7 +561,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onStreamerRemoved(){
 		var event = new StreamerRemovedEvent(streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -577,7 +577,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onStreamerUnknown(){
 		var event = new StreamerUnknownEvent(STREAMER_USERNAME, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -600,7 +600,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new DropClaimEvent(drop, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -620,7 +620,7 @@ class DiscordMessageBuilderEmbedTest{
 		
 		var event = new DropClaimedEvent(drop, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -636,7 +636,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onDropClaimedChannel(){
 		var event = new DropClaimedChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -652,7 +652,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onDropProgressChannel(){
 		var event = new DropProgressChannelEvent(STREAMER_ID, STREAMER_USERNAME, streamer, NOW, 20);
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()
@@ -669,7 +669,7 @@ class DiscordMessageBuilderEmbedTest{
 	void onLoginRequired(){
 		var event = new LoginRequiredEvent(NOW, "message");
 		event.setMiner(miner);
-		var webhook = tested.createEmbedMessage(event, discordEventConfiguration);
+		var webhook = tested.createEmbedMessage(event, messageEventConfiguration);
 		
 		assertThat(webhook).isEqualTo(Webhook.builder()
 				.embeds(List.of(Embed.builder()

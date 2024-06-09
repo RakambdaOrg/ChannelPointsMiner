@@ -402,6 +402,12 @@ class StreamerTest{
 	}
 	
 	@Test
+	void excludeSubscriberDrops(){
+		when(settings.isExcludeSubscriberDrops()).thenReturn(true);
+		assertThat(tested.isExcludeSubscriberDrops()).isTrue();
+	}
+	
+	@Test
 	void doesNotFollowRaid(){
 		when(settings.isFollowRaid()).thenReturn(false);
 		assertThat(tested.followRaids()).isFalse();

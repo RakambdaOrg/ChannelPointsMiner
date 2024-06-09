@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightservi
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMock;
@@ -50,6 +51,9 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
                                                         .entitlementLimit(1)
                                                         .build()))
                                                 .build()))
+				                                .summary(DropCampaignSummary.builder()
+						                                .includesSubRequirement(true)
+						                                .build())
                                         .build()))
                                 .build())
                         .build())
@@ -85,6 +89,6 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
     
     @Override
     protected String getValidRequest(){
-	    return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"9a62a09bce5b53e26e64a671e530bc599cb6aab1e5ba3cbd5d85966d3940716f\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
+	    return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"962510a535f25f33bbf85d7767982e3bb6d1b00f84dd3c7a06d8572323dfd010\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
     }
 }

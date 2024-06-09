@@ -3,10 +3,14 @@ package fr.rakambda.channelpointsminer.miner.priority;
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
@@ -18,6 +22,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 @JsonTypeName("drops")
@@ -33,23 +38,23 @@ public class DropsPriority extends IStreamerPriority{
 	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
 		if(streamer.isParticipateCampaigns()
 				&& streamer.isStreamingGame()
-				&& hasCampaigns(streamer)){
+				&& hasCampaigns(miner, streamer)){
 			return getScore();
 		}
 		
 		return 0;
 	}
 	
-	private boolean hasCampaigns(@NotNull Streamer streamer){
+	private boolean hasCampaigns(@NotNull IMiner miner, @NotNull Streamer streamer){
 		return Optional.ofNullable(streamer.getDropsHighlightServiceAvailableDrops())
 				.map(DropsHighlightServiceAvailableDropsData::getChannel)
 				.map(Channel::getViewerDropCampaigns)
 				.stream()
 				.flatMap(Collection::stream)
-				.anyMatch(this::isValidCampaign);
+				.anyMatch(dropCampaign -> isValidCampaign(miner, streamer, dropCampaign));
 	}
 	
-	private boolean isValidCampaign(@NotNull DropCampaign dropCampaign){
+	private boolean isValidCampaign(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull DropCampaign dropCampaign){
 		var now = TimeFactory.nowZoned();
 		
 		if(Optional.ofNullable(dropCampaign.getStartAt()).map(date -> date.isAfter(now)).orElse(false)){
@@ -60,15 +65,19 @@ public class DropsPriority extends IStreamerPriority{
 			log.trace("Campaign {} already ended", dropCampaign.getId());
 			return false;
 		}
+		if(streamer.isExcludeSubscriberDrops() && Optional.ofNullable(dropCampaign.getSummary()).map(DropCampaignSummary::isIncludesSubRequirement).orElse(false)){
+			log.trace("Campaign {} requires subscriptions", dropCampaign.getId());
+			return false;
+		}
 		
-		var result = dropCampaign.getTimeBasedDrops().stream().anyMatch(this::isValidDrop);
+		var result = dropCampaign.getTimeBasedDrops().stream().anyMatch(timeBasedDrop -> isValidDrop(miner, timeBasedDrop));
 		if(!result){
 			log.trace("Campaign {} has no valid drops", dropCampaign.getId());
 		}
 		return result;
 	}
 	
-	private boolean isValidDrop(@NotNull TimeBasedDrop timeBasedDrop){
+	private boolean isValidDrop(@NotNull IMiner miner, @NotNull TimeBasedDrop timeBasedDrop){
 		var now = TimeFactory.nowZoned();
 		
 		if(Optional.ofNullable(timeBasedDrop.getStartAt()).map(date -> date.isAfter(now)).orElse(false)){
@@ -83,14 +92,23 @@ public class DropsPriority extends IStreamerPriority{
 		var result = Optional.ofNullable(timeBasedDrop.getBenefitEdges())
 				.stream()
 				.flatMap(Collection::stream)
-				.anyMatch(this::isValidBenefit);
+				.anyMatch(dropBenefitEdge -> isValidBenefit(miner, dropBenefitEdge));
 		if(!result){
 			log.trace("Drop {} has no valid benefit", timeBasedDrop.getId());
 		}
 		return result;
 	}
 	
-	private boolean isValidBenefit(@NotNull DropBenefitEdge dropBenefitEdge){
-		return dropBenefitEdge.getClaimCount() < dropBenefitEdge.getEntitlementLimit();
+	private boolean isValidBenefit(@NotNull IMiner miner, @NotNull DropBenefitEdge dropBenefitEdge){
+		return Optional.ofNullable(miner.getMinerData().getInventory())
+				.map(InventoryData::getCurrentUser)
+				.map(User::getInventory)
+				.map(Inventory::getGameEventDrops)
+				.stream()
+				.flatMap(Collection::stream)
+				.filter(userDropReward -> Objects.equals(userDropReward.getId(), dropBenefitEdge.getBenefit().getId()))
+				.findFirst()
+				.map(userDropReward -> userDropReward.getTotalCount() < dropBenefitEdge.getEntitlementLimit())
+				.orElse(true);
 	}
 }

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class UnirestLogger implements Interceptor{
 	private static final String TOKEN_URL = "https://id.twitch.tv/oauth2/token";
 	private static final String M3U8_URL = "https://usher.ttvnw.net/api/channel/hls/";
+	private static final String M3U8_CHUNK_URL = "https://video-weaver.";
 	
 	@Override
 	public void onRequest(HttpRequest<?> request, Config config){
@@ -46,6 +47,10 @@ public class UnirestLogger implements Interceptor{
 		}
 		
 		if(request.getUrl().startsWith(M3U8_URL) && response.getStatus() == 403){
+			return false;
+		}
+		
+		if(request.getUrl().startsWith(M3U8_CHUNK_URL) && response.getStatus() == 403){
 			return false;
 		}
 		

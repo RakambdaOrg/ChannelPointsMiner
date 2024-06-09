@@ -2,10 +2,12 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.api.discord.DiscordApi;
 import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpLoginProvider;
+import fr.rakambda.channelpointsminer.miner.api.telegram.TelegramApi;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.AnalyticsConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.DatabaseConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.DiscordConfiguration;
+import fr.rakambda.channelpointsminer.miner.config.TelegramConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.login.ILoginMethod;
 import fr.rakambda.channelpointsminer.miner.database.DatabaseEventHandler;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
@@ -19,6 +21,7 @@ import fr.rakambda.channelpointsminer.miner.handler.PredictionsHandler;
 import fr.rakambda.channelpointsminer.miner.handler.StreamStartEndHandler;
 import fr.rakambda.channelpointsminer.miner.log.LoggerEventListener;
 import fr.rakambda.channelpointsminer.miner.log.discord.DiscordEventListener;
+import fr.rakambda.channelpointsminer.miner.log.telegram.TelegramEventListener;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
@@ -53,7 +56,11 @@ class MinerFactoryTest{
 	@Mock
 	private DiscordApi discordApi;
 	@Mock
+	private TelegramApi telegramApi;
+	@Mock
 	private DiscordConfiguration discordConfiguration;
+	@Mock
+	private TelegramConfiguration telegramConfiguration;
 	@Mock
 	private AnalyticsConfiguration analyticsConfiguration;
 	@Mock
@@ -74,6 +81,7 @@ class MinerFactoryTest{
 		lenient().when(accountConfiguration.getUsername()).thenReturn(USERNAME);
 		lenient().when(accountConfiguration.getLoginMethod()).thenReturn(loginMethod);
 		lenient().when(accountConfiguration.getDiscord()).thenReturn(discordConfiguration);
+		lenient().when(accountConfiguration.getTelegram()).thenReturn(telegramConfiguration);
 		lenient().when(accountConfiguration.getAnalytics()).thenReturn(analyticsConfiguration);
 		lenient().when(analyticsConfiguration.isRecordUserPredictions()).thenReturn(RECORD_USER_PREDICTIONS);
 	}
@@ -112,7 +120,7 @@ class MinerFactoryTest{
 			var discordWebhook = new URL("https://discord-webhook");
 			
 			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
-			apiFactory.when(() -> ApiFactory.createdDiscordApi(discordWebhook)).thenReturn(discordApi);
+			apiFactory.when(() -> ApiFactory.createDiscordApi(discordWebhook)).thenReturn(discordApi);
 			minerRunnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(any(IMiner.class), eq(eventManager))).thenReturn(syncInventory);
 			
 			when(discordConfiguration.getUrl()).thenReturn(discordWebhook);
@@ -132,6 +140,39 @@ class MinerFactoryTest{
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verify(eventManager).addEventHandler(any(DiscordEventListener.class));
+			verifyNoMoreInteractions(eventManager);
+			
+			miner.close();
+		}
+	}
+	
+	@Test
+	void nominalWithTelegram() throws MalformedURLException{
+		try(var apiFactory = mockStatic(ApiFactory.class);
+				var minerRunnableFactory = mockStatic(MinerRunnableFactory.class)){
+			var botUrl = new URL("https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11");
+			
+			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
+			apiFactory.when(() -> ApiFactory.createTelegramApi(botUrl)).thenReturn(telegramApi);
+			minerRunnableFactory.when(() -> MinerRunnableFactory.createSyncInventory(any(IMiner.class), eq(eventManager))).thenReturn(syncInventory);
+			
+			when(telegramConfiguration.getToken()).thenReturn("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11");
+			
+			var miner = MinerFactory.create(accountConfiguration, eventManager);
+			
+			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
+			assertThat(miner.getPubSubMessageHandlers())
+					.hasSize(7)
+					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
+					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
+					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
+					.hasAtLeastOneElementOfType(PredictionsHandler.class)
+					.hasAtLeastOneElementOfType(PointsHandler.class)
+					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
+			
+			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
+			verify(eventManager).addEventHandler(any(TelegramEventListener.class));
 			verifyNoMoreInteractions(eventManager);
 			
 			miner.close();

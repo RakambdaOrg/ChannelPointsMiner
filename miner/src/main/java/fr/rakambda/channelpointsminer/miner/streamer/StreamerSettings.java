@@ -51,6 +51,10 @@ public class StreamerSettings{
 	@JsonPropertyDescription("Join chat. Default: false")
 	@Builder.Default
 	private boolean joinIrc = false;
+	@JsonProperty("excludeSubscriberDrops")
+	@JsonPropertyDescription("Exclude progressing drops that require subscriptions. Default: true")
+	@Builder.Default
+	private boolean excludeSubscriberDrops = true;
 	@JsonProperty("index")
 	@JsonPropertyDescription("The streamer index. This value is used when streamers have the same score from the defined priorities, the one with the lowest index will be picked first. Default: 2147483647")
 	@Builder.Default
@@ -74,6 +78,7 @@ public class StreamerSettings{
 		followRaid = origin.followRaid;
 		participateCampaigns = origin.participateCampaigns;
 		joinIrc = origin.joinIrc;
+		excludeSubscriberDrops = origin.excludeSubscriberDrops;
 		index = origin.index;
 		predictions = new PredictionSettings(origin.predictions);
 		priorities.addAll(origin.priorities);
