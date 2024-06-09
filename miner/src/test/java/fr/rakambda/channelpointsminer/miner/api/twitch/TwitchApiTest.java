@@ -359,7 +359,7 @@ class TwitchApiTest{
 				.withStatus(200);
 		
 		unirest.expect(GET, M3U8_CHUNK_URL)
-				.thenReturn()
+				.thenReturn("")
 				.withStatus(200);
 		
 		assertThat(tested.openM3u8LastChunk(url)).isTrue();
@@ -396,7 +396,7 @@ class TwitchApiTest{
 				.withStatus(200);
 		
 		unirest.expect(GET, M3U8_CHUNK_URL)
-				.thenReturn()
+				.thenReturn("")
 				.withStatus(400);
 		
 		assertThat(tested.openM3u8LastChunk(url)).isFalse();
