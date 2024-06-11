@@ -38,20 +38,11 @@ public class TimeBasedDrop extends GQLType{
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
 	@Nullable
 	private ZonedDateTime endAt;
-	@JsonProperty("preconditionDrops")
-	@Nullable
-	@Builder.Default
-	private List<TimeBasedDrop> preconditionDrops = new ArrayList<>();
 	@JsonProperty("benefitEdges")
 	@Nullable
 	@Builder.Default
 	private List<DropBenefitEdge> benefitEdges = new ArrayList<>();
-	@JsonProperty("requiredMinutesWatched")
-	private int requiredMinutesWatched;
 	@JsonProperty("self")
 	@Nullable
 	private TimeBasedDropSelfEdge self;
-	@JsonProperty("campaign")
-	@Nullable
-	private DropCampaign campaign;
 }

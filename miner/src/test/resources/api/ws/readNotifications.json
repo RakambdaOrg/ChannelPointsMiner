@@ -1,7 +1,0 @@
-{
-  "type" : "MESSAGE",
-  "data" : {
-    "topic" : "onsite-notifications.123456789",
-    "message" : "{\"type\":\"read-notifications\",\"data\":{\"notification_ids\":[\"notification-id\"],\"display_type\":\"VIEWER\",\"summary\":{\"unseen_view_count\":5,\"last_seen_at\":\"2021-01-01T19:41:56.957079333Z\",\"viewer_unread_count\":8,\"creator_unread_count\":1,\"summaries_by_display_type\":{\"CREATOR\":{\"unread_summary\":{\"count\":5,\"last_read_all\":\"2021-01-01T20:41:56.957079333Z\"},\"unseen_summary\":{\"count\":6,\"last_seen\":\"2021-01-01T21:41:56.957079333Z\"}},\"VIEWER\":{\"unread_summary\":{\"count\":7,\"last_read_all\":\"2021-01-01T22:41:56.957079333Z\"},\"unseen_summary\":{\"count\":8,\"last_seen\":\"2021-01-01T23:41:56.957079333Z\"}}}}}}"
-  }
-}

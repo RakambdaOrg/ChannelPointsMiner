@@ -15,7 +15,4 @@ public class Badge{
 	@JsonProperty("version")
 	@NotNull
 	private String version;
-	@JsonProperty("set_id")
-	@NotNull
-	private String setId;
 }

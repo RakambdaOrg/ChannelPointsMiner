@@ -139,7 +139,7 @@ public class TwitchApi{
 		
 		if(!response.isSuccess()){
 			if(response.getStatus() == 403){
-				log.trace("Got 403 response for m3u8 playlist, is streamer region locked? (#783)");
+				log.trace("Got 403 response for m3u8 content, is streamer region locked? (#783)");
 				return Optional.empty();
 			}
 			
@@ -154,6 +154,11 @@ public class TwitchApi{
 		var playlistResponse = unirest.get(m3u8Url.toString()).asString();
 		
 		if(!playlistResponse.isSuccess()){
+			if(playlistResponse.getStatus() == 403){
+				log.trace("Got 403 response for m3u8 playlist, is streamer region locked? (#783)");
+				return false;
+			}
+			
 			log.error("Failed to get streamer M3U8 playlist");
 			return false;
 		}
@@ -164,7 +169,7 @@ public class TwitchApi{
 			return false;
 		}
 		
-		var chunkRequest = unirest.get(chunkUrl.get().toString()).asEmpty();
+		var chunkRequest = unirest.get(chunkUrl.get().toString()).asBytes();
 		return chunkRequest.isSuccess();
 	}
 }

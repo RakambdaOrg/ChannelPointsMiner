@@ -20,9 +20,6 @@ import org.jetbrains.annotations.Nullable;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class ClaimCommunityMomentPayload extends GQLType{
-	@JsonProperty("moment")
-	@Nullable
-	private CommunityMoment moment;
 	@JsonProperty("error")
 	@JsonDeserialize(using = UnknownDeserializer.class)
 	@Nullable

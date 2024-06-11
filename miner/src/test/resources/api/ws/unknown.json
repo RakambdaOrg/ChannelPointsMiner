@@ -1,0 +1,7 @@
+{
+  "type": "MESSAGE",
+  "data": {
+    "topic": "raid.123456789",
+    "message": "{\"type\":\"unknown\",\"data\":{}}"
+  }
+}

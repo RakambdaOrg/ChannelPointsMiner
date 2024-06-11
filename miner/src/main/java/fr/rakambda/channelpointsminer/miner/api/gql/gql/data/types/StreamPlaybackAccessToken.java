@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @JsonTypeName("PlaybackAccessToken")
 @Getter

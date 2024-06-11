@@ -21,6 +21,4 @@ public class PredictionResultPayload{
 	private PredictionResultType type;
 	@JsonProperty("points_won")
 	private int pointsWon;
-	@JsonProperty("is_acknowledged")
-	private boolean isAcknowledged;
 }

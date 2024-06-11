@@ -1,7 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.RequestInfo;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +17,6 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode
 @ToString
 public class ReportMenuItemData{
-	@JsonProperty("requestInfo")
-	@NotNull
-	private RequestInfo requestInfo;
 	@JsonProperty("user")
 	@NotNull
 	private User user;

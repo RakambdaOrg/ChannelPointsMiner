@@ -2,16 +2,13 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.RequestInfo;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Stream;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import java.time.ZonedDateTime;
 import java.util.Map;
-import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,9 +25,6 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 						"requestID", "request-id"
 				))
 				.data(ReportMenuItemData.builder()
-						.requestInfo(RequestInfo.builder()
-								.countryCode("US")
-								.build())
 						.user(User.builder()
 								.id("123456789")
 								.build())
@@ -39,7 +33,7 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 		
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/reportMenuItem_offline.json");
 		
-		assertThat(tested.reportMenuItem(USERNAME)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.reportMenuItem(USERNAME)).contains(expected);
 		
 		verifyAll();
 	}
@@ -53,14 +47,10 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 						"requestID", "request-id"
 				))
 				.data(ReportMenuItemData.builder()
-						.requestInfo(RequestInfo.builder()
-								.countryCode("US")
-								.build())
 						.user(User.builder()
 								.id("123456789")
 								.stream(Stream.builder()
 										.id("123456")
-										.createdAt(ZonedDateTime.of(2021, 10, 10, 1, 17, 2, 0, UTC))
 										.build())
 								.build())
 						.build())
@@ -69,7 +59,7 @@ class GQLApiReportMenuItemTest extends AbstractGQLTest{
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/reportMenuItem_online.json");
 		
 		var result = tested.reportMenuItem(USERNAME);
-		assertThat(result).isPresent().get().isEqualTo(expected);
+		assertThat(result).contains(expected);
 		
 		verifyAll();
 	}

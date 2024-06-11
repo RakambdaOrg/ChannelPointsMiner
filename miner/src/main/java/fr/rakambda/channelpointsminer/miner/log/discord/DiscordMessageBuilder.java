@@ -5,7 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.discord.data.Embed;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Field;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Footer;
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Webhook;
-import fr.rakambda.channelpointsminer.miner.config.DiscordEventConfiguration;
+import fr.rakambda.channelpointsminer.miner.config.MessageEventConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.event.ILoggableEvent;
 import org.apache.commons.text.StringSubstitutor;
@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
 
 public class DiscordMessageBuilder{
 	@NotNull
-	public Webhook createSimpleMessage(@NotNull ILoggableEvent event, @Nullable DiscordEventConfiguration config){
-		var format = Optional.ofNullable(config).map(DiscordEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
+	public Webhook createSimpleMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
+		var format = Optional.ofNullable(config).map(MessageEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
 		return Webhook.builder().content(formatMessage(event, format)).build();
 	}
 	
 	@NotNull
-	public Webhook createEmbedMessage(@NotNull ILoggableEvent event, @Nullable DiscordEventConfiguration config){
-		var format = Optional.ofNullable(config).map(DiscordEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
+	public Webhook createEmbedMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
+		var format = Optional.ofNullable(config).map(MessageEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
 		
 		var fields = event.getEmbedFields().entrySet().stream()
 				.sorted(Map.Entry.comparingByKey())

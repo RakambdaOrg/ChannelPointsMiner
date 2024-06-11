@@ -2,9 +2,6 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.claimcommunitypoints.ClaimCommunityPointsData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ClaimCommunityPointsError;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ClaimCommunityPointsPayload;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.CommunityPointsClaim;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
@@ -27,20 +24,12 @@ class GQLApiClaimCommunityPointsTest extends AbstractGQLTest{
 						"requestID", "request-id"
 				))
 				.data(ClaimCommunityPointsData.builder()
-						.claimCommunityPoints(ClaimCommunityPointsPayload.builder()
-								.claim(CommunityPointsClaim.builder()
-										.id("claim-id")
-										.pointsEarnedBaseline(50)
-										.pointsEarnedTotal(50)
-										.build())
-								.currentPoints(1500)
-								.build())
 						.build())
 				.build();
 		
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/claimCommunityPoints_claimed.json");
 		
-		assertThat(tested.claimCommunityPoints(CHANNEL_ID, CLAIM_ID)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.claimCommunityPoints(CHANNEL_ID, CLAIM_ID)).contains(expected);
 		
 		verifyAll();
 	}
@@ -54,17 +43,12 @@ class GQLApiClaimCommunityPointsTest extends AbstractGQLTest{
 						"requestID", "request-id"
 				))
 				.data(ClaimCommunityPointsData.builder()
-						.claimCommunityPoints(ClaimCommunityPointsPayload.builder()
-								.error(ClaimCommunityPointsError.builder()
-										.code("NOT_FOUND")
-										.build())
-								.build())
 						.build())
 				.build();
 		
 		expectValidRequestOkWithIntegrityOk("api/gql/gql/claimCommunityPoints_notFound.json");
 		
-		assertThat(tested.claimCommunityPoints(CHANNEL_ID, CLAIM_ID)).isPresent().get().isEqualTo(expected);
+		assertThat(tested.claimCommunityPoints(CHANNEL_ID, CLAIM_ID)).contains(expected);
 		
 		verifyAll();
 	}

@@ -34,5 +34,5 @@ public class DiscordConfiguration{
 	@JsonProperty("events")
 	@JsonPropertyDescription("Customize events that are sent. Key is the name of an event (can be seen in the event/impl package). Default: all events with default format")
 	@Builder.Default
-	private Map<String, DiscordEventConfiguration> events = new HashMap<>();
+	private Map<String, MessageEventConfiguration> events = new HashMap<>();
 }

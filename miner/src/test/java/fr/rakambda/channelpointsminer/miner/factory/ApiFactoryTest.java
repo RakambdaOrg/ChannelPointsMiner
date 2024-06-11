@@ -15,6 +15,7 @@ import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.OauthLoginProvider;
+import fr.rakambda.channelpointsminer.miner.api.telegram.TelegramApi;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.config.VersionProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
@@ -90,7 +91,12 @@ class ApiFactoryTest{
 	
 	@Test
 	void createDiscordApi(){
-		assertThat(ApiFactory.createdDiscordApi(url)).isNotNull().isInstanceOf(DiscordApi.class);
+		assertThat(ApiFactory.createDiscordApi(url)).isNotNull().isInstanceOf(DiscordApi.class);
+	}
+	
+	@Test
+	void createTelegramApi(){
+		assertThat(ApiFactory.createTelegramApi(url)).isNotNull().isInstanceOf(TelegramApi.class);
 	}
 	
 	@Test

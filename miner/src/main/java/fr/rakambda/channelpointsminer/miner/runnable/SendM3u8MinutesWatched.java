@@ -24,6 +24,11 @@ public class SendM3u8MinutesWatched extends SendMinutesWatched{
 	
 	@Override
 	protected boolean send(@NotNull Streamer streamer){
-		return miner.getTwitchApi().openM3u8LastChunk(streamer.getM3u8Url());
+		var result = miner.getTwitchApi().openM3u8LastChunk(streamer.getM3u8Url());
+		if(!result){
+			log.warn("Got an error from m3u8 for streamer, disabling it until next stream data refresh");
+			streamer.setM3u8Url(null);
+		}
+		return result;
 	}
 }

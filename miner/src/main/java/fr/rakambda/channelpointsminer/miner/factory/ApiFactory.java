@@ -17,6 +17,7 @@ import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLoginCacher;
 import fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.http.HttpLoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.oauth.OauthLoginProvider;
+import fr.rakambda.channelpointsminer.miner.api.telegram.TelegramApi;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.config.VersionProvider;
 import fr.rakambda.channelpointsminer.miner.config.login.BrowserConfiguration;
@@ -31,6 +32,7 @@ import fr.rakambda.channelpointsminer.miner.log.UnirestLogger;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.HeaderNames;
+import kong.unirest.core.RetryStrategy;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestInstance;
 import kong.unirest.jackson.JacksonObjectMapper;
@@ -53,7 +55,7 @@ public class ApiFactory{
 	private static final String API_CONSUMER_TYPE = "mobile; Android/1304010";
 	private static final String X_APP_VERSION = "13.4.1";
 	
-	private static String xDeviceId = CommonUtils.randomAlphanumeric(32);
+	private static final String xDeviceId = CommonUtils.randomAlphanumeric(32);
 	
 	private static UnirestInstance createUnirestInstance(@Nullable TwitchClient twitchClient){
 		var unirest = Unirest.spawnInstance();
@@ -103,57 +105,61 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static DiscordApi createdDiscordApi(@NotNull URL webhookUrl){
+	public static DiscordApi createDiscordApi(@NotNull URL webhookUrl){
 		var unirestInstance = createUnirestInstance(null);
-		unirestInstance.config().retryAfter(true);
+		unirestInstance.config().retryAfter(true, 5);
 		
 		return new DiscordApi(webhookUrl, unirestInstance);
 	}
 	
 	@NotNull
+	public static TelegramApi createTelegramApi(@NotNull URL botUrl){
+		var unirestInstance = createUnirestInstance(null);
+		unirestInstance.config()
+				.defaultBaseUrl(botUrl.toString())
+				.retryAfter(true);
+		
+		return new TelegramApi(unirestInstance);
+	}
+	
+	@NotNull
 	public static ILoginProvider createLoginProvider(@NotNull String username, @NotNull ILoginMethod loginMethod, @NotNull IEventManager eventManager){
-		if(loginMethod instanceof IPassportApiLoginProvider passportApiLoginProvider){
-			var twitchClient = passportApiLoginProvider.getTwitchClient();
-			var unirest = createUnirestInstance(twitchClient);
-			
-			if(passportApiLoginProvider.getTwitchClient() == TwitchClient.MOBILE){
-				addMobileHeaders(unirest);
-				unirest.config().setDefaultHeader("X-Device-Id", xDeviceId);
+		return switch(loginMethod){
+			case IPassportApiLoginProvider passportApiLoginProvider -> {
+				var twitchClient = passportApiLoginProvider.getTwitchClient();
+				var unirest = createUnirestInstance(twitchClient);
+				
+				if(passportApiLoginProvider.getTwitchClient() == TwitchClient.MOBILE){
+					addMobileHeaders(unirest);
+					unirest.config().setDefaultHeader("X-Device-Id", xDeviceId);
+				}
+				
+				var cachePath = passportApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
+				TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
+				yield new HttpLoginProvider(twitchClient, unirest, username, passportApiLoginProvider, cacher, eventManager);
 			}
-			
-			var cachePath = passportApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
-			TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
-			return new HttpLoginProvider(twitchClient, unirest, username, passportApiLoginProvider, cacher, eventManager);
-		}
-		if(loginMethod instanceof IOauthApiLoginProvider oauthApiLoginProvider){
-			var twitchClient = oauthApiLoginProvider.getTwitchClient();
-			var unirest = createUnirestInstance(twitchClient);
-			
-			var cachePath = oauthApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
-			TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
-			return new OauthLoginProvider(twitchClient, unirest, username, cacher, eventManager);
-		}
-		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
-			return new BrowserLoginProvider(browserConfiguration, eventManager);
-		}
-		throw new IllegalStateException("Unknown login method");
+			case IOauthApiLoginProvider oauthApiLoginProvider -> {
+				var twitchClient = oauthApiLoginProvider.getTwitchClient();
+				var unirest = createUnirestInstance(twitchClient);
+				
+				var cachePath = oauthApiLoginProvider.getAuthenticationFolder().resolve(username.toLowerCase(Locale.ROOT) + ".json");
+				TwitchLoginCacher cacher = new TwitchLoginCacher(cachePath);
+				yield new OauthLoginProvider(twitchClient, unirest, username, cacher, eventManager);
+			}
+			case BrowserConfiguration browserConfiguration -> new BrowserLoginProvider(browserConfiguration, eventManager);
+			default -> throw new IllegalStateException("Unknown login method");
+		};
 	}
 	
 	@NotNull
 	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @NotNull ILoginMethod loginMethod, @NotNull IEventManager eventManager){
-		if(loginMethod instanceof HttpLoginMethod){
-			return createHttpIntegrityProvider(twitchLogin, versionProvider);
-		}
-		if(loginMethod instanceof MobileLoginMethod){
-			return createMobileIntegrityProvider(twitchLogin);
-		}
-		if(loginMethod instanceof TvLoginMethod){
-			return new NoIntegrityProvider();
-		}
-		if(loginMethod instanceof BrowserConfiguration browserConfiguration){
-			return createBrowserIntegrityProvider(browserConfiguration, eventManager);
-		}
-		throw new IllegalStateException("Unknown login method");
+		return switch(loginMethod){
+			case HttpLoginMethod ignored -> createHttpIntegrityProvider(twitchLogin, versionProvider);
+			case MobileLoginMethod ignored -> createMobileIntegrityProvider(twitchLogin);
+			case TvLoginMethod ignored -> new NoIntegrityProvider();
+			case BrowserConfiguration browserConfiguration -> createBrowserIntegrityProvider(browserConfiguration, eventManager);
+			default -> throw new IllegalStateException("Unknown login method");
+		};
 	}
 	
 	@NotNull
