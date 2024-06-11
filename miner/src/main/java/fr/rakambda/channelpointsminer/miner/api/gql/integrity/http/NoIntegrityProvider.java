@@ -13,7 +13,7 @@ import java.util.Optional;
 public class NoIntegrityProvider implements IIntegrityProvider{
 	@Override
 	@NotNull
-	public Optional<IntegrityData> getIntegrity() throws IntegrityException{
+	public Optional<IntegrityData> getIntegrity(){
 		return Optional.empty();
 	}
 	

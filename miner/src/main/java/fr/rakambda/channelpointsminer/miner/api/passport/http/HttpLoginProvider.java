@@ -147,7 +147,7 @@ public class HttpLoginProvider implements ILoginProvider{
 			var errorCode = body.getErrorCode();
 			var errorDescription = body.getErrorDescription();
 			if(Objects.isNull(errorCode)){
-				throw new LoginException(statusCode, errorCode, errorDescription);
+				throw new LoginException(statusCode, null, errorDescription);
 			}
 			
 			switch(errorCode){

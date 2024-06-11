@@ -21,10 +21,10 @@ public class UnknownDeserializer extends StdDeserializer<String>{
 	@Override
 	@Nullable
 	public String deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext deserializationContext) throws IOException{
-		var currentLocation = jsonParser.getCurrentLocation();
+		var currentLocation = jsonParser.currentLocation();
 		var treeNode = jsonParser.readValueAsTree();
 		var treeNodeStr = treeNode == null ? null : treeNode.toString();
-		log.warn("Got actual value for unknown field {} (l:{},c:{}) : {}", jsonParser.getCurrentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), treeNodeStr);
+		log.warn("Got actual value for unknown field {} (l:{},c:{}) : {}", jsonParser.currentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), treeNodeStr);
 		return treeNodeStr;
 	}
 }

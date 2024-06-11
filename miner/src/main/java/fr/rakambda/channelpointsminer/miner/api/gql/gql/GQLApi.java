@@ -218,7 +218,7 @@ public class GQLApi{
             if(hasNext){
                 cursor = followConnection.map(FollowConnection::getEdges)
                         .filter(followEdges -> !followEdges.isEmpty())
-                        .map(edge -> edge.get(edge.size() - 1))
+                        .map(List::getLast)
                         .map(FollowEdge::getCursor)
                         .orElseThrow(() -> new IllegalStateException("Follows has next page but couldn't find cursor"));
             }
