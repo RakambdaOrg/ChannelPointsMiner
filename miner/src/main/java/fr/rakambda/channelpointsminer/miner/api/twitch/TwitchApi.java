@@ -169,7 +169,7 @@ public class TwitchApi{
 			return false;
 		}
 		
-		var chunkRequest = unirest.get(chunkUrl.get().toString()).asBytes();
+		var chunkRequest = unirest.head(chunkUrl.get().toString()).asBytes();
 		return chunkRequest.isSuccess();
 	}
 }
