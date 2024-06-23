@@ -2,7 +2,7 @@
 slf4j-version = "2.0.13"
 log4j2-version = "2.23.1"
 log4j2-slf4j-version = "2.23.1"
-unirest-version = "4.2.9"
+unirest-version = "4.4.0"
 picocli-version = "4.7.6"
 jackson-version = "2.17.1"
 jsonschema-generator-version = "4.35.0"
@@ -41,9 +41,10 @@ git-version-plugin-version = "3.1.0"
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j2-version" }
 log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j2-slf4j-version" }
-unirest-java = { group = "com.konghq", name = "unirest-java-core", version.ref = "unirest-version" }
-unirest-objectmapper-jackson = { group = "com.konghq", name = "unirest-objectmapper-jackson", version.ref = "unirest-version" }
-unirestMocks = { group = "com.konghq", name = "unirest-mocks", version.ref = "unirest-version" }
+unirestBom = { group = "com.konghq", name = "unirest-java-bom", version.ref = "unirest-version" }
+unirest-java = { group = "com.konghq", name = "unirest-java-core" }
+unirest-modules-jackson = { group = "com.konghq", name = "unirest-modules-jackson" }
+unirestMocks = { group = "com.konghq", name = "unirest-modules-mocks" }
 picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli-version" }
 jacksonBom = { group = "com.fasterxml.jackson", name = "jackson-bom", version.ref = "jackson-version"}
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core" }
@@ -82,7 +83,7 @@ rerunnerJupiter = { group = "io.github.artsok", name = "rerunner-jupiter", versi
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind", "jackson-jsr310"]
 log4j2 = ["log4j2-core", "log4j2-slf4j"]
-unirest = ["unirest-java", "unirest-objectmapper-jackson"]
+unirest = ["unirest-java", "unirest-modules-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
 jsonschemaGenerator = ["jsonschema-generator", "jsonschema-module-jackson"]
 junit = ["junit-api", "junit-params"]
