@@ -73,7 +73,6 @@ junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", vers
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core-version" }
 assertj-db = { group = "org.assertj", name = "assertj-db", version.ref = "assertj-db-version" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
-mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito-version" }
 mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito-version" }
 awaitility = { group = "org.awaitility", name = "awaitility", version.ref = "awaitility-version" }
 json-unit = { group = "net.javacrumbs.json-unit", name = "json-unit", version.ref = "json-unit-version" }
@@ -87,7 +86,7 @@ unirest = ["unirest-java", "unirest-objectmapper-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
 jsonschemaGenerator = ["jsonschema-generator", "jsonschema-module-jackson"]
 junit = ["junit-api", "junit-params"]
-mockito = ["mockito-core", "mockito-inline", "mockito-junit"]
+mockito = ["mockito-core", "mockito-junit"]
 jsonUnit = ["json-unit", "json-unit-assertj"]
 assertj = ["assertj-core", "assertj-db"]
 
