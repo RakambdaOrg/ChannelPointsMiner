@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     implementation(platform(libs.jacksonBom))
+    implementation(platform(libs.unirestBom))
 
     implementation(libs.slf4j)
     implementation(libs.bundles.log4j2)

@@ -8,7 +8,7 @@ import kong.unirest.core.Interceptor;
 import kong.unirest.core.MockClient;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestInstance;
-import kong.unirest.jackson.JacksonObjectMapper;
+import kong.unirest.modules.jackson.JacksonObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
