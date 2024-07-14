@@ -3,6 +3,7 @@ package fr.rakambda.channelpointsminer.miner.api.twitch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.PlayerEvent;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
+import kong.unirest.core.UnirestException;
 import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpConnectTimeoutException;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Objects;
@@ -151,25 +153,31 @@ public class TwitchApi{
 	}
 	
 	public boolean openM3u8LastChunk(@NotNull URL m3u8Url){
-		var playlistResponse = unirest.get(m3u8Url.toString()).asString();
-		
-		if(!playlistResponse.isSuccess()){
-			if(playlistResponse.getStatus() == 403){
-				log.trace("Got 403 response for m3u8 playlist, is streamer region locked? (#783)");
+		try{
+			var playlistResponse = unirest.get(m3u8Url.toString()).asString();
+			
+			if(!playlistResponse.isSuccess()){
+				if(playlistResponse.getStatus() == 403){
+					log.trace("Got 403 response for m3u8 playlist, is streamer region locked? (#783)");
+					return false;
+				}
+				
+				log.error("Failed to get streamer M3U8 playlist");
 				return false;
 			}
 			
-			log.error("Failed to get streamer M3U8 playlist");
+			var chunkUrl = extractUrl(M3U8_CHUNK_PATTERN, 1, playlistResponse.getBody(), true);
+			if(chunkUrl.isEmpty()){
+				log.error("Failed to get streamer M3U8 chunk from playlist");
+				return false;
+			}
+			
+			var chunkRequest = unirest.head(chunkUrl.get().toString()).asBytes();
+			return chunkRequest.isSuccess();
+		}
+		catch(UnirestException e){
+			log.error("Failed to get streamer M3U8", e);
 			return false;
 		}
-		
-		var chunkUrl = extractUrl(M3U8_CHUNK_PATTERN, 1, playlistResponse.getBody(), true);
-		if(chunkUrl.isEmpty()){
-			log.error("Failed to get streamer M3U8 chunk from playlist");
-			return false;
-		}
-		
-		var chunkRequest = unirest.head(chunkUrl.get().toString()).asBytes();
-		return chunkRequest.isSuccess();
 	}
 }
