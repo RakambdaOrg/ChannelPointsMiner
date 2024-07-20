@@ -231,9 +231,23 @@ class DropsPriorityTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
 			
+			when(userDropReward.getLastAwardedAt()).thenReturn(NOW.plusSeconds(1));
 			when(userDropReward.getTotalCount()).thenReturn(DROP_CLAIM_LIMIT);
 			
 			assertThat(tested.getScore(miner, streamer)).isEqualTo(0);
+		}
+	}
+	
+	@Test
+	void claimLimitNotReachedOnReusedDropReward(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::nowZoned).thenReturn(NOW);
+			
+			when(timeBasedDrop.getStartAt()).thenReturn(NOW);
+			when(userDropReward.getLastAwardedAt()).thenReturn(NOW.minusSeconds(1));
+			when(userDropReward.getTotalCount()).thenReturn(DROP_CLAIM_LIMIT);
+			
+			assertThat(tested.getScore(miner, streamer)).isEqualTo(SCORE);
 		}
 	}
 	

@@ -21,9 +21,13 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @JsonTypeName("drops")
 @Getter
@@ -70,14 +74,31 @@ public class DropsPriority extends IStreamerPriority{
 			return false;
 		}
 		
-		var result = dropCampaign.getTimeBasedDrops().stream().anyMatch(timeBasedDrop -> isValidDrop(miner, timeBasedDrop));
+		var possibleEntitlements = dropCampaign.getTimeBasedDrops().stream()
+				.map(TimeBasedDrop::getBenefitEdges)
+				.filter(Objects::nonNull)
+				.flatMap(Collection::stream)
+				.collect(Collectors.groupingBy(dropBenefitEdge -> dropBenefitEdge.getBenefit().getId()))
+				.values()
+				.stream()
+				.map(dropBenefitEdges ->
+						dropBenefitEdges.stream()
+								.reduce((benefit1, benefit2) ->
+										new DropBenefitEdge(benefit1.getBenefit(),
+												benefit1.getEntitlementLimit() + benefit2.getEntitlementLimit(),
+												Optional.ofNullable(benefit1.getClaimCount()).orElse(0) + Optional.ofNullable(benefit2.getClaimCount()).orElse(0)))
+								.orElseThrow()
+				)
+				.collect(Collectors.toList());
+		
+		var result = dropCampaign.getTimeBasedDrops().stream().anyMatch(timeBasedDrop -> isValidDrop(miner, timeBasedDrop, possibleEntitlements));
 		if(!result){
 			log.trace("Campaign {} has no valid drops", dropCampaign.getId());
 		}
 		return result;
 	}
 	
-	private boolean isValidDrop(@NotNull IMiner miner, @NotNull TimeBasedDrop timeBasedDrop){
+	private boolean isValidDrop(@NotNull IMiner miner, @NotNull TimeBasedDrop timeBasedDrop, List<DropBenefitEdge> possibleEntitlements){
 		var now = TimeFactory.nowZoned();
 		
 		if(Optional.ofNullable(timeBasedDrop.getStartAt()).map(date -> date.isAfter(now)).orElse(false)){
@@ -92,14 +113,20 @@ public class DropsPriority extends IStreamerPriority{
 		var result = Optional.ofNullable(timeBasedDrop.getBenefitEdges())
 				.stream()
 				.flatMap(Collection::stream)
-				.anyMatch(dropBenefitEdge -> isValidBenefit(miner, dropBenefitEdge));
+				.anyMatch(timeBasedDropBenefitEdge ->
+						isValidBenefit(miner, timeBasedDrop.getStartAt(),
+								possibleEntitlements.stream()
+										.filter(possibleEntitlementDropBenefitEdge ->
+												timeBasedDropBenefitEdge.getBenefit().getId().equals(possibleEntitlementDropBenefitEdge.getBenefit().getId()))
+										.findFirst()
+										.orElse(timeBasedDropBenefitEdge)));
 		if(!result){
 			log.trace("Drop {} has no valid benefit", timeBasedDrop.getId());
 		}
 		return result;
 	}
 	
-	private boolean isValidBenefit(@NotNull IMiner miner, @NotNull DropBenefitEdge dropBenefitEdge){
+	private boolean isValidBenefit(@NotNull IMiner miner, @Nullable ZonedDateTime startAt, @NotNull DropBenefitEdge dropBenefitEdge){
 		return Optional.ofNullable(miner.getMinerData().getInventory())
 				.map(InventoryData::getCurrentUser)
 				.map(User::getInventory)
@@ -108,7 +135,11 @@ public class DropsPriority extends IStreamerPriority{
 				.flatMap(Collection::stream)
 				.filter(userDropReward -> Objects.equals(userDropReward.getId(), dropBenefitEdge.getBenefit().getId()))
 				.findFirst()
-				.map(userDropReward -> userDropReward.getTotalCount() < dropBenefitEdge.getEntitlementLimit())
+				.map(userDropReward ->
+						userDropReward.getTotalCount() < dropBenefitEdge.getEntitlementLimit() ||
+								Optional.ofNullable(userDropReward.getLastAwardedAt())
+										.map(last -> Optional.ofNullable(startAt).map(last::isBefore).orElse(false))
+										.orElse(true))
 				.orElse(true);
 	}
 }

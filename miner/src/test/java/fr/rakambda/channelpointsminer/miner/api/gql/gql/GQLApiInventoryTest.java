@@ -79,6 +79,7 @@ class GQLApiInventoryTest extends AbstractGQLTest{
 												UserDropReward.builder()
 														.id("reward-id")
 														.totalCount(1)
+														.lastAwardedAt(ZonedDateTime.of(2021, 10, 31, 21, 41, 34, 0, UTC))
 														.build()
 										))
 										.build())
