@@ -47,4 +47,9 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 		
 		return miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
 	}
+	
+	@Override
+	protected boolean shouldUpdateWatchedMinutes(){
+		return true;
+	}
 }

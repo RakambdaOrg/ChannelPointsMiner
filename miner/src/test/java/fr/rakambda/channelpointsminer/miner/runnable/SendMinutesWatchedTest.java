@@ -305,5 +305,10 @@ class SendMinutesWatchedTest{
 			}
 			return sendResult;
 		}
+		
+		@Override
+		protected boolean shouldUpdateWatchedMinutes(){
+			return true;
+		}
 	}
 }
