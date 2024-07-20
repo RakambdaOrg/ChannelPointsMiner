@@ -52,7 +52,9 @@ public class UpdateStreamInfo implements Runnable{
 			var now = TimeFactory.now();
 			streamer.setLastUpdated(now);
 			if(wasStreaming && !streamer.isStreaming()){
-				streamer.setLastOffline(now);
+				if (streamer.getWatchedDuration().compareTo(Streamer.SEVEN_MINUTES) > 0){
+					streamer.setLastOffline(now);
+				}
 				streamer.resetWatchedDuration();
 			}
 		}
