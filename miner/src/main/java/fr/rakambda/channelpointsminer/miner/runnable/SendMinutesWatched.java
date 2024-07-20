@@ -27,6 +27,8 @@ public abstract class SendMinutesWatched implements Runnable{
 	protected abstract boolean checkStreamer(@NotNull Streamer streamer);
 	
 	protected abstract boolean send(@NotNull Streamer streamer);
+
+	protected abstract boolean shouldUpdateWatchedMinutes();
 	
 	@Override
 	public void run(){
@@ -46,7 +48,7 @@ public abstract class SendMinutesWatched implements Runnable{
 			for(var streamer : toSendMinutesWatched){
 				try(var ignored2 = LogContext.empty().withStreamer(streamer)){
 					log.debug("Sending {} minutes watched", getType());
-					if(send(streamer)){
+					if(send(streamer) && shouldUpdateWatchedMinutes()){
 						updateWatchedMinutes(streamer);
 					}
 					CommonUtils.randomSleep(100, 50);

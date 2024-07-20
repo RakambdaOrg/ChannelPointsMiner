@@ -149,6 +149,7 @@ class UpdateStreamInfoTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
+			when(streamer.getWatchedDuration()).thenReturn(Streamer.SEVEN_MINUTES.plusSeconds(1));
 			when(streamer.isStreaming()).thenReturn(true).thenReturn(false);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.empty());
 			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.empty());

@@ -40,7 +40,7 @@ import static java.util.Optional.ofNullable;
 @ToString(onlyExplicitlyIncluded = true)
 @Log4j2
 public class Streamer{
-	private static final Duration SEVEN_MINUTES = Duration.ofMinutes(7);
+	public static final Duration SEVEN_MINUTES = Duration.ofMinutes(7);
 	
 	@NotNull
 	@Getter
