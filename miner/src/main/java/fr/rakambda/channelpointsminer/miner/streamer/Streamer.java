@@ -15,7 +15,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreamin
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
-import fr.rakambda.channelpointsminer.miner.priority.DropsPriority;
+import fr.rakambda.channelpointsminer.miner.priority.IStreamerPriority;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Optional.ofNullable;
 
@@ -110,10 +111,10 @@ public class Streamer{
 		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
 	}
 	
-	public int getScore(@NotNull IMiner miner, boolean ignoreDropsPriority){
+	public int getScore(@NotNull IMiner miner, Predicate<IStreamerPriority> filterPriority){
 		try(var ignored = LogContext.with(miner).withStreamer(this)){
 			var score = settings.getPriorities().stream()
-					.filter(priority -> ignoreDropsPriority != (priority instanceof DropsPriority))
+					.filter(filterPriority)
 					.mapToInt(p -> {
 						var s = p.getScore(miner, this);
 						if(s != 0){
@@ -221,5 +222,9 @@ public class Streamer{
 			log.warn("Chat banned for streamer {}", this);
 		}
 		this.chatBanned = chatBanned;
+	}
+	
+	public boolean hasStreamedEnoughTime(){
+		return getWatchedDuration().compareTo(Streamer.SEVEN_MINUTES) > 0;
 	}
 }

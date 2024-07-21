@@ -1,10 +1,12 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.priority.IStreamerPriority;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 @Log4j2
 public class SendM3u8MinutesWatched extends SendMinutesWatched{
@@ -38,7 +40,13 @@ public class SendM3u8MinutesWatched extends SendMinutesWatched{
 	}
 	
 	@Override
-	protected boolean shouldWatchDropsOnly(){
-		return true;
+	@NotNull
+	protected Predicate<IStreamerPriority> getPriorityFilter(){
+		return IStreamerPriority::isDropsRelated;
+	}
+	
+	@Override
+	protected int getWatchLimit(){
+		return 1;
 	}
 }
