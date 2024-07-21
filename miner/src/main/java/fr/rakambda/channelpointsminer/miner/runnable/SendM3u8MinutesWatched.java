@@ -36,4 +36,9 @@ public class SendM3u8MinutesWatched extends SendMinutesWatched{
 	protected boolean shouldUpdateWatchedMinutes(){
 		return false;
 	}
+	
+	@Override
+	protected boolean shouldWatchDropsOnly(){
+		return true;
+	}
 }

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedList;
@@ -208,25 +207,23 @@ class SendMinutesWatchedTest{
 		
 		var s1 = mock(Streamer.class);
 		when(s1.isStreaming()).thenReturn(true);
-		when(s1.getScore(miner)).thenReturn(10);
+		when(s1.getScore(miner, true)).thenReturn(10);
 		
-		var spade2 = new URL("https://spade2");
 		var s2 = mock(Streamer.class);
 		when(s2.getId()).thenReturn("s2");
 		when(s2.getUsername()).thenReturn("sn2");
 		when(s2.isStreaming()).thenReturn(true);
-		when(s2.getScore(miner)).thenReturn(100);
+		when(s2.getScore(miner, true)).thenReturn(100);
 		
 		var s3 = mock(Streamer.class);
 		when(s3.isStreaming()).thenReturn(true);
-		when(s3.getScore(miner)).thenReturn(20);
+		when(s3.getScore(miner, true)).thenReturn(20);
 		
-		var spade4 = new URL("https://spade4");
 		var s4 = mock(Streamer.class);
 		when(s4.getId()).thenReturn("s4");
 		when(s4.getUsername()).thenReturn("sn4");
 		when(s4.isStreaming()).thenReturn(true);
-		when(s4.getScore(miner)).thenReturn(50);
+		when(s4.getScore(miner, true)).thenReturn(50);
 		
 		when(miner.getStreamers()).thenReturn(List.of(s1, s2, s3, s4));
 		
@@ -240,29 +237,27 @@ class SendMinutesWatchedTest{
 		
 		var s1 = mock(Streamer.class);
 		when(s1.isStreaming()).thenReturn(true);
-		when(s1.getScore(miner)).thenReturn(10);
+		when(s1.getScore(miner, true)).thenReturn(10);
 		when(s1.getIndex()).thenReturn(1);
 		
-		var spade2 = new URL("https://spade2");
 		var s2 = mock(Streamer.class);
 		when(s2.getId()).thenReturn("s2");
 		when(s2.getUsername()).thenReturn("sn2");
 		when(s2.isStreaming()).thenReturn(true);
 		when(s2.getIndex()).thenReturn(0);
-		when(s2.getScore(miner)).thenReturn(10);
+		when(s2.getScore(miner, true)).thenReturn(10);
 		
 		var s3 = mock(Streamer.class);
 		when(s3.isStreaming()).thenReturn(true);
-		when(s3.getScore(miner)).thenReturn(10);
+		when(s3.getScore(miner, true)).thenReturn(10);
 		when(s3.getIndex()).thenReturn(25);
 		
-		var spade4 = new URL("https://spade4");
 		var s4 = mock(Streamer.class);
 		when(s4.getId()).thenReturn("s4");
 		when(s4.getUsername()).thenReturn("sn4");
 		when(s4.isStreaming()).thenReturn(true);
 		when(s4.getIndex()).thenReturn(-5);
-		when(s4.getScore(miner)).thenReturn(10);
+		when(s4.getScore(miner, true)).thenReturn(10);
 		
 		when(miner.getStreamers()).thenReturn(List.of(s1, s2, s3, s4));
 		
@@ -309,6 +304,11 @@ class SendMinutesWatchedTest{
 		@Override
 		protected boolean shouldUpdateWatchedMinutes(){
 			return true;
+		}
+		
+		@Override
+		protected boolean shouldWatchDropsOnly(){
+			return false;
 		}
 	}
 }

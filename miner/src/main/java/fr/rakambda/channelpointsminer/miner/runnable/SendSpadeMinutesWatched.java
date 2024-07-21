@@ -52,4 +52,9 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 	protected boolean shouldUpdateWatchedMinutes(){
 		return true;
 	}
+	
+	@Override
+	protected boolean shouldWatchDropsOnly(){
+		return false;
+	}
 }

@@ -30,18 +30,21 @@ public abstract class SendMinutesWatched implements Runnable{
 
 	protected abstract boolean shouldUpdateWatchedMinutes();
 	
+	protected abstract boolean shouldWatchDropsOnly();
+	
 	@Override
 	public void run(){
 		log.debug("Starting sending {} minutes watched", getType());
 		
 		try(var ignored = LogContext.with(miner)){
+			var dropsOnly = shouldWatchDropsOnly();
 			var toSendMinutesWatched = miner.getStreamers().stream()
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> !streamer.isChatBanned())
 					.filter(this::checkStreamer)
-					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
+					.map(streamer -> Map.entry(streamer, streamer.getScore(miner, !dropsOnly)))
 					.sorted(this::compare)
-					.limit(2)
+					.limit(dropsOnly ? 1 : 2)
 					.map(Map.Entry::getKey)
 					.toList();
 			
