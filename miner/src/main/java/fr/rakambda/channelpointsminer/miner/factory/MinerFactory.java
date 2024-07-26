@@ -42,6 +42,7 @@ public class MinerFactory{
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createPointsHandler(miner, eventManager));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimMomentHandler(miner, eventManager));
 			miner.addPubSubHandler(PubSubMessageHandlerFactory.createClaimDropHandler(miner, eventManager));
+			miner.addPubSubHandler(PubSubMessageHandlerFactory.createNotificationHandler(miner));
 			
 			eventManager.addEventHandler(LogEventListenerFactory.createLogger());
 			if(Objects.nonNull(config.getDiscord().getUrl())){
