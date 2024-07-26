@@ -131,7 +131,7 @@ class MinerFactoryTest{
 			
 			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
 			assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(9)
+					.hasSize(8)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
