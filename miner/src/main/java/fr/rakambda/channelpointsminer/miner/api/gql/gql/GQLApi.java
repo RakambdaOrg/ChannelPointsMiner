@@ -27,6 +27,8 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.makeprediction.Make
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.makeprediction.MakePredictionOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemOperation;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.FollowConnection;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.FollowEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.PageInfo;
@@ -157,6 +159,11 @@ public class GQLApi{
     public Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(@NotNull String channelId){
         return postGqlRequest(new DropsHighlightServiceAvailableDropsOperation(channelId));
     }
+	
+	@NotNull
+	public Optional<GQLResponse<SetDropsCommunityHighlightToHiddenData>> setDropsCommunityHighlightToHidden(@NotNull String channelId, @NotNull String campaignId){
+		return postGqlRequest(new SetDropsCommunityHighlightToHiddenOperation(channelId, campaignId));
+	}
     
     @NotNull
     public Optional<GQLResponse<ClaimCommunityPointsData>> claimCommunityPoints(@NotNull String channelId, @NotNull String claimId){

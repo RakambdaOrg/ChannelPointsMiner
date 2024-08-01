@@ -1,0 +1,14 @@
+{
+  "data" : {
+    "setDropsCommunityHighlightToHidden" : {
+      "isHidden" : true,
+      "__typename": "SetDropsCommunityHighlightToHiddenPayload"
+    },
+    "__typename": "fake"
+  },
+  "extensions" : {
+    "durationMilliseconds" : 9,
+    "operationName" : "SetDropsCommunityHighlightToHidden",
+    "requestID" : "request-id"
+  }
+}

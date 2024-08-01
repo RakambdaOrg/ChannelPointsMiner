@@ -43,6 +43,10 @@ public class StreamerSettings{
 	@JsonPropertyDescription("Participate in campaigns and claim rewards (drops). Default: false")
 	@Builder.Default
 	private boolean participateCampaigns = false;
+	@JsonProperty("dismissKnownGlobalCampaigns")
+	@JsonPropertyDescription("Dismiss known global campaigns that blocks other drops from being seen. Default: false")
+	@Builder.Default
+	private boolean dismissKnownGlobalCampaigns = false;
 	@JsonProperty("claimMoments")
 	@JsonPropertyDescription("Claim moments. Default: false")
 	@Builder.Default
@@ -77,6 +81,7 @@ public class StreamerSettings{
 		makePredictions = origin.makePredictions;
 		followRaid = origin.followRaid;
 		participateCampaigns = origin.participateCampaigns;
+		dismissKnownGlobalCampaigns = origin.dismissKnownGlobalCampaigns;
 		joinIrc = origin.joinIrc;
 		excludeSubscriberDrops = origin.excludeSubscriberDrops;
 		index = origin.index;

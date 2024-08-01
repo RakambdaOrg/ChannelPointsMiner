@@ -206,6 +206,10 @@ public class Streamer{
 		return settings.isParticipateCampaigns();
 	}
 	
+	public boolean isDismissKnownGlobalCampaigns(){
+		return settings.isDismissKnownGlobalCampaigns();
+	}
+	
 	public boolean isStreamingGame(){
 		return getGame()
 				.map(Game::getName)

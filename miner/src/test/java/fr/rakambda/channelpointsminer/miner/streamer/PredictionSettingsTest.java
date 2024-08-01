@@ -26,7 +26,7 @@ class PredictionSettingsTest{
 	
 	@Test
 	void copy(){
-		var actions = List.of(this.predictionAction);
+		var actions = List.of(predictionAction);
 		var tested = PredictionSettings.builder()
 				.delayCalculator(delayCalculator)
 				.minimumPointsRequired(25)
