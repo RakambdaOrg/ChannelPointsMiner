@@ -15,8 +15,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class InputData{
-	@JsonProperty("channelID")
-	private String channelID;
 	@JsonProperty("campaignID")
 	private String campaignID;
+	@JsonProperty("channelID")
+	private String channelID;
 }
