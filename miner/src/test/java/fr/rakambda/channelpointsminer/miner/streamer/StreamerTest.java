@@ -510,6 +510,16 @@ class StreamerTest{
 		assertThat(tested.isParticipateCampaigns()).isEqualTo(state);
 	}
 	
+	@ParameterizedTest
+	@ValueSource(booleans = {
+			true,
+			false
+	})
+	void isDismissKnownGlobalCampaigns(boolean state){
+		when(settings.isDismissKnownGlobalCampaigns()).thenReturn(state);
+		assertThat(tested.isDismissKnownGlobalCampaigns()).isEqualTo(state);
+	}
+	
 	@Test
 	void getIndex(){
 		var index = 6;

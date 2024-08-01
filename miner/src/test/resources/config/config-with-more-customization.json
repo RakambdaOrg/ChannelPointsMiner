@@ -14,7 +14,8 @@
       "defaultStreamerSettings" : {
         "makePredictions" : true,
         "followRaid" : true,
-        "participateCampaigns" : true
+        "participateCampaigns" : true,
+        "isDismissKnownGlobalCampaigns": true
       },
       "streamerConfigDirectories" : [
         {
