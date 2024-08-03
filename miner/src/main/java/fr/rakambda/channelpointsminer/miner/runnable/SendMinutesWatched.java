@@ -3,6 +3,7 @@ package fr.rakambda.channelpointsminer.miner.runnable;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.priority.IStreamerPriority;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -28,6 +30,13 @@ public abstract class SendMinutesWatched implements Runnable{
 	
 	protected abstract boolean send(@NotNull Streamer streamer);
 	
+	protected abstract boolean shouldUpdateWatchedMinutes();
+	
+	@NotNull
+	protected abstract Predicate<IStreamerPriority> getPriorityFilter();
+	
+	protected abstract int getWatchLimit();
+	
 	@Override
 	public void run(){
 		log.debug("Starting sending {} minutes watched", getType());
@@ -37,16 +46,16 @@ public abstract class SendMinutesWatched implements Runnable{
 					.filter(Streamer::isStreaming)
 					.filter(streamer -> !streamer.isChatBanned())
 					.filter(this::checkStreamer)
-					.map(streamer -> Map.entry(streamer, streamer.getScore(miner)))
+					.map(streamer -> Map.entry(streamer, streamer.getScore(miner, getPriorityFilter())))
 					.sorted(this::compare)
-					.limit(2)
+					.limit(getWatchLimit())
 					.map(Map.Entry::getKey)
 					.toList();
 			
 			for(var streamer : toSendMinutesWatched){
 				try(var ignored2 = LogContext.empty().withStreamer(streamer)){
 					log.debug("Sending {} minutes watched", getType());
-					if(send(streamer)){
+					if(send(streamer) && shouldUpdateWatchedMinutes()){
 						updateWatchedMinutes(streamer);
 					}
 					CommonUtils.randomSleep(100, 50);

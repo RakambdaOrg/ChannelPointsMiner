@@ -11,7 +11,7 @@ import fr.rakambda.channelpointsminer.miner.log.UnirestLogger;
 import fr.rakambda.channelpointsminer.miner.util.GitProperties;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.Unirest;
-import kong.unirest.jackson.JacksonObjectMapper;
+import kong.unirest.modules.jackson.JacksonObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

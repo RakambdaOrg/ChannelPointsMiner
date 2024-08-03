@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimDropHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
+import fr.rakambda.channelpointsminer.miner.handler.NotificationHandler;
 import fr.rakambda.channelpointsminer.miner.handler.PointsHandler;
 import fr.rakambda.channelpointsminer.miner.handler.PredictionsHandler;
 import fr.rakambda.channelpointsminer.miner.handler.StreamStartEndHandler;
@@ -60,5 +61,10 @@ class PubSubMessageHandlerFactoryTest{
 	@Test
 	void createClaimDropHandler(){
 		assertThat(PubSubMessageHandlerFactory.createClaimDropHandler(miner, eventManager)).isNotNull().isInstanceOf(ClaimDropHandler.class);
+	}
+	
+	@Test
+	void createNotificationHandler(){
+		assertThat(PubSubMessageHandlerFactory.createNotificationHandler(miner)).isNotNull().isInstanceOf(NotificationHandler.class);
 	}
 }

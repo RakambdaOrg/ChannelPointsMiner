@@ -39,4 +39,8 @@ public abstract class IStreamerPriority{
 	private int score;
 	
 	public abstract int getScore(@NotNull IMiner miner, @NotNull Streamer streamer);
+	
+	public boolean isDropsRelated(){
+		return false;
+	}
 }

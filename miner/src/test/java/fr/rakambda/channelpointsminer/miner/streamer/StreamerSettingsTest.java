@@ -21,6 +21,7 @@ class StreamerSettingsTest{
 		var tested = StreamerSettings.builder()
 				.makePredictions(true)
 				.participateCampaigns(true)
+				.dismissKnownGlobalCampaigns(true)
 				.followRaid(true)
 				.excludeSubscriberDrops(false)
 				.joinIrc(true)
@@ -35,6 +36,7 @@ class StreamerSettingsTest{
 		assertThat(copy.isEnabled()).isEqualTo(tested.isEnabled());
 		assertThat(copy.isMakePredictions()).isEqualTo(tested.isMakePredictions());
 		assertThat(copy.isParticipateCampaigns()).isEqualTo(tested.isParticipateCampaigns());
+		assertThat(copy.isDismissKnownGlobalCampaigns()).isEqualTo(tested.isDismissKnownGlobalCampaigns());
 		assertThat(copy.isExcludeSubscriberDrops()).isEqualTo(tested.isExcludeSubscriberDrops());
 		assertThat(copy.isFollowRaid()).isEqualTo(tested.isFollowRaid());
 		assertThat(copy.isJoinIrc()).isEqualTo(tested.isJoinIrc());

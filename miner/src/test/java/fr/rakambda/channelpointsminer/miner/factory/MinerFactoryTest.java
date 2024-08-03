@@ -16,6 +16,7 @@ import fr.rakambda.channelpointsminer.miner.handler.ClaimAvailableHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimDropHandler;
 import fr.rakambda.channelpointsminer.miner.handler.ClaimMomentHandler;
 import fr.rakambda.channelpointsminer.miner.handler.FollowRaidHandler;
+import fr.rakambda.channelpointsminer.miner.handler.NotificationHandler;
 import fr.rakambda.channelpointsminer.miner.handler.PointsHandler;
 import fr.rakambda.channelpointsminer.miner.handler.PredictionsHandler;
 import fr.rakambda.channelpointsminer.miner.handler.StreamStartEndHandler;
@@ -97,14 +98,15 @@ class MinerFactoryTest{
 			
 			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
 			assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(7)
+					.hasSize(8)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class)
 					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
-					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class)
+					.hasAtLeastOneElementOfType(NotificationHandler.class);
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verifyNoMoreInteractions(eventManager);
@@ -129,14 +131,15 @@ class MinerFactoryTest{
 			
 			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
 			assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(7)
+					.hasSize(8)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class)
 					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
-					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class)
+					.hasAtLeastOneElementOfType(NotificationHandler.class);
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verify(eventManager).addEventHandler(any(DiscordEventListener.class));
@@ -162,14 +165,15 @@ class MinerFactoryTest{
 			
 			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
 			assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(7)
+					.hasSize(8)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class)
 					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
-					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class)
+					.hasAtLeastOneElementOfType(NotificationHandler.class);
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verify(eventManager).addEventHandler(any(TelegramEventListener.class));
@@ -196,14 +200,15 @@ class MinerFactoryTest{
 			
 			assertThat(miner.getSyncInventory()).isEqualTo(syncInventory);
 			assertThat(miner.getPubSubMessageHandlers())
-					.hasSize(7)
+					.hasSize(8)
 					.hasAtLeastOneElementOfType(ClaimAvailableHandler.class)
 					.hasAtLeastOneElementOfType(StreamStartEndHandler.class)
 					.hasAtLeastOneElementOfType(FollowRaidHandler.class)
 					.hasAtLeastOneElementOfType(PredictionsHandler.class)
 					.hasAtLeastOneElementOfType(PointsHandler.class)
 					.hasAtLeastOneElementOfType(ClaimMomentHandler.class)
-					.hasAtLeastOneElementOfType(ClaimDropHandler.class);
+					.hasAtLeastOneElementOfType(ClaimDropHandler.class)
+					.hasAtLeastOneElementOfType(NotificationHandler.class);
 			
 			verify(eventManager).addEventHandler(any(LoggerEventListener.class));
 			verify(eventManager).addEventHandler(any(DatabaseEventHandler.class));

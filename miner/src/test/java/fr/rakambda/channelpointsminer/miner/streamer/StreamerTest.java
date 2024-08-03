@@ -416,7 +416,7 @@ class StreamerTest{
 	@Test
 	void getScoreNoPriorities(){
 		when(settings.getPriorities()).thenReturn(List.of());
-		assertThat(tested.getScore(miner)).isEqualTo(0);
+		assertThat(tested.getScore(miner, p -> true)).isEqualTo(0);
 	}
 	
 	@Test
@@ -431,7 +431,7 @@ class StreamerTest{
 		when(p2.getScore(miner, tested)).thenReturn(s2);
 		
 		when(settings.getPriorities()).thenReturn(List.of(p1, p2));
-		assertThat(tested.getScore(miner)).isEqualTo(s1 + s2);
+		assertThat(tested.getScore(miner, p -> true)).isEqualTo(s1 + s2);
 	}
 	
 	@ParameterizedTest
@@ -508,6 +508,16 @@ class StreamerTest{
 	void isParticipateCampaigns(boolean state){
 		when(settings.isParticipateCampaigns()).thenReturn(state);
 		assertThat(tested.isParticipateCampaigns()).isEqualTo(state);
+	}
+	
+	@ParameterizedTest
+	@ValueSource(booleans = {
+			true,
+			false
+	})
+	void isDismissKnownGlobalCampaigns(boolean state){
+		when(settings.isDismissKnownGlobalCampaigns()).thenReturn(state);
+		assertThat(tested.isDismissKnownGlobalCampaigns()).isEqualTo(state);
 	}
 	
 	@Test

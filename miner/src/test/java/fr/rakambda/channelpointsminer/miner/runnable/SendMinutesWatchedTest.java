@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.priority.IStreamerPriority;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.Mock;
@@ -10,12 +11,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +35,7 @@ class SendMinutesWatchedTest{
 	private static final String STREAMER_NAME = "streamer-name";
 	private static final Instant NOW = Instant.parse("2021-03-25T18:12:36Z");
 	private static final int INDEX = 5;
+	private static final Predicate<IStreamerPriority> KEEP_ALL_PRIORITIES = p -> true;
 	
 	@Mock
 	private IMiner miner;
@@ -208,25 +210,23 @@ class SendMinutesWatchedTest{
 		
 		var s1 = mock(Streamer.class);
 		when(s1.isStreaming()).thenReturn(true);
-		when(s1.getScore(miner)).thenReturn(10);
+		when(s1.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(10);
 		
-		var spade2 = new URL("https://spade2");
 		var s2 = mock(Streamer.class);
 		when(s2.getId()).thenReturn("s2");
 		when(s2.getUsername()).thenReturn("sn2");
 		when(s2.isStreaming()).thenReturn(true);
-		when(s2.getScore(miner)).thenReturn(100);
+		when(s2.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(100);
 		
 		var s3 = mock(Streamer.class);
 		when(s3.isStreaming()).thenReturn(true);
-		when(s3.getScore(miner)).thenReturn(20);
+		when(s3.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(20);
 		
-		var spade4 = new URL("https://spade4");
 		var s4 = mock(Streamer.class);
 		when(s4.getId()).thenReturn("s4");
 		when(s4.getUsername()).thenReturn("sn4");
 		when(s4.isStreaming()).thenReturn(true);
-		when(s4.getScore(miner)).thenReturn(50);
+		when(s4.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(50);
 		
 		when(miner.getStreamers()).thenReturn(List.of(s1, s2, s3, s4));
 		
@@ -235,34 +235,32 @@ class SendMinutesWatchedTest{
 	}
 	
 	@Test
-	void sendingMinutesWatchedBestScoresEqualsPicksIndex() throws MalformedURLException{
+	void sendingMinutesWatchedBestScoresEqualsPicksIndex(){
 		var tested = new Tester(miner, true, true);
 		
 		var s1 = mock(Streamer.class);
 		when(s1.isStreaming()).thenReturn(true);
-		when(s1.getScore(miner)).thenReturn(10);
+		when(s1.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(10);
 		when(s1.getIndex()).thenReturn(1);
 		
-		var spade2 = new URL("https://spade2");
 		var s2 = mock(Streamer.class);
 		when(s2.getId()).thenReturn("s2");
 		when(s2.getUsername()).thenReturn("sn2");
 		when(s2.isStreaming()).thenReturn(true);
 		when(s2.getIndex()).thenReturn(0);
-		when(s2.getScore(miner)).thenReturn(10);
+		when(s2.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(10);
 		
 		var s3 = mock(Streamer.class);
 		when(s3.isStreaming()).thenReturn(true);
-		when(s3.getScore(miner)).thenReturn(10);
+		when(s3.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(10);
 		when(s3.getIndex()).thenReturn(25);
 		
-		var spade4 = new URL("https://spade4");
 		var s4 = mock(Streamer.class);
 		when(s4.getId()).thenReturn("s4");
 		when(s4.getUsername()).thenReturn("sn4");
 		when(s4.isStreaming()).thenReturn(true);
 		when(s4.getIndex()).thenReturn(-5);
-		when(s4.getScore(miner)).thenReturn(10);
+		when(s4.getScore(miner, KEEP_ALL_PRIORITIES)).thenReturn(10);
 		
 		when(miner.getStreamers()).thenReturn(List.of(s1, s2, s3, s4));
 		
@@ -304,6 +302,21 @@ class SendMinutesWatchedTest{
 				throw new IllegalStateException("For tests");
 			}
 			return sendResult;
+		}
+		
+		@Override
+		protected boolean shouldUpdateWatchedMinutes(){
+			return true;
+		}
+		
+		@Override
+		protected Predicate<IStreamerPriority> getPriorityFilter(){
+			return KEEP_ALL_PRIORITIES;
+		}
+		
+		@Override
+		protected int getWatchLimit(){
+			return 2;
 		}
 	}
 }

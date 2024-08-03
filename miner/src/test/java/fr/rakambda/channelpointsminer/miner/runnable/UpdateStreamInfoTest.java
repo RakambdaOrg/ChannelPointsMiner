@@ -6,7 +6,9 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.channelpointscontex
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.chatroombanstatus.ChatRoomBanStatusData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken.PlaybackAccessTokenData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ChatRoomBanStatus;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.StreamPlaybackAccessToken;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
@@ -48,6 +50,7 @@ class UpdateStreamInfoTest{
 	private static final String ACCOUNT_ID = "account-id";
 	private static final String M3U8_SIGNATURE = "signature";
 	private static final String M3U8_VALUE = "value";
+	private static final String CAMPAIGN_ID = "campaign-id";
 	
 	@InjectMocks
 	private UpdateStreamInfo tested;
@@ -82,6 +85,12 @@ class UpdateStreamInfoTest{
 	private ChatRoomBanStatusData chatRoomBanStatusData;
 	@Mock
 	private PlaybackAccessTokenData playbackAccessTokenData;
+	@Mock
+	private DropsHighlightServiceAvailableDropsData dropsHighlightServiceAvailableDropsData;
+	@Mock
+	private Channel channel;
+	@Mock
+	private DropCampaign dropCampaign;
 	
 	private URL spadeUrl;
 	private URL m3u8Url;
@@ -112,6 +121,11 @@ class UpdateStreamInfoTest{
 		lenient().when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
 		lenient().when(gqlResponseChatRoomBanStatus.getData()).thenReturn(chatRoomBanStatusData);
 		lenient().when(gqlResponsePlaybackAccessToken.getData()).thenReturn(playbackAccessTokenData);
+		
+		lenient().when(dropsHighlightServiceAvailableDrops.getData()).thenReturn(dropsHighlightServiceAvailableDropsData);
+		lenient().when(dropsHighlightServiceAvailableDropsData.getChannel()).thenReturn(channel);
+		lenient().when(channel.getViewerDropCampaigns()).thenReturn(List.of(dropCampaign));
+		lenient().when(dropCampaign.getId()).thenReturn(CAMPAIGN_ID);
 	}
 	
 	@Test
@@ -149,6 +163,7 @@ class UpdateStreamInfoTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
+			when(streamer.hasStreamedEnoughTime()).thenReturn(true);
 			when(streamer.isStreaming()).thenReturn(true).thenReturn(false);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.empty());
 			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.empty());
@@ -379,9 +394,6 @@ class UpdateStreamInfoTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			var data = mock(DropsHighlightServiceAvailableDropsData.class);
-			when(dropsHighlightServiceAvailableDrops.getData()).thenReturn(data);
-			
 			when(streamer.isStreaming()).thenReturn(true);
 			when(streamer.isParticipateCampaigns()).thenReturn(true);
 			when(streamer.isStreamingGame()).thenReturn(true);
@@ -405,7 +417,48 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer).setDropsHighlightServiceAvailableDrops(data);
+			verify(streamer).setDropsHighlightServiceAvailableDrops(dropsHighlightServiceAvailableDropsData);
+			verify(streamer).setLastUpdated(NOW);
+			verify(streamer).setChatBanned(false);
+			verify(streamer, never()).setLastOffline(any());
+			verify(streamer, never()).resetWatchedDuration();
+		}
+	}
+	
+	@Test
+	void updateWithDataStreamingUpdateCampaignDismissibleAndSettingActivated(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			var dropId = "dc4ff0b4-4de0-11ef-9ec3-621fb0811846";
+			when(dropCampaign.getId()).thenReturn(dropId);
+			
+			when(streamer.isStreaming()).thenReturn(true);
+			when(streamer.isParticipateCampaigns()).thenReturn(true);
+			when(streamer.isDismissKnownGlobalCampaigns()).thenReturn(true);
+			when(streamer.isStreamingGame()).thenReturn(true);
+			when(streamer.getSpadeUrl()).thenReturn(spadeUrl);
+			when(streamer.getM3u8Url()).thenReturn(m3u8Url);
+			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
+			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
+			when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.of(dropsHighlightServiceAvailableDrops));
+			when(gqlApi.chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID)).thenReturn(Optional.of(gqlResponseChatRoomBanStatus));
+			
+			assertDoesNotThrow(() -> tested.run());
+			
+			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
+			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
+			verify(gqlApi).dropsHighlightServiceAvailableDrops(STREAMER_ID);
+			verify(gqlApi).setDropsCommunityHighlightToHidden(STREAMER_ID, dropId);
+			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
+			verify(gqlApi, never()).playbackAccessToken(anyString());
+			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
+			
+			verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
+			verify(streamer).setChannelPointsContext(channelPointsContextData);
+			verify(streamer, never()).setSpadeUrl(any());
+			verify(streamer, never()).setM3u8Url(any());
+			verify(streamer).setDropsHighlightServiceAvailableDrops(dropsHighlightServiceAvailableDropsData);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());

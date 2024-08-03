@@ -4,10 +4,12 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.priority.IStreamerPriority;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 @Log4j2
 public class SendSpadeMinutesWatched extends SendMinutesWatched{
@@ -46,5 +48,21 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 				.build();
 		
 		return miner.getTwitchApi().sendPlayerEvents(streamer.getSpadeUrl(), request);
+	}
+	
+	@Override
+	protected boolean shouldUpdateWatchedMinutes(){
+		return true;
+	}
+	
+	@Override
+	@NotNull
+	protected Predicate<IStreamerPriority> getPriorityFilter(){
+		return Predicate.not(IStreamerPriority::isDropsRelated);
+	}
+	
+	@Override
+	protected int getWatchLimit(){
+		return 2;
 	}
 }

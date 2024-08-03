@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Base64;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static kong.unirest.core.HttpMethod.GET;
+import static kong.unirest.core.HttpMethod.HEAD;
 import static kong.unirest.core.HttpMethod.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -358,7 +359,7 @@ class TwitchApiTest{
 				.thenReturn(M3U8_PLAYLIST_BODY)
 				.withStatus(200);
 		
-		unirest.expect(GET, M3U8_CHUNK_URL)
+		unirest.expect(HEAD, M3U8_CHUNK_URL)
 				.thenReturn("")
 				.withStatus(200);
 		
@@ -395,7 +396,7 @@ class TwitchApiTest{
 				.thenReturn(M3U8_PLAYLIST_BODY)
 				.withStatus(200);
 		
-		unirest.expect(GET, M3U8_CHUNK_URL)
+		unirest.expect(HEAD, M3U8_CHUNK_URL)
 				.thenReturn("")
 				.withStatus(400);
 		
