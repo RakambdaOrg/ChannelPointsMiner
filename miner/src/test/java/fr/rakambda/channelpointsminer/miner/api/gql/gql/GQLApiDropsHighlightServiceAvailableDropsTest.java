@@ -14,7 +14,6 @@ import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +92,6 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
     
     @Override
     protected String getValidRequest(){
-	    return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"962510a535f25f33bbf85d7767982e3bb6d1b00f84dd3c7a06d8572323dfd010\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
+	    return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"eff13f4a43157238e40b4cd74b0dac3a41b5f8fb31de1a3b19347fae84e60b92\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
     }
 }
