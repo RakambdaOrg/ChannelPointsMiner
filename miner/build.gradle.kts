@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+
 plugins {
     application
     jacoco
@@ -10,6 +12,7 @@ plugins {
 dependencies {
     implementation(platform(libs.jacksonBom))
     implementation(platform(libs.unirestBom))
+    implementation(platform(libs.log4j2Bom))
 
     implementation(libs.slf4j)
     implementation(libs.bundles.log4j2)
@@ -109,6 +112,8 @@ tasks {
 
         exclude("META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.SF")
         mergeServiceFiles()
+
+        transform(Log4j2PluginsCacheFileTransformer::class.java)
     }
 }
 
