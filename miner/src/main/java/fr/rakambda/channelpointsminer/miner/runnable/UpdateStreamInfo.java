@@ -6,6 +6,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightservi
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.SetDropsCommunityHighlightToHiddenPayload;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
@@ -23,11 +24,6 @@ import java.util.Set;
 @Log4j2
 @RequiredArgsConstructor
 public class UpdateStreamInfo implements Runnable{
-	private static final Collection<String> DISMISSIBLE_CAMPAIGNS = Set.of(
-		"dc4ff0b4-4de0-11ef-9ec3-621fb0811846",
-		"cbc3c726-8c0a-11ef-9b38-1ede7ff66562"
-	);
-	
 	@NotNull
 	private final IMiner miner;
 	
@@ -154,13 +150,19 @@ public class UpdateStreamInfo implements Runnable{
 						.map(DropsHighlightServiceAvailableDropsData::getChannel)
 						.map(Channel::getViewerDropCampaigns)
 						.flatMap(Collection::stream)
-						.filter(dropCampaign -> DISMISSIBLE_CAMPAIGNS.contains(dropCampaign.getId()))
+						.filter(dropCampaign -> isDismissibleGlobalCompaign(dropCampaign))
 						.forEach(dropCampaign -> dismissCampaign(miner, streamer, dropCampaign));
 			}
 		}
 		else{
 			streamer.setDropsHighlightServiceAvailableDrops(null);
 		}
+	}
+	
+	private boolean isDismissibleGlobalCompaign(@NotNull DropCampaign dropCampaign){
+		return Optional.ofNullable(dropCampaign.getSummary())
+				.map(summary -> summary.isSitewide() && summary.isPermanentlyDismissible())
+				.orElse(false);
 	}
 	
 	private void dismissCampaign(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull DropCampaign dropCampaign){

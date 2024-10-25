@@ -43,6 +43,8 @@
             }
           ],
           "summary": {
+            "isPermanentlyDismissible": true,
+            "isSitewide": true,
             "includesSubRequirement": true,
             "__typename": "DropCampaignSummary"
           },
