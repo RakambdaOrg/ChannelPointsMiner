@@ -55,6 +55,8 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
                                                         .build()))
                                                 .build()))
 				                                .summary(DropCampaignSummary.builder()
+						                                .sitewide(true)
+						                                .permanentlyDismissible(true)
 						                                .includesSubRequirement(true)
 						                                .build())
                                         .build()))
