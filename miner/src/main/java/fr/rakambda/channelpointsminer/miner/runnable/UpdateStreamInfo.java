@@ -150,7 +150,7 @@ public class UpdateStreamInfo implements Runnable{
 						.map(DropsHighlightServiceAvailableDropsData::getChannel)
 						.map(Channel::getViewerDropCampaigns)
 						.flatMap(Collection::stream)
-						.filter(dropCampaign -> isDismissibleGlobalCompaign(dropCampaign))
+						.filter(this::isDismissibleGlobalCompaign)
 						.forEach(dropCampaign -> dismissCampaign(miner, streamer, dropCampaign));
 			}
 		}
