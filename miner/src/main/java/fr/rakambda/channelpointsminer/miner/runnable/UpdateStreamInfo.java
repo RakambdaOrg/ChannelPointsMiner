@@ -6,7 +6,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightservi
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.SetDropsCommunityHighlightToHiddenPayload;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Log4j2
 @RequiredArgsConstructor
