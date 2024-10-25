@@ -23,7 +23,10 @@ import java.util.Set;
 @Log4j2
 @RequiredArgsConstructor
 public class UpdateStreamInfo implements Runnable{
-	private static final Collection<String> DISMISSIBLE_CAMPAIGNS = Set.of("dc4ff0b4-4de0-11ef-9ec3-621fb0811846");
+	private static final Collection<String> DISMISSIBLE_CAMPAIGNS = Set.of(
+		"dc4ff0b4-4de0-11ef-9ec3-621fb0811846",
+		"cbc3c726-8c0a-11ef-9b38-1ede7ff66562"
+	);
 	
 	@NotNull
 	private final IMiner miner;
