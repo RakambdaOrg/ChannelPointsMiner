@@ -19,4 +19,8 @@ import lombok.ToString;
 public class DropCampaignSummary extends GQLType{
 	@JsonProperty("includesSubRequirement")
 	private boolean includesSubRequirement;
+	@JsonProperty("isPermanentlyDismissible")
+	private boolean permanentlyDismissible;
+	@JsonProperty("isSitewide")
+	private boolean sitewide;
 }

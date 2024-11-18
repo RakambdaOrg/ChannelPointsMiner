@@ -9,6 +9,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ChatRoomBanStatus;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.StreamPlaybackAccessToken;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
@@ -91,6 +92,8 @@ class UpdateStreamInfoTest{
 	private Channel channel;
 	@Mock
 	private DropCampaign dropCampaign;
+	@Mock
+	private DropCampaignSummary dropCampaignSummary;
 	
 	private URL spadeUrl;
 	private URL m3u8Url;
@@ -443,6 +446,10 @@ class UpdateStreamInfoTest{
 			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
 			when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.of(dropsHighlightServiceAvailableDrops));
 			when(gqlApi.chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID)).thenReturn(Optional.of(gqlResponseChatRoomBanStatus));
+			
+			when(dropCampaign.getSummary()).thenReturn(dropCampaignSummary);
+			when(dropCampaignSummary.isSitewide()).thenReturn(true);
+			when(dropCampaignSummary.isPermanentlyDismissible()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.run());
 			

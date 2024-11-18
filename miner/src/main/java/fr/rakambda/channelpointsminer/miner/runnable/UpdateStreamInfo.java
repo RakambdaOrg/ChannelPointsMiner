@@ -18,13 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Log4j2
 @RequiredArgsConstructor
 public class UpdateStreamInfo implements Runnable{
-	private static final Collection<String> DISMISSIBLE_CAMPAIGNS = Set.of("dc4ff0b4-4de0-11ef-9ec3-621fb0811846");
-	
 	@NotNull
 	private final IMiner miner;
 	
@@ -151,13 +148,19 @@ public class UpdateStreamInfo implements Runnable{
 						.map(DropsHighlightServiceAvailableDropsData::getChannel)
 						.map(Channel::getViewerDropCampaigns)
 						.flatMap(Collection::stream)
-						.filter(dropCampaign -> DISMISSIBLE_CAMPAIGNS.contains(dropCampaign.getId()))
+						.filter(this::isDismissibleGlobalCompaign)
 						.forEach(dropCampaign -> dismissCampaign(miner, streamer, dropCampaign));
 			}
 		}
 		else{
 			streamer.setDropsHighlightServiceAvailableDrops(null);
 		}
+	}
+	
+	private boolean isDismissibleGlobalCompaign(@NotNull DropCampaign dropCampaign){
+		return Optional.ofNullable(dropCampaign.getSummary())
+				.map(summary -> summary.isSitewide() && summary.isPermanentlyDismissible())
+				.orElse(false);
 	}
 	
 	private void dismissCampaign(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull DropCampaign dropCampaign){
