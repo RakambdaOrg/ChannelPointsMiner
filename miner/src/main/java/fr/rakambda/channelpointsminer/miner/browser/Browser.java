@@ -112,7 +112,6 @@ public class Browser implements AutoCloseable{
 		config.savePageSource(false);
 		config.screenshots(browserConfiguration.isScreenshots());
 		config.headless(browserConfiguration.isHeadless());
-		config.holdBrowserOpen(false);
 		return config;
 	}
 	
