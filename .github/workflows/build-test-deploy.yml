@@ -113,7 +113,7 @@ jobs:
           flags: unittests-miner
           name: codecov-github-actions
       - name: Upload JUnit reports
-        uses: actions/upload-artifact@v5.2.0
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: junit-test-results-miner
@@ -177,7 +177,7 @@ jobs:
           flags: unittests-viewer
           name: codecov-github-actions
       - name: Upload JUnit reports
-        uses: actions/upload-artifact@v5.2.0
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: junit-test-results-viewer
