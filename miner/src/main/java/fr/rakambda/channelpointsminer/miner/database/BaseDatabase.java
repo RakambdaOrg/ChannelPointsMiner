@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.database.converter.Converters;
 import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
@@ -10,7 +9,9 @@ import lombok.extern.log4j.Log4j2;
 import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @RequiredArgsConstructor
 @Log4j2
 public abstract class BaseDatabase implements IDatabase{
-	private final HikariDataSource dataSource;
+	private final DataSource dataSource;
 	private final Lock[] getOrCreatePredictionUserIdLocks = new Lock[]{
 			new ReentrantLock(),
 			new ReentrantLock(),
@@ -41,7 +42,8 @@ public abstract class BaseDatabase implements IDatabase{
 				.baselineOnMigrate(true)
 				.baselineVersion("1")
 				.load();
-		flyway.migrate();
+		var result = flyway.migrate();
+		System.out.println(result);
 	}
 	
 	@Override
@@ -120,14 +122,14 @@ public abstract class BaseDatabase implements IDatabase{
 			}
 			
 			try(var addUserStatement = conn.prepareStatement("""
-					INSERT INTO `PredictionUser`(`Username`, `ChannelID`) VALUES (?, ?) RETURNING `ID`;""")) {
+					INSERT INTO `PredictionUser`(`Username`, `ChannelID`) VALUES (?, ?) RETURNING `ID`;""")){
 				addUserStatement.setString(1, username);
 				addUserStatement.setString(2, channelId);
-				try (var generatedKeys = addUserStatement.executeQuery()) {
-					if (!generatedKeys.next()) {
+				try(var generatedKeys = addUserStatement.executeQuery()){
+					if(!generatedKeys.next()){
 						throw new SQLException("Failed to get new prediction user id");
 					}
-
+					
 					var userId = generatedKeys.getInt(1);
 					log.debug("Added new prediction user '{}' for channel '{}' : {}", username, channelId, userId);
 					return userId;
@@ -270,8 +272,10 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void close(){
-		dataSource.close();
+	public void close() throws IOException{
+		if(dataSource instanceof Closeable closeable){
+			closeable.close();
+		}
 	}
 	
 	@NotNull

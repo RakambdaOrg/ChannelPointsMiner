@@ -1,14 +1,14 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.rakambda.channelpointsminer.miner.database.converter.Converters;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import org.jetbrains.annotations.NotNull;
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
 public class SQLiteDatabase extends BaseDatabase{
-	public SQLiteDatabase(HikariDataSource dataSource){
+	public SQLiteDatabase(DataSource dataSource){
 		super(dataSource);
 	}
 	

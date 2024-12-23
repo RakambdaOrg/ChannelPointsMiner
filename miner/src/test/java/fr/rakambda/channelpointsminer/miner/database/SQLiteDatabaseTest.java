@@ -1,7 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
@@ -11,11 +9,13 @@ import org.assertj.db.type.AssertDbConnectionFactory;
 import org.assertj.db.type.Changes;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.sqlite.SQLiteDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -70,7 +70,6 @@ class SQLiteDatabaseTest{
 	private Event event;
 	
 	private SQLiteDatabase tested;
-	private HikariDataSource dataSource;
 	
 	private AssertDbConnection assertDbConnection;
 	private Supplier<Changes> changesBalance;
@@ -82,12 +81,9 @@ class SQLiteDatabaseTest{
 	
 	@BeforeEach
 	void setUp(){
-		var poolConfiguration = new HikariConfig();
-		poolConfiguration.setJdbcUrl("jdbc:sqlite:" + tempPath.resolve(System.currentTimeMillis() + "_test.db").toAbsolutePath());
-		poolConfiguration.setDriverClassName("org.sqlite.JDBC");
-		poolConfiguration.setMaximumPoolSize(1);
+		var dataSource = new SQLiteDataSource();
+		dataSource.setUrl("jdbc:sqlite:" + tempPath.resolve(System.currentTimeMillis() + "_test.db").toAbsolutePath());
 		
-		dataSource = new HikariDataSource(poolConfiguration);
 		assertDbConnection = AssertDbConnectionFactory.of(dataSource).create();;
 		
 		tested = new SQLiteDatabase(dataSource);
@@ -109,7 +105,7 @@ class SQLiteDatabaseTest{
 	}
 	
 	@AfterEach
-	void tearDown(){
+	void tearDown() throws IOException{
 		tested.close();
 	}
 	

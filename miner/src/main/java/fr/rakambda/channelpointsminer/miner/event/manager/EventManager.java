@@ -8,14 +8,17 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.ThreadContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import org.jetbrains.annotations.VisibleForTesting;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 
+@Slf4j
 @RequiredArgsConstructor
 public class EventManager implements IEventManager{
 	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
@@ -23,35 +26,40 @@ public class EventManager implements IEventManager{
 			@VisibleForTesting
 	})
 	private final Collection<IEventHandler> eventHandlers = new ConcurrentLinkedQueue<>();
-
+	
 	private final ExecutorService handlerExecutor;
-
+	
 	@Setter
 	private IMiner miner;
-
+	
 	@Override
 	public void addEventHandler(@NotNull IEventHandler handler){
 		eventHandlers.add(handler);
 	}
-
+	
 	@Override
 	public void onEvent(@NotNull IEvent event){
 		event.setMiner(miner);
-
+		
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
-
+		
 		eventHandlers.forEach(listener -> handlerExecutor.submit(() -> {
 			try(var ignored = LogContext.restore(values, messages)){
 				listener.onEvent(event);
 			}
 		}));
 	}
-
+	
 	@Override
 	public void close(){
 		for(var listener : eventHandlers){
-			listener.close();
+			try{
+				listener.close();
+			}
+			catch(IOException e){
+				log.error("Failed to close event handler {}", listener, e);
+			}
 		}
 	}
 }

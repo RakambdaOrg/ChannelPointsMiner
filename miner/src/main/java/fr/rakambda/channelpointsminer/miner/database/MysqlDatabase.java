@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
 
 public class MysqlDatabase extends MariaDBDatabase{
-    public MysqlDatabase(HikariDataSource dataSource){
+    public MysqlDatabase(DataSource dataSource){
         super(dataSource);
     }
     

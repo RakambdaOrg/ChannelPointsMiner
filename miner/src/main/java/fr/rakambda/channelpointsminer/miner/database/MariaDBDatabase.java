@@ -1,12 +1,12 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.rakambda.channelpointsminer.miner.database.converter.Converters;
 import org.jetbrains.annotations.NotNull;
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class MariaDBDatabase extends BaseDatabase{
-	public MariaDBDatabase(HikariDataSource dataSource){
+	public MariaDBDatabase(DataSource dataSource){
 		super(dataSource);
 	}
 	
