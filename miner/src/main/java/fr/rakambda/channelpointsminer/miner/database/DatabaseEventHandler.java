@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
@@ -155,7 +156,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	}
 	
 	@Override
-	public void close(){
+	public void close() throws IOException{
 		database.close();
 	}
 }

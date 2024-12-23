@@ -1,20 +1,21 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import org.assertj.core.api.Assertions;
+import org.assertj.db.type.AssertDbConnection;
+import org.assertj.db.type.AssertDbConnectionFactory;
 import org.assertj.db.type.Changes;
-import org.assertj.db.type.Table;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.sqlite.SQLiteDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -69,8 +70,8 @@ class SQLiteDatabaseTest{
 	private Event event;
 	
 	private SQLiteDatabase tested;
-	private HikariDataSource dataSource;
 	
+	private AssertDbConnection assertDbConnection;
 	private Supplier<Changes> changesBalance;
 	private Supplier<Changes> changesChannel;
 	private Supplier<Changes> changesPrediction;
@@ -79,23 +80,22 @@ class SQLiteDatabaseTest{
 	private Supplier<Changes> changesResolvedPrediction;
 	
 	@BeforeEach
-	void setUp() throws SQLException{
-		var poolConfiguration = new HikariConfig();
-		poolConfiguration.setJdbcUrl("jdbc:sqlite:" + tempPath.resolve(System.currentTimeMillis() + "_test.db").toAbsolutePath());
-		poolConfiguration.setDriverClassName("org.sqlite.JDBC");
-		poolConfiguration.setMaximumPoolSize(1);
+	void setUp(){
+		var dataSource = new SQLiteDataSource();
+		dataSource.setUrl("jdbc:sqlite:" + tempPath.resolve(System.currentTimeMillis() + "_test.db").toAbsolutePath());
 		
-		dataSource = new HikariDataSource(poolConfiguration);
+		assertDbConnection = AssertDbConnectionFactory.of(dataSource).create();;
+		
 		tested = new SQLiteDatabase(dataSource);
 		
 		tested.initDatabase();
 		
-		changesBalance = () -> new Changes(new Table(dataSource, "Balance"));
-		changesChannel = () -> new Changes(new Table(dataSource, "Channel"));
-		changesPrediction = () -> new Changes(new Table(dataSource, "Prediction"));
-		changesPredictionUser = () -> new Changes(new Table(dataSource, "PredictionUser"));
-		changesUserPrediction = () -> new Changes(new Table(dataSource, "UserPrediction"));
-		changesResolvedPrediction = () -> new Changes(new Table(dataSource, "ResolvedPrediction"));
+		changesBalance = () -> assertDbConnection.changes().table("Balance").build();
+		changesChannel = () -> assertDbConnection.changes().table("Channel").build();
+		changesPrediction = () -> assertDbConnection.changes().table("Prediction").build();
+		changesPredictionUser = () -> assertDbConnection.changes().table("PredictionUser").build();
+		changesUserPrediction = () -> assertDbConnection.changes().table("UserPrediction").build();
+		changesResolvedPrediction = () -> assertDbConnection.changes().table("ResolvedPrediction").build();
 		
 		lenient().when(event.getId()).thenReturn(EVENT_ID);
 		lenient().when(event.getChannelId()).thenReturn(CHANNEL_ID);
@@ -105,17 +105,17 @@ class SQLiteDatabaseTest{
 	}
 	
 	@AfterEach
-	void tearDown(){
+	void tearDown() throws IOException{
 		tested.close();
 	}
 	
 	@Test
 	void tablesAreCreated(){
-		assertThat(new Table(dataSource, "Balance")).exists();
-		assertThat(new Table(dataSource, "Channel")).exists();
-		assertThat(new Table(dataSource, "Prediction")).exists();
-		assertThat(new Table(dataSource, "PredictionUser")).exists();
-		assertThat(new Table(dataSource, "UserPrediction")).exists();
+		assertThat(assertDbConnection.table("Balance").build()).exists();
+		assertThat(assertDbConnection.table("Channel").build()).exists();
+		assertThat(assertDbConnection.table("Prediction").build()).exists();
+		assertThat(assertDbConnection.table("PredictionUser").build()).exists();
+		assertThat(assertDbConnection.table("UserPrediction").build()).exists();
 	}
 	
 	@Test
