@@ -19,13 +19,13 @@
         </RollingFile>
 
         <Routing name="router">
-            <Routes pattern="\$\${env:LOG_TO_FILE}">
+            <Routes pattern="\${env:LOG_TO_FILE}">
                 <Route ref="file" key="TRUE"/>
             </Routes>
         </Routing>
     </Appenders>
     <Loggers>
-        <Logger level="info" name="fr.rakambda.channelpointsminer.miner" additivity="false">
+        <Logger level="\${env:LOG_LEVEL:-info}" name="fr.rakambda.channelpointsminer.miner" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="router"/>
         </Logger>
