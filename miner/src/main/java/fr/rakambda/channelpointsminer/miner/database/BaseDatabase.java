@@ -42,8 +42,7 @@ public abstract class BaseDatabase implements IDatabase{
 				.baselineOnMigrate(true)
 				.baselineVersion("1")
 				.load();
-		var result = flyway.migrate();
-		System.out.println(result);
+		flyway.migrate();
 	}
 	
 	@Override
