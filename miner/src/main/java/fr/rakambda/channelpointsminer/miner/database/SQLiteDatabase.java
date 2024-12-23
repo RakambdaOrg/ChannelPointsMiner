@@ -13,7 +13,7 @@ public class SQLiteDatabase extends BaseDatabase{
 	}
 	
 	@Override
-	public void initDatabase() throws SQLException{
+	public void initDatabase(){
 		applyFlyway("db/migrations/sqlite");
 	}
 	
