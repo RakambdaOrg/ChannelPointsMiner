@@ -105,7 +105,7 @@ jobs:
         with:
           report_paths: 'miner/build/test-results/test/*.xml'
       - name: Publish coverage on CodeCov
-        uses: codecov/codecov-action@v5.2.0
+        uses: codecov/codecov-action@v5.3.0
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -169,7 +169,7 @@ jobs:
         with:
           report_paths: 'viewer/build/test-results/test/*.xml'
       - name: Publish coverage on CodeCov
-        uses: codecov/codecov-action@v5.2.0
+        uses: codecov/codecov-action@v5.3.0
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
