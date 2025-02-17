@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
 import com.zaxxer.hikari.pool.HikariPool;
-import fr.rakambda.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.Miner;

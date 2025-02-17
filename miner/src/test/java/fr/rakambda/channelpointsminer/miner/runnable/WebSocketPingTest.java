@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
-import fr.rakambda.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.mockito.InjectMocks;

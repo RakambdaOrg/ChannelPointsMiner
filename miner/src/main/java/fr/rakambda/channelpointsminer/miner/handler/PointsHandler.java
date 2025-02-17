@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsEarned;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsSpent;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PointsEarned;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PointsSpent;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.PointsEarnedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PointsSpentEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;

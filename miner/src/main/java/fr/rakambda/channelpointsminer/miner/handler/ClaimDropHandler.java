@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropClaim;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.DropClaim;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.DropProgress;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropClaimedChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.DropProgressChannelEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;

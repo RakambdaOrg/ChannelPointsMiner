@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.prediction.bet.outcome;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Badge;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Badge;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
 import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import fr.rakambda.channelpointsminer.miner.factory.DatabaseFactory;

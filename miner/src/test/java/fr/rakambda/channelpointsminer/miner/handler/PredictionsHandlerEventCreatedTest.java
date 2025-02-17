@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.EventCreated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.eventcreated.EventCreatedData;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.EventCreated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.eventcreated.EventCreatedData;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus.ACTIVE;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus.LOCKED;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.EventStatus.ACTIVE;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.EventStatus.LOCKED;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

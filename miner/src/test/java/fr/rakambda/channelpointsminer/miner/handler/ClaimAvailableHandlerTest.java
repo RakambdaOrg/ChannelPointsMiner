@@ -1,10 +1,10 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.claimavailable.ClaimAvailableData;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ClaimAvailable;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.claimavailable.ClaimAvailableData;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Claim;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;

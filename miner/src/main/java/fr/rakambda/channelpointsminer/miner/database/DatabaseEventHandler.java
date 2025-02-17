@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.Balance;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.EventStatus;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
 import fr.rakambda.channelpointsminer.miner.event.EventHandlerAdapter;
 import fr.rakambda.channelpointsminer.miner.event.IStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ChatMessageEvent;

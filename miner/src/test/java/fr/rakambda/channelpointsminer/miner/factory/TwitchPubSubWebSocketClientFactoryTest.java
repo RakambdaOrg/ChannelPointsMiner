@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.api.chat.ws.TwitchChatWebSocketClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
-import fr.rakambda.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketClient;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketClient;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
