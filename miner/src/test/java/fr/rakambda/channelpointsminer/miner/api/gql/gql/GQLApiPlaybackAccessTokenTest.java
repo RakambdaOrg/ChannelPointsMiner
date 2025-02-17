@@ -40,6 +40,6 @@ class GQLApiPlaybackAccessTokenTest extends AbstractGQLTest{
 	
 	@Override
 	protected String getValidRequest(){
-		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"3093517e37e4f4cb48906155bcd894150aef92617939236d2508f3375ab732ce\",\"version\":1}},\"operationName\":\"PlaybackAccessToken\",\"variables\":{\"isLive\":true,\"vodID\":\"\",\"playerType\":\"picture-by-picture\",\"isVod\":false,\"login\":\"%s\"}}".formatted(LOGIN);
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"ed230aa1e33e07eebb8928504583da78a5173989fadfb1ac94be06a04f3cdbe9\",\"version\":1}},\"operationName\":\"PlaybackAccessToken\",\"variables\":{\"isLive\":true,\"vodID\":\"\",\"playerType\":\"picture-by-picture\",\"isVod\":false,\"login\":\"%s\",\"platform\":\"web\"}}".formatted(LOGIN);
 	}
 }
