@@ -15,7 +15,7 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-@JsonTypeName("mostUsers")
+@JsonTypeName("constant")
 @Getter
 @EqualsAndHashCode
 @ToString

@@ -41,11 +41,11 @@ public class CommonUtils{
 	
 	@NotNull
 	public static String randomHex(int count) {
-		return RandomStringUtils.random(count, HEX_CHARS);
+		return RandomStringUtils.secure().next(count, HEX_CHARS);
 	}
 	
 	@NotNull
 	public static String randomAlphanumeric(int count) {
-		return RandomStringUtils.randomAlphanumeric(count);
+		return RandomStringUtils.secure().nextAlphanumeric(count);
 	}
 }

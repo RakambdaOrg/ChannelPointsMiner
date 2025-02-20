@@ -49,3 +49,18 @@ If you have 2FA enabled or using selenium, you'll have to enter information in t
 As Docker doesn't give an interactive shell by default you'll have to run the container in interactive mode yourself the first time.
 More can be read about it in link:https://github.com/RakambdaOrg/ChannelPointsMiner/issues/87#issuecomment-988276214[#87].
 ====
+
+[cols=3*]
+|===
+|Key
+|Default
+|Description
+
+|LOG_LEVEL
+|info
+|Sets the log level of the miner (if the default config file is still used)
+
+|LOG_TO_FILE
+|
+|If set to `true`, logs will also be produced in lo files that are in `/usr/src/app/logs`
+|===

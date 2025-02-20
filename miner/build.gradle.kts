@@ -25,7 +25,7 @@ dependencies {
     implementation(libs.commonsText)
     implementation(libs.websocket)
     implementation(libs.kittehIrc)
-    implementation(libs.selenide)
+    implementation(libs.bundles.selenide)
 
     implementation(libs.hikaricp)
     implementation(libs.mariadb)

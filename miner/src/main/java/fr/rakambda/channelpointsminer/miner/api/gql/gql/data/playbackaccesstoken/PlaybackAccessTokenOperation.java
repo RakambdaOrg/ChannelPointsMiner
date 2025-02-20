@@ -15,10 +15,11 @@ import org.jetbrains.annotations.NotNull;
 public class PlaybackAccessTokenOperation extends IGQLOperation<PlaybackAccessTokenData>{
 	public PlaybackAccessTokenOperation(@NotNull String login){
 		super("PlaybackAccessToken");
-		addPersistedQueryExtension(new PersistedQueryExtension(1, "3093517e37e4f4cb48906155bcd894150aef92617939236d2508f3375ab732ce"));
+		addPersistedQueryExtension(new PersistedQueryExtension(1, "ed230aa1e33e07eebb8928504583da78a5173989fadfb1ac94be06a04f3cdbe9"));
 		addVariable("isLive", true);
 		addVariable("isVod", false);
 		addVariable("login", login);
+		addVariable("platform", "web");
 		addVariable("playerType", "picture-by-picture");
 		addVariable("vodID", "");
 	}

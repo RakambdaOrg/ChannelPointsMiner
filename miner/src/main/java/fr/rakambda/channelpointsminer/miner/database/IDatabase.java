@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeSta
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Collection;
@@ -13,7 +14,7 @@ public interface IDatabase extends AutoCloseable{
 	void initDatabase() throws SQLException;
 	
 	@Override
-	void close();
+	void close() throws IOException;
 	
 	void createChannel(@NotNull String channelId, @NotNull String username) throws SQLException;
 	

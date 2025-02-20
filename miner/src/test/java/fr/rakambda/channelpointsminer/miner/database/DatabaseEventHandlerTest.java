@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
@@ -363,7 +364,7 @@ class DatabaseEventHandlerTest{
 	}
 	
 	@Test
-	void closeClosesDatabase(){
+	void closeClosesDatabase() throws IOException{
 		tested.close();
 		
 		verify(database).close();
