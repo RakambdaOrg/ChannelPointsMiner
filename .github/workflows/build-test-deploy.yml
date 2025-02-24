@@ -100,7 +100,7 @@ jobs:
           ./gradlew \
           :miner:jacocoTestReport
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5.3.0
+        uses: mikepenz/action-junit-report@v5.4.0
         if: always()
         with:
           report_paths: 'miner/build/test-results/test/*.xml'
@@ -164,7 +164,7 @@ jobs:
           ./gradlew \
           :viewer:jacocoTestReport
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5.3.0
+        uses: mikepenz/action-junit-report@v5.4.0
         if: always()
         with:
           report_paths: 'viewer/build/test-results/test/*.xml'
