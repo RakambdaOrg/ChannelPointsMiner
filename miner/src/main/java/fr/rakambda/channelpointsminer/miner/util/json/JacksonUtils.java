@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSetter.Value;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_IGNO
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
 import static com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -46,12 +48,14 @@ public class JacksonUtils{
 					.enable(ALLOW_COMMENTS)
 					.disable(FAIL_ON_IGNORED_PROPERTIES)
 					.disable(FAIL_ON_UNKNOWN_PROPERTIES)
+					.disable(WRITE_DATES_AS_TIMESTAMPS)
 					.visibility(FIELD, ANY)
 					.visibility(GETTER, NONE)
 					.visibility(SETTER, NONE)
 					.visibility(CREATOR, NONE)
 					.serializationInclusion(NON_NULL)
 					.withConfigOverride(List.class, o -> o.setSetterInfo(Value.forValueNulls(AS_EMPTY)))
+					.addModule(new JavaTimeModule())
 					.build();
 		}
 		return mapper;
