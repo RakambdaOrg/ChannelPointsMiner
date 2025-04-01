@@ -24,7 +24,7 @@ mysql-version = "9.2.0"
 rerunner-jupiter-version = "2.1.6"
 flyway-version = "11.5.0"
 selenide-version = "7.7.3"
-lombok-version = "1.18.36"
+lombok-version = "1.18.38"
 jacocoVersion = "0.8.12"
 
 shadow-version = "8.1.1"
