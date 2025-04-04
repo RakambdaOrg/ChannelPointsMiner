@@ -26,6 +26,7 @@ flyway-version = "11.6.0"
 selenide-version = "7.8.1"
 lombok-version = "1.18.38"
 jacocoVersion = "0.8.12"
+log4j-ecs-version = "1.6.0"
 
 shadow-version = "8.1.1"
 names-version = "0.52.0"
@@ -41,7 +42,7 @@ slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version"
 log4j2Bom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j2-version"}
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core" }
 log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl" }
-log4j2-json = { group = "org.apache.logging.log4j", name = "log4j-layout-template-json" }
+log4jEcs = { group = "co.elastic.logging", name = "log4j2-ecs-layout", version.ref = "log4j-ecs-version" }
 unirestBom = { group = "com.konghq", name = "unirest-java-bom", version.ref = "unirest-version" }
 unirest-java = { group = "com.konghq", name = "unirest-java-core" }
 unirest-modules-jackson = { group = "com.konghq", name = "unirest-modules-jackson" }
@@ -86,7 +87,7 @@ rerunnerJupiter = { group = "io.github.artsok", name = "rerunner-jupiter", versi
 
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind", "jackson-jsr310"]
-log4j2 = ["log4j2-core", "log4j2-slf4j", "log4j2-json"]
+log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-modules-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
 selenide = ["selenide", "selenide-proxy"]
