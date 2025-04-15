@@ -26,7 +26,7 @@ flyway-version = "11.7.0"
 selenide-version = "7.8.1"
 lombok-version = "1.18.38"
 jacocoVersion = "0.8.12"
-log4j-ecs-version = "1.6.0"
+log4j-ecs-version = "1.7.0"
 
 shadow-version = "8.1.1"
 names-version = "0.52.0"
