@@ -1,7 +1,7 @@
 [versions]
 slf4j-version = "2.0.17"
 log4j2-version = "2.24.3"
-unirest-version = "4.4.6"
+unirest-version = "4.4.7"
 picocli-version = "4.7.7"
 jackson-version = "2.19.0"
 jsonschema-generator-version = "4.38.0"
