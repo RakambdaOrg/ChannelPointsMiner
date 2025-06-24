@@ -7,5 +7,6 @@ public enum PointReasonCode{
 	RAID,
 	REFUND,
 	WATCH,
-	WATCH_STREAK
+	WATCH_STREAK,
+	SUB_GIFT
 }
