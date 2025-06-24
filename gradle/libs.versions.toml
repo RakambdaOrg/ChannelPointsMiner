@@ -1,47 +1,48 @@
 [versions]
-slf4j-version = "2.0.16"
-log4j2-version = "2.24.3"
-unirest-version = "4.4.5"
-picocli-version = "4.7.6"
-jackson-version = "2.18.2"
-jsonschema-generator-version = "4.37.0"
+slf4j-version = "2.0.17"
+log4j2-version = "2.25.0"
+unirest-version = "4.4.7"
+picocli-version = "4.7.7"
+jackson-version = "2.19.1"
+jsonschema-generator-version = "4.38.0"
 httpclient-version = "4.5.14"
 lang3-version = "3.17.0"
-commons-text-version = "1.13.0"
+commons-text-version = "1.13.1"
 jetbrains-annotations-version = "26.0.2"
 websocket-version = "1.6.0"
-junitVersion = "5.11.4"
+junitVersion = "5.13.1"
 assertj-core-version = "3.27.3"
 assertj-db-version = "3.0.0"
-mockito-version = "5.15.2"
-awaitility-version = "4.2.2"
-json-unit-version = "4.1.0"
+mockito-version = "5.18.0"
+awaitility-version = "4.3.0"
+json-unit-version = "4.1.1"
 kitteh-irc-version = "9.0.0"
-hikari-cp-version = "6.2.1"
-mariadb-version = "3.5.2"
-sqlite-version = "3.49.1.0"
-mysql-version = "9.2.0"
+hikari-cp-version = "6.3.0"
+mariadb-version = "3.5.3"
+sqlite-version = "3.50.1.0"
+mysql-version = "9.3.0"
 rerunner-jupiter-version = "2.1.6"
-flyway-version = "11.3.3"
-selenide-version = "7.7.2"
-lombok-version = "1.18.36"
+flyway-version = "11.9.2"
+selenide-version = "7.9.3"
+lombok-version = "1.18.38"
 jacocoVersion = "0.8.12"
+log4j-ecs-version = "1.7.0"
 
 shadow-version = "8.1.1"
 names-version = "0.52.0"
-jib-version = "3.4.4"
-git-properties-version = "2.4.2"
-springboot-version = "3.4.2"
+jib-version = "3.4.5"
+git-properties-version = "2.5.0"
+springboot-version = "3.5.3"
 springboot-dependencies-version = "1.1.7"
 test-logger-version = "4.0.0"
-git-version-plugin-version = "3.1.0"
+git-version-plugin-version = "3.3.0"
 
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
 log4j2Bom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j2-version"}
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core" }
 log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl" }
-log4j2-json = { group = "org.apache.logging.log4j", name = "log4j-layout-template-json" }
+log4jEcs = { group = "co.elastic.logging", name = "log4j2-ecs-layout", version.ref = "log4j-ecs-version" }
 unirestBom = { group = "com.konghq", name = "unirest-java-bom", version.ref = "unirest-version" }
 unirest-java = { group = "com.konghq", name = "unirest-java-core" }
 unirest-modules-jackson = { group = "com.konghq", name = "unirest-modules-jackson" }
@@ -70,9 +71,11 @@ selenide = { group = "com.codeborne", name = "selenide", version.ref = "selenide
 selenide-proxy = { group = "com.codeborne", name = "selenide-proxy", version.ref = "selenide-version" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok-version" }
 
-junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitVersion" }
-junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitVersion" }
-junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitVersion" }
+junitBom = { group = "org.junit", name = "junit-bom", version.ref = "junitVersion"}
+junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
+junit-params = { group = "org.junit.jupiter", name = "junit-jupiter-params" }
+junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine" }
+junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj-core-version" }
 assertj-db = { group = "org.assertj", name = "assertj-db", version.ref = "assertj-db-version" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-version" }
@@ -84,12 +87,12 @@ rerunnerJupiter = { group = "io.github.artsok", name = "rerunner-jupiter", versi
 
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind", "jackson-jsr310"]
-log4j2 = ["log4j2-core", "log4j2-slf4j", "log4j2-json"]
+log4j2 = ["log4j2-core", "log4j2-slf4j"]
 unirest = ["unirest-java", "unirest-modules-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
 selenide = ["selenide", "selenide-proxy"]
 jsonschemaGenerator = ["jsonschema-generator", "jsonschema-module-jackson"]
-junit = ["junit-api", "junit-params"]
+junit = ["junit-api", "junit-params", "junit-engine"]
 mockito = ["mockito-core", "mockito-junit"]
 jsonUnit = ["json-unit", "json-unit-assertj"]
 assertj = ["assertj-core", "assertj-db"]

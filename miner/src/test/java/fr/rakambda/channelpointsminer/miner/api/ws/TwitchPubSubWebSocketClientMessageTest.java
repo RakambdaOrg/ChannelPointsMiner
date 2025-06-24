@@ -44,7 +44,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.time.ZonedDateTime;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PointReasonCode.CLAIM;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
@@ -87,7 +86,7 @@ class TwitchPubSubWebSocketClientMessageTest{
 										.channelId("987654321")
 										.pointGain(PointGain.builder()
 												.totalPoints(50)
-												.reasonCode(CLAIM)
+												.reasonCode("CLAIM")
 												.build())
 										.balance(Balance.builder()
 												.channelId("987654321")

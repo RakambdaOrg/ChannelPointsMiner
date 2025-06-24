@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v4.3.0
+        uses: gradle/actions/dependency-submission@v4.4.1
         continue-on-error: true
 
   build:
@@ -45,7 +45,7 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.3.0
+        uses: gradle/actions/setup-gradle@v4.4.1
       - name: Build project
         run: |
           ./gradlew \
@@ -86,7 +86,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.3.0
+        uses: gradle/actions/setup-gradle@v4.4.1
 
       - name: Run tests
         run: |
@@ -100,12 +100,12 @@ jobs:
           ./gradlew \
           :miner:jacocoTestReport
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5.3.0
+        uses: mikepenz/action-junit-report@v5.6.1
         if: always()
         with:
           report_paths: 'miner/build/test-results/test/*.xml'
       - name: Publish coverage on CodeCov
-        uses: codecov/codecov-action@v5.3.1
+        uses: codecov/codecov-action@v5.4.3
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -150,7 +150,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.3.0
+        uses: gradle/actions/setup-gradle@v4.4.1
 
       - name: Run tests
         run: |
@@ -164,12 +164,12 @@ jobs:
           ./gradlew \
           :viewer:jacocoTestReport
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5.3.0
+        uses: mikepenz/action-junit-report@v5.6.1
         if: always()
         with:
           report_paths: 'viewer/build/test-results/test/*.xml'
       - name: Publish coverage on CodeCov
-        uses: codecov/codecov-action@v5.3.1
+        uses: codecov/codecov-action@v5.4.3
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -214,7 +214,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.3.0
+        uses: gradle/actions/setup-gradle@v4.4.1
 
       - name: Calculate miner image name
         id: miner-image-name
@@ -244,7 +244,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.3.0
+        uses: gradle/actions/setup-gradle@v4.4.1
 
       - name: Calculate viewer image name
         id: viewer-image-name
