@@ -40,7 +40,7 @@ public class PointsEarnedEvent extends AbstractLoggableStreamerEvent{
 			return millify(pointsEarnedData.getPointGain().getTotalPoints(), true);
 		}
 		if(EventVariableKey.REASON.equals(key)){
-			return pointsEarnedData.getPointGain().getReasonCode().toString();
+			return pointsEarnedData.getPointGain().getReasonCode();
 		}
 		if(EventVariableKey.BALANCE.equals(key)){
 			return millify(pointsEarnedData.getBalance().getBalance(), false);

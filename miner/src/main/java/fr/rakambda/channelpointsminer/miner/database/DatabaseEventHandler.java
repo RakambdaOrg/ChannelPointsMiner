@@ -78,7 +78,7 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	public void onPointsEarnedEvent(@NotNull PointsEarnedEvent event) throws SQLException{
 		var pointsEarnedData = event.getPointsEarnedData();
 		var reasonCode = pointsEarnedData.getPointGain().getReasonCode();
-		updateBalance(event, pointsEarnedData.getBalance(), reasonCode.name());
+		updateBalance(event, pointsEarnedData.getBalance(), reasonCode);
 	}
 	
 	@Override
