@@ -9,7 +9,6 @@ import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PointGain;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PointReasonCode;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
 import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Predictor;
 import fr.rakambda.channelpointsminer.miner.event.impl.ChatMessageEvent;
@@ -206,7 +205,7 @@ class DatabaseEventHandlerTest{
 		when(balance.getBalance()).thenReturn(BALANCE);
 		
 		var pointGain = mock(PointGain.class);
-		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.RAID);
+		when(pointGain.getReasonCode()).thenReturn("RAID");
 		
 		var pointsEarnedData = mock(PointsEarnedData.class);
 		when(pointsEarnedData.getBalance()).thenReturn(balance);
@@ -228,7 +227,7 @@ class DatabaseEventHandlerTest{
 		when(balance.getBalance()).thenReturn(BALANCE);
 		
 		var pointGain = mock(PointGain.class);
-		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.RAID);
+		when(pointGain.getReasonCode()).thenReturn("RAID");
 		
 		var pointsEarnedData = mock(PointsEarnedData.class);
 		when(pointsEarnedData.getBalance()).thenReturn(balance);

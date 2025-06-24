@@ -20,5 +20,5 @@ public class PointGain{
 	private int totalPoints;
 	@JsonProperty("reason_code")
 	@NotNull
-	private PointReasonCode reasonCode;
+	private String reasonCode;
 }
