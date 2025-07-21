@@ -42,6 +42,7 @@ jobs:
       pages: write
       id-token: write
     runs-on: ubuntu-latest
+    concurrency: pages
     needs: build
     name: Deploy pages
     steps:
