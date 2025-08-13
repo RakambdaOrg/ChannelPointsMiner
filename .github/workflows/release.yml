@@ -10,6 +10,7 @@ jobs:
     name: Publish Miner on DockerHub
     runs-on: ubuntu-latest
     concurrency: miner_docker
+    environment: DockerHub
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
@@ -33,6 +34,7 @@ jobs:
     name: Publish Viewer on DockerHub
     runs-on: ubuntu-latest
     concurrency: viewer_docker
+    environment: DockerHub
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
