@@ -13,23 +13,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  dependency-submission:
-    name: Dependencies submission
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v5
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: ${{ vars.JAVA_VERSION }}
-      - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v4.4.2
-        continue-on-error: true
-
   build:
     name: Build project
     runs-on: ubuntu-latest
@@ -205,6 +188,7 @@ jobs:
       - test-viewer
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     concurrency: miner_docker
+    environment: DockerHub
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
@@ -235,6 +219,7 @@ jobs:
       - test-viewer
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     concurrency: viewer_docker
+    environment: DockerHub
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
