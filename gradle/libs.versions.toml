@@ -28,8 +28,7 @@ lombok-version = "1.18.38"
 jacocoVersion = "0.8.12"
 log4j-ecs-version = "1.7.0"
 
-shadow-version = "8.1.1"
-names-version = "0.52.0"
+shadow-version = "9.0.2"
 jib-version = "3.4.5"
 git-properties-version = "2.5.2"
 springboot-version = "3.5.4"
@@ -98,8 +97,7 @@ jsonUnit = ["json-unit", "json-unit-assertj"]
 assertj = ["assertj-core", "assertj-db"]
 
 [plugins]
-shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }
-names = { id = "com.github.ben-manes.versions", version.ref = "names-version" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow-version" }
 jib = { id = "com.google.cloud.tools.jib", version.ref = "jib-version" }
 gitProperties = { id = "com.gorylenko.gradle-git-properties", version.ref = "git-properties-version" }
 springboot = { id = "org.springframework.boot", version.ref = "springboot-version" }
