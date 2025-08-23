@@ -1,0 +1,12 @@
+{
+  "subscribeResponse" : {
+    "subscription" : {
+      "id" : "id1"
+    },
+    "result" : "ok"
+  },
+  "id" : "4ae4865b-cedc-4755-8335-0560b7d05341",
+  "parentId" : "11a0ae22-6929-4b26-84b3-92dbbd9c710e",
+  "type" : "subscribeResponse",
+  "timestamp" : "2025-01-02T03:04:05.123456789Z"
+}

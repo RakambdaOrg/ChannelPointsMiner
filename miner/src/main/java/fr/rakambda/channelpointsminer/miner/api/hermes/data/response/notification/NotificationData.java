@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @Getter
@@ -18,11 +19,10 @@ import lombok.ToString;
 })
 @ToString
 @EqualsAndHashCode
+@SuperBuilder
 public abstract class NotificationData{
 	@JsonProperty("subscription")
 	private Subscription subscription;
-	@JsonProperty("type")
-	private String type;
 	
 	@Getter
 	@NoArgsConstructor

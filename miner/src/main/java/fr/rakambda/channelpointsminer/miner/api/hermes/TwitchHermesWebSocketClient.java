@@ -88,7 +88,7 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 					log.debug("Received Hermes subscribe response with status {}", unsubscribeResponse.getUnsubscribeResponse().getResult());
 					subscribeRequests.remove(unsubscribeResponse.getUnsubscribeResponse().getSubscription().getId());
 				}
-				case NotificationResponse notificationResponse -> log.debug("Received Hermes notification with type {}", notificationResponse.getNotification().getType());
+				case NotificationResponse notificationResponse -> log.debug("Received Hermes notification of type {}", notificationResponse.getNotification().getClass().getSimpleName());
 				default -> {
 				}
 			}
@@ -159,7 +159,9 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	
 	public void removeSubscription(@NotNull String id){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			send(new UnsubscribeRequest(id));
+			if(subscribeRequests.containsKey(id)){
+				send(new UnsubscribeRequest(id));
+			}
 		}
 	}
 	

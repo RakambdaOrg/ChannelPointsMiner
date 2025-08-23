@@ -12,7 +12,6 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topics;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
-import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -222,12 +221,8 @@ class TwitchHermesWebSocketPoolTest{
 	}
 	
 	@Test
-	void messagesAreRedirected(){
-		try(var jacksonUtils = Mockito.mockStatic(JacksonUtils.class);
-				var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			var message = mock(IPubSubMessage.class);
-			
-			jacksonUtils.when(() -> JacksonUtils.read(eq("test"), any())).thenReturn(message);
+	void pubSubMessagesAreRedirected(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
 			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
 			
 			tested.listenPubSubTopic(topic);
@@ -235,9 +230,10 @@ class TwitchHermesWebSocketPoolTest{
 			var response = mock(NotificationResponse.class);
 			var data = mock(PubSubNotificationType.class);
 			var subscription = mock(NotificationData.Subscription.class);
+			var message = mock(IPubSubMessage.class);
 			
 			when(response.getNotification()).thenReturn(data);
-			when(data.getPubsub()).thenReturn("test");
+			when(data.getPubsub()).thenReturn(message);
 			when(data.getSubscription()).thenReturn(subscription);
 			when(subscription.getId()).thenReturn(SUBSCRIBED_TOPIC_ID);
 			
@@ -305,6 +301,16 @@ class TwitchHermesWebSocketPoolTest{
 			
 			when(client.isPubSubTopicListened(topic)).thenReturn(false);
 			tested.listenPubSubTopic(topic);
+			
+			tested.removePubSubTopic(topic);
+			verify(client, never()).removeSubscription(anyString());
+		}
+	}
+	
+	@Test
+	void removeNeverAddedTopic(){
+		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
+			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
 			
 			tested.removePubSubTopic(topic);
 			verify(client, never()).removeSubscription(anyString());

@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.Nullable;
 import java.time.ZonedDateTime;
 
@@ -25,6 +26,7 @@ import java.time.ZonedDateTime;
 })
 @ToString
 @EqualsAndHashCode
+@SuperBuilder
 public abstract class ITwitchHermesWebSocketResponse {
 	@JsonProperty("id")
 	private String id;

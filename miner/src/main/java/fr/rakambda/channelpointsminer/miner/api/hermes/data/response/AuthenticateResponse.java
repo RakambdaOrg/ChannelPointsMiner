@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.api.hermes.data.response;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
@@ -9,20 +8,22 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import java.util.Objects;
 
 @JsonTypeName("authenticateResponse")
 @Getter
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class AuthenticateResponse extends ITwitchHermesWebSocketResponse {
+@ToString(callSuper = true)
+public class AuthenticateResponse extends ITwitchHermesWebSocketResponse{
 	@JsonProperty("authenticateResponse")
 	private AuthenticateResponseData authenticateResponse;
 	
 	public boolean hasError(){
-		return !Objects.equals(authenticateResponse.result, "ok");
+		return Objects.isNull(authenticateResponse) || !Objects.equals(authenticateResponse.result, "ok");
 	}
 	
 	@Getter

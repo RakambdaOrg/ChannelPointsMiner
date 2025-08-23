@@ -1,22 +1,18 @@
 package fr.rakambda.channelpointsminer.miner.api.hermes;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ITwitchHermesWebSocketResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.NotificationResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.UnsubscribeResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.notification.PubSubNotificationType;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.ITwitchPubSubMessageListener;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
-import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -87,14 +83,8 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 		if(response instanceof NotificationResponse n){
 			if(n.getNotification() instanceof PubSubNotificationType t){
-				try{
-					var topic = topics.get(n.getNotification().getSubscription().getId());
-					var message = JacksonUtils.read(t.getPubsub(), new TypeReference<IPubSubMessage>(){});
-					pubSubListeners.forEach(l -> l.onTwitchMessage(topic, message));
-				}
-				catch(IOException e){
-					log.error("Failed to parse PubSub notification from Hermes {}", t.getPubsub(), e);
-				}
+				var topic = topics.get(n.getNotification().getSubscription().getId());
+				pubSubListeners.forEach(l -> l.onTwitchMessage(topic, t.getPubsub()));
 			}
 		}
 	}

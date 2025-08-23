@@ -8,14 +8,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @JsonTypeName("welcome")
 @Getter
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class WelcomeResponse extends ITwitchHermesWebSocketResponse{
 	@JsonProperty("welcome")
 	private Welcome welcome;
