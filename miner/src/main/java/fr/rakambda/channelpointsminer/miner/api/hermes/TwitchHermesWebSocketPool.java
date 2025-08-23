@@ -5,7 +5,6 @@ import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ITwitchHerm
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.NotificationResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.UnsubscribeResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.notification.PubSubNotificationType;
-import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.ITwitchPubSubMessageListener;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
@@ -112,7 +111,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		try{
 			Topic topic;
 			while(Objects.nonNull(topic = pendingTopics.poll())){
-				listenTopic(topic);
+				listenPubSubTopic(topic);
 			}
 		}
 		catch(RuntimeException e){
@@ -120,7 +119,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 	}
 	
-	public void listenTopic(@NotNull Topic topic){
+	public void listenPubSubTopic(@NotNull Topic topic){
 		if(isTopicListened(topic)){
 			log.debug("Topic {} is already being listened", topics);
 			return;
@@ -155,7 +154,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 	@NotNull
 	public TwitchHermesWebSocketClient createNewClient(){
 		try{
-			var client = TwitchWebSocketClientFactory.createHermesClient(TwitchClient.WEB);
+			var client = TwitchWebSocketClientFactory.createHermesClient();
 			log.debug("Created Hermes WebSocket client with uuid {}", client.getUuid());
 			client.addListener(this);
 			client.connectBlocking();

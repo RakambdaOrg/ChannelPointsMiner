@@ -165,7 +165,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, accountConfiguration.getLoginMethod(), eventManager);
 			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
 			twitchApi = ApiFactory.createTwitchApi(twitchLogin);
-			hermesWebSocketPool = new TwitchHermesWebSocketPool(50, twitchLogin);
+			hermesWebSocketPool = ApiFactory.createHermesWebSocketPool(twitchLogin);
 			hermesWebSocketPool.addPubSubListener(this);
 			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);
 			chatClient.addChatMessageListener(new TwitchChatEventProducer(eventManager));
@@ -187,7 +187,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
-		hermesWebSocketPool.listenTopic(Topic.builder().name(name).target(target).build());
+		hermesWebSocketPool.listenPubSubTopic(Topic.builder().name(name).target(target).build());
 	}
 	
 	@Override
@@ -340,7 +340,9 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	public void close(){
 		scheduledExecutor.shutdown();
 		handlerExecutor.shutdown();
-		hermesWebSocketPool.close();
+		if(Objects.nonNull(hermesWebSocketPool)){
+			hermesWebSocketPool.close();
+		}
 		if(!Objects.isNull(chatClient)){
 			chatClient.close();
 		}

@@ -22,8 +22,8 @@ public class TwitchWebSocketClientFactory{
 	}
 	
 	@NotNull
-	public static TwitchHermesWebSocketClient createHermesClient(@NotNull TwitchClient twitchClient){
-		return new TwitchHermesWebSocketClient(URI.create("%s?clientId=%s".formatted(HERMES_URI_BASE, twitchClient.getClientId())));
+	public static TwitchHermesWebSocketClient createHermesClient(){
+		return new TwitchHermesWebSocketClient(URI.create("%s?clientId=%s".formatted(HERMES_URI_BASE, TwitchClient.WEB.getClientId())));
 	}
 	
 	@NotNull
