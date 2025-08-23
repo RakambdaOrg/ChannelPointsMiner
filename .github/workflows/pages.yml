@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Install Node.js
@@ -30,7 +30,7 @@ jobs:
           mkdir pages
           cp -R .github/antora-docs/. pages
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: pages
 
@@ -42,6 +42,7 @@ jobs:
       pages: write
       id-token: write
     runs-on: ubuntu-latest
+    concurrency: pages
     needs: build
     name: Deploy pages
     steps:

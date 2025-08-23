@@ -1,37 +1,37 @@
-package fr.rakambda.channelpointsminer.miner.api.pubsub;
+package fr.rakambda.channelpointsminer.miner.api.ws;
 
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ClaimAvailable;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CommunityMomentStart;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CreateNotification;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.DropClaim;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.DropProgress;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PointsEarned;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PointsSpent;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionMade;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionResult;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionUpdated;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.RaidUpdateV2;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.claimavailable.ClaimAvailableData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.communitymoment.CommunityMomentStartData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.createnotification.CreateNotificationData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.createnotification.Notification;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.dropclaim.DropClaimData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.dropprogress.DropProgressData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.Balance;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.PointsEarnedData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsspent.PointsSpentData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.predictionmade.PredictionMadeData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.predictionresult.PredictionResultData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.predictionupdated.PredictionUpdatedData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Claim;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointGain;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Prediction;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PredictionResultPayload;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PredictionResultType;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Raid;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.response.MessageData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.response.MessageResponse;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CreateNotification;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropClaim;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsEarned;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsSpent;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionMade;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionResult;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdated;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.claimavailable.ClaimAvailableData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.communitymoment.CommunityMomentStartData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotification.CreateNotificationData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.createnotification.Notification;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.dropclaim.DropClaimData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.dropprogress.DropProgressData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.PointsSpentData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionmade.PredictionMadeData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionupdated.PredictionUpdatedData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Claim;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PointGain;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Raid;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.response.MessageData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.response.MessageResponse;
 import fr.rakambda.channelpointsminer.miner.tests.TestUtils;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServerExtension;
@@ -44,13 +44,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.time.ZonedDateTime;
-import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointReasonCode.CLAIM;
-import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
-import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
-import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
-import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.PREDICTIONS_USER_V1;
-import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.RAID;
-import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.USER_DROP_EVENTS;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.RAID;
+import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.USER_DROP_EVENTS;
 import static java.time.ZoneOffset.UTC;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -87,7 +86,7 @@ class TwitchPubSubWebSocketClientMessageTest{
 										.channelId("987654321")
 										.pointGain(PointGain.builder()
 												.totalPoints(50)
-												.reasonCode(CLAIM)
+												.reasonCode("CLAIM")
 												.build())
 										.balance(Balance.builder()
 												.channelId("987654321")

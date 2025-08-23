@@ -1,17 +1,16 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.Balance;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.PointsEarnedData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsspent.PointsSpentData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.predictionresult.PredictionResultData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Badge;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.EventStatus;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointGain;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointReasonCode;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Prediction;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Predictor;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.PointsSpentData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Badge;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PointGain;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Predictor;
 import fr.rakambda.channelpointsminer.miner.event.impl.ChatMessageEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PointsEarnedEvent;
@@ -206,7 +205,7 @@ class DatabaseEventHandlerTest{
 		when(balance.getBalance()).thenReturn(BALANCE);
 		
 		var pointGain = mock(PointGain.class);
-		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.RAID);
+		when(pointGain.getReasonCode()).thenReturn("RAID");
 		
 		var pointsEarnedData = mock(PointsEarnedData.class);
 		when(pointsEarnedData.getBalance()).thenReturn(balance);
@@ -228,7 +227,7 @@ class DatabaseEventHandlerTest{
 		when(balance.getBalance()).thenReturn(BALANCE);
 		
 		var pointGain = mock(PointGain.class);
-		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.RAID);
+		when(pointGain.getReasonCode()).thenReturn("RAID");
 		
 		var pointsEarnedData = mock(PointsEarnedData.class);
 		when(pointsEarnedData.getBalance()).thenReturn(balance);

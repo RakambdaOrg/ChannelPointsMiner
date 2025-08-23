@@ -2,19 +2,18 @@ package fr.rakambda.channelpointsminer.miner.log.discord;
 
 import fr.rakambda.channelpointsminer.miner.api.discord.data.Webhook;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.Balance;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.PointsEarnedData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsspent.PointsSpentData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.predictionresult.PredictionResultData;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.OutcomeColor;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointGain;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointReasonCode;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Prediction;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PredictionResultPayload;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PredictionResultType;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.Balance;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsearned.PointsEarnedData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.pointsspent.PointsSpentData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.OutcomeColor;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PointGain;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
+import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.config.MessageEventConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimAvailableEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.ClaimMomentEvent;
@@ -143,7 +142,7 @@ class DiscordMessageBuilderMessageTest{
 		when(data.getBalance()).thenReturn(balance);
 		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(25);
-		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(pointGain.getReasonCode()).thenReturn("CLAIM");
 		when(balance.getBalance()).thenReturn(200);
 		
 		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
@@ -165,7 +164,7 @@ class DiscordMessageBuilderMessageTest{
 		when(data.getBalance()).thenReturn(balance);
 		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(2500);
-		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(pointGain.getReasonCode()).thenReturn("CLAIM");
 		when(balance.getBalance()).thenReturn(12345678);
 		
 		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);
@@ -187,7 +186,7 @@ class DiscordMessageBuilderMessageTest{
 		when(data.getBalance()).thenReturn(balance);
 		when(data.getTimestamp()).thenReturn(ZONED_NOW);
 		when(pointGain.getTotalPoints()).thenReturn(-2500);
-		when(pointGain.getReasonCode()).thenReturn(PointReasonCode.CLAIM);
+		when(pointGain.getReasonCode()).thenReturn("CLAIM");
 		when(balance.getBalance()).thenReturn(12345678);
 		
 		var event = new PointsEarnedEvent(STREAMER_ID, STREAMER_USERNAME, streamer, data);

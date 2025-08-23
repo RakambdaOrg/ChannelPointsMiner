@@ -16,6 +16,7 @@ dependencies {
 
     implementation(libs.slf4j)
     implementation(libs.bundles.log4j2)
+    implementation(libs.log4jEcs)
 
     implementation(libs.bundles.unirest)
     implementation(libs.picocli)
@@ -38,8 +39,9 @@ dependencies {
 
     annotationProcessor(libs.lombok)
 
+    implementation(platform(libs.junitBom))
     testImplementation(libs.bundles.junit)
-    testRuntimeOnly(libs.junitEngine)
+    testRuntimeOnly(libs.junitPlatformLauncher)
 
     testImplementation(libs.bundles.assertj)
     testImplementation(libs.bundles.mockito)
@@ -113,7 +115,8 @@ tasks {
         exclude("META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.SF")
         mergeServiceFiles()
 
-        transform(Log4j2PluginsCacheFileTransformer::class.java)
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        transform<Log4j2PluginsCacheFileTransformer>()
     }
 }
 
@@ -161,4 +164,5 @@ jib {
 
 gitProperties {
     failOnNoGitDirectory = false
+    dotGitDirectory.set(layout.settingsDirectory.dir(".git"))
 }

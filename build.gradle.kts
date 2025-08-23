@@ -1,6 +1,5 @@
 plugins {
     idea
-    alias(libs.plugins.names)
 }
 
 group = "fr.rakambda"

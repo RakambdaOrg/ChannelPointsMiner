@@ -1,0 +1,16 @@
+name: Update Gradle Wrapper
+'on':
+  workflow_dispatch: null
+  schedule:
+    - cron: 0 6 * * 0
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  update:
+    uses: RakambdaOrg/rakambda-github-workflows/.github/workflows/gradle-update-wrapper.yml@main
+    with:
+      reviewers: Rakambda
+      labels: dependencies,gradle-wrapper
+    secrets:
+      github-token: ${{ secrets.SYNC_TOKEN }}

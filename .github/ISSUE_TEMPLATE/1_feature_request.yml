@@ -1,7 +1,7 @@
 name: Feature request
 description: Suggest an idea for this project
 labels: ["type: 🧱 enhancement"]
-type: 'Enhancement'
+type: Enhancement
 assignees:
   - Rakambda
 body:
@@ -9,6 +9,6 @@ body:
     id: describing
     attributes:
       label: Description
-      description: Describe the feature/enhacement you wish to have
+      description: Describe the feature/enhancement you wish to have
     validations:
       required: true
