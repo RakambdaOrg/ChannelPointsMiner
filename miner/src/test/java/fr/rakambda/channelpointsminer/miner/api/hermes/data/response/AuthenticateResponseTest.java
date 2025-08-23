@@ -11,7 +11,7 @@ class AuthenticateResponseTest{
 	void noError(){
 		var tested = AuthenticateResponse.builder()
 				.authenticateResponse(AuthenticateResponse.AuthenticateResponseData.builder()
-						.error("ok")
+						.result("ok")
 						.build())
 				.build();
 		assertThat(tested.hasError()).isFalse();
@@ -27,7 +27,7 @@ class AuthenticateResponseTest{
 	void hasError(String error){
 		var tested = AuthenticateResponse.builder()
 				.authenticateResponse(AuthenticateResponse.AuthenticateResponseData.builder()
-						.error(error)
+						.result(error)
 						.build())
 				.build();
 		
