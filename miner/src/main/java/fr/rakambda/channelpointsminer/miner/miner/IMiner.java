@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.miner;
 
 import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketPool;
@@ -60,7 +61,7 @@ public interface IMiner{
 	String getUsername();
 	
 	@NotNull
-	TwitchPubSubWebSocketPool getPubSubWebSocketPool();
+	TwitchHermesWebSocketPool getHermesWebSocketPool();
 	
 	@NotNull
 	IDatabase getDatabase();

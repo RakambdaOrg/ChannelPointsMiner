@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.IVersionProvider;
+import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
@@ -93,7 +94,7 @@ class MinerTest{
 	@Mock
 	private ILoginProvider passportApi;
 	@Mock
-	private TwitchPubSubWebSocketPool webSocketPool;
+	private TwitchHermesWebSocketPool hermesWebSocketPool;
 	@Mock
 	private StreamerSettingsFactory streamerSettingsFactory;
 	@Mock
@@ -130,7 +131,7 @@ class MinerTest{
 	
 	@BeforeEach
 	void setUp() throws LoginException, IOException{
-		tested = new Miner(accountConfiguration, passportApi, streamerSettingsFactory, webSocketPool, scheduledExecutorService, executorService, database, eventManager);
+		tested = new Miner(accountConfiguration, passportApi, streamerSettingsFactory, scheduledExecutorService, executorService, database, eventManager);
 		tested.setSyncInventory(syncInventory);
 		
 		lenient().when(accountConfiguration.getUsername()).thenReturn(USERNAME);
@@ -180,7 +181,7 @@ class MinerTest{
 			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(COMMUNITY_POINTS_USER_V1).target(USER_ID).build());
 			verify(twitchChatClient, never()).join(any());
 			verify(scheduledExecutorService).schedule(eq(streamerConfigurationReload), anyLong(), any());
 			verify(twitchChatClient).addChatMessageListener(any());
@@ -209,7 +210,7 @@ class MinerTest{
 			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(COMMUNITY_POINTS_USER_V1).target(USER_ID).build());
 			verify(scheduledExecutorService).scheduleWithFixedDelay(eq(streamerConfigurationReload), anyLong(), eq(15L), eq(MINUTES));
 		}
 	}
@@ -235,7 +236,7 @@ class MinerTest{
 			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(COMMUNITY_POINTS_USER_V1).target(USER_ID).build());
 			verify(scheduledExecutorService).scheduleWithFixedDelay(eq(streamerConfigurationReload), anyLong(), eq(15L), eq(MINUTES));
 		}
 	}
@@ -264,7 +265,7 @@ class MinerTest{
 			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(COMMUNITY_POINTS_USER_V1).target(USER_ID).build());
 			verify(twitchChatClient, never()).join(any());
 			verify(scheduledExecutorService).schedule(eq(streamerConfigurationReload), anyLong(), any());
 			verify(twitchChatClient).addChatMessageListener(any());
@@ -296,7 +297,7 @@ class MinerTest{
 			assertThat(tested.getStreamers()).isEmpty();
 			
 			verify(passportApi).login();
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_POINTS_USER_V1, USER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(COMMUNITY_POINTS_USER_V1).target(USER_ID).build());
 			verify(twitchChatClient, never()).join(any());
 			verify(scheduledExecutorService).schedule(eq(streamerConfigurationReload), anyLong(), any());
 			verify(twitchChatClient).addChatMessageListener(any());
@@ -346,7 +347,7 @@ class MinerTest{
 			
 			verify(scheduledExecutorService).shutdown();
 			verify(executorService).shutdown();
-			verify(webSocketPool).close();
+			verify(hermesWebSocketPool).close();
 			verify(twitchChatClient).close();
 			verify(eventManager).close();
 		}
@@ -406,10 +407,10 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(streamer);
 			
 			verify(updateStreamInfo).run(streamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(USER_DROP_EVENTS, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(PREDICTIONS_USER_V1).target(USER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(USER_DROP_EVENTS).target(USER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
@@ -444,8 +445,8 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(streamer);
 			
 			verify(updateStreamInfo).run(streamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(COMMUNITY_MOMENTS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(COMMUNITY_MOMENTS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
@@ -480,8 +481,8 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(streamer);
 			
 			verify(updateStreamInfo).run(streamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
@@ -517,7 +518,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(streamer);
 			
 			verify(updateStreamInfo).run(streamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 			verify(twitchChatClient, never()).join(any());
 		}
@@ -555,7 +556,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(streamer);
 			
 			verify(updateStreamInfo).run(streamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 			verify(twitchChatClient).join(STREAMER_USERNAME);
 		}
@@ -590,7 +591,7 @@ class MinerTest{
 					.first().usingRecursiveComparison().isEqualTo(streamer);
 			
 			verify(updateStreamInfo).run(streamer);
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
@@ -672,10 +673,10 @@ class MinerTest{
 			tested.start();
 			tested.removeStreamer(streamer);
 			
-			verify(webSocketPool).removeTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
-			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
-			verify(webSocketPool).removeTopic(Topic.builder().name(COMMUNITY_MOMENTS_CHANNEL_V1).target(STREAMER_ID).build());
-			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(COMMUNITY_MOMENTS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchChatClient).leave(STREAMER_USERNAME);
 			verify(eventManager).onEvent(new StreamerRemovedEvent(streamer, NOW));
 		}
@@ -701,7 +702,7 @@ class MinerTest{
 			tested.start();
 			tested.removeStreamer(streamer);
 			
-			verify(webSocketPool, never()).removeTopic(any());
+			verify(hermesWebSocketPool, never()).removePubSubTopic(any());
 			verify(twitchChatClient, never()).leave(any());
 			verify(eventManager, never()).onEvent(any());
 		}
@@ -715,8 +716,8 @@ class MinerTest{
 		
 		assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 		
-		verify(webSocketPool, never()).listenTopic(any());
-		verify(webSocketPool, never()).removeTopic(any());
+		verify(hermesWebSocketPool, never()).listenTopic(any());
+		verify(hermesWebSocketPool, never()).removePubSubTopic(any());
 	}
 	
 	@Test
@@ -748,11 +749,11 @@ class MinerTest{
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(USER_DROP_EVENTS, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(USER_DROP_EVENTS).target(USER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(PREDICTIONS_USER_V1).target(USER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchChatClient).join(STREAMER_USERNAME);
 		}
 	}
@@ -786,11 +787,11 @@ class MinerTest{
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
-			verify(webSocketPool).listenTopic(Topics.buildFromName(VIDEO_PLAYBACK_BY_ID, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(USER_DROP_EVENTS, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_USER_V1, USER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(PREDICTIONS_CHANNEL_V1, STREAMER_ID, ACCESS_TOKEN));
-			verify(webSocketPool).listenTopic(Topics.buildFromName(RAID, STREAMER_ID, ACCESS_TOKEN));
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(USER_DROP_EVENTS).target(USER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(PREDICTIONS_USER_V1).target(USER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchChatClient, never()).join(any());
 		}
 	}
@@ -824,8 +825,8 @@ class MinerTest{
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
-			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
-			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchChatClient, never()).join(any());
 		}
 	}
@@ -859,8 +860,8 @@ class MinerTest{
 			
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
-			verify(webSocketPool).removeTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
-			verify(webSocketPool).removeTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(twitchChatClient, never()).join(any());
 		}
 	}

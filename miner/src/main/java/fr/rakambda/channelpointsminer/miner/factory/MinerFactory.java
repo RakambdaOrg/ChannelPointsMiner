@@ -1,7 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
 import com.zaxxer.hikari.pool.HikariPool;
-import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.Miner;
@@ -26,7 +25,6 @@ public class MinerFactory{
 					config,
 					ApiFactory.createLoginProvider(config.getUsername(), config.getLoginMethod(), eventManager),
 					new StreamerSettingsFactory(config),
-					new TwitchPubSubWebSocketPool(50),
 					Executors.newScheduledThreadPool(4),
 					Executors.newCachedThreadPool(),
 					database,

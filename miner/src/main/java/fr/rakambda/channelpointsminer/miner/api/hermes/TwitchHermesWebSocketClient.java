@@ -1,29 +1,21 @@
 package fr.rakambda.channelpointsminer.miner.api.hermes;
 
-import java.net.URI;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.AuthenticateRequest;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.ITwitchHermesWebSocketRequest;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.ListenTopicRequest;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.KeepAliveRequest;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.UnlistenTopicRequest;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.topic.Topic;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.topic.Topics;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.SubscribeRequest;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.UnsubscribeRequest;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.subscribe.PubSubSubscribeType;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.AuthenticateResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ITwitchHermesWebSocketResponse;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.MessageResponseHermes;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.PongResponseHermes;
-import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ReconnectResponseHermes;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.KeepAliveResponse;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.NotificationResponse;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.SubscribeResponse;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.UnsubscribeResponse;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.WelcomeResponse;
+import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
@@ -34,15 +26,24 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
+import java.net.URI;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 
 @Log4j2
 public class TwitchHermesWebSocketClient extends WebSocketClient{
-	@Getter
-	private final Set<Topics> topics;
 	private final Collection<ITwitchHermesWebSocketListener> listeners;
 	@Getter
 	private final String uuid;
-	private final Map<String, ListenTopicRequest> listenRequests;
+	@Getter
+	private final Map<String, SubscribeRequest> subscribeRequests;
 	
 	@Getter
 	private Instant lastPong;
@@ -50,16 +51,13 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	public TwitchHermesWebSocketClient(@NotNull URI uri){
 		super(uri);
 		uuid = UUID.randomUUID().toString();
-		listenRequests = new HashMap<>();
+		subscribeRequests = new HashMap<>();
 		
 		setConnectionLostTimeout(0);
-		topics = new HashSet<>();
 		listeners = new ConcurrentLinkedQueue<>();
 		lastPong = Instant.EPOCH;
 		
 		addHeader("Origin", "https://www.twitch.tv");
-		addHeader("Sec-Websocket-Key", "g5vRgkpsUreEDo2HQn0RgQ==");
-		addHeader("Sec-Websocket-Version", "13");
 	}
 	
 	@Override
@@ -77,16 +75,20 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 			log.trace("Parsed Hermes message: {}", message);
 			
 			switch(message){
+				case WelcomeResponse welcomeResponse -> log.info("Received Hermes welcome with keep alive of {} seconds", welcomeResponse.getWelcome().getKeepaliveSec());
 				case AuthenticateResponse authenticateResponse -> {
 					if(authenticateResponse.hasError()){
 						log.error("Received Hermes error authentication {}", authenticateResponse);
 						close(GOING_AWAY, "Invalid credentials");
 					}
 				}
-				case PongResponseHermes ignored1 -> onPong();
-				case MessageResponseHermes messageResponse -> {
+				case KeepAliveResponse ignored -> onPong();
+				case SubscribeResponse subscribeResponse -> log.debug("Received Hermes subscribe response with status {}", subscribeResponse.getSubscribeResponse().getResult());
+				case UnsubscribeResponse unsubscribeResponse -> {
+					log.debug("Received Hermes subscribe response with status {}", unsubscribeResponse.getUnsubscribeResponse().getResult());
+					subscribeRequests.remove(unsubscribeResponse.getUnsubscribeResponse().getSubscription().getId());
 				}
-				case ReconnectResponseHermes ignored -> close(GOING_AWAY);
+				case NotificationResponse notificationResponse -> log.debug("Received Hermes notification with type {}", notificationResponse.getNotification().getType());
 				default -> {
 				}
 			}
@@ -114,8 +116,8 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		lastPong = TimeFactory.now();
 	}
 	
-	public void ping(){
-		send(new KeepAliveRequest());
+	public void authenticate(@NotNull TwitchLogin twitchLogin){
+		send(new AuthenticateRequest(twitchLogin.getAccessToken()));
 	}
 	
 	public void send(@NotNull ITwitchHermesWebSocketRequest request){
@@ -138,36 +140,30 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		listeners.add(listener);
 	}
 	
-	public boolean isTopicListened(@NotNull Topic topic){
-		return topics.stream()
-				.flatMap(t -> t.getTopics().stream())
-				.anyMatch(t -> Objects.equals(t, topic));
+	public boolean isPubSubTopicListened(@NotNull Topic topic){
+		return subscribeRequests.values().stream()
+				.map(SubscribeRequest::getSubscribe)
+				.filter(PubSubSubscribeType.class::isInstance)
+				.map(PubSubSubscribeType.class::cast)
+				.anyMatch(t -> Objects.equals(t.getPubsub().getTopic(), topic.getValue()));
 	}
 	
-	public void listenTopic(@NotNull Topics topics){
+	public Optional<String> listenPubSubTopic(@NotNull Topic topic){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			if(this.topics.add(topics)){
-				var request = new ListenTopicRequest(topics);
-				listenRequests.put(request.getNonce(), request);
-				send(request);
-			}
+			var request = SubscribeRequest.pubsub(topic.getValue());
+			subscribeRequests.put(request.getSubscribe().getId(), request);
+			send(request);
+			return Optional.of(request.getSubscribe().getId());
 		}
 	}
 	
-	public void removeTopic(@NotNull Topic topic){
+	public void removeSubscription(@NotNull String id){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
-			var topics = this.topics.stream()
-					.filter(t -> t.getTopics().contains(topic))
-					.toList();
-			
-			topics.forEach(t -> {
-				send(new UnlistenTopicRequest(t));
-				this.topics.remove(t);
-			});
+			send(new UnsubscribeRequest(id));
 		}
 	}
 	
-	public int getTopicCount(){
-		return topics.stream().mapToInt(Topics::getTopicCount).sum();
+	public int getSubscriptionCount(){
+		return subscribeRequests.size();
 	}
 }

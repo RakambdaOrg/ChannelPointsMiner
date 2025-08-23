@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.api.hermes.data.response;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
@@ -10,19 +9,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@JsonTypeName("authenticateResponse")
+@JsonTypeName("unsubscribeResponse")
 @Getter
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class AuthenticateResponse extends ITwitchHermesWebSocketResponse {
-	@JsonProperty("authenticateResponse")
-	private AuthenticateResponseData authenticateResponse;
+public class UnsubscribeResponse extends ITwitchHermesWebSocketResponse{
+	@JsonProperty("unsubscribeResponse")
+	private UnsubscribeResponseData unsubscribeResponse;
 	
-	public boolean hasError(){
-		return !Objects.equals(authenticateResponse.result, "ok");
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@EqualsAndHashCode
+	@ToString
+	@Builder
+	public static class UnsubscribeResponseData{
+		@JsonProperty("result")
+		private String result;
+		@JsonProperty("subscription")
+		private SubscriptionData subscription;
 	}
 	
 	@Getter
@@ -31,12 +39,8 @@ public class AuthenticateResponse extends ITwitchHermesWebSocketResponse {
 	@EqualsAndHashCode
 	@ToString
 	@Builder
-	public static class AuthenticateResponseData{
-		@JsonProperty("result")
-		private String result;
-		@JsonProperty("error")
-		private String error;
-		@JsonProperty("errorCode")
-		private String errorCode;
+	public static class SubscriptionData{
+		@JsonProperty("id")
+		private String id;
 	}
 }

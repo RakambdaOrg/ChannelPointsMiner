@@ -84,7 +84,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 			}
 		}
 		catch(RuntimeException e){
-			log.error("Failed to join pending chats", e);
+			log.error("Failed to join pending topics", e);
 		}
 	}
 	

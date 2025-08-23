@@ -54,10 +54,10 @@ public class DiscordMessageBuilder{
 	
 	@Nullable
 	protected Author getEmbedAuthor(@NotNull StringLookup event){
-		return Optional.ofNullable(event.lookup(EventVariableKey.STREAMER))
+		return Optional.ofNullable(event.apply(EventVariableKey.STREAMER))
 				.map(username -> Author.builder().name(username)
-						.url(event.lookup(EventVariableKey.STREAMER_URL))
-						.iconUrl(event.lookup(EventVariableKey.STREAMER_PROFILE_PICTURE_URL))
+						.url(event.apply(EventVariableKey.STREAMER_URL))
+						.iconUrl(event.apply(EventVariableKey.STREAMER_PROFILE_PICTURE_URL))
 						.build()
 				)
 				.orElse(null);
@@ -65,14 +65,14 @@ public class DiscordMessageBuilder{
 	
 	@Nullable
 	protected Footer getEmbedFooter(@NotNull StringLookup event){
-		return Optional.ofNullable(event.lookup(EventVariableKey.USERNAME))
+		return Optional.ofNullable(event.apply(EventVariableKey.USERNAME))
 				.map(username -> Footer.builder().text(username).build())
 				.orElse(null);
 	}
 	
 	@Nullable
 	protected Integer getEmbedColor(@NotNull StringLookup event){
-		return Optional.ofNullable(event.lookup(EventVariableKey.COLOR))
+		return Optional.ofNullable(event.apply(EventVariableKey.COLOR))
 				.map(Integer::parseInt)
 				.orElse(null);
 	}
