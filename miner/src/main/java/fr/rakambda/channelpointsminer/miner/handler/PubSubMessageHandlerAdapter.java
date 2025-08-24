@@ -16,6 +16,7 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionUp
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.RaidUpdateV2;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamDown;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamUp;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ViewCount;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.util.ClassWalker;
 import org.jetbrains.annotations.NotNull;
@@ -63,6 +64,8 @@ public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandl
 	public void onDropProgress(@NotNull Topic topic, @NotNull DropProgress message){}
 	
 	public void onDropClaim(@NotNull Topic topic, @NotNull DropClaim message){}
+	
+	public void onViewCount(@NotNull Topic topic, @NotNull ViewCount message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IPubSubMessage message){

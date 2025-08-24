@@ -13,6 +13,7 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionMa
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionResult;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionUpdated;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.RaidUpdateV2;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ViewCount;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.claimavailable.ClaimAvailableData;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.communitymoment.CommunityMomentStartData;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.createnotification.CreateNotificationData;
@@ -52,6 +53,7 @@ import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.PREDICTIONS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.RAID;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.USER_DROP_EVENTS;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
 import static java.time.ZoneOffset.UTC;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -354,6 +356,24 @@ class TwitchPubSubWebSocketClientMessageTest{
 										.channelId("987654321")
 										.dropInstanceId("drop-instance-id")
 										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onViewCount(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/viewCount.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(VIDEO_PLAYBACK_BY_ID)
+								.target("123456789")
+								.build())
+						.message(ViewCount.builder()
+								.viewers(50L)
 								.build())
 						.build())
 				.build();
