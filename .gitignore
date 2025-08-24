@@ -4,6 +4,7 @@
 /authentication
 /build
 /out
+/logs
 /streamers
 /target
 bin/
