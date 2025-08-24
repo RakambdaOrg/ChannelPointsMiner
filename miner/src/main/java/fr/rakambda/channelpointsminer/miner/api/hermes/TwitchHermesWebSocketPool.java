@@ -83,6 +83,9 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 		if(response instanceof NotificationResponse n){
 			if(n.getNotification() instanceof PubSubNotificationType t){
+				if(Objects.isNull(t.getPubsub())){
+					return;
+				}
 				var topic = topics.get(n.getNotification().getSubscription().getId());
 				pubSubListeners.forEach(l -> l.onTwitchMessage(topic, t.getPubsub()));
 			}
