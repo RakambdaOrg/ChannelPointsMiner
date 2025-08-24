@@ -2,12 +2,13 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.runnable.HermesWebSocketPing;
 import fr.rakambda.channelpointsminer.miner.runnable.SendM3u8MinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.SendSpadeMinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.StreamerConfigurationReload;
 import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.runnable.UpdateStreamInfo;
-import fr.rakambda.channelpointsminer.miner.runnable.WebSocketPing;
+import fr.rakambda.channelpointsminer.miner.runnable.ChatWebSocketPing;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -29,8 +30,13 @@ public class MinerRunnableFactory{
 	}
 	
 	@NotNull
-	public static WebSocketPing createWebSocketPing(@NotNull IMiner miner){
-		return new WebSocketPing(miner);
+	public static ChatWebSocketPing createChatWebSocketPing(@NotNull IMiner miner){
+		return new ChatWebSocketPing(miner);
+	}
+	
+	@NotNull
+	public static HermesWebSocketPing createHermesWebSocketPing(@NotNull IMiner miner){
+		return new HermesWebSocketPing(miner);
 	}
 	
 	@NotNull

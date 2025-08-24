@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.prediction.bet.outcome;
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;

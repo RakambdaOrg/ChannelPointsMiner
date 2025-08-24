@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.prediction.bet.action;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Predictor;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Predictor;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.Placement;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import lombok.AllArgsConstructor;

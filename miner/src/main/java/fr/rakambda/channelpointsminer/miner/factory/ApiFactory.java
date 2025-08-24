@@ -10,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.http.NoIntegrityPr
 import fr.rakambda.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
+import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
@@ -195,5 +196,10 @@ public class ApiFactory{
 			case WEBPAGE -> new WebpageVersionProvider(unirest);
 			case MANIFEST -> new ManifestVersionProvider(unirest);
 		};
+	}
+	
+	@NotNull
+	public static TwitchHermesWebSocketPool createHermesWebSocketPool(@NotNull TwitchLogin twitchLogin){
+		return new TwitchHermesWebSocketPool(50, twitchLogin);
 	}
 }

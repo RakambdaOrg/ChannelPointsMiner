@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
 import lombok.AllArgsConstructor;

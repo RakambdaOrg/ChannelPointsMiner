@@ -1,0 +1,12 @@
+{
+  "notification" : {
+    "subscription" : {
+      "id": "id1"
+    },
+    "type": "pubsub",
+    "pubsub" : "{\"type\":\"points-earned\",\"data\":{\"timestamp\":\"2025-01-02T03:04:05.123456789Z\",\"channel_id\":\"123456789\",\"point_gain\":{\"user_id\":\"987654321\",\"channel_id\":\"123456789\",\"total_points\":10,\"baseline_points\":10,\"reason_code\":\"WATCH\",\"multipliers\":[]},\"balance\":{\"user_id\":\"987654321\",\"channel_id\":\"123456789\",\"balance\":50}}}"
+  },
+  "id" : "4ae4865b-cedc-4755-8335-0560b7d05341",
+  "type" : "notification",
+  "timestamp" : "2025-01-02T03:04:05.123456789Z"
+}

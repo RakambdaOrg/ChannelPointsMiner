@@ -164,5 +164,4 @@ jib {
 
 gitProperties {
     failOnNoGitDirectory = false
-    dotGitDirectory.set(layout.settingsDirectory.dir(".git"))
 }

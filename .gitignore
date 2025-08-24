@@ -4,6 +4,7 @@
 /authentication
 /build
 /out
+/logs
 /streamers
 /target
 bin/
@@ -12,6 +13,7 @@ bin/
 /.github/antora-docs
 
 *.iml
+.env
 /analytics.db
 /config*.json
 /log4j2.xml

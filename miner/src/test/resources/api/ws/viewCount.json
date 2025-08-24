@@ -1,0 +1,7 @@
+{
+  "type" : "MESSAGE",
+  "data" : {
+    "topic" : "video-playback-by-id.123456789",
+    "message" : "{\"type\":\"viewcount\",\"server_time\":1756210100.123456,\"viewers\":50,\"collaboration_status\":\"none\",\"collaboration_viewers\":0,\"costream_status\":\"\",\"costream_viewers\":0}"
+  }
+}

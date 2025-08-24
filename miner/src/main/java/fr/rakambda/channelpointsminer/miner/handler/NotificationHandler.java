@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CreateNotification;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CreateNotification;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;

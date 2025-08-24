@@ -1,10 +1,10 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionupdated.PredictionUpdatedData;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionUpdated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.predictionupdated.PredictionUpdatedData;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Prediction;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PlacedPrediction;

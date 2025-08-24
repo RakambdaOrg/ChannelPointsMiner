@@ -4,7 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.makeprediction.MakePredictionData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionError;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MakePredictionPayload;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.EventStatus;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.handler.data.PredictionState;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;

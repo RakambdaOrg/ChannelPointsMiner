@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
 import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamDown;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamUp;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamDown;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamUp;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;

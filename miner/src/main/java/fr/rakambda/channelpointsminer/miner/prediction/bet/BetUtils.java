@@ -1,6 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.prediction.bet;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Outcome;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
 import org.jetbrains.annotations.NotNull;
 
 public class BetUtils{

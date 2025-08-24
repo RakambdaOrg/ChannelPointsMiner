@@ -2,12 +2,13 @@ package fr.rakambda.channelpointsminer.miner.factory;
 
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
+import fr.rakambda.channelpointsminer.miner.runnable.HermesWebSocketPing;
 import fr.rakambda.channelpointsminer.miner.runnable.SendM3u8MinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.SendSpadeMinutesWatched;
 import fr.rakambda.channelpointsminer.miner.runnable.StreamerConfigurationReload;
 import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.runnable.UpdateStreamInfo;
-import fr.rakambda.channelpointsminer.miner.runnable.WebSocketPing;
+import fr.rakambda.channelpointsminer.miner.runnable.ChatWebSocketPing;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
@@ -44,9 +45,15 @@ class MinerRunnableFactoryTest{
 	}
 	
 	@Test
-	void createWebSocketPing(){
-		Assertions.assertThat(MinerRunnableFactory.createWebSocketPing(miner)).isNotNull()
-				.isInstanceOf(WebSocketPing.class);
+	void createChatWebSocketPing(){
+		Assertions.assertThat(MinerRunnableFactory.createChatWebSocketPing(miner)).isNotNull()
+				.isInstanceOf(ChatWebSocketPing.class);
+	}
+	
+	@Test
+	void createHermesWebSocketPing(){
+		Assertions.assertThat(MinerRunnableFactory.createHermesWebSocketPing(miner)).isNotNull()
+				.isInstanceOf(HermesWebSocketPing.class);
 	}
 	
 	@Test

@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.database;
 
 import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.time.Instant;
