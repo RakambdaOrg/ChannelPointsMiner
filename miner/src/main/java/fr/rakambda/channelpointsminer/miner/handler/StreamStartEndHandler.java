@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.BroadcastSettingsUpdate;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamDown;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamUp;
@@ -47,31 +48,38 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 		var streamerId = message.getChannelId();
 		var streamer = miner.getStreamerById(streamerId);
 		
-		if(streamer.map(Streamer::isStreaming).orElse(true)){
-			streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), false);
+		var status = miner.getGqlApi().withIsStreamLive(streamerId);
+		var streaming = status.map(GQLResponse::getData).map(d -> Objects.nonNull(d.getUser().getStream()));
+		var memoryStreaming = streamer.map(Streamer::isStreaming).orElse(false);
+		
+		// Fire event only if we know the current streaming status, and it is different from what we currently have in memory (i.e. the stream status changed and not just some parameters)
+		var fireEvent = streaming.isPresent() && streaming.get() != memoryStreaming;
+		
+		if(streaming.orElseGet(() -> !memoryStreaming)){
+			streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), fireEvent);
 		}
 		else{
-			streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), false);
+			streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), fireEvent);
 		}
 	}
 	
 	private void streamUp(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime, boolean fireEvent){
 		updateStream(streamerId, streamer);
-		Optional.ofNullable(streamer)
-				.filter(s -> s.getSettings().isJoinIrc())
-				.map(Streamer::getUsername)
-				.ifPresent(miner.getChatClient()::join);
 		if(fireEvent){
+			Optional.ofNullable(streamer)
+					.filter(s -> s.getSettings().isJoinIrc())
+					.map(Streamer::getUsername)
+					.ifPresent(miner.getChatClient()::join);
 			eventManager.onEvent(new StreamUpEvent(streamerId, username, streamer, serverTime));
 		}
 	}
 	
 	private void streamDown(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime, boolean fireEvent){
 		updateStream(streamerId, streamer);
-		Optional.ofNullable(streamer)
-				.map(Streamer::getUsername)
-				.ifPresent(miner.getChatClient()::leave);
 		if(fireEvent){
+			Optional.ofNullable(streamer)
+					.map(Streamer::getUsername)
+					.ifPresent(miner.getChatClient()::leave);
 			eventManager.onEvent(new StreamDownEvent(streamerId, username, streamer, serverTime));
 		}
 	}

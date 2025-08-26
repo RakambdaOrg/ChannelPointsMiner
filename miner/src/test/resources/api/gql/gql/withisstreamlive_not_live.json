@@ -1,0 +1,14 @@
+{
+  "data" : {
+    "user" : {
+      "id" : "987654321",
+      "stream" : null,
+      "__typename" : "User"
+    }
+  },
+  "extensions" : {
+    "durationMilliseconds": 58,
+    "operationName": "WithIsStreamLiveQuery",
+    "requestID": "request-id"
+  }
+}
