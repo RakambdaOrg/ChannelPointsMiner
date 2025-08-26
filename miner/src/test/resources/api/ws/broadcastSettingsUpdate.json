@@ -2,6 +2,6 @@
   "type" : "MESSAGE",
   "data" : {
     "topic" : "broadcast-settings-update.987654321",
-    "message" : "{\\\"channel_id\\\":\\\"987654321\\\",\\\"type\\\":\\\"broadcast_settings_update\\\",\\\"channel\\\":\\\"channel\\\",\\\"old_status\\\":\\\"\\\",\\\"status\\\":\\\"\\\",\\\"old_game\\\":\\\"\\\",\\\"game\\\":\\\"\\\",\\\"old_game_id\\\":0,\\\"game_id\\\":0}"
+    "message" : "{\"channel_id\":\"987654321\",\"type\":\"broadcast_settings_update\",\"channel\":\"channel\",\"old_status\":\"\",\"status\":\"\",\"old_game\":\"\",\"game\":\"\",\"old_game_id\":0,\"game_id\":0}"
   }
 }
