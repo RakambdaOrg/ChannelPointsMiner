@@ -1,12 +1,14 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
 import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.BroadcastSettingsUpdate;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamDown;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamUp;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamDownEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
+import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
@@ -23,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,6 +55,8 @@ class StreamStartEndHandlerTest{
 	@Mock
 	private StreamDown streamDownMessage;
 	@Mock
+	private BroadcastSettingsUpdate broadcastSettingsUpdateMessage;
+	@Mock
 	private ITwitchChatClient chatClient;
 	
 	@BeforeEach
@@ -59,10 +64,12 @@ class StreamStartEndHandlerTest{
 		lenient().when(topic.getTarget()).thenReturn(STREAMER_ID);
 		lenient().when(streamer.getUsername()).thenReturn(STREAMER_NAME);
 		lenient().when(streamer.getSettings()).thenReturn(streamerSettings);
+		lenient().when(streamer.isStreaming()).thenReturn(false);
 		lenient().when(streamerSettings.isJoinIrc()).thenReturn(false);
 		lenient().when(miner.getChatClient()).thenReturn(chatClient);
 		lenient().when(streamUpMessage.getServerTime()).thenReturn(NOW);
 		lenient().when(streamDownMessage.getServerTime()).thenReturn(NOW);
+		lenient().when(broadcastSettingsUpdateMessage.getChannelId()).thenReturn(STREAMER_ID);
 	}
 	
 	@Test
@@ -137,5 +144,63 @@ class StreamStartEndHandlerTest{
 		verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
 		verify(eventManager).onEvent(new StreamDownEvent(STREAMER_ID, null, null, NOW));
 		verify(chatClient, never()).leave(any());
+	}
+	
+	@Test
+	void broadcastSettingsUpdateAndNotStreaming(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+				var runnable = invocation.getArgument(0, Runnable.class);
+				runnable.run();
+				return null;
+			});
+			
+			when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
+			
+			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
+			
+			verify(miner).updateStreamerInfos(streamer);
+			verify(eventManager).onEvent(new StreamUpEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
+			verify(chatClient, never()).join(any());
+		}
+	}
+	
+	@Test
+	void broadcastSettingsUpdateAndStreaming(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+				var runnable = invocation.getArgument(0, Runnable.class);
+				runnable.run();
+				return null;
+			});
+			
+			when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
+			when(streamer.isStreaming()).thenReturn(true);
+			
+			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
+			
+			verify(miner).updateStreamerInfos(streamer);
+			verify(eventManager).onEvent(new StreamDownEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
+			verify(chatClient).leave(STREAMER_NAME);
+		}
+	}
+	
+	@Test
+	void broadcastSettingsUpdateAndUnknown(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.empty());
+			
+			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
+			
+			verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
+			verify(eventManager).onEvent(new StreamDownEvent(STREAMER_ID, null, null, NOW));
+			verify(chatClient, never()).leave(STREAMER_NAME);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.BroadcastSettingsUpdate;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ClaimAvailable;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CommunityMomentStart;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CreateNotification;
@@ -66,6 +67,8 @@ public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandl
 	public void onDropClaim(@NotNull Topic topic, @NotNull DropClaim message){}
 	
 	public void onViewCount(@NotNull Topic topic, @NotNull ViewCount message){}
+	
+	public void onBroadcastSettingsUpdate(@NotNull Topic topic, @NotNull BroadcastSettingsUpdate message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IPubSubMessage message){

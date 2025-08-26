@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.api.ws;
 
 import fr.rakambda.channelpointsminer.miner.api.pubsub.ITwitchPubSubWebSocketListener;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketClient;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.BroadcastSettingsUpdate;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ClaimAvailable;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CommunityMomentStart;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CreateNotification;
@@ -47,6 +48,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.time.ZonedDateTime;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.BROADCAST_SETTINGS_UPDATE;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
@@ -374,6 +376,24 @@ class TwitchPubSubWebSocketClientMessageTest{
 								.build())
 						.message(ViewCount.builder()
 								.viewers(50L)
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
+	void onBroadcastSettingsUpdate(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/broadcastSettingsUpdate.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(BROADCAST_SETTINGS_UPDATE)
+								.target("987654321")
+								.build())
+						.message(BroadcastSettingsUpdate.builder()
+								.channelId("987654321")
 								.build())
 						.build())
 				.build();

@@ -27,6 +27,7 @@ import lombok.ToString;
 		@JsonSubTypes.Type(value = DropProgress.class, name = "drop-progress"),
 		@JsonSubTypes.Type(value = DropClaim.class, name = "drop-claim"),
 		@JsonSubTypes.Type(value = ViewCount.class, name = "viewcount"),
+		@JsonSubTypes.Type(value = BroadcastSettingsUpdate.class, name = "broadcast_settings_update"),
 })
 @EqualsAndHashCode
 @ToString
