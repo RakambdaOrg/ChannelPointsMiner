@@ -16,7 +16,8 @@ public enum TopicName{
 	PREDICTIONS_CHANNEL_V1("predictions-channel-v1", false),
 	ONSITE_NOTIFICATIONS("onsite-notifications", true),
 	COMMUNITY_MOMENTS_CHANNEL_V1("community-moments-channel-v1", false),
-	USER_DROP_EVENTS("user-drop-events", false);
+	USER_DROP_EVENTS("user-drop-events", false),
+	BROADCAST_SETTINGS_UPDATE("broadcast-settings-update", false);
 	
 	@Getter(onMethod_ = @JsonValue)
 	private final String value;

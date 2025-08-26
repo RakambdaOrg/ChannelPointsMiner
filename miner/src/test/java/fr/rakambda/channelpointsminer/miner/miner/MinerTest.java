@@ -45,6 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.BROADCAST_SETTINGS_UPDATE;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
@@ -414,6 +415,7 @@ class MinerTest{
 			verify(updateStreamInfo).run(streamer);
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(PREDICTIONS_USER_V1).target(USER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(USER_DROP_EVENTS).target(USER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
@@ -452,6 +454,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(COMMUNITY_MOMENTS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
@@ -489,6 +492,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
@@ -527,6 +531,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 			verify(twitchChatClient, never()).join(any());
 		}
@@ -566,6 +571,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 			verify(twitchChatClient).join(STREAMER_USERNAME);
 		}
@@ -602,6 +608,7 @@ class MinerTest{
 			
 			verify(updateStreamInfo).run(streamer);
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(eventManager).onEvent(new StreamerAddedEvent(streamer, NOW));
 		}
 	}
@@ -686,6 +693,7 @@ class MinerTest{
 			tested.removeStreamer(streamer);
 			
 			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(COMMUNITY_MOMENTS_CHANNEL_V1).target(STREAMER_ID).build());
 			verify(hermesWebSocketPool).removePubSubTopic(Topic.builder().name(RAID).target(STREAMER_ID).build());
@@ -764,6 +772,7 @@ class MinerTest{
 			assertDoesNotThrow(() -> tested.updateStreamer(streamer));
 			
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(VIDEO_PLAYBACK_BY_ID).target(STREAMER_ID).build());
+			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(BROADCAST_SETTINGS_UPDATE).target(STREAMER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(USER_DROP_EVENTS).target(USER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(PREDICTIONS_USER_V1).target(USER_ID).build());
 			verify(hermesWebSocketPool).listenPubSubTopic(Topic.builder().name(PREDICTIONS_CHANNEL_V1).target(STREAMER_ID).build());

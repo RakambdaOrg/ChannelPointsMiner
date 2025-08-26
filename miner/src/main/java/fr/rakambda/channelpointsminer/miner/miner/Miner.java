@@ -45,6 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.BROADCAST_SETTINGS_UPDATE;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
 import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
@@ -221,6 +222,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			
 			listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
+			listenTopic(BROADCAST_SETTINGS_UPDATE, streamer.getId());
 			
 			if(streamer.getSettings().isMakePredictions()){
 				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
@@ -262,6 +264,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			log.info("Removing streamer from the mining list");
 			removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
+			removeTopic(BROADCAST_SETTINGS_UPDATE, streamer.getId());
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			removeTopic(COMMUNITY_MOMENTS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
