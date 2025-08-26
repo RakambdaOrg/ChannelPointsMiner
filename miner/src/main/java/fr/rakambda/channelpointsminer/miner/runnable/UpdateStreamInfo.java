@@ -148,7 +148,7 @@ public class UpdateStreamInfo implements Runnable{
 						.map(DropsHighlightServiceAvailableDropsData::getChannel)
 						.map(Channel::getViewerDropCampaigns)
 						.flatMap(Collection::stream)
-						.filter(this::isDismissibleGlobalCompaign)
+						.filter(this::isDismissibleGlobalCampaign)
 						.forEach(dropCampaign -> dismissCampaign(miner, streamer, dropCampaign));
 			}
 		}
@@ -157,7 +157,7 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	private boolean isDismissibleGlobalCompaign(@NotNull DropCampaign dropCampaign){
+	private boolean isDismissibleGlobalCampaign(@NotNull DropCampaign dropCampaign){
 		return Optional.ofNullable(dropCampaign.getSummary())
 				.map(summary -> summary.isSitewide() && summary.isPermanentlyDismissible())
 				.orElse(false);
