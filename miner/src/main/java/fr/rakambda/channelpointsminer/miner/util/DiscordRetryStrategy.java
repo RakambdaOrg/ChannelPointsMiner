@@ -13,11 +13,7 @@ public class DiscordRetryStrategy extends RetryStrategy.Standard{
 	
 	@Override
 	public long getWaitTime(HttpResponse response){
-		if(response == null){
-			return 0;
-		}
-		String value = response.getHeaders().getFirst("X-RateLimit-Reset-After");
-		var delay = parseToMillies(value);
+		var delay = super.getWaitTime(response);
 		log.info("Discord API call delayed for {}", Duration.ofMillis(delay));
 		return delay;
 	}
