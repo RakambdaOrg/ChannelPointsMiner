@@ -179,6 +179,7 @@ class StreamStartEndHandlerTest{
 			
 			when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
 			when(user.getStream()).thenReturn(null);
+			when(streamer.isStreaming()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
 			
@@ -205,6 +206,50 @@ class StreamStartEndHandlerTest{
 			
 			verify(miner).updateStreamerInfos(streamer);
 			verify(eventManager).onEvent(new StreamUpEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
+			verify(chatClient, never()).join(any());
+		}
+	}
+	
+	@Test
+	void broadcastSettingsUpdateAndNotStreamingFromGqlButStateDidNotChange(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+				var runnable = invocation.getArgument(0, Runnable.class);
+				runnable.run();
+				return null;
+			});
+			
+			when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
+			when(user.getStream()).thenReturn(null);
+			
+			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
+			
+			verify(miner).updateStreamerInfos(streamer);
+			verify(eventManager, never()).onEvent(any());
+			verify(chatClient, never()).leave(STREAMER_NAME);
+		}
+	}
+	
+	@Test
+	void broadcastSettingsUpdateAndStreamingFromGqlButStateDidNotChange(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			
+			when(miner.schedule(any(Runnable.class), anyLong(), any())).thenAnswer(invocation -> {
+				var runnable = invocation.getArgument(0, Runnable.class);
+				runnable.run();
+				return null;
+			});
+			
+			when(miner.getStreamerById(STREAMER_ID)).thenReturn(Optional.of(streamer));
+			when(streamer.isStreaming()).thenReturn(true);
+			
+			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
+			
+			verify(miner).updateStreamerInfos(streamer);
+			verify(eventManager, never()).onEvent(any());
 			verify(chatClient, never()).join(any());
 		}
 	}

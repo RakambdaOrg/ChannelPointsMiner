@@ -49,16 +49,17 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 		var streamer = miner.getStreamerById(streamerId);
 		
 		var status = miner.getGqlApi().withIsStreamLive(streamerId);
-		var streaming = status.map(GQLResponse::getData)
-				.map(d -> Objects.nonNull(d.getUser().getStream()))
-				.or(() -> streamer.map(Streamer::isStreaming).map(b -> !b))
-				.orElse(false);
+		var streaming = status.map(GQLResponse::getData).map(d -> Objects.nonNull(d.getUser().getStream()));
+		var memoryStreaming = streamer.map(Streamer::isStreaming).orElse(false);
 		
-		if(streaming){
-			streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), status.isPresent());
+		// Fire event only if we know the current streaming status, and it is different from what we currently have in memory (i.e. the stream status changed and not just some parameters)
+		var fireEvent = streaming.isPresent() && streaming.get() != memoryStreaming;
+		
+		if(streaming.orElseGet(() -> !memoryStreaming)){
+			streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), fireEvent);
 		}
 		else{
-			streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), status.isPresent());
+			streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), fireEvent);
 		}
 	}
 	
