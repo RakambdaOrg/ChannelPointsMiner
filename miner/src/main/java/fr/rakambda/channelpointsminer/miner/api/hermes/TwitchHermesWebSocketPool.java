@@ -97,6 +97,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		clients.remove(client);
 		if(code != NORMAL){
 			pendingTopics.addAll(client.getSubscribeRequests().keySet().stream().map(topics::get).filter(Objects::nonNull).toList());
+			client.getSubscribeRequests().keySet().forEach(topics::remove);
 		}
 	}
 	

@@ -11,6 +11,7 @@ import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.Authenticat
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ITwitchHermesWebSocketResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.KeepAliveResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.NotificationResponse;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ReconnectResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.SubscribeResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.UnsubscribeResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.WelcomeResponse;
@@ -89,6 +90,10 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 					subscribeRequests.remove(unsubscribeResponse.getUnsubscribeResponse().getSubscription().getId());
 				}
 				case NotificationResponse notificationResponse -> log.debug("Received Hermes notification of type {}", notificationResponse.getNotification().getClass().getSimpleName());
+				case ReconnectResponse ignored -> {
+					log.warn("Received Hermes reconnect response, TODO: see if any field is useful : {}", messageStr);
+					close(GOING_AWAY);
+				}
 				default -> {
 				}
 			}
