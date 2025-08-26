@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 		@JsonSubTypes.Type(value = SubscribeResponse.class, name = "subscribeResponse"),
 		@JsonSubTypes.Type(value = UnsubscribeResponse.class, name = "unsubscribeResponse"),
 		@JsonSubTypes.Type(value = NotificationResponse.class, name = "notification"),
+		@JsonSubTypes.Type(value = ReconnectResponse.class, name = "reconnect"),
 })
 @ToString
 @EqualsAndHashCode
