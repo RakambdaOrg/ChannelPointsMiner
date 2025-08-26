@@ -1,0 +1,18 @@
+{
+  "data" : {
+    "user" : {
+      "id" : "987654321",
+      "stream" : {
+        "id" : "12345",
+        "createdAt" : "2025-08-26T11:27:09Z",
+        "__typename" : "Stream"
+      },
+      "__typename" : "User"
+    }
+  },
+  "extensions" : {
+    "durationMilliseconds" : 58,
+    "operationName" : "WithIsStreamLiveQuery",
+    "requestID" : "request-id"
+  }
+}
