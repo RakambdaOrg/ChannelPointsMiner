@@ -162,7 +162,7 @@ class StreamStartEndHandlerTest{
 			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
 			
 			verify(miner).updateStreamerInfos(streamer);
-			verify(eventManager).onEvent(new StreamUpEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
+			verify(eventManager, never()).onEvent(any());
 			verify(chatClient, never()).join(any());
 		}
 	}
@@ -184,7 +184,7 @@ class StreamStartEndHandlerTest{
 			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
 			
 			verify(miner).updateStreamerInfos(streamer);
-			verify(eventManager).onEvent(new StreamDownEvent(STREAMER_ID, STREAMER_NAME, streamer, NOW));
+			verify(eventManager, never()).onEvent(any());
 			verify(chatClient).leave(STREAMER_NAME);
 		}
 	}
@@ -199,7 +199,7 @@ class StreamStartEndHandlerTest{
 			assertDoesNotThrow(() -> tested.handle(topic, broadcastSettingsUpdateMessage));
 			
 			verify(miner, never()).schedule(any(Runnable.class), anyLong(), any());
-			verify(eventManager).onEvent(new StreamDownEvent(STREAMER_ID, null, null, NOW));
+			verify(eventManager, never()).onEvent(any());
 			verify(chatClient, never()).leave(STREAMER_NAME);
 		}
 	}

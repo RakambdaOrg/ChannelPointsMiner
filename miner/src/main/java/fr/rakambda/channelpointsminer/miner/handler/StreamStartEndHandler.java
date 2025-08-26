@@ -32,14 +32,14 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 	public void onStreamUp(@NotNull Topic topic, @NotNull StreamUp message){
 		var streamerId = topic.getTarget();
 		var streamer = miner.getStreamerById(streamerId);
-		streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), message.getServerTime());
+		streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), message.getServerTime(), true);
 	}
 	
 	@Override
 	public void onStreamDown(@NotNull Topic topic, @NotNull StreamDown message){
 		var streamerId = topic.getTarget();
 		var streamer = miner.getStreamerById(streamerId);
-		streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), message.getServerTime());
+		streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), message.getServerTime(), true);
 	}
 	
 	@Override
@@ -48,28 +48,32 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 		var streamer = miner.getStreamerById(streamerId);
 		
 		if(streamer.map(Streamer::isStreaming).orElse(true)){
-			streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now());
+			streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), false);
 		}
 		else{
-			streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now());
+			streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), TimeFactory.now(), false);
 		}
 	}
 	
-	private void streamUp(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime){
+	private void streamUp(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime, boolean fireEvent){
 		updateStream(streamerId, streamer);
 		Optional.ofNullable(streamer)
 				.filter(s -> s.getSettings().isJoinIrc())
 				.map(Streamer::getUsername)
 				.ifPresent(miner.getChatClient()::join);
-		eventManager.onEvent(new StreamUpEvent(streamerId, username, streamer, serverTime));
+		if(fireEvent){
+			eventManager.onEvent(new StreamUpEvent(streamerId, username, streamer, serverTime));
+		}
 	}
 	
-	private void streamDown(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime){
+	private void streamDown(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime, boolean fireEvent){
 		updateStream(streamerId, streamer);
 		Optional.ofNullable(streamer)
 				.map(Streamer::getUsername)
 				.ifPresent(miner.getChatClient()::leave);
-		eventManager.onEvent(new StreamDownEvent(streamerId, username, streamer, serverTime));
+		if(fireEvent){
+			eventManager.onEvent(new StreamDownEvent(streamerId, username, streamer, serverTime));
+		}
 	}
 	
 	private void updateStream(@Nullable String streamerId, @Nullable Streamer streamer){
