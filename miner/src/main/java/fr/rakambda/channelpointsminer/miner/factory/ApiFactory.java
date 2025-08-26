@@ -31,6 +31,7 @@ import fr.rakambda.channelpointsminer.miner.config.login.TvLoginMethod;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.log.UnirestLogger;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
+import fr.rakambda.channelpointsminer.miner.util.DiscordRetryStrategy;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.HeaderNames;
 import kong.unirest.core.Unirest;
@@ -65,7 +66,7 @@ public class ApiFactory{
 				.interceptor(new UnirestLogger());
 		
 		if(Objects.isNull(twitchClient) || twitchClient == TwitchClient.WEB){
-			unirest.config().setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0");
+			unirest.config().setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:142.0) Gecko/20100101 Firefox/142.0");
 		}
 		else if(twitchClient == TwitchClient.MOBILE){
 			unirest.config().setDefaultHeader(USER_AGENT, "Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G975N Build/N2G48C) tv.twitch.android.app/13.4.1/1304010");
@@ -107,7 +108,7 @@ public class ApiFactory{
 	@NotNull
 	public static DiscordApi createDiscordApi(@NotNull URL webhookUrl){
 		var unirestInstance = createUnirestInstance(null);
-		unirestInstance.config().retryAfter(true, 5);
+		unirestInstance.config().retryAfter(new DiscordRetryStrategy(5));
 		
 		return new DiscordApi(webhookUrl, unirestInstance);
 	}
