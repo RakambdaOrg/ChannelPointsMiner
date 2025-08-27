@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
 import java.time.ZonedDateTime;
 import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
+import static org.java_websocket.framing.CloseFrame.NORMAL;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -47,12 +48,27 @@ class TwitchHermesWebSocketReconnectTest{
 		var expected = ReconnectResponse.builder()
 				.id("4ae4865b-cedc-4755-8335-0560b7d05341")
 				.timestamp(ZonedDateTime.parse("2025-01-02T03:04:05.123456789Z"))
+				.reconnect(ReconnectResponse.Reconnect.builder().build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+		verify(listener).onWebSocketClosed(eq(tested), eq(GOING_AWAY), anyString(), anyBoolean());
+	}
+	
+	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)
+	void onResponseWithReconnectUrl(WebsocketMockServer server) throws InterruptedException{
+		tested.connectBlocking();
+		
+		server.send(TestUtils.getAllResourceContent("api/hermes/reconnect_ok_url.json"));
+		
+		var expected = ReconnectResponse.builder()
+				.id("4ae4865b-cedc-4755-8335-0560b7d05341")
+				.timestamp(ZonedDateTime.parse("2025-01-02T03:04:05.123456789Z"))
 				.reconnect(ReconnectResponse.Reconnect.builder()
 						.url("wss://test")
 						.build())
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
-		verify(listener).onWebSocketClosed(eq(tested), eq(GOING_AWAY), anyString(), anyBoolean());
+		verify(listener).onWebSocketClosed(eq(tested), eq(NORMAL), anyString(), anyBoolean());
 	}
 	
 	@BeforeEach

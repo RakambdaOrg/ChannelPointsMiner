@@ -15,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString(callSuper = true)
 public class ReconnectResponse extends ITwitchHermesWebSocketResponse{
 	@JsonProperty("reconnect")

@@ -3,5 +3,6 @@
   "type" : "reconnect",
   "timestamp" : "2025-01-02T03:04:05.123456789Z",
   "reconnect" : {
+    "url" : "wss://test"
   }
 }
