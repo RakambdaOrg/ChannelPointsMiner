@@ -17,6 +17,8 @@ import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.Unsubscribe
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.WelcomeResponse;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.event.impl.ErrorEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
@@ -37,6 +39,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
+import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
 public class TwitchHermesWebSocketClient extends WebSocketClient{
@@ -45,12 +48,15 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	private final String uuid;
 	@Getter
 	private final Map<String, SubscribeRequest> subscribeRequests;
+	@NotNull
+	private final IEventManager eventManager;
 	
 	@Getter
 	private Instant lastPong;
 	
-	public TwitchHermesWebSocketClient(@NotNull URI uri){
+	public TwitchHermesWebSocketClient(@NotNull URI uri, @NotNull IEventManager eventManager){
 		super(uri);
+		this.eventManager = eventManager;
 		uuid = UUID.randomUUID().toString();
 		subscribeRequests = new HashMap<>();
 		
@@ -86,13 +92,18 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 				case KeepAliveResponse ignored -> onPong();
 				case SubscribeResponse subscribeResponse -> log.debug("Received Hermes subscribe response with status {}", subscribeResponse.getSubscribeResponse().getResult());
 				case UnsubscribeResponse unsubscribeResponse -> {
-					log.debug("Received Hermes subscribe response with status {}", unsubscribeResponse.getUnsubscribeResponse().getResult());
+					log.debug("Received Hermes unsubscribe response with status {}", unsubscribeResponse.getUnsubscribeResponse().getResult());
 					subscribeRequests.remove(unsubscribeResponse.getUnsubscribeResponse().getSubscription().getId());
 				}
 				case NotificationResponse notificationResponse -> log.debug("Received Hermes notification of type {}", notificationResponse.getNotification().getClass().getSimpleName());
-				case ReconnectResponse ignored -> {
-					log.warn("Received Hermes reconnect response, TODO: see if any field is useful : {}", messageStr);
-					close(GOING_AWAY);
+				case ReconnectResponse reconnectResponse -> {
+					if(Objects.nonNull(reconnectResponse.getReconnect()) && Objects.nonNull(reconnectResponse.getReconnect().getUrl())){
+						close(NORMAL);
+					}
+					else{
+						log.warn("Received Hermes reconnect response without a reconnect URL");
+						close(GOING_AWAY);
+					}
 				}
 				default -> {
 				}
@@ -101,6 +112,7 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		}
 		catch(Exception e){
 			log.error("Failed to handle Hermes WebSocket message {}", messageStr, e);
+			eventManager.onEvent(new ErrorEvent("Hermes API", "Failed to handle Hermes WebSocket message %s".formatted(messageStr), e));
 		}
 	}
 	

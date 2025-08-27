@@ -166,7 +166,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, accountConfiguration.getLoginMethod(), eventManager);
 			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
 			twitchApi = ApiFactory.createTwitchApi(twitchLogin);
-			hermesWebSocketPool = ApiFactory.createHermesWebSocketPool(twitchLogin);
+			hermesWebSocketPool = ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager);
 			hermesWebSocketPool.addPubSubListener(this);
 			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);
 			chatClient.addChatMessageListener(new TwitchChatEventProducer(eventManager));

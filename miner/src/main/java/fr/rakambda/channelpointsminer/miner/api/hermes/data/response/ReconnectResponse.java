@@ -17,5 +17,17 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @ToString(callSuper = true)
 public class ReconnectResponse extends ITwitchHermesWebSocketResponse{
-	// TODO what fields are present ?
+	@JsonProperty("reconnect")
+	private Reconnect reconnect;
+	
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@EqualsAndHashCode
+	@ToString
+	@Builder
+	public static class Reconnect{
+		@JsonProperty("url")
+		private String url;
+	}
 }

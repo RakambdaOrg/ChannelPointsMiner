@@ -7,6 +7,7 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PointsEarned
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.Balance;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned.PointsEarnedData;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointGain;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.tests.TestUtils;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServerExtension;
@@ -30,6 +31,8 @@ class TwitchHermesWebSocketNotificationTest{
 	
 	@Mock
 	private ITwitchHermesWebSocketListener listener;
+	@Mock
+	private IEventManager eventManager;
 	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
@@ -72,7 +75,7 @@ class TwitchHermesWebSocketNotificationTest{
 	@BeforeEach
 	void setUp(WebsocketMockServer server){
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchHermesWebSocketClient(uri);
+		tested = new TwitchHermesWebSocketClient(uri, eventManager);
 		tested.setReuseAddr(true);
 		tested.addListener(listener);
 	}

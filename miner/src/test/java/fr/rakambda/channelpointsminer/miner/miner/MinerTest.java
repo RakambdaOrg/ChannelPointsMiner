@@ -9,9 +9,9 @@ import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
-import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.AnalyticsConfiguration;
 import fr.rakambda.channelpointsminer.miner.config.ChatMode;
@@ -167,7 +167,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -196,7 +196,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, eventManager, streamerSettingsFactory, true)).thenReturn(streamerConfigurationReload);
@@ -224,7 +224,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			runnableFactory.when(() -> MinerRunnableFactory.createStreamerConfigurationReload(tested, eventManager, streamerSettingsFactory, false)).thenReturn(streamerConfigurationReload);
@@ -252,7 +252,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -284,7 +284,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, true)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -343,7 +343,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			tested.start();
@@ -391,7 +391,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
@@ -431,7 +431,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
@@ -469,7 +469,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
@@ -508,7 +508,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -547,7 +547,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -586,7 +586,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
 			
@@ -643,7 +643,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -677,7 +677,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -711,7 +711,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -750,7 +750,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -790,7 +790,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -829,7 +829,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -865,7 +865,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);
@@ -909,7 +909,7 @@ class MinerTest{
 			apiFactory.when(() -> ApiFactory.createVersionProvider(VERSION_PROVIDER)).thenReturn(versionProvider);
 			apiFactory.when(() -> ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, loginMethod, eventManager)).thenReturn(integrityProvider);
 			apiFactory.when(() -> ApiFactory.createGqlApi(twitchLogin, integrityProvider)).thenReturn(gqlApi);
-			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin)).thenReturn(hermesWebSocketPool);
+			apiFactory.when(() -> ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).thenReturn(hermesWebSocketPool);
 			ircFactory.when(() -> TwitchChatFactory.createChat(tested, CHAT_MODE, false)).thenReturn(twitchChatClient);
 			
 			runnableFactory.when(() -> MinerRunnableFactory.createUpdateStreamInfo(tested)).thenReturn(updateStreamInfo);

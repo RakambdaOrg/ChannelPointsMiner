@@ -199,7 +199,7 @@ public class ApiFactory{
 	}
 	
 	@NotNull
-	public static TwitchHermesWebSocketPool createHermesWebSocketPool(@NotNull TwitchLogin twitchLogin){
-		return new TwitchHermesWebSocketPool(50, twitchLogin);
+	public static TwitchHermesWebSocketPool createHermesWebSocketPool(@NotNull TwitchLogin twitchLogin, @NotNull IEventManager eventManager){
+		return new TwitchHermesWebSocketPool(50, twitchLogin, eventManager);
 	}
 }

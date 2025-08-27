@@ -2,11 +2,14 @@ package fr.rakambda.channelpointsminer.miner.api.hermes;
 
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ITwitchHermesWebSocketResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.NotificationResponse;
+import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.ReconnectResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.UnsubscribeResponse;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.notification.PubSubNotificationType;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.ITwitchPubSubMessageListener;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.event.impl.ErrorEvent;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +32,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 	
 	private final int maxSubscriptionPerClient;
 	private final TwitchLogin twitchLogin;
+	private final IEventManager eventManager;
 	
 	private final Collection<TwitchHermesWebSocketClient> clients;
 	private final Collection<ITwitchHermesMessageListener> listeners;
@@ -37,9 +41,10 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 	
 	private final Map<String, fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic> topics;
 	
-	public TwitchHermesWebSocketPool(int maxSubscriptionPerClient, @NotNull TwitchLogin twitchLogin){
+	public TwitchHermesWebSocketPool(int maxSubscriptionPerClient, @NotNull TwitchLogin twitchLogin, @NotNull IEventManager eventManager){
 		this.maxSubscriptionPerClient = maxSubscriptionPerClient;
 		this.twitchLogin = twitchLogin;
+		this.eventManager = eventManager;
 		
 		clients = new ConcurrentLinkedQueue<>();
 		listeners = new ConcurrentLinkedQueue<>();
@@ -81,12 +86,28 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		if(response instanceof UnsubscribeResponse u){
 			topics.remove(u.getUnsubscribeResponse().getSubscription().getId());
 		}
+		if(response instanceof ReconnectResponse r){
+			if(Objects.nonNull(r.getReconnect()) && Objects.nonNull(r.getReconnect().getUrl())){
+				try{
+					createReconnectClient(r.getReconnect().getUrl()); // TODO do the subscription ids change ?
+				}
+				catch(Exception e){
+					eventManager.onEvent(new ErrorEvent("Hermes API", "Failed to reconnect client with reconnect URL", e));
+				}
+			}
+		}
 		if(response instanceof NotificationResponse n){
 			if(n.getNotification() instanceof PubSubNotificationType t){
 				if(Objects.isNull(t.getPubsub())){
 					return;
 				}
-				var topic = topics.get(n.getNotification().getSubscription().getId());
+				var subscriptionId = n.getNotification().getSubscription().getId();
+				var topic = topics.get(subscriptionId);
+				if(Objects.isNull(topic)){
+					log.error("Received Hermes PubSub message for unknown topic from subscription id {}", subscriptionId);
+					eventManager.onEvent(new ErrorEvent("Hermes API", "Received PubSub message for unknown topic from subscription id %s".formatted(subscriptionId)));
+					return;
+				}
 				pubSubListeners.forEach(l -> l.onTwitchMessage(topic, t.getPubsub()));
 			}
 		}
@@ -110,6 +131,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 		catch(RuntimeException e){
 			log.error("Failed to join pending subscriptions", e);
+			eventManager.onEvent(new ErrorEvent("Hermes API", "Failed to join pending subscriptions"));
 		}
 	}
 	
@@ -124,6 +146,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 		catch(RuntimeException e){
 			pendingTopics.add(topic);
+			eventManager.onEvent(new ErrorEvent("Hermes API", "Failed to listen to PubSub topic", e));
 			throw e;
 		}
 	}
@@ -148,8 +171,8 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 	@NotNull
 	public TwitchHermesWebSocketClient createNewClient(){
 		try{
-			var client = TwitchWebSocketClientFactory.createHermesClient();
-			log.debug("Created Hermes WebSocket client with uuid {}", client.getUuid());
+			var client = TwitchWebSocketClientFactory.createHermesClient(eventManager);
+			log.info("Created Hermes WebSocket client with uuid {}", client.getUuid());
 			client.addListener(this);
 			client.connectBlocking();
 			clients.add(client);
@@ -157,6 +180,22 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 		catch(Exception e){
 			log.error("Failed to create new Hermes WebSocket");
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@NotNull
+	private TwitchHermesWebSocketClient createReconnectClient(@NotNull String reconnectUrl){
+		try{
+			var client = TwitchWebSocketClientFactory.createHermesClient(reconnectUrl, eventManager);
+			log.info("Created (reconnect) Hermes WebSocket client with uuid {}", client.getUuid());
+			client.addListener(this);
+			client.connectBlocking();
+			clients.add(client);
+			return client;
+		}
+		catch(Exception e){
+			log.error("Failed to create new (reconnect) Hermes WebSocket");
 			throw new RuntimeException(e);
 		}
 	}

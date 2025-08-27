@@ -3,6 +3,7 @@ package fr.rakambda.channelpointsminer.miner.api.hermes;
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.response.UnsubscribeResponse;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.tests.TestUtils;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServerExtension;
@@ -27,6 +28,8 @@ class TwitchHermesWebSocketUnsubscribeTest{
 	
 	@Mock
 	private ITwitchHermesWebSocketListener listener;
+	@Mock
+	private IEventManager eventManager;
 	
 	@AfterEach
 	void tearDown(WebsocketMockServer server){
@@ -87,7 +90,7 @@ class TwitchHermesWebSocketUnsubscribeTest{
 	@BeforeEach
 	void setUp(WebsocketMockServer server){
 		var uri = URI.create("ws://127.0.0.1:" + server.getPort());
-		tested = new TwitchHermesWebSocketClient(uri);
+		tested = new TwitchHermesWebSocketClient(uri, eventManager);
 		tested.setReuseAddr(true);
 		tested.addListener(listener);
 	}

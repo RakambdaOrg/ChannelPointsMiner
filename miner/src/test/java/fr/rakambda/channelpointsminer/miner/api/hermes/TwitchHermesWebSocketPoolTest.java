@@ -10,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.ITwitchPubSubMessageListe
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topics;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
 import org.mockito.Mock;
@@ -54,10 +55,12 @@ class TwitchHermesWebSocketPoolTest{
 	private ITwitchPubSubMessageListener twitchMessageListener;
 	@Mock
 	private TwitchLogin twitchLogin;
+	@Mock
+	private IEventManager eventManager;
 	
 	@BeforeEach
 	void setUp(){
-		tested = new TwitchHermesWebSocketPool(50, twitchLogin);
+		tested = new TwitchHermesWebSocketPool(50, twitchLogin, eventManager);
 		
 		lenient().when(client.listenPubSubTopic(any())).thenReturn(Optional.of(SUBSCRIBED_TOPIC_ID));
 	}
@@ -65,7 +68,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void addTopicCreatesNewClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			assertDoesNotThrow(() -> tested.listenPubSubTopic(topic));
 			
@@ -80,7 +83,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void addNewTopicToExistingClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			when(client.isPubSubTopicListened(topic)).thenReturn(false);
 			
@@ -98,7 +101,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void addExistingTopicToExistingClient() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			when(client.isPubSubTopicListened(topic)).thenReturn(true);
 			
@@ -117,7 +120,7 @@ class TwitchHermesWebSocketPoolTest{
 	void manyTopicsAreSplitOnSeveralClients(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
 			var client2 = mock(TwitchHermesWebSocketClient.class);
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client).thenReturn(client2);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client).thenReturn(client2);
 			
 			when(client.isPubSubTopicListened(any())).thenReturn(false);
 			when(client.getSubscriptionCount()).thenReturn(0);
@@ -136,7 +139,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void clientError() throws InterruptedException{
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			doThrow(new RuntimeException("For tests")).when(client).connectBlocking();
 			
@@ -150,7 +153,7 @@ class TwitchHermesWebSocketPoolTest{
 	void closesAllClients(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
 			var client2 = mock(TwitchHermesWebSocketClient.class);
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client).thenReturn(client2);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client).thenReturn(client2);
 			
 			when(client.isPubSubTopicListened(any())).thenReturn(false);
 			when(client.getSubscriptionCount()).thenReturn(0);
@@ -170,7 +173,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void normalClientCloseRemovesClient(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			assertDoesNotThrow(() -> tested.listenPubSubTopic(topic));
 			assertThat(tested.getClientCount()).isEqualTo(1);
@@ -184,7 +187,7 @@ class TwitchHermesWebSocketPoolTest{
 	void abnormalClientCloseRecreatesClient(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
 			var client2 = mock(TwitchHermesWebSocketClient.class);
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client).thenReturn(client2);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client).thenReturn(client2);
 			
 			when(client.getSubscribeRequests()).thenReturn(Map.of(SUBSCRIBED_TOPIC_ID, mock(SubscribeRequest.class)));
 			
@@ -201,7 +204,7 @@ class TwitchHermesWebSocketPoolTest{
 	void abnormalClientCloseRecreatesClient2(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
 			var client2 = mock(TwitchHermesWebSocketClient.class);
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client).thenReturn(client2);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client).thenReturn(client2);
 			
 			var topics = new Topics(topic);
 			
@@ -223,7 +226,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void pubSubMessagesAreRedirected(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			tested.listenPubSubTopic(topic);
 			
@@ -249,7 +252,7 @@ class TwitchHermesWebSocketPoolTest{
 	void pingTimedOutClosing(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
@@ -267,7 +270,7 @@ class TwitchHermesWebSocketPoolTest{
 	void pingTimedOutClosed(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class);
 				var timeFactory = Mockito.mockStatic(TimeFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
@@ -284,7 +287,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void removeTopic(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			when(client.isPubSubTopicListened(topic)).thenReturn(true);
 			tested.listenPubSubTopic(topic);
@@ -297,7 +300,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void removeUnknownTopic(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			when(client.isPubSubTopicListened(topic)).thenReturn(false);
 			tested.listenPubSubTopic(topic);
@@ -310,7 +313,7 @@ class TwitchHermesWebSocketPoolTest{
 	@Test
 	void removeNeverAddedTopic(){
 		try(var twitchClientFactory = Mockito.mockStatic(TwitchWebSocketClientFactory.class)){
-			twitchClientFactory.when(TwitchWebSocketClientFactory::createHermesClient).thenReturn(client);
+			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			
 			tested.removePubSubTopic(topic);
 			verify(client, never()).removeSubscription(anyString());

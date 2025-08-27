@@ -162,6 +162,6 @@ class ApiFactoryTest{
 	
 	@Test
 	void createHermesWebSocketPool(){
-		assertThat(ApiFactory.createHermesWebSocketPool(twitchLogin)).isNotNull().isInstanceOf(TwitchHermesWebSocketPool.class);
+		assertThat(ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).isNotNull().isInstanceOf(TwitchHermesWebSocketPool.class);
 	}
 }

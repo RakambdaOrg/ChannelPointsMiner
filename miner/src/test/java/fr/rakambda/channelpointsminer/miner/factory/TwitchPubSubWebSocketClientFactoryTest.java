@@ -4,6 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.chat.ws.TwitchChatWebSocketClien
 import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketClient;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.Mock;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.Test;
 class TwitchPubSubWebSocketClientFactoryTest{
 	@Mock
 	private TwitchLogin twitchLogin;
+	@Mock
+	private IEventManager eventManager;
 	
 	@Test
 	void createPubSub(){
@@ -21,7 +24,12 @@ class TwitchPubSubWebSocketClientFactoryTest{
 	
 	@Test
 	void createHermesClient(){
-		Assertions.assertThat(TwitchWebSocketClientFactory.createHermesClient()).isNotNull().isInstanceOf(TwitchHermesWebSocketClient.class);
+		Assertions.assertThat(TwitchWebSocketClientFactory.createHermesClient(eventManager)).isNotNull().isInstanceOf(TwitchHermesWebSocketClient.class);
+	}
+	
+	@Test
+	void createReconnectHermesClient(){
+		Assertions.assertThat(TwitchWebSocketClientFactory.createHermesClient("wss://test", eventManager)).isNotNull().isInstanceOf(TwitchHermesWebSocketClient.class);
 	}
 	
 	@Test

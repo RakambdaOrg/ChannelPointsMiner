@@ -1,5 +1,8 @@
 {
   "id" : "4ae4865b-cedc-4755-8335-0560b7d05341",
   "type" : "reconnect",
-  "timestamp" : "2025-01-02T03:04:05.123456789Z"
+  "timestamp" : "2025-01-02T03:04:05.123456789Z",
+  "reconnect" : {
+    "url" : "wss://test"
+  }
 }

@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketClie
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketClient;
+import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import java.net.URI;
@@ -22,8 +23,13 @@ public class TwitchWebSocketClientFactory{
 	}
 	
 	@NotNull
-	public static TwitchHermesWebSocketClient createHermesClient(){
-		return new TwitchHermesWebSocketClient(URI.create("%s?clientId=%s".formatted(HERMES_URI_BASE, TwitchClient.WEB.getClientId())));
+	public static TwitchHermesWebSocketClient createHermesClient(@NotNull IEventManager eventManager){
+		return new TwitchHermesWebSocketClient(URI.create("%s?clientId=%s".formatted(HERMES_URI_BASE, TwitchClient.WEB.getClientId())), eventManager);
+	}
+	
+	@NotNull
+	public static TwitchHermesWebSocketClient createHermesClient(@NotNull String reconnectUrl, @NotNull IEventManager eventManager){
+		return new TwitchHermesWebSocketClient(URI.create(reconnectUrl), eventManager);
 	}
 	
 	@NotNull
