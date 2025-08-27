@@ -27,26 +27,30 @@ public class WebsocketMockServer extends WebSocketServer{
 	private final Map<String, String> answers;
 	@Getter
 	private boolean receivedClose;
+	@Getter
+	private boolean started;
 	
 	public WebsocketMockServer(int port){
 		super(new InetSocketAddress(port));
 		setReuseAddr(true);
 		
 		log.debug("Starting websocket mock server on port {}", port);
-		
 		this.port = port;
 		
 		receivedMessages = new ConcurrentLinkedQueue<>();
 		answers = new ConcurrentHashMap<>();
 		receivedClose = false;
+		started = false;
 	}
 	
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake){
+		log.debug("WebSocket mock server received connection");
 	}
 	
 	@Override
 	public void onClose(WebSocket conn, int code, String reason, boolean remote){
+		log.debug("WebSocket mock server closing");
 		receivedClose = true;
 	}
 	
@@ -66,6 +70,8 @@ public class WebsocketMockServer extends WebSocketServer{
 	
 	@Override
 	public void onStart(){
+		log.debug("WebSocket mock server started");
+		started = true;
 	}
 	
 	@Override

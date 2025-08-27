@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import static org.awaitility.Awaitility.await;
 
 public class WebsocketMockServerExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterAllCallback, ParameterResolver{
 	private final WebsocketMockServer server;
@@ -25,6 +27,7 @@ public class WebsocketMockServerExtension implements Extension, BeforeAllCallbac
 	@Override
 	public void beforeAll(ExtensionContext context){
 		server.start();
+		await("WebSocket started").atMost(15, TimeUnit.SECONDS).until(server::isStarted);
 	}
 	
 	@Override
