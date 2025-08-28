@@ -68,7 +68,7 @@ class TwitchHermesWebSocketReconnectTest{
 						.build())
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
-		verify(listener).onWebSocketClosed(eq(tested), eq(NORMAL), anyString(), anyBoolean());
+		verify(listener).onWebSocketClosed(eq(tested), eq(GOING_AWAY), anyString(), anyBoolean());
 	}
 	
 	@BeforeEach

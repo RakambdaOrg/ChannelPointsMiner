@@ -86,16 +86,6 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		if(response instanceof UnsubscribeResponse u){
 			topics.remove(u.getUnsubscribeResponse().getSubscription().getId());
 		}
-		if(response instanceof ReconnectResponse r){
-			if(Objects.nonNull(r.getReconnect()) && Objects.nonNull(r.getReconnect().getUrl())){
-				try{
-					createReconnectClient(r.getReconnect().getUrl()); // TODO do the subscription ids change ?
-				}
-				catch(Exception e){
-					eventManager.onEvent(new ErrorEvent("Hermes API", "Failed to reconnect client with reconnect URL", e));
-				}
-			}
-		}
 		if(response instanceof NotificationResponse n){
 			if(n.getNotification() instanceof PubSubNotificationType t){
 				if(Objects.isNull(t.getPubsub())){

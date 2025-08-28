@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
-import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
 public class TwitchHermesWebSocketClient extends WebSocketClient{
@@ -96,14 +95,9 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 					subscribeRequests.remove(unsubscribeResponse.getUnsubscribeResponse().getSubscription().getId());
 				}
 				case NotificationResponse notificationResponse -> log.debug("Received Hermes notification of type {}", notificationResponse.getNotification().getClass().getSimpleName());
-				case ReconnectResponse reconnectResponse -> {
-					if(Objects.nonNull(reconnectResponse.getReconnect()) && Objects.nonNull(reconnectResponse.getReconnect().getUrl())){
-						close(NORMAL);
-					}
-					else{
-						log.warn("Received Hermes reconnect response without a reconnect URL");
-						close(GOING_AWAY);
-					}
+				case ReconnectResponse ignored -> {
+					log.warn("Received Hermes reconnect response");
+					close(GOING_AWAY);
 				}
 				default -> {
 				}
