@@ -10,4 +10,4 @@ Please note that the project has a code of conduct; please follow it in all your
 
 == Pull requests
 
-Pull requests target should be made on `develop` branch.
+Pull requests target should be made on `main` branch.

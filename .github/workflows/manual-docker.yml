@@ -2,6 +2,13 @@ name: Manually deploy docker
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        type: string
+        description: branch to build
+      latest:
+        type: boolean
+        description: Build as latest
 
 jobs:
   publish-miner:
@@ -12,6 +19,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.branch }}
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -33,7 +42,7 @@ jobs:
           -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
           -Djib.to.image=${{ steps.miner-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
-        if: success() && github.ref == 'refs/heads/main'
+        if: success() && github.event.inputs.latest == 'true'
         run: |
           ./gradlew \
           :miner:jib \
@@ -49,6 +58,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.branch }}
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -70,7 +81,7 @@ jobs:
           -Djib.to.auth.password=${{ secrets.DOCKER_TOKEN }} \
           -Djib.to.image=${{ steps.viewer-image-name.outputs.IMAGE_NAME }}
       - name: Push latest on Docker Hub
-        if: success() && github.ref == 'refs/heads/main'
+        if: success() && github.event.inputs.latest == 'true'
         run: |
           ./gradlew \
           :viewer:jib \

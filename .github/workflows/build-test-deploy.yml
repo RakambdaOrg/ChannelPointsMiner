@@ -4,12 +4,10 @@ on:
   push:
     branches:
       - main
-      - develop
     tags:
   pull_request:
     branches:
       - main
-      - develop
   workflow_dispatch:
 
 jobs:
@@ -186,7 +184,7 @@ jobs:
     needs:
       - test-miner
       - test-viewer
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main'
     concurrency: miner_docker_${{ github.ref }}
     environment: DockerHub
     steps:
@@ -217,7 +215,7 @@ jobs:
     needs:
       - test-miner
       - test-viewer
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main'
     concurrency: viewer_docker_${{ github.ref }}
     environment: DockerHub
     steps:
