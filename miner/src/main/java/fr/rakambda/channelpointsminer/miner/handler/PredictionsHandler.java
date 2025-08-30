@@ -1,14 +1,14 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.EventCreated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.EventUpdated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionMade;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionResult;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.EventStatus;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.EventCreated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.EventUpdated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionMade;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionResult;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionUpdated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.EventStatus;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Prediction;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventCreatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.EventUpdatedEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.PredictionMadeEvent;

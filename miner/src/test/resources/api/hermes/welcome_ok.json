@@ -1,0 +1,10 @@
+{
+  "welcome" : {
+    "keepaliveSec" : 15,
+    "recoveryUrl" : "wss://recovery",
+    "sessionId" : "377de93c-16c6-4206-88de-2ec6c01317a5"
+  },
+  "id" : "4ae4865b-cedc-4755-8335-0560b7d05341",
+  "type" : "welcome",
+  "timestamp" : "2025-01-02T03:04:05.123456789Z"
+}

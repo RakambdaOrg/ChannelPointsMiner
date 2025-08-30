@@ -10,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.http.NoIntegrityPr
 import fr.rakambda.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
+import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.browser.BrowserLoginProvider;
@@ -157,5 +158,10 @@ class ApiFactoryTest{
 	@Test
 	void createManifestVersionProvider(){
 		assertThat(ApiFactory.createVersionProvider(VersionProvider.MANIFEST)).isNotNull().isInstanceOf(ManifestVersionProvider.class);
+	}
+	
+	@Test
+	void createHermesWebSocketPool(){
+		assertThat(ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager)).isNotNull().isInstanceOf(TwitchHermesWebSocketPool.class);
 	}
 }

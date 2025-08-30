@@ -115,7 +115,8 @@ tasks {
         exclude("META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.SF")
         mergeServiceFiles()
 
-        transform(Log4j2PluginsCacheFileTransformer::class.java)
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        transform<Log4j2PluginsCacheFileTransformer>()
     }
 }
 

@@ -24,4 +24,6 @@ public class EventVariableKey{
 	public static final String STREAMER_URL = "streamer_url";
 	public static final String STREAMER_PROFILE_PICTURE_URL = "streamer_profile_picture_url";
 	public static final String VERSION = "version";
+	public static final String CATEGORY = "category";
+	public static final String THROWABLE = "throwable";
 }

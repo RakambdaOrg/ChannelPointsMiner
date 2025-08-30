@@ -10,6 +10,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.http.NoIntegrityPr
 import fr.rakambda.channelpointsminer.miner.api.gql.version.IVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.manifest.ManifestVersionProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.version.webpage.WebpageVersionProvider;
+import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
@@ -64,7 +65,7 @@ public class ApiFactory{
 				.interceptor(new UnirestLogger());
 		
 		if(Objects.isNull(twitchClient) || twitchClient == TwitchClient.WEB){
-			unirest.config().setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0");
+			unirest.config().setDefaultHeader(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:142.0) Gecko/20100101 Firefox/142.0");
 		}
 		else if(twitchClient == TwitchClient.MOBILE){
 			unirest.config().setDefaultHeader(USER_AGENT, "Dalvik/2.1.0 (Linux; U; Android 7.1.2; SM-G975N Build/N2G48C) tv.twitch.android.app/13.4.1/1304010");
@@ -195,5 +196,10 @@ public class ApiFactory{
 			case WEBPAGE -> new WebpageVersionProvider(unirest);
 			case MANIFEST -> new ManifestVersionProvider(unirest);
 		};
+	}
+	
+	@NotNull
+	public static TwitchHermesWebSocketPool createHermesWebSocketPool(@NotNull TwitchLogin twitchLogin, @NotNull IEventManager eventManager){
+		return new TwitchHermesWebSocketPool(50, twitchLogin, eventManager);
 	}
 }

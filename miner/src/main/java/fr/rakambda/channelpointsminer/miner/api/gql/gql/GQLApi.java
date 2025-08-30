@@ -35,6 +35,8 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.PageInfo;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelOperation;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.withislive.WithIsStreamLiveData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.withislive.WithIsStreamLiveOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IIntegrityProvider;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
@@ -199,7 +201,12 @@ public class GQLApi{
     public Optional<GQLResponse<PlaybackAccessTokenData>> playbackAccessToken(@NotNull String login){
         return postGqlRequest(new PlaybackAccessTokenOperation(login));
     }
-    
+	
+	@NotNull
+	public Optional<GQLResponse<WithIsStreamLiveData>> withIsStreamLive(@NotNull String id){
+		return postGqlRequest(new WithIsStreamLiveOperation(id));
+	}
+	
     @NotNull
     public List<User> allChannelFollows(){
         var follows = new ArrayList<User>();
@@ -234,12 +241,12 @@ public class GQLApi{
         
         return follows;
     }
-    
+	
     @NotNull
     public Optional<GQLResponse<ChannelFollowsData>> channelFollows(int limit, @NotNull String order, @Nullable String cursor){
         return postGqlRequest(new ChannelFollowsOperation(limit, order, cursor));
     }
-    
+	
     @NotNull
     public Optional<GQLResponse<ChatRoomBanStatusData>> chatRoomBanStatus(@NotNull String channelId, @NotNull String targetUserId){
         return postGqlRequest(new ChatRoomBanStatusOperation(channelId, targetUserId));

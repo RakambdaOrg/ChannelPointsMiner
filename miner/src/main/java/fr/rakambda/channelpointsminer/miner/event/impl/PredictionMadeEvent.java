@@ -1,6 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.event.impl;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
 import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;

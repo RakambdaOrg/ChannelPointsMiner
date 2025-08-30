@@ -1,22 +1,24 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.ClaimAvailable;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CommunityMomentStart;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.CreateNotification;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropClaim;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.DropProgress;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.EventCreated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.EventUpdated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.IPubSubMessage;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsEarned;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PointsSpent;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionMade;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionResult;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionUpdated;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.RaidUpdateV2;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamDown;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.StreamUp;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.BroadcastSettingsUpdate;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ClaimAvailable;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CommunityMomentStart;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.CreateNotification;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.DropClaim;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.DropProgress;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.EventCreated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.EventUpdated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PointsEarned;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PointsSpent;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionMade;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionResult;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionUpdated;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.RaidUpdateV2;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamDown;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.StreamUp;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.ViewCount;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.util.ClassWalker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,6 +65,10 @@ public abstract class PubSubMessageHandlerAdapter implements IPubSubMessageHandl
 	public void onDropProgress(@NotNull Topic topic, @NotNull DropProgress message){}
 	
 	public void onDropClaim(@NotNull Topic topic, @NotNull DropClaim message){}
+	
+	public void onViewCount(@NotNull Topic topic, @NotNull ViewCount message){}
+	
+	public void onBroadcastSettingsUpdate(@NotNull Topic topic, @NotNull BroadcastSettingsUpdate message){}
 	
 	@Override
 	public void handle(@NotNull Topic topic, @NotNull IPubSubMessage message){

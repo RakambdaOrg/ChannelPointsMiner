@@ -1,47 +1,46 @@
 [versions]
 slf4j-version = "2.0.17"
-log4j2-version = "2.25.0"
-unirest-version = "4.4.7"
+log4j2-version = "2.25.1"
+unirest-version = "4.5.0"
 picocli-version = "4.7.7"
-jackson-version = "2.19.1"
+jackson-version = "2.20.0"
 jsonschema-generator-version = "4.38.0"
 httpclient-version = "4.5.14"
-lang3-version = "3.17.0"
-commons-text-version = "1.13.1"
+lang3-version = "3.18.0"
+commons-text-version = "1.14.0"
 jetbrains-annotations-version = "26.0.2"
 websocket-version = "1.6.0"
-junitVersion = "5.13.1"
-assertj-core-version = "3.27.3"
+junitVersion = "5.13.4"
+assertj-core-version = "3.27.4"
 assertj-db-version = "3.0.0"
-mockito-version = "5.18.0"
+mockito-version = "5.19.0"
 awaitility-version = "4.3.0"
 json-unit-version = "4.1.1"
 kitteh-irc-version = "9.0.0"
-hikari-cp-version = "6.3.0"
-mariadb-version = "3.5.3"
-sqlite-version = "3.50.1.0"
-mysql-version = "9.3.0"
+hikari-cp-version = "7.0.2"
+mariadb-version = "3.5.5"
+sqlite-version = "3.50.3.0"
+mysql-version = "9.4.0"
 rerunner-jupiter-version = "2.1.6"
-flyway-version = "11.9.2"
-selenide-version = "7.9.3"
+flyway-version = "11.11.2"
+selenide-version = "7.10.0"
 lombok-version = "1.18.38"
 jacocoVersion = "0.8.12"
 log4j-ecs-version = "1.7.0"
 
-shadow-version = "8.1.1"
-names-version = "0.52.0"
+shadow-version = "9.1.0"
 jib-version = "3.4.5"
-git-properties-version = "2.5.0"
-springboot-version = "3.5.3"
+git-properties-version = "2.5.2"
+springboot-version = "3.5.5"
 springboot-dependencies-version = "1.1.7"
 test-logger-version = "4.0.0"
-git-version-plugin-version = "3.3.0"
 
 [libraries]
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
 log4j2Bom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j2-version"}
 log4j2-core = { group = "org.apache.logging.log4j", name = "log4j-core" }
 log4j2-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl" }
+log4j2-json = { group = "org.apache.logging.log4j", name = "log4j-layout-template-json" }
 log4jEcs = { group = "co.elastic.logging", name = "log4j2-ecs-layout", version.ref = "log4j-ecs-version" }
 unirestBom = { group = "com.konghq", name = "unirest-java-bom", version.ref = "unirest-version" }
 unirest-java = { group = "com.konghq", name = "unirest-java-core" }
@@ -87,7 +86,7 @@ rerunnerJupiter = { group = "io.github.artsok", name = "rerunner-jupiter", versi
 
 [bundles]
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind", "jackson-jsr310"]
-log4j2 = ["log4j2-core", "log4j2-slf4j"]
+log4j2 = ["log4j2-core", "log4j2-slf4j", "log4j2-json"]
 unirest = ["unirest-java", "unirest-modules-jackson"]
 flyway = ["flyway-core", "flyway-mysql"]
 selenide = ["selenide", "selenide-proxy"]
@@ -98,11 +97,9 @@ jsonUnit = ["json-unit", "json-unit-assertj"]
 assertj = ["assertj-core", "assertj-db"]
 
 [plugins]
-shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow-version" }
-names = { id = "com.github.ben-manes.versions", version.ref = "names-version" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow-version" }
 jib = { id = "com.google.cloud.tools.jib", version.ref = "jib-version" }
 gitProperties = { id = "com.gorylenko.gradle-git-properties", version.ref = "git-properties-version" }
 springboot = { id = "org.springframework.boot", version.ref = "springboot-version" }
 springbootDependencies = { id = "io.spring.dependency-management", version.ref = "springboot-dependencies-version" }
 testLogger = { id = "com.adarshr.test-logger", version.ref = "test-logger-version" }
-gitVersion = { id = "com.palantir.git-version", version.ref = "git-version-plugin-version" }

@@ -1,11 +1,11 @@
 package fr.rakambda.channelpointsminer.miner.handler;
 
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.PredictionResult;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.predictionresult.PredictionResultData;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Prediction;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultPayload;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.PredictionResultType;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.PredictionResult;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.predictionresult.PredictionResultData;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Prediction;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PredictionResultPayload;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PredictionResultType;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.event.impl.PredictionResultEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;

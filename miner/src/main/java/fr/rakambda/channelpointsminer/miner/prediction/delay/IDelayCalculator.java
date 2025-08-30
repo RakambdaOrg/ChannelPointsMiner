@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.prediction.delay;
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.subtype.Event;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
 import org.jetbrains.annotations.NotNull;
 import java.time.ZonedDateTime;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;

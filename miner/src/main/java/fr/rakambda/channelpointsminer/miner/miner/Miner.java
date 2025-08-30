@@ -3,16 +3,15 @@ package fr.rakambda.channelpointsminer.miner.miner;
 import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.rakambda.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
+import fr.rakambda.channelpointsminer.miner.api.hermes.TwitchHermesWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.api.passport.ILoginProvider;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.CaptchaSolveRequired;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.ITwitchPubSubMessageListener;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
+import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName;
 import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
-import fr.rakambda.channelpointsminer.miner.api.ws.ITwitchPubSubMessageListener;
-import fr.rakambda.channelpointsminer.miner.api.ws.TwitchPubSubWebSocketPool;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.message.IPubSubMessage;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topic;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName;
-import fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.Topics;
 import fr.rakambda.channelpointsminer.miner.config.AccountConfiguration;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerAddedEvent;
@@ -46,14 +45,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.PREDICTIONS_USER_V1;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.RAID;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.USER_DROP_EVENTS;
-import static fr.rakambda.channelpointsminer.miner.api.ws.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.BROADCAST_SETTINGS_UPDATE;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_MOMENTS_CHANNEL_V1;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.COMMUNITY_POINTS_USER_V1;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.ONSITE_NOTIFICATIONS;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.PREDICTIONS_CHANNEL_V1;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.PREDICTIONS_USER_V1;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.RAID;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.USER_DROP_EVENTS;
+import static fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.TopicName.VIDEO_PLAYBACK_BY_ID;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -63,8 +63,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	private final ILoginProvider passportApi;
 	
 	private final Map<String, Streamer> streamers;
-	@Getter
-	private final TwitchPubSubWebSocketPool pubSubWebSocketPool;
 	private final ScheduledExecutorService scheduledExecutor;
 	private final ExecutorService handlerExecutor;
 	@Getter
@@ -92,11 +90,12 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	private TwitchApi twitchApi;
 	@Getter
 	private ITwitchChatClient chatClient;
+	@Getter
+	private TwitchHermesWebSocketPool hermesWebSocketPool;
 	
 	public Miner(@NotNull AccountConfiguration accountConfiguration,
 			@NotNull ILoginProvider passportApi,
 			@NotNull StreamerSettingsFactory streamerSettingsFactory,
-			@NotNull TwitchPubSubWebSocketPool pubSubWebSocketPool,
 			@NotNull ScheduledExecutorService scheduledExecutor,
 			@NotNull ExecutorService handlerExecutor,
 			@NotNull IDatabase database,
@@ -104,7 +103,6 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
-		this.pubSubWebSocketPool = pubSubWebSocketPool;
 		this.scheduledExecutor = scheduledExecutor;
 		this.handlerExecutor = handlerExecutor;
 		this.database = database;
@@ -123,14 +121,14 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	public void start(){
 		try(var ignored = LogContext.with(this)){
 			log.info("Starting miner");
-			pubSubWebSocketPool.addListener(this);
 			
 			login();
 			
 			scheduledExecutor.scheduleWithFixedDelay(getUpdateStreamInfo(), 0, 2, MINUTES);
 			scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendSpadeMinutesWatched(this), 0, 1, MINUTES);
 			scheduledExecutor.scheduleWithFixedDelay(MinerRunnableFactory.createSendM3u8MinutesWatched(this), 0, 15, SECONDS);
-			scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createWebSocketPing(this), 25, 25, SECONDS);
+			scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createChatWebSocketPing(this), 25, 25, SECONDS);
+			scheduledExecutor.scheduleAtFixedRate(MinerRunnableFactory.createHermesWebSocketPing(this), 1, 1, MINUTES);
 			scheduledExecutor.scheduleAtFixedRate(syncInventory, 1, 15, MINUTES);
 			
 			var streamerConfigurationReload = MinerRunnableFactory.createStreamerConfigurationReload(this, eventManager, streamerSettingsFactory, accountConfiguration.isLoadFollows());
@@ -168,6 +166,8 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			var integrityProvider = ApiFactory.createIntegrityProvider(twitchLogin, versionProvider, accountConfiguration.getLoginMethod(), eventManager);
 			gqlApi = ApiFactory.createGqlApi(twitchLogin, integrityProvider);
 			twitchApi = ApiFactory.createTwitchApi(twitchLogin);
+			hermesWebSocketPool = ApiFactory.createHermesWebSocketPool(twitchLogin, eventManager);
+			hermesWebSocketPool.addPubSubListener(this);
 			chatClient = TwitchChatFactory.createChat(this, accountConfiguration.getChatMode(), listenMessages);
 			chatClient.addChatMessageListener(new TwitchChatEventProducer(eventManager));
 		}
@@ -188,7 +188,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	private void listenTopic(@NotNull TopicName name, @NotNull String target){
-		pubSubWebSocketPool.listenTopic(Topics.buildFromName(name, target, twitchLogin.getAccessToken()));
+		hermesWebSocketPool.listenPubSubTopic(Topic.builder().name(name).target(target).build());
 	}
 	
 	@Override
@@ -222,6 +222,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			
 			listenTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
+			listenTopic(BROADCAST_SETTINGS_UPDATE, streamer.getId());
 			
 			if(streamer.getSettings().isMakePredictions()){
 				listenTopic(PREDICTIONS_USER_V1, getTwitchLogin().fetchUserId(gqlApi));
@@ -263,6 +264,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 			}
 			log.info("Removing streamer from the mining list");
 			removeTopic(VIDEO_PLAYBACK_BY_ID, streamer.getId());
+			removeTopic(BROADCAST_SETTINGS_UPDATE, streamer.getId());
 			removeTopic(PREDICTIONS_CHANNEL_V1, streamer.getId());
 			removeTopic(COMMUNITY_MOMENTS_CHANNEL_V1, streamer.getId());
 			removeTopic(RAID, streamer.getId());
@@ -318,7 +320,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	private void removeTopic(@NotNull TopicName name, @NotNull String target){
-		pubSubWebSocketPool.removeTopic(Topic.builder().name(name).target(target).build());
+		hermesWebSocketPool.removePubSubTopic(Topic.builder().name(name).target(target).build());
 	}
 	
 	@Override
@@ -341,7 +343,9 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	public void close(){
 		scheduledExecutor.shutdown();
 		handlerExecutor.shutdown();
-		pubSubWebSocketPool.close();
+		if(Objects.nonNull(hermesWebSocketPool)){
+			hermesWebSocketPool.close();
+		}
 		if(!Objects.isNull(chatClient)){
 			chatClient.close();
 		}
