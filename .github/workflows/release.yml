@@ -9,7 +9,7 @@ jobs:
   publish-docker-miner:
     name: Publish Miner on DockerHub
     runs-on: ubuntu-latest
-    concurrency: miner_docker
+    concurrency: miner_docker_latest
     environment: DockerHub
     steps:
       - name: Checkout source
@@ -33,7 +33,7 @@ jobs:
   publish-docker-viewer:
     name: Publish Viewer on DockerHub
     runs-on: ubuntu-latest
-    concurrency: viewer_docker
+    concurrency: viewer_docker_latest
     environment: DockerHub
     steps:
       - name: Checkout source
