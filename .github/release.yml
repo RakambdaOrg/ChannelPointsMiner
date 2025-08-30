@@ -2,6 +2,7 @@ changelog:
   exclude:
     labels:
       - "type: 📚 dependencies"
+      - "dependencies"
       - "type: 🐛 dev bug"
       - "sync"
   categories:

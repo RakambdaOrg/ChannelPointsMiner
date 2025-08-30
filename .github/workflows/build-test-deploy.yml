@@ -187,7 +187,7 @@ jobs:
       - test-miner
       - test-viewer
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    concurrency: miner_docker
+    concurrency: miner_docker_${{ github.ref }}
     environment: DockerHub
     steps:
       - name: Checkout source
@@ -218,7 +218,7 @@ jobs:
       - test-miner
       - test-viewer
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    concurrency: viewer_docker
+    concurrency: viewer_docker_${{ github.ref }}
     environment: DockerHub
     steps:
       - name: Checkout source
