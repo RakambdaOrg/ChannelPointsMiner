@@ -4,7 +4,7 @@ import fr.rakambda.channelpointsminer.viewer.api.data.BalanceData;
 import fr.rakambda.channelpointsminer.viewer.api.data.ChannelData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.Test;
 import java.time.Instant;
@@ -16,9 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ApiController.class)
 class ApiControllerTest{
-    @MockBean
+    @MockitoBean
     private BalanceService balanceService;
-    @MockBean
+    @MockitoBean
     private ChannelService channelService;
     
     @Autowired
