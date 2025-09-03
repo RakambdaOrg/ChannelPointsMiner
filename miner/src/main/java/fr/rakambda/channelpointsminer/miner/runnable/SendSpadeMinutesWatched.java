@@ -7,13 +7,13 @@ import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.priority.IStreamerPriority;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 import java.util.function.Predicate;
 
 @Log4j2
 public class SendSpadeMinutesWatched extends SendMinutesWatched{
-	public SendSpadeMinutesWatched(@NotNull IMiner miner){
+	public SendSpadeMinutesWatched(@NonNull IMiner miner){
 		super(miner);
 	}
 	
@@ -23,12 +23,12 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 	}
 	
 	@Override
-	protected boolean checkStreamer(@NotNull Streamer streamer){
+	protected boolean checkStreamer(@NonNull Streamer streamer){
 		return Objects.nonNull(streamer.getSpadeUrl());
 	}
 	
 	@Override
-	protected boolean send(@NotNull Streamer streamer){
+	protected boolean send(@NonNull Streamer streamer){
 		var streamId = streamer.getStreamId();
 		if(streamId.isEmpty()){
 			return false;
@@ -56,7 +56,7 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected Predicate<IStreamerPriority> getPriorityFilter(){
 		return Predicate.not(IStreamerPriority::isDropsRelated);
 	}

@@ -5,7 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -15,7 +15,7 @@ public class NotificationHandler extends PubSubMessageHandlerAdapter{
 	private final IMiner miner;
 	
 	@Override
-	public void onCreateNotification(@NotNull Topic topic, @NotNull CreateNotification message){
+	public void onCreateNotification(@NonNull Topic topic, @NonNull CreateNotification message){
 		try(var ignored = LogContext.with(miner)){
 			var type = message.getData().getNotification().getType();
 			if(Objects.equals(type, DROP_REWARD_REMINDER)){

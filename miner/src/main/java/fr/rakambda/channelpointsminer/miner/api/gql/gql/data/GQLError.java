@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +19,14 @@ import java.util.List;
 @ToString
 public class GQLError{
 	@JsonProperty("message")
-	@NotNull
+	@NonNull
 	private String message;
 	@JsonProperty("locations")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<Location> locations = new ArrayList<>();
 	@JsonProperty("path")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<String> path = new ArrayList<>();
 }

@@ -6,7 +6,7 @@ import kong.unirest.core.HttpRequestSummary;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Interceptor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Log4j2
 public class UnirestLogger implements Interceptor{
@@ -37,7 +37,7 @@ public class UnirestLogger implements Interceptor{
 		}
 	}
 	
-	private static boolean shouldLogError(@NotNull HttpRequestSummary request, @NotNull HttpResponse<?> response){
+	private static boolean shouldLogError(@NonNull HttpRequestSummary request, @NonNull HttpResponse<?> response){
 		if(response.getParsingError().isPresent() && response.getStatus() == 204){
 			return false;
 		}

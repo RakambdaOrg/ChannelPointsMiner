@@ -7,13 +7,13 @@ import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class PlaybackAccessTokenOperation extends IGQLOperation<PlaybackAccessTokenData>{
-	public PlaybackAccessTokenOperation(@NotNull String login){
+	public PlaybackAccessTokenOperation(@NonNull String login){
 		super("PlaybackAccessToken");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "ed230aa1e33e07eebb8928504583da78a5173989fadfb1ac94be06a04f3cdbe9"));
 		addVariable("isLive", true);
@@ -25,7 +25,7 @@ public class PlaybackAccessTokenOperation extends IGQLOperation<PlaybackAccessTo
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public GenericType<GQLResponse<PlaybackAccessTokenData>> getResponseType(){
 		return new GenericType<>(){};
 	}

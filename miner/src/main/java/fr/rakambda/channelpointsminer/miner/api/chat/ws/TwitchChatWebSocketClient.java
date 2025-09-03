@@ -14,8 +14,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.PongFrame;
 import org.java_websocket.handshake.ServerHandshake;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
+import org.jspecify.annotations.NonNull;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
@@ -37,13 +36,13 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	private final String uuid;
 	private final TwitchLogin twitchLogin;
 	private final Collection<ITwitchChatMessageListener> chatMessageListeners;
-	@Setter(onMethod_ = {@TestOnly}, value = AccessLevel.PROTECTED)
+	@Setter(value = AccessLevel.PROTECTED)
 	private boolean listenMessages;
 	
 	@Getter
 	private Instant lastHeartbeat;
 	
-	public TwitchChatWebSocketClient(@NotNull URI uri, @NotNull TwitchLogin twitchLogin, boolean listenMessages){
+	public TwitchChatWebSocketClient(@NonNull URI uri, @NonNull TwitchLogin twitchLogin, boolean listenMessages){
 		super(uri);
 		this.twitchLogin = twitchLogin;
 		this.listenMessages = listenMessages;
@@ -108,7 +107,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 		log.debug("Received WS Chat heartbeat");
 	}
 	
-	private void sendMessage(@NotNull String message){
+	private void sendMessage(@NonNull String message){
 		log.trace("Sending Chat message {}", message);
 		send(message);
 	}
@@ -125,7 +124,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	}
 	
 	@Override
-	public void join(@NotNull String channel){
+	public void join(@NonNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			if(channels.add(channel)){
 				log.info("Joining Chat channel {}", channel);
@@ -139,7 +138,7 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	}
 	
 	@Override
-	public void leave(@NotNull String channel){
+	public void leave(@NonNull String channel){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			log.info("Leaving Chat channel {}", channel);
 			sendMessage("PART #" + channel);
@@ -153,15 +152,15 @@ public class TwitchChatWebSocketClient extends WebSocketClient implements ITwitc
 	}
 	
 	@Override
-	public void addChatMessageListener(@NotNull ITwitchChatMessageListener listener){
+	public void addChatMessageListener(@NonNull ITwitchChatMessageListener listener){
 		chatMessageListeners.add(listener);
 	}
 	
-	public boolean isChannelJoined(@NotNull String channel){
+	public boolean isChannelJoined(@NonNull String channel){
 		return channels.contains(channel);
 	}
 	
-	public void addWebSocketClosedListener(@NotNull ITwitchChatWebSocketClosedListener listener){
+	public void addWebSocketClosedListener(@NonNull ITwitchChatWebSocketClosedListener listener){
 		socketClosedListeners.add(listener);
 	}
 	

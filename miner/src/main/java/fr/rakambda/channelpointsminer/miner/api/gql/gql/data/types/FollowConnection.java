@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +22,9 @@ import java.util.List;
 public class FollowConnection extends GQLType{
 	@JsonProperty("edges")
 	@Builder.Default
-	@NotNull
+	@NonNull
 	private List<FollowEdge> edges = new ArrayList<>();
 	@JsonProperty("pageInfo")
-	@NotNull
+	@NonNull
 	private PageInfo pageInfo;
 }

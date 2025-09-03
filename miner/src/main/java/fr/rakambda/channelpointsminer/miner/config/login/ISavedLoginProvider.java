@@ -1,13 +1,13 @@
 package fr.rakambda.channelpointsminer.miner.config.login;
 
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchClient;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.nio.file.Path;
 
 public interface ISavedLoginProvider{
-	@NotNull
+	@NonNull
 	TwitchClient getTwitchClient();
 	
-	@NotNull
+	@NonNull
 	Path getAuthenticationFolder();
 }

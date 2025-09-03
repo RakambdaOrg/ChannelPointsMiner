@@ -16,7 +16,7 @@
 
 package fr.rakambda.channelpointsminer.miner.util;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,7 +44,7 @@ public class ClassWalker implements Iterable<Class<?>>{
 		return new ClassWalker(start);
 	}
 	
-	@NotNull
+	@NonNull
 	@Override
 	public Iterator<Class<?>> iterator(){
 		return new Iterator<>(){

@@ -9,8 +9,8 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -24,19 +24,19 @@ public class PredictionMadeEvent extends AbstractLoggableStreamerEvent{
 	@Getter
 	private final PlacedPrediction placedPrediction;
 	
-	public PredictionMadeEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PlacedPrediction placedPrediction){
+	public PredictionMadeEvent(@NonNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NonNull PlacedPrediction placedPrediction){
 		super(streamerId, streamerUsername, streamer, placedPrediction.getPredictedAt());
 		this.placedPrediction = placedPrediction;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Bet placed [{prediction_points} | {prediction_outcome}]";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} {streamer} : Bet placed [{prediction_points} | {prediction_outcome}]";
 	}
@@ -53,7 +53,7 @@ public class PredictionMadeEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Map<String, String> getEmbedFields(){
 		return Map.of(
 				"Points placed", EventVariableKey.PREDICTION_POINTS,
@@ -62,18 +62,18 @@ public class PredictionMadeEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_PREDICTION;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "🪙";
 	}
 	
-	@NotNull
+	@NonNull
 	private String getOutcome(){
 		return Optional.ofNullable(placedPrediction.getBettingPrediction())
 				.map(BettingPrediction::getEvent)

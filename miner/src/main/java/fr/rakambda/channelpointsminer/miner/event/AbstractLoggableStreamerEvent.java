@@ -4,8 +4,8 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
@@ -20,11 +20,11 @@ public abstract class AbstractLoggableStreamerEvent extends AbstractLoggableEven
 	private final String streamerUsername;
 	private final Streamer streamer;
 	
-	public AbstractLoggableStreamerEvent(@NotNull Streamer streamer, @NotNull Instant instant){
+	public AbstractLoggableStreamerEvent(@NonNull Streamer streamer, @NonNull Instant instant){
 		this(streamer.getId(), streamer.getUsername(), streamer, instant);
 	}
 	
-	public AbstractLoggableStreamerEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant){
+	public AbstractLoggableStreamerEvent(@NonNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NonNull Instant instant){
 		super(instant);
 		this.streamerId = streamerId;
 		this.streamerUsername = streamerUsername;
@@ -46,13 +46,13 @@ public abstract class AbstractLoggableStreamerEvent extends AbstractLoggableEven
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Optional<Streamer> getStreamer(){
 		return Optional.ofNullable(streamer);
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Optional<String> getStreamerUsername(){
 		return Optional.ofNullable(streamerUsername);
 	}

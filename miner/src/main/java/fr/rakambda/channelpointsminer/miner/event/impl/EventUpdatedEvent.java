@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 
 @RequiredArgsConstructor
@@ -16,11 +16,11 @@ import java.time.Instant;
 @ToString
 @Getter
 public class EventUpdatedEvent implements IEvent{
-	@NotNull
+	@NonNull
 	private final Instant instant;
-	@NotNull
+	@NonNull
 	private final String streamerUsername;
-	@NotNull
+	@NonNull
 	private final Event event;
 	
 	@Setter

@@ -4,11 +4,11 @@ import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.BetPlacer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BetPlacerFactory{
-	public static BetPlacer created(@NotNull IMiner miner){
+	public static BetPlacer created(@NonNull IMiner miner){
 		return new BetPlacer(miner);
 	}
 }

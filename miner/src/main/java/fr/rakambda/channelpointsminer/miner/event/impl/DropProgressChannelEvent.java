@@ -5,8 +5,8 @@ import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.Map;
 
@@ -15,19 +15,19 @@ import java.util.Map;
 public class DropProgressChannelEvent extends AbstractLoggableStreamerEvent{
 	private final String progress;
 	
-	public DropProgressChannelEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull Instant instant, int progress){
+	public DropProgressChannelEvent(@NonNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NonNull Instant instant, int progress){
 		super(streamerId, streamerUsername, streamer, instant);
 		this.progress = Integer.toString(progress);
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Drop progress on channel {streamer} : {drop_progress}%";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} : Drop progress on channel {streamer} : {drop_progress}%";
 	}
@@ -41,19 +41,19 @@ public class DropProgressChannelEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Map<String, String> getEmbedFields(){
 		return Map.of("Progress", EventVariableKey.DROP_PROGRESS);
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_INFO;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "🎁";
 	}

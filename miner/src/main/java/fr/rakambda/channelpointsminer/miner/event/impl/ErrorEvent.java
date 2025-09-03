@@ -6,8 +6,8 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
@@ -20,23 +20,23 @@ public class ErrorEvent extends AbstractLoggableEvent{
 	private final String message;
 	private final Throwable throwable;
 	
-	public ErrorEvent(@NotNull String category, @NotNull String message, @Nullable Throwable throwable, @NotNull Instant instant){
+	public ErrorEvent(@NonNull String category, @NonNull String message, @Nullable Throwable throwable, @NonNull Instant instant){
 		super(instant);
 		this.category = category;
 		this.message = message;
 		this.throwable = throwable;
 	}
 	
-	public ErrorEvent(@NotNull String category, @NotNull String message){
+	public ErrorEvent(@NonNull String category, @NonNull String message){
 		this(category, message, null, TimeFactory.now());
 	}
 	
-	public ErrorEvent(@NotNull String category, @NotNull String message, @Nullable Throwable throwable){
+	public ErrorEvent(@NonNull String category, @NonNull String message, @Nullable Throwable throwable){
 		this(category, message, throwable, TimeFactory.now());
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Error received : [{category}] {message} {throwable}";
 	}
@@ -56,19 +56,19 @@ public class ErrorEvent extends AbstractLoggableEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} : Error received : [{category}] {message} {throwable}";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_WARN;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "😵";
 	}

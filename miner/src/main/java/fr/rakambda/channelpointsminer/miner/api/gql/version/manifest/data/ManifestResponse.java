@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class ManifestResponse{
 	@JsonProperty("channels")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<ManifestChannel> channels = new ArrayList<>();
 }

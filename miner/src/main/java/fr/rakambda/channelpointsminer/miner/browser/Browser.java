@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -39,9 +39,9 @@ import java.util.logging.Level;
 @Log4j2
 @RequiredArgsConstructor
 public class Browser implements AutoCloseable{
-	@NotNull
+	@NonNull
 	private final BrowserConfiguration browserConfiguration;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Getter
@@ -53,7 +53,7 @@ public class Browser implements AutoCloseable{
 	@Getter
 	private final Collection<ResponseReceived> receivedResponses = new ConcurrentLinkedQueue<>();
 	
-	@NotNull
+	@NonNull
 	public BrowserController setup(){
 		log.info("Starting browser...");
 		
@@ -76,7 +76,7 @@ public class Browser implements AutoCloseable{
 		return new BrowserController(selenideDriver, eventManager);
 	}
 	
-	private void setupHideJsElements(@NotNull DevTools devTools){
+	private void setupHideJsElements(@NonNull DevTools devTools){
 		devTools.send(new Command<>("Page.addScriptToEvaluateOnNewDocument", Map.of("source", """
 				Object.defineProperty(navigator, 'webdriver', {
 					get: () => undefined
@@ -96,27 +96,27 @@ public class Browser implements AutoCloseable{
 		)));
 	}
 	
-	private void listenNetwork(@NotNull DevTools devTools){
+	private void listenNetwork(@NonNull DevTools devTools){
 		devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		devTools.addListener(Network.requestWillBeSent(), sentRequests::add);
 		devTools.addListener(Network.responseReceived(), receivedResponses::add);
 	}
 	
-	@NotNull
-	public String getRequestBody(@NotNull RequestId requestId){
+	@NonNull
+	public String getRequestBody(@NonNull RequestId requestId){
 		return devTools.send(Network.getResponseBody(requestId)).getBody();
 	}
 	
-	@NotNull
-	private SelenideConfig setupSelenideConfig(@NotNull SelenideConfig config){
+	@NonNull
+	private SelenideConfig setupSelenideConfig(@NonNull SelenideConfig config){
 		config.savePageSource(false);
 		config.screenshots(browserConfiguration.isScreenshots());
 		config.headless(browserConfiguration.isHeadless());
 		return config;
 	}
 	
-	@NotNull
-	private WebDriver buildDriver(@NotNull BrowserConfiguration config){
+	@NonNull
+	private WebDriver buildDriver(@NonNull BrowserConfiguration config){
 		return switch(config.getDriver()){
 			case CHROME -> getChromeDriver(config);
 			case FIREFOX -> getFirefoxDriver(config);
@@ -125,34 +125,34 @@ public class Browser implements AutoCloseable{
 		};
 	}
 	
-	@NotNull
-	private ChromeDriver getChromeDriver(@NotNull BrowserConfiguration configuration){
+	@NonNull
+	private ChromeDriver getChromeDriver(@NonNull BrowserConfiguration configuration){
 		var options = getDefaultChromeOptions(configuration);
 		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary).toFile()));
 		return new ChromeDriver(options);
 	}
 	
-	@NotNull
-	private FirefoxDriver getFirefoxDriver(@NotNull BrowserConfiguration configuration){
+	@NonNull
+	private FirefoxDriver getFirefoxDriver(@NonNull BrowserConfiguration configuration){
 		var options = getDefaultFirefoxOptions(configuration);
 		Optional.ofNullable(configuration.getBinary()).ifPresent(binary -> options.setBinary(Paths.get(binary)));
 		return new FirefoxDriver(options);
 	}
 	
 	@SneakyThrows
-	@NotNull
-	private RemoteWebDriver getRemoteDriverChrome(@NotNull BrowserConfiguration configuration){
+	@NonNull
+	private RemoteWebDriver getRemoteDriverChrome(@NonNull BrowserConfiguration configuration){
 		return new RemoteWebDriver(URI.create(configuration.getRemoteHost()).toURL(), getDefaultChromeOptions(configuration));
 	}
 	
 	@SneakyThrows
-	@NotNull
-	private RemoteWebDriver getRemoteDriverFirefox(@NotNull BrowserConfiguration configuration){
+	@NonNull
+	private RemoteWebDriver getRemoteDriverFirefox(@NonNull BrowserConfiguration configuration){
 		return new RemoteWebDriver(URI.create(configuration.getRemoteHost()).toURL(), getDefaultFirefoxOptions(configuration));
 	}
 	
-	@NotNull
-	private ChromeOptions getDefaultChromeOptions(@NotNull BrowserConfiguration configuration){
+	@NonNull
+	private ChromeOptions getDefaultChromeOptions(@NonNull BrowserConfiguration configuration){
 		var options = new ChromeOptions();
 		if(configuration.isHeadless()){
 			options.addArguments("--headless=new");
@@ -181,8 +181,8 @@ public class Browser implements AutoCloseable{
 		return options;
 	}
 	
-	@NotNull
-	private FirefoxOptions getDefaultFirefoxOptions(@NotNull BrowserConfiguration configuration){
+	@NonNull
+	private FirefoxOptions getDefaultFirefoxOptions(@NonNull BrowserConfiguration configuration){
 		var profile = new FirefoxProfile();
 		profile.setPreference("dom.webdriver.enabled", false);
 		profile.setPreference("useAutomationExtension", false);

@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.miner;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatClient;
 import fr.rakambda.channelpointsminer.miner.api.chat.TwitchChatEventProducer;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
@@ -32,9 +33,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
-import org.jetbrains.annotations.VisibleForTesting;
+import org.jspecify.annotations.NonNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -68,10 +67,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	@Getter
 	private final IDatabase database;
 	private final StreamerSettingsFactory streamerSettingsFactory;
-	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {
-			@TestOnly,
-			@VisibleForTesting
-	})
+	@Getter(value = AccessLevel.PUBLIC)
 	private final Collection<IPubSubMessageHandler> pubSubMessageHandlers;
 	private final IEventManager eventManager;
 	@Getter
@@ -79,7 +75,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	
 	private UpdateStreamInfo updateStreamInfo;
 	@Setter
-	@Getter(value = AccessLevel.PUBLIC, onMethod_ = {@TestOnly})
+	@Getter(value = AccessLevel.PUBLIC)
 	private SyncInventory syncInventory;
 	
 	@Getter
@@ -93,13 +89,13 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	@Getter
 	private TwitchHermesWebSocketPool hermesWebSocketPool;
 	
-	public Miner(@NotNull AccountConfiguration accountConfiguration,
-			@NotNull ILoginProvider passportApi,
-			@NotNull StreamerSettingsFactory streamerSettingsFactory,
-			@NotNull ScheduledExecutorService scheduledExecutor,
-			@NotNull ExecutorService handlerExecutor,
-			@NotNull IDatabase database,
-			@NotNull IEventManager eventManager){
+	public Miner(@NonNull AccountConfiguration accountConfiguration,
+			@NonNull ILoginProvider passportApi,
+			@NonNull StreamerSettingsFactory streamerSettingsFactory,
+			@NonNull ScheduledExecutorService scheduledExecutor,
+			@NonNull ExecutorService handlerExecutor,
+			@NonNull IDatabase database,
+			@NonNull IEventManager eventManager){
 		this.accountConfiguration = accountConfiguration;
 		this.passportApi = passportApi;
 		this.streamerSettingsFactory = streamerSettingsFactory;
@@ -179,7 +175,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		}
 	}
 	
-	@NotNull
+	@NonNull
 	private UpdateStreamInfo getUpdateStreamInfo(){
 		if(Objects.isNull(updateStreamInfo)){
 			updateStreamInfo = MinerRunnableFactory.createUpdateStreamInfo(this);
@@ -187,18 +183,18 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		return updateStreamInfo;
 	}
 	
-	private void listenTopic(@NotNull TopicName name, @NotNull String target){
+	private void listenTopic(@NonNull TopicName name, @NonNull String target){
 		hermesWebSocketPool.listenPubSubTopic(Topic.builder().name(name).target(target).build());
 	}
 	
 	@Override
-	@NotNull
-	public Optional<Streamer> getStreamerById(@NotNull String id){
+	@NonNull
+	public Optional<Streamer> getStreamerById(@NonNull String id){
 		return Optional.ofNullable(streamers.get(id));
 	}
 	
 	@Override
-	public void addStreamer(@NotNull Streamer streamer){
+	public void addStreamer(@NonNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			if(containsStreamer(streamer)){
 				log.debug("Streamer is already being mined");
@@ -214,7 +210,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	@Override
-	public void updateStreamer(@NotNull Streamer streamer){
+	public void updateStreamer(@NonNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			if(!containsStreamer(streamer)){
 				log.debug("Streamer is can't be updated as it is unknown");
@@ -256,7 +252,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	@Override
-	public boolean removeStreamer(@NotNull Streamer streamer){
+	public boolean removeStreamer(@NonNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			if(!containsStreamer(streamer)){
 				log.debug("Can't remove streamer as it isn't in the mining list");
@@ -276,7 +272,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	@Override
-	public void updateStreamerInfos(@NotNull Streamer streamer){
+	public void updateStreamerInfos(@NonNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			getUpdateStreamInfo().run(streamer);
 		}
@@ -288,13 +284,13 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	@Override
-	public boolean containsStreamer(@NotNull Streamer streamer){
+	public boolean containsStreamer(@NonNull Streamer streamer){
 		return streamers.containsKey(streamer.getId());
 	}
 	
 	@Override
-	@NotNull
-	public ScheduledFuture<?> schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit unit){
+	@NonNull
+	public ScheduledFuture<?> schedule(@NonNull Runnable runnable, long delay, @NonNull TimeUnit unit){
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
@@ -308,23 +304,23 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Collection<Streamer> getStreamers(){
 		return streamers.values();
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getUsername(){
 		return accountConfiguration.getUsername();
 	}
 	
-	private void removeTopic(@NotNull TopicName name, @NotNull String target){
+	private void removeTopic(@NonNull TopicName name, @NonNull String target){
 		hermesWebSocketPool.removePubSubTopic(Topic.builder().name(name).target(target).build());
 	}
 	
 	@Override
-	public void onTwitchMessage(@NotNull Topic topic, @NotNull IPubSubMessage message){
+	public void onTwitchMessage(@NonNull Topic topic, @NonNull IPubSubMessage message){
 		var values = ThreadContext.getImmutableContext();
 		var messages = ThreadContext.getImmutableStack().asList();
 		
@@ -335,7 +331,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		}));
 	}
 	
-	public void addPubSubHandler(@NotNull IPubSubMessageHandler handler){
+	public void addPubSubHandler(@NonNull IPubSubMessageHandler handler){
 		pubSubMessageHandlers.add(handler);
 	}
 	
@@ -352,9 +348,7 @@ public class Miner implements AutoCloseable, IMiner, ITwitchPubSubMessageListene
 		eventManager.close();
 	}
 	
-	@NotNull
-	@VisibleForTesting
-	@TestOnly
+	@NonNull
 	protected Map<String, Streamer> getStreamerMap(){
 		return streamers;
 	}

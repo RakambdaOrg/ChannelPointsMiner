@@ -12,19 +12,19 @@ import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 
 @Log4j2
 @RequiredArgsConstructor
 public class ClaimMomentHandler extends PubSubMessageHandlerAdapter{
-	@NotNull
+	@NonNull
 	private final IMiner miner;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Override
-	public void onCommunityMomentStart(@NotNull Topic topic, @NotNull CommunityMomentStart message){
+	public void onCommunityMomentStart(@NonNull Topic topic, @NonNull CommunityMomentStart message){
 		var channelId = message.getData().getChannelId();
 		var streamer = miner.getStreamerById(channelId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();

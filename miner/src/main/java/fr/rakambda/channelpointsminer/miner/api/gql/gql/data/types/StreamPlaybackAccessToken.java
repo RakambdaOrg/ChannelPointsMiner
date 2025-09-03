@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("PlaybackAccessToken")
 @Getter
@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 public class StreamPlaybackAccessToken extends GQLType{
 	@JsonProperty("signature")
-	@NotNull
+	@NonNull
 	private String signature;
 	@JsonProperty("value")
-	@NotNull
+	@NonNull
 	private String value;
 }

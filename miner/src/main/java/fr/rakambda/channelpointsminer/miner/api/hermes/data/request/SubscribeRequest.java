@@ -5,7 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.subscribe.Pu
 import fr.rakambda.channelpointsminer.miner.api.hermes.data.request.subscribe.SubscribeData;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @ToString(callSuper = true)
 @Getter
@@ -13,12 +13,12 @@ public class SubscribeRequest extends ITwitchHermesWebSocketRequest{
 	@JsonProperty("subscribe")
 	private SubscribeData subscribe;
 	
-	public SubscribeRequest(@NotNull SubscribeData data){
+	public SubscribeRequest(@NonNull SubscribeData data){
 		super("subscribe");
 		subscribe = data;
 	}
 	
-	public static SubscribeRequest pubsub(@NotNull String topic){
+	public static SubscribeRequest pubsub(@NonNull String topic){
 		return new SubscribeRequest(new PubSubSubscribeType(topic));
 	}
 }

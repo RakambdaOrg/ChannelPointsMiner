@@ -5,7 +5,7 @@ import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 public class StreamerSettingsFactory{
 	private final AccountConfiguration accountConfiguration;
 	
-	@NotNull
-	public StreamerSettings createStreamerSettings(@NotNull String username){
+	@NonNull
+	public StreamerSettings createStreamerSettings(@NonNull String username){
 		var defaultSettings = new StreamerSettings(getDefaultSettings());
 		
 		var streamerPathOptional = getStreamerPath(username);
@@ -45,20 +45,20 @@ public class StreamerSettingsFactory{
 		}
 	}
 	
-	@NotNull
+	@NonNull
 	public StreamerSettings getDefaultSettings(){
 		return accountConfiguration.getDefaultStreamerSettings();
 	}
 	
-	@NotNull
-	private Optional<Path> getStreamerPath(@NotNull String username){
+	@NonNull
+	private Optional<Path> getStreamerPath(@NonNull String username){
 		var expectedFilename = username.toLowerCase() + ".json";
 		return getStreamerConfigs()
 				.filter(path -> Objects.equals(path.getFileName().toString().toLowerCase(), expectedFilename))
 				.findFirst();
 	}
 	
-	@NotNull
+	@NonNull
 	public Stream<Path> getStreamerConfigs(){
 		return accountConfiguration.getStreamerConfigDirectories().stream()
 				.flatMap(streamerDirectory -> {

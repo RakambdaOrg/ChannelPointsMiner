@@ -7,7 +7,7 @@ import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
@@ -20,7 +20,7 @@ public class InventoryOperation extends IGQLOperation<InventoryData>{
     }
     
     @Override
-    @NotNull
+    @NonNull
     public GenericType<GQLResponse<InventoryData>> getResponseType(){
         return new GenericType<>(){};
     }

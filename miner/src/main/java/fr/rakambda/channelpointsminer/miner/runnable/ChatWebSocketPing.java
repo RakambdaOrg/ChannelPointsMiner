@@ -4,12 +4,12 @@ import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Log4j2
 @RequiredArgsConstructor
 public class ChatWebSocketPing implements Runnable{
-	@NotNull
+	@NonNull
 	private final IMiner miner;
 	
 	@Override

@@ -8,8 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class Channel extends GQLType{
 	@Nullable
 	private ChannelSelfEdge self;
 	@JsonProperty("viewerDropCampaigns")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<DropCampaign> viewerDropCampaigns = new ArrayList<>();
 }

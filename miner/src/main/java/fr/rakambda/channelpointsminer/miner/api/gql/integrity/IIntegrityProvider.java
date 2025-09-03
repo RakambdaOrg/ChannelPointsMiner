@@ -1,11 +1,11 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.integrity;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Optional;
 
 public interface IIntegrityProvider{
 	void invalidate();
 	
-	@NotNull
+	@NonNull
 	Optional<IntegrityData> getIntegrity() throws IntegrityException;
 }

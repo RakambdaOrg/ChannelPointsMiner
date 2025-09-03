@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.passport;
 
 import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.LoginException;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 
 public interface ILoginProvider{
@@ -13,6 +13,6 @@ public interface ILoginProvider{
 	 * @throws IOException    Authentication file errors.
 	 * @throws LoginException Login request failed.
 	 */
-	@NotNull
+	@NonNull
 	TwitchLogin login() throws LoginException, IOException;
 }

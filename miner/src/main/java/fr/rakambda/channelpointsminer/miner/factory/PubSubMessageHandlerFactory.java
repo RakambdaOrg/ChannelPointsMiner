@@ -13,48 +13,48 @@ import fr.rakambda.channelpointsminer.miner.handler.StreamStartEndHandler;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.BetPlacer;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public class PubSubMessageHandlerFactory{
-	@NotNull
-	public static IPubSubMessageHandler createClaimAvailableHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+	@NonNull
+	public static IPubSubMessageHandler createClaimAvailableHandler(@NonNull IMiner miner, @NonNull IEventManager eventManager){
 		return new ClaimAvailableHandler(miner, eventManager);
 	}
 	
-	@NotNull
-	public static IPubSubMessageHandler createStreamStartEndHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+	@NonNull
+	public static IPubSubMessageHandler createStreamStartEndHandler(@NonNull IMiner miner, @NonNull IEventManager eventManager){
 		return new StreamStartEndHandler(miner, eventManager);
 	}
 	
-	@NotNull
-	public static IPubSubMessageHandler createFollowRaidHandler(@NotNull IMiner miner){
+	@NonNull
+	public static IPubSubMessageHandler createFollowRaidHandler(@NonNull IMiner miner){
 		return new FollowRaidHandler(miner);
 	}
 	
-	@NotNull
-	public static IPubSubMessageHandler createPredictionsHandler(@NotNull IMiner miner, @NotNull BetPlacer betPlacer, @NotNull IEventManager eventManager){
+	@NonNull
+	public static IPubSubMessageHandler createPredictionsHandler(@NonNull IMiner miner, @NonNull BetPlacer betPlacer, @NonNull IEventManager eventManager){
 		return new PredictionsHandler(miner, betPlacer, eventManager);
 	}
 	
-	@NotNull
-	public static IPubSubMessageHandler createPointsHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+	@NonNull
+	public static IPubSubMessageHandler createPointsHandler(@NonNull IMiner miner, @NonNull IEventManager eventManager){
 		return new PointsHandler(miner, eventManager);
 	}
 	
-	@NotNull
-	public static IPubSubMessageHandler createClaimMomentHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+	@NonNull
+	public static IPubSubMessageHandler createClaimMomentHandler(@NonNull IMiner miner, @NonNull IEventManager eventManager){
 		return new ClaimMomentHandler(miner, eventManager);
 	}
 	
-	@NotNull
-	public static IPubSubMessageHandler createClaimDropHandler(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+	@NonNull
+	public static IPubSubMessageHandler createClaimDropHandler(@NonNull IMiner miner, @NonNull IEventManager eventManager){
 		return new ClaimDropHandler(miner, eventManager);
 	}
 	
-	@NotNull
-	public static IPubSubMessageHandler createNotificationHandler(@NotNull IMiner miner){
+	@NonNull
+	public static IPubSubMessageHandler createNotificationHandler(@NonNull IMiner miner){
 		return new NotificationHandler(miner);
 	}
 }

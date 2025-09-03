@@ -7,7 +7,7 @@ import kong.unirest.core.UnirestException;
 import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -29,12 +29,12 @@ public class TwitchApi{
 	
 	private final UnirestInstance unirest;
 	
-	@NotNull
-	public Optional<URL> getSpadeUrl(@NotNull URL streamerUrl){
+	@NonNull
+	public Optional<URL> getSpadeUrl(@NonNull URL streamerUrl){
 		return getStreamerPageContent(streamerUrl).flatMap(this::getSpadeUrlFromContent);
 	}
 	
-	private Optional<URL> getSpadeUrlFromContent(@NotNull String content){
+	private Optional<URL> getSpadeUrlFromContent(@NonNull String content){
 		var result = extractUrl(SPADE_URL_PATTERN, 2, content).or(() -> extractSpadeFromSettings(content));
 		if(result.isEmpty()){
 			log.error("Failed to get Spade URL, content was : {}", content);
@@ -42,8 +42,8 @@ public class TwitchApi{
 		return result;
 	}
 	
-	@NotNull
-	private Optional<String> getStreamerPageContent(@NotNull URL streamerUrl){
+	@NonNull
+	private Optional<String> getStreamerPageContent(@NonNull URL streamerUrl){
 		var response = unirest.get(streamerUrl.toString()).asString();
 		
 		if(!response.isSuccess()){
@@ -54,8 +54,8 @@ public class TwitchApi{
 		return Optional.of(response.getBody());
 	}
 	
-	@NotNull
-	private Optional<URL> extractSpadeFromSettings(@NotNull String content){
+	@NonNull
+	private Optional<URL> extractSpadeFromSettings(@NonNull String content){
 		var settings = extractUrl(SETTINGS_URL_PATTERN, 1, content)
 				.map(settingsUrl -> {
 					var response = unirest.get(settingsUrl.toString()).asString();
@@ -75,13 +75,13 @@ public class TwitchApi{
 		return result;
 	}
 	
-	@NotNull
-	private Optional<URL> extractUrl(@NotNull Pattern pattern, int group, @NotNull String content){
+	@NonNull
+	private Optional<URL> extractUrl(@NonNull Pattern pattern, int group, @NonNull String content){
 		return extractUrl(pattern, group, content, false);
 	}
 	
-	@NotNull
-	private Optional<URL> extractUrl(@NotNull Pattern pattern, int group, @NotNull String content, boolean last){
+	@NonNull
+	private Optional<URL> extractUrl(@NonNull Pattern pattern, int group, @NonNull String content, boolean last){
 		var matcher = pattern.matcher(content);
 		var matched = false;
 		String foundGroup = null;
@@ -107,7 +107,7 @@ public class TwitchApi{
 		}
 	}
 	
-	public boolean sendPlayerEvents(@NotNull URL spadeUrl, @NotNull PlayerEvent... events){
+	public boolean sendPlayerEvents(@NonNull URL spadeUrl, @NonNull PlayerEvent... events){
 		try{
 			var requestStr = JacksonUtils.writeAsString(events);
 			var requestBase64 = new String(Base64.getEncoder().encode(requestStr.getBytes(UTF_8)), UTF_8);
@@ -125,8 +125,8 @@ public class TwitchApi{
 		}
 	}
 	
-	@NotNull
-	public Optional<URL> getM3u8Url(@NotNull String login, @NotNull String signature, @NotNull String value){
+	@NonNull
+	public Optional<URL> getM3u8Url(@NonNull String login, @NonNull String signature, @NonNull String value){
 		var response = unirest.get("https://usher.ttvnw.net/api/channel/hls/%s.m3u8".formatted(login.toLowerCase(Locale.ROOT)))
 				.queryString("sig", signature)
 				.queryString("token", value)
@@ -152,7 +152,7 @@ public class TwitchApi{
 		return extractUrl(M3U8_STREAM_PATTERN, 1, response.getBody(), true);
 	}
 	
-	public boolean openM3u8LastChunk(@NotNull URL m3u8Url){
+	public boolean openM3u8LastChunk(@NonNull URL m3u8Url){
 		try{
 			var playlistResponse = unirest.get(m3u8Url.toString()).asString();
 			

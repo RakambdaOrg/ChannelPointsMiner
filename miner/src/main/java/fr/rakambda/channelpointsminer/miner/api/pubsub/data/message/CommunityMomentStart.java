@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("active")
 @Getter
@@ -20,6 +20,6 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class CommunityMomentStart extends IPubSubMessage{
 	@JsonProperty("data")
-	@NotNull
+	@NonNull
 	private CommunityMomentStartData data;
 }

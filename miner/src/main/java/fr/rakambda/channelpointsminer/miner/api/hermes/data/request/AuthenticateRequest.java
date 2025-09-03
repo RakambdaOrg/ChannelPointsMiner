@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @ToString(callSuper = true)
 @Getter
@@ -24,7 +24,7 @@ public class AuthenticateRequest extends ITwitchHermesWebSocketRequest{
 	@JsonProperty("authenticate")
 	private Data authenticate;
 	
-	public AuthenticateRequest(@NotNull String token){
+	public AuthenticateRequest(@NonNull String token){
 		super("authenticate");
 		authenticate = new Data(token);
 	}

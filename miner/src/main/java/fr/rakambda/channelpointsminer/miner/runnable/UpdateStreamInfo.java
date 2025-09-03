@@ -14,7 +14,7 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @Log4j2
 @RequiredArgsConstructor
 public class UpdateStreamInfo implements Runnable{
-	@NotNull
+	@NonNull
 	private final IMiner miner;
 	
 	@Override
@@ -44,7 +44,7 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	public void run(@NotNull Streamer streamer){
+	public void run(@NonNull Streamer streamer){
 		try(var ignored = LogContext.empty().withStreamer(streamer)){
 			var wasStreaming = streamer.isStreaming();
 			
@@ -66,7 +66,7 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	private void updateVideoInfo(@NotNull Streamer streamer){
+	private void updateVideoInfo(@NonNull Streamer streamer){
 		log.trace("Updating video info");
 		
 		miner.getGqlApi().videoPlayerStreamInfoOverlayChannel(streamer.getUsername())
@@ -76,7 +76,7 @@ public class UpdateStreamInfo implements Runnable{
 						() -> streamer.setVideoPlayerStreamInfoOverlayChannel(null));
 	}
 	
-	private void updateSpadeUrl(@NotNull Streamer streamer){
+	private void updateSpadeUrl(@NonNull Streamer streamer){
 		log.trace("Updating spade url");
 		if(streamer.isStreaming()){
 			if(Objects.isNull(streamer.getSpadeUrl())){
@@ -90,7 +90,7 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	private void updateM3u8Url(@NotNull Streamer streamer){
+	private void updateM3u8Url(@NonNull Streamer streamer){
 		log.trace("Updating m3u8 url");
 		if(streamer.isParticipateCampaigns() && streamer.isStreaming()){
 			if(Objects.isNull(streamer.getM3u8Url())){
@@ -110,7 +110,7 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	private void updateBanStatus(@NotNull Streamer streamer){
+	private void updateBanStatus(@NonNull Streamer streamer){
 		log.trace("Updating ban status");
 		if(streamer.isStreaming()){
 			var banned = miner.getGqlApi().chatRoomBanStatus(streamer.getId(), miner.getTwitchLogin().fetchUserId(miner.getGqlApi()))
@@ -121,7 +121,7 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	private void updatePointsContext(@NotNull Streamer streamer){
+	private void updatePointsContext(@NonNull Streamer streamer){
 		log.trace("Updating channel points context");
 		
 		miner.getGqlApi().channelPointsContext(streamer.getUsername())
@@ -133,7 +133,7 @@ public class UpdateStreamInfo implements Runnable{
 		streamer.getClaimId().ifPresent(claimId -> miner.getGqlApi().claimCommunityPoints(streamer.getId(), claimId));
 	}
 	
-	private void updateCampaigns(@NotNull Streamer streamer){
+	private void updateCampaigns(@NonNull Streamer streamer){
 		log.trace("Updating campaigns");
 		if(streamer.isParticipateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
 			var dropsHighlightServiceAvailableDropsData = miner.getGqlApi().dropsHighlightServiceAvailableDrops(streamer.getId())
@@ -157,13 +157,13 @@ public class UpdateStreamInfo implements Runnable{
 		}
 	}
 	
-	private boolean isDismissibleGlobalCampaign(@NotNull DropCampaign dropCampaign){
+	private boolean isDismissibleGlobalCampaign(@NonNull DropCampaign dropCampaign){
 		return Optional.ofNullable(dropCampaign.getSummary())
 				.map(summary -> summary.isSitewide() && summary.isPermanentlyDismissible())
 				.orElse(false);
 	}
 	
-	private void dismissCampaign(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull DropCampaign dropCampaign){
+	private void dismissCampaign(@NonNull IMiner miner, @NonNull Streamer streamer, @NonNull DropCampaign dropCampaign){
 		var result = miner.getGqlApi().setDropsCommunityHighlightToHidden(streamer.getId(), dropCampaign.getId());
 		var isHidden = result
 				.map(GQLResponse::getData)

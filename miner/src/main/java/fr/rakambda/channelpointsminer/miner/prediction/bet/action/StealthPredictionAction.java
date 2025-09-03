@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Comparator;
 
 @JsonTypeName("stealth")
@@ -24,7 +24,7 @@ import java.util.Comparator;
 @JsonClassDescription("Ensure that the amount placed is lower than the top predictor.")
 public class StealthPredictionAction implements IPredictionAction{
 	@Override
-	public void perform(@NotNull Placement placement) throws BetPlacementException{
+	public void perform(@NonNull Placement placement) throws BetPlacementException{
 		var topPoints = placement.getOutcome().getTopPredictors()
 				.stream()
 				.max(Comparator.comparingInt(Predictor::getPoints))

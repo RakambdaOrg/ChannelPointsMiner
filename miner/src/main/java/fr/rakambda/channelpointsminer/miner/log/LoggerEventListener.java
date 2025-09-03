@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Log4j2
 @RequiredArgsConstructor
 public class LoggerEventListener extends EventHandlerAdapter{
 	@Override
-	public void onILoggableEvent(@NotNull ILoggableEvent event){
+	public void onILoggableEvent(@NonNull ILoggableEvent event){
 		try(var context = LogContext.with(event.getMiner())){
 			if(event instanceof IStreamerEvent e){
 				e.getStreamerUsername().ifPresent(context::withStreamer);
@@ -22,8 +22,8 @@ public class LoggerEventListener extends EventHandlerAdapter{
 		}
 	}
 	
-	@NotNull
-	private String formatMessage(@NotNull StringLookup event, @NotNull String format){
+	@NonNull
+	private String formatMessage(@NonNull StringLookup event, @NonNull String format){
 		var substitutor = new StringSubstitutor(event, "{", "}", '$');
 		return substitutor.replace(format);
 	}

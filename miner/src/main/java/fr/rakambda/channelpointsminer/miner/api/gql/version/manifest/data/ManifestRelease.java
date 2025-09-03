@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class ManifestRelease{
 	@JsonProperty("buildId")
-	@NotNull
+	@NonNull
 	private String buildId;
 	@JsonProperty("created")
 	@JsonDeserialize(using = MillisecondsTimestampDeserializer.class)
@@ -30,7 +30,7 @@ public class ManifestRelease{
 	@JsonProperty("stage")
 	private String stage;
 	@JsonProperty("files")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<String> files = new ArrayList<>();
 }

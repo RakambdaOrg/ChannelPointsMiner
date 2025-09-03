@@ -14,8 +14,8 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +41,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 	
 	private final Map<String, fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic> topics;
 	
-	public TwitchHermesWebSocketPool(int maxSubscriptionPerClient, @NotNull TwitchLogin twitchLogin, @NotNull IEventManager eventManager){
+	public TwitchHermesWebSocketPool(int maxSubscriptionPerClient, @NonNull TwitchLogin twitchLogin, @NonNull IEventManager eventManager){
 		this.maxSubscriptionPerClient = maxSubscriptionPerClient;
 		this.twitchLogin = twitchLogin;
 		this.eventManager = eventManager;
@@ -63,7 +63,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
 	}
 	
-	public void removePubSubTopic(@NotNull Topic topic){
+	public void removePubSubTopic(@NonNull Topic topic){
 		var subscriptionId = topics.entrySet().stream().filter(e -> Objects.equals(e.getValue(), topic)).findFirst();
 		if(subscriptionId.isEmpty()){
 			return;
@@ -73,16 +73,16 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 				.forEach(client -> client.removeSubscription(subscriptionId.get().getKey()));
 	}
 	
-	public void addListener(@NotNull ITwitchHermesMessageListener listener){
+	public void addListener(@NonNull ITwitchHermesMessageListener listener){
 		listeners.add(listener);
 	}
 	
-	public void addPubSubListener(@NotNull ITwitchPubSubMessageListener listener){
+	public void addPubSubListener(@NonNull ITwitchPubSubMessageListener listener){
 		pubSubListeners.add(listener);
 	}
 	
 	@Override
-	public void onWebSocketMessage(@NotNull ITwitchHermesWebSocketResponse response){
+	public void onWebSocketMessage(@NonNull ITwitchHermesWebSocketResponse response){
 		if(response instanceof UnsubscribeResponse u){
 			topics.remove(u.getUnsubscribeResponse().getSubscription().getId());
 		}
@@ -104,7 +104,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 	}
 	
 	@Override
-	public void onWebSocketClosed(@NotNull TwitchHermesWebSocketClient client, int code, @Nullable String reason, boolean remote){
+	public void onWebSocketClosed(@NonNull TwitchHermesWebSocketClient client, int code, @Nullable String reason, boolean remote){
 		clients.remove(client);
 		if(code != NORMAL){
 			pendingTopics.addAll(client.getSubscribeRequests().keySet().stream().map(topics::get).filter(Objects::nonNull).toList());
@@ -125,7 +125,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 	}
 	
-	public void listenPubSubTopic(@NotNull Topic topic){
+	public void listenPubSubTopic(@NonNull Topic topic){
 		if(isTopicListened(topic)){
 			log.debug("Topic {} is already being listened", topics);
 			return;
@@ -141,11 +141,11 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 	}
 	
-	private boolean isTopicListened(@NotNull Topic topic){
+	private boolean isTopicListened(@NonNull Topic topic){
 		return clients.stream().anyMatch(client -> client.isPubSubTopicListened(topic));
 	}
 	
-	@NotNull
+	@NonNull
 	private TwitchHermesWebSocketClient getAvailableClient(){
 		return clients.stream()
 				.filter(client -> !client.isClosing() && !client.isClosed())
@@ -158,7 +158,7 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 				});
 	}
 	
-	@NotNull
+	@NonNull
 	public TwitchHermesWebSocketClient createNewClient(){
 		try{
 			var client = TwitchWebSocketClientFactory.createHermesClient(eventManager);
@@ -174,8 +174,8 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 		}
 	}
 	
-	@NotNull
-	private TwitchHermesWebSocketClient createReconnectClient(@NotNull String reconnectUrl){
+	@NonNull
+	private TwitchHermesWebSocketClient createReconnectClient(@NonNull String reconnectUrl){
 		try{
 			var client = TwitchWebSocketClientFactory.createHermesClient(reconnectUrl, eventManager);
 			log.info("Created (reconnect) Hermes WebSocket client with uuid {}", client.getUuid());

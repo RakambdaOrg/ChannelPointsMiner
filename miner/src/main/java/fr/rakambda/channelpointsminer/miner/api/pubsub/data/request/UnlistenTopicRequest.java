@@ -5,7 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topics
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @ToString(callSuper = true)
 @Getter
@@ -17,7 +17,7 @@ public class UnlistenTopicRequest extends ITwitchWebSocketRequest{
 	@JsonProperty("data")
 	private Topics data;
 	
-	public UnlistenTopicRequest(@NotNull Topics topics){
+	public UnlistenTopicRequest(@NonNull Topics topics){
 		super("UNLISTEN");
 		data = topics;
 		nonce = CommonUtils.randomAlphanumeric(NONCE_LENGTH);

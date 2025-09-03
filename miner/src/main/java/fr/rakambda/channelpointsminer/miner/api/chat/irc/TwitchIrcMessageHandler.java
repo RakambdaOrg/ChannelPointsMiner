@@ -5,7 +5,7 @@ import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.engio.mbassy.listener.Handler;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -14,14 +14,14 @@ import java.util.LinkedList;
 @Log4j2
 public class TwitchIrcMessageHandler{
 	
-	@NotNull
+	@NonNull
 	private final String accountName;
 	
-	@NotNull
+	@NonNull
 	private final Collection<ITwitchChatMessageListener> listeners = new LinkedList<>();
 	
 	@Handler
-	public void onMessageEvent(@NotNull ChannelMessageEvent event){
+	public void onMessageEvent(@NonNull ChannelMessageEvent event){
 		try(var ignored = LogContext.with(accountName)){
 			log.trace("Received Irc Chat Message");
 			var badges = event.getTag("badges");

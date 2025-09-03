@@ -10,42 +10,42 @@ import fr.rakambda.channelpointsminer.miner.runnable.SyncInventory;
 import fr.rakambda.channelpointsminer.miner.runnable.UpdateStreamInfo;
 import fr.rakambda.channelpointsminer.miner.runnable.ChatWebSocketPing;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public class MinerRunnableFactory{
-	@NotNull
-	public static UpdateStreamInfo createUpdateStreamInfo(@NotNull IMiner miner){
+	@NonNull
+	public static UpdateStreamInfo createUpdateStreamInfo(@NonNull IMiner miner){
 		return new UpdateStreamInfo(miner);
 	}
 	
-	@NotNull
-	public static SendSpadeMinutesWatched createSendSpadeMinutesWatched(@NotNull IMiner miner){
+	@NonNull
+	public static SendSpadeMinutesWatched createSendSpadeMinutesWatched(@NonNull IMiner miner){
 		return new SendSpadeMinutesWatched(miner);
 	}
-	@NotNull
-	public static SendM3u8MinutesWatched createSendM3u8MinutesWatched(@NotNull IMiner miner){
+	@NonNull
+	public static SendM3u8MinutesWatched createSendM3u8MinutesWatched(@NonNull IMiner miner){
 		return new SendM3u8MinutesWatched(miner);
 	}
 	
-	@NotNull
-	public static ChatWebSocketPing createChatWebSocketPing(@NotNull IMiner miner){
+	@NonNull
+	public static ChatWebSocketPing createChatWebSocketPing(@NonNull IMiner miner){
 		return new ChatWebSocketPing(miner);
 	}
 	
-	@NotNull
-	public static HermesWebSocketPing createHermesWebSocketPing(@NotNull IMiner miner){
+	@NonNull
+	public static HermesWebSocketPing createHermesWebSocketPing(@NonNull IMiner miner){
 		return new HermesWebSocketPing(miner);
 	}
 	
-	@NotNull
-	public static SyncInventory createSyncInventory(@NotNull IMiner miner, @NotNull IEventManager eventManager){
+	@NonNull
+	public static SyncInventory createSyncInventory(@NonNull IMiner miner, @NonNull IEventManager eventManager){
 		return new SyncInventory(miner, eventManager);
 	}
 	
-	@NotNull
-	public static StreamerConfigurationReload createStreamerConfigurationReload(@NotNull IMiner miner, @NotNull IEventManager eventManager, @NotNull StreamerSettingsFactory streamerSettingsFactory, boolean loadFollows){
+	@NonNull
+	public static StreamerConfigurationReload createStreamerConfigurationReload(@NonNull IMiner miner, @NonNull IEventManager eventManager, @NonNull StreamerSettingsFactory streamerSettingsFactory, boolean loadFollows){
 		return new StreamerConfigurationReload(miner, eventManager, streamerSettingsFactory, loadFollows);
 	}
 }

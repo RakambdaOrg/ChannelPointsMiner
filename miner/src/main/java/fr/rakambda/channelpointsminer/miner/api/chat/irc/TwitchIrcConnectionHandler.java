@@ -4,7 +4,7 @@ import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.engio.mbassy.listener.Handler;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.kitteh.irc.client.library.event.channel.RequestedChannelJoinCompleteEvent;
 import org.kitteh.irc.client.library.event.client.ClientNegotiationCompleteEvent;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
@@ -13,7 +13,7 @@ import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEven
 @Log4j2
 public class TwitchIrcConnectionHandler{
 	
-	@NotNull
+	@NonNull
 	private final String accountName;
 	
 	@Handler
@@ -37,7 +37,7 @@ public class TwitchIrcConnectionHandler{
 	}
 
 	@Handler
-	public void onChannelJoinEvent(@NotNull RequestedChannelJoinCompleteEvent event){
+	public void onChannelJoinEvent(@NonNull RequestedChannelJoinCompleteEvent event){
 		try(var ignored = LogContext.with(accountName)){
 			log.info("Joined IRC channel {}", event.getChannel().getName());
 		}

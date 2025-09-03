@@ -1,14 +1,14 @@
 package fr.rakambda.channelpointsminer.miner.prediction.bet.exception;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class BetPlacementException extends Exception{
-	public BetPlacementException(@NotNull String message){
+	public BetPlacementException(@NonNull String message){
 		super(message);
 	}
 	
-	public BetPlacementException(@NotNull String message, @Nullable Throwable e){
+	public BetPlacementException(@NonNull String message, @Nullable Throwable e){
 		super(message, e);
 	}
 }

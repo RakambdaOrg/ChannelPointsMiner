@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 @NoArgsConstructor
@@ -16,13 +16,13 @@ import org.jetbrains.annotations.Nullable;
 @EqualsAndHashCode
 public class MinuteWatchedProperties{
 	@JsonProperty("broadcast_id")
-	@NotNull
+	@NonNull
 	private String broadcastId;
 	@JsonProperty("channel")
-	@NotNull
+	@NonNull
 	private String channel;
 	@JsonProperty("channel_id")
-	@NotNull
+	@NonNull
 	private String channelId;
 	@JsonProperty("game")
 	@Nullable
@@ -33,7 +33,7 @@ public class MinuteWatchedProperties{
 	@JsonProperty("live")
 	private boolean live;
 	@JsonProperty("player")
-	@NotNull
+	@NonNull
 	private String player;
 	@JsonProperty("user_id")
 	private int userId;

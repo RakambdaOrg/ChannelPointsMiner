@@ -6,7 +6,7 @@ import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.Miner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.sql.SQLException;
@@ -15,8 +15,8 @@ import java.util.concurrent.Executors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinerFactory{
-	@NotNull
-	public static Miner create(@NotNull AccountConfiguration config, @NotNull IEventManager eventManager){
+	@NonNull
+	public static Miner create(@NonNull AccountConfiguration config, @NonNull IEventManager eventManager){
 		try{
 			var dbConfig = config.getAnalytics().getDatabase();
 			var database = DatabaseFactory.createDatabase(dbConfig);

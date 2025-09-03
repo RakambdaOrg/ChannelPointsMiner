@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("CommunityPointsMultiplier")
 @Getter
@@ -19,6 +19,6 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 public class CommunityPointsMultiplier extends GQLType{
 	@JsonProperty("reasonCode")
-	@NotNull
+	@NonNull
 	private MultiplierReasonCode reasonCode;
 }

@@ -1,10 +1,10 @@
 package fr.rakambda.channelpointsminer.miner.prediction.bet;
 
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class BetUtils{
-	public static float getKellyValue(@NotNull Outcome chosenOutcome, @NotNull Outcome otherOutcome){
+	public static float getKellyValue(@NonNull Outcome chosenOutcome, @NonNull Outcome otherOutcome){
 		if(chosenOutcome.getTotalUsers() == 0 && otherOutcome.getTotalUsers() == 0){
 			return 0;
 		}

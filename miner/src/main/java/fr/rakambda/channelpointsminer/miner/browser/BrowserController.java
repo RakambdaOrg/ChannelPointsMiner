@@ -13,8 +13,8 @@ import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.openqa.selenium.Cookie;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,9 +27,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class BrowserController{
-	@NotNull
+	@NonNull
 	private final SelenideDriver driver;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	public void ensureLoggedIn() throws LoginException{
@@ -107,7 +107,7 @@ public class BrowserController{
 		return !loginButton.is(Condition.visible);
 	}
 	
-	@NotNull
+	@NonNull
 	private SelenideElement getLoginButton(){
 		return driver.$("button[data-a-target=login-button]");
 	}

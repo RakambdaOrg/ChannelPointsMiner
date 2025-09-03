@@ -15,7 +15,7 @@ import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.openqa.selenium.devtools.v137.page.model.FrameId;
 import java.io.IOException;
 import java.time.Duration;
@@ -27,9 +27,9 @@ import java.util.Optional;
 @Log4j2
 public class BrowserIntegrityProvider implements IIntegrityProvider{
 	public static final String INTEGRITY_URL = "https://gql.twitch.tv/integrity";
-	@NotNull
+	@NonNull
 	private final BrowserConfiguration browserConfiguration;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	private IntegrityData currentIntegrity;
@@ -41,7 +41,7 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Optional<IntegrityData> getIntegrity() throws IntegrityException{
 		synchronized(this){
 			if(Objects.nonNull(currentIntegrity) && currentIntegrity.getExpiration().minus(Duration.ofMinutes(5)).isAfter(TimeFactory.now())){
@@ -63,8 +63,8 @@ public class BrowserIntegrityProvider implements IIntegrityProvider{
 		}
 	}
 	
-	@NotNull
-	private IntegrityData extractGQLIntegrity(@NotNull Browser browser) throws IntegrityException{
+	@NonNull
+	private IntegrityData extractGQLIntegrity(@NonNull Browser browser) throws IntegrityException{
 		var integrityResponse = browser.getReceivedResponses().stream()
 				.filter(r -> Objects.equals(r.getResponse().getUrl(), INTEGRITY_URL))
 				.max(Comparator.comparing(r -> r.getTimestamp().toString()))

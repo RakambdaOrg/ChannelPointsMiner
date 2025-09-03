@@ -37,8 +37,8 @@ import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestInstance;
 import kong.unirest.modules.jackson.JacksonObjectMapper;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Objects;
@@ -74,15 +74,15 @@ public class ApiFactory{
 		return unirest;
 	}
 	
-	public static void addMobileHeaders(@NotNull UnirestInstance unirest){
+	public static void addMobileHeaders(@NonNull UnirestInstance unirest){
 		unirest.config()
 				.setDefaultHeader(HeaderNames.ACCEPT, ACCEPT_MOBILE)
 				.setDefaultHeader(API_CONSUMER_TYPE_HEADER, API_CONSUMER_TYPE)
 				.setDefaultHeader(X_APP_VERSION_HEADER, X_APP_VERSION);
 	}
 	
-	@NotNull
-	public static GQLApi createGqlApi(@NotNull TwitchLogin twitchLogin, @NotNull IIntegrityProvider integrityProvider){
+	@NonNull
+	public static GQLApi createGqlApi(@NonNull TwitchLogin twitchLogin, @NonNull IIntegrityProvider integrityProvider){
 		var unirest = createUnirestInstance(twitchLogin.getTwitchClient());
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
 		
@@ -96,24 +96,24 @@ public class ApiFactory{
 		return new GQLApi(twitchLogin, unirest, integrityProvider);
 	}
 	
-	@NotNull
-	public static TwitchApi createTwitchApi(@NotNull TwitchLogin twitchLogin){
+	@NonNull
+	public static TwitchApi createTwitchApi(@NonNull TwitchLogin twitchLogin){
 		var unirest = createUnirestInstance(twitchLogin.getTwitchClient());
 		twitchLogin.getCookies().forEach(unirest.config()::addDefaultCookie);
 		
 		return new TwitchApi(unirest);
 	}
 	
-	@NotNull
-	public static DiscordApi createDiscordApi(@NotNull URL webhookUrl){
+	@NonNull
+	public static DiscordApi createDiscordApi(@NonNull URL webhookUrl){
 		var unirestInstance = createUnirestInstance(null);
 		unirestInstance.config().retryAfter(true, 5);
 		
 		return new DiscordApi(webhookUrl, unirestInstance);
 	}
 	
-	@NotNull
-	public static TelegramApi createTelegramApi(@NotNull URL botUrl){
+	@NonNull
+	public static TelegramApi createTelegramApi(@NonNull URL botUrl){
 		var unirestInstance = createUnirestInstance(null);
 		unirestInstance.config()
 				.defaultBaseUrl(botUrl.toString())
@@ -122,8 +122,8 @@ public class ApiFactory{
 		return new TelegramApi(unirestInstance);
 	}
 	
-	@NotNull
-	public static ILoginProvider createLoginProvider(@NotNull String username, @NotNull ILoginMethod loginMethod, @NotNull IEventManager eventManager){
+	@NonNull
+	public static ILoginProvider createLoginProvider(@NonNull String username, @NonNull ILoginMethod loginMethod, @NonNull IEventManager eventManager){
 		return switch(loginMethod){
 			case IPassportApiLoginProvider passportApiLoginProvider -> {
 				var twitchClient = passportApiLoginProvider.getTwitchClient();
@@ -151,8 +151,8 @@ public class ApiFactory{
 		};
 	}
 	
-	@NotNull
-	public static IIntegrityProvider createIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider, @NotNull ILoginMethod loginMethod, @NotNull IEventManager eventManager){
+	@NonNull
+	public static IIntegrityProvider createIntegrityProvider(@NonNull TwitchLogin twitchLogin, @NonNull IVersionProvider versionProvider, @NonNull ILoginMethod loginMethod, @NonNull IEventManager eventManager){
 		return switch(loginMethod){
 			case HttpLoginMethod ignored -> createHttpIntegrityProvider(twitchLogin, versionProvider);
 			case MobileLoginMethod ignored -> createMobileIntegrityProvider(twitchLogin);
@@ -162,8 +162,8 @@ public class ApiFactory{
 		};
 	}
 	
-	@NotNull
-	private static IIntegrityProvider createHttpIntegrityProvider(@NotNull TwitchLogin twitchLogin, @NotNull IVersionProvider versionProvider){
+	@NonNull
+	private static IIntegrityProvider createHttpIntegrityProvider(@NonNull TwitchLogin twitchLogin, @NonNull IVersionProvider versionProvider){
 		var clientSessionId = CommonUtils.randomHex(16);
 		
 		var unirest = createUnirestInstance(twitchLogin.getTwitchClient());
@@ -172,8 +172,8 @@ public class ApiFactory{
 		return new HttpIntegrityProvider(twitchLogin, unirest, versionProvider, clientSessionId, xDeviceId);
 	}
 	
-	@NotNull
-	private static IIntegrityProvider createMobileIntegrityProvider(@NotNull TwitchLogin twitchLogin){
+	@NonNull
+	private static IIntegrityProvider createMobileIntegrityProvider(@NonNull TwitchLogin twitchLogin){
 		var clientSessionId = CommonUtils.randomHex(16);
 		var xDeviceId = CommonUtils.randomAlphanumeric(32);
 		
@@ -184,13 +184,13 @@ public class ApiFactory{
 		return new MobileIntegrityProvider(twitchLogin, unirest, clientSessionId, xDeviceId);
 	}
 	
-	@NotNull
-	private static IIntegrityProvider createBrowserIntegrityProvider(@NotNull BrowserConfiguration configuration, @NotNull IEventManager eventManager){
+	@NonNull
+	private static IIntegrityProvider createBrowserIntegrityProvider(@NonNull BrowserConfiguration configuration, @NonNull IEventManager eventManager){
 		return new BrowserIntegrityProvider(configuration, eventManager);
 	}
 	
-	@NotNull
-	public static IVersionProvider createVersionProvider(@NotNull VersionProvider versionProvider){
+	@NonNull
+	public static IVersionProvider createVersionProvider(@NonNull VersionProvider versionProvider){
 		var unirest = createUnirestInstance(null);
 		return switch(versionProvider){
 			case WEBPAGE -> new WebpageVersionProvider(unirest);
@@ -198,8 +198,8 @@ public class ApiFactory{
 		};
 	}
 	
-	@NotNull
-	public static TwitchHermesWebSocketPool createHermesWebSocketPool(@NotNull TwitchLogin twitchLogin, @NotNull IEventManager eventManager){
+	@NonNull
+	public static TwitchHermesWebSocketPool createHermesWebSocketPool(@NonNull TwitchLogin twitchLogin, @NonNull IEventManager eventManager){
 		return new TwitchHermesWebSocketPool(50, twitchLogin, eventManager);
 	}
 }

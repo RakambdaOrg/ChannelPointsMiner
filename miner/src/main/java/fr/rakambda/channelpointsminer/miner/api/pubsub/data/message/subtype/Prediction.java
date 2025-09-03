@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.ZonedDateTime;
 
 @Getter
@@ -21,19 +21,19 @@ import java.time.ZonedDateTime;
 @Builder
 public class Prediction{
 	@JsonProperty("event_id")
-	@NotNull
+	@NonNull
 	private String eventId;
 	@JsonProperty("outcome_id")
-	@NotNull
+	@NonNull
 	private String outcomeId;
 	@JsonProperty("channel_id")
-	@NotNull
+	@NonNull
 	private String channelId;
 	@JsonProperty("points")
 	private int points;
 	@JsonProperty("predicted_at")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
+	@NonNull
 	private ZonedDateTime predictedAt;
 	@JsonProperty("result")
 	@Nullable

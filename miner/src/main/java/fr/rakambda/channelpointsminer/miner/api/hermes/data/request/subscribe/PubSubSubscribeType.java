@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("pubsub")
 @Getter
@@ -33,7 +33,7 @@ public class PubSubSubscribeType extends SubscribeData{
 		private String topic;
 	}
 	
-	public PubSubSubscribeType(@NotNull String topic){
+	public PubSubSubscribeType(@NonNull String topic){
 		super();
 		type = "pubsub";
 		pubsub = new PubSub(topic);

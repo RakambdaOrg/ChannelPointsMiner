@@ -8,7 +8,7 @@ jsonschema-generator-version = "4.38.0"
 httpclient-version = "4.5.14"
 lang3-version = "3.18.0"
 commons-text-version = "1.14.0"
-jetbrains-annotations-version = "26.0.2"
+jspecify-version = "1.0.0"
 websocket-version = "1.6.0"
 junitVersion = "5.13.4"
 assertj-core-version = "3.27.4"
@@ -57,7 +57,7 @@ jsonschema-module-jackson = { group = "com.github.victools", name = "jsonschema-
 httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "httpclient-version" }
 lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3-version" }
 commonsText = { group = "org.apache.commons", name = "commons-text", version.ref = "commons-text-version" }
-jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations-version" }
+jSpecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify-version" }
 websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "websocket-version" }
 kittehIrc = { group = "org.kitteh.irc", name = "client-lib", version.ref = "kitteh-irc-version" }
 hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari-cp-version" }

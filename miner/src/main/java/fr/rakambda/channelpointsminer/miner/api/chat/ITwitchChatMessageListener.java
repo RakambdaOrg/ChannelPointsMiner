@@ -1,10 +1,10 @@
 package fr.rakambda.channelpointsminer.miner.api.chat;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public interface ITwitchChatMessageListener{
 	
-	void onChatMessage(@NotNull String streamer, @NotNull String actor, @NotNull String message);
+	void onChatMessage(@NonNull String streamer, @NonNull String actor, @NonNull String message);
 	
-	void onChatMessage(@NotNull String streamer, @NotNull String actor, @NotNull String message, @NotNull String badges);
+	void onChatMessage(@NonNull String streamer, @NonNull String actor, @NonNull String message, @NonNull String badges);
 }

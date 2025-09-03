@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("raid_update_v2")
 @Getter
@@ -20,6 +20,6 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class RaidUpdateV2 extends IPubSubMessage{
 	@JsonProperty("raid")
-	@NotNull
+	@NonNull
 	private Raid raid;
 }

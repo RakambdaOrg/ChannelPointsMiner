@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @NoArgsConstructor
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class PredictionResultPayload{
 	@JsonProperty("type")
-	@NotNull
+	@NonNull
 	private PredictionResultType type;
 	@JsonProperty("points_won")
 	private int pointsWon;

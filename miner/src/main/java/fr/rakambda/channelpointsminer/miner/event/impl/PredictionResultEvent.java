@@ -10,8 +10,8 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,20 +22,20 @@ public class PredictionResultEvent extends AbstractLoggableStreamerEvent{
 	@Getter
 	private final PredictionResultData predictionResultData;
 	
-	public PredictionResultEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @Nullable PlacedPrediction placedPrediction, @NotNull PredictionResultData predictionResultData){
+	public PredictionResultEvent(@NonNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @Nullable PlacedPrediction placedPrediction, @NonNull PredictionResultData predictionResultData){
 		super(streamerId, streamerUsername, streamer, predictionResultData.getTimestamp().toInstant());
 		this.placedPrediction = placedPrediction;
 		this.predictionResultData = predictionResultData;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Bet result [{prediction_type} | {prediction_points}]";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} {streamer} : Bet result [{prediction_type} | {prediction_points}]";
 	}
@@ -52,7 +52,7 @@ public class PredictionResultEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Map<String, String> getEmbedFields(){
 		return Map.of(
 				"Type", EventVariableKey.PREDICTION_TYPE,
@@ -61,24 +61,24 @@ public class PredictionResultEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_PREDICTION;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "🧧";
 	}
 	
-	@NotNull
+	@NonNull
 	private PredictionResultType getType(){
 		var result = Optional.ofNullable(predictionResultData.getPrediction().getResult());
 		return result.map(PredictionResultPayload::getType).orElse(PredictionResultType.UNKNOWN);
 	}
 	
-	@NotNull
+	@NonNull
 	public String getGain(){
 		if(getType() == PredictionResultType.REFUND){
 			return "0";

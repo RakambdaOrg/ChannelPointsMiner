@@ -8,18 +8,18 @@ import fr.rakambda.channelpointsminer.miner.event.impl.PointsSpentEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 
 @RequiredArgsConstructor
 public class PointsHandler extends PubSubMessageHandlerAdapter{
-	@NotNull
+	@NonNull
 	private final IMiner miner;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Override
-	public void onPointsEarned(@NotNull Topic topic, @NotNull PointsEarned message){
+	public void onPointsEarned(@NonNull Topic topic, @NonNull PointsEarned message){
 		var streamerId = message.getData().getChannelId();
 		var streamer = miner.getStreamerById(streamerId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
@@ -27,7 +27,7 @@ public class PointsHandler extends PubSubMessageHandlerAdapter{
 	}
 	
 	@Override
-	public void onPointsSpent(@NotNull Topic topic, @NotNull PointsSpent message){
+	public void onPointsSpent(@NonNull Topic topic, @NonNull PointsSpent message){
 		var streamerId = message.getData().getBalance().getChannelId();
 		var streamer = miner.getStreamerById(streamerId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();

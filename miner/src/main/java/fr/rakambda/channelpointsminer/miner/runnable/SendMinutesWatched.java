@@ -8,11 +8,12 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -20,19 +21,19 @@ import java.util.function.Predicate;
 @Log4j2
 @RequiredArgsConstructor
 public abstract class SendMinutesWatched implements Runnable{
-	@NotNull
+	@NonNull
 	protected final IMiner miner;
 	private final Map<String, Instant> lastSend = new ConcurrentHashMap<>();
 	
 	protected abstract String getType();
 	
-	protected abstract boolean checkStreamer(@NotNull Streamer streamer);
+	protected abstract boolean checkStreamer(@NonNull Streamer streamer);
 	
-	protected abstract boolean send(@NotNull Streamer streamer);
+	protected abstract boolean send(@NonNull Streamer streamer);
 	
 	protected abstract boolean shouldUpdateWatchedMinutes();
 	
-	@NotNull
+	@NonNull
 	protected abstract Predicate<IStreamerPriority> getPriorityFilter();
 	
 	protected abstract int getWatchLimit();
@@ -49,7 +50,7 @@ public abstract class SendMinutesWatched implements Runnable{
 					.map(streamer -> Map.entry(streamer, streamer.getScore(miner, getPriorityFilter())))
 					.sorted(this::compare)
 					.limit(getWatchLimit())
-					.map(Map.Entry::getKey)
+					.map(Entry::getKey)
 					.toList();
 			
 			for(var streamer : toSendMinutesWatched){
@@ -71,7 +72,7 @@ public abstract class SendMinutesWatched implements Runnable{
 		}
 	}
 	
-	private int compare(@NotNull Map.Entry<Streamer, Integer> e1, @NotNull Map.Entry<Streamer, Integer> e2){
+	private int compare(@NonNull Entry<Streamer, Integer> e1, @NonNull Entry<Streamer, Integer> e2){
 		var compareScore = Integer.compare(e2.getValue(), e1.getValue());
 		if(compareScore != 0){
 			return compareScore;
@@ -79,7 +80,7 @@ public abstract class SendMinutesWatched implements Runnable{
 		return Integer.compare(e1.getKey().getIndex(), e2.getKey().getIndex());
 	}
 	
-	private void updateWatchedMinutes(@NotNull Streamer streamer){
+	private void updateWatchedMinutes(@NonNull Streamer streamer){
 		var now = TimeFactory.now();
 		var previousUpdate = lastSend.get(streamer.getId());
 		if(Objects.nonNull(previousUpdate)){
@@ -89,7 +90,7 @@ public abstract class SendMinutesWatched implements Runnable{
 		lastSend.put(streamer.getId(), now);
 	}
 	
-	private void removeLastSend(@NotNull List<Streamer> currentStreamers){
+	private void removeLastSend(@NonNull List<Streamer> currentStreamers){
 		var currentIds = currentStreamers.stream().map(Streamer::getId).toList();
 		var keysToRemove = lastSend.keySet().stream().filter(id -> !currentIds.contains(id)).toList();
 		keysToRemove.forEach(lastSend::remove);

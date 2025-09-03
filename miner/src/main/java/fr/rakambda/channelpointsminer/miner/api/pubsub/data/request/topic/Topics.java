@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Set;
 
 @Getter
@@ -18,16 +18,16 @@ public class Topics{
 	@ToString.Exclude
 	private String authToken;
 	
-	public Topics(@NotNull Topic topic){
+	public Topics(@NonNull Topic topic){
 		this(topic, null);
 	}
 	
-	public Topics(@NotNull Topic topic, @Nullable String authToken){
+	public Topics(@NonNull Topic topic, @Nullable String authToken){
 		topics = Set.of(topic);
 		this.authToken = authToken;
 	}
 	
-	public static Topics buildFromName(@NotNull TopicName topicName, @NotNull String target, @Nullable String authToken){
+	public static Topics buildFromName(@NonNull TopicName topicName, @NonNull String target, @Nullable String authToken){
 		var topic = Topic.builder()
 				.name(topicName)
 				.target(target)

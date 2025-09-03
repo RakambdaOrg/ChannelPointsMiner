@@ -5,7 +5,7 @@ import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,22 +22,22 @@ public abstract class IGQLOperation<T>{
 	@JsonProperty("variables")
 	private Map<String, Object> variables = new HashMap<>();
 	
-	public IGQLOperation(@NotNull String operationName){
+	public IGQLOperation(@NonNull String operationName){
 		this.operationName = operationName;
 	}
 	
-	protected void addPersistedQueryExtension(@NotNull PersistedQueryExtension persistedQueryExtension){
+	protected void addPersistedQueryExtension(@NonNull PersistedQueryExtension persistedQueryExtension){
 		addExtension(PERSISTED_QUERY_EXTENSION_NAME, persistedQueryExtension);
 	}
 	
-	protected void addExtension(@NotNull String key, @NotNull Object extension){
+	protected void addExtension(@NonNull String key, @NonNull Object extension){
 		extensions.put(key, extension);
 	}
 	
-	protected void addVariable(@NotNull String key, @NotNull Object object){
+	protected void addVariable(@NonNull String key, @NonNull Object object){
 		variables.put(key, object);
 	}
 	
-	@NotNull
+	@NonNull
 	public abstract GenericType<GQLResponse<T>> getResponseType();
 }

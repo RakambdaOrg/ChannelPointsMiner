@@ -2,13 +2,13 @@ package fr.rakambda.channelpointsminer.miner.database.model.prediction;
 
 import lombok.Builder;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Data
 @Builder
 public class OutcomeStatistic{
 	
-	@NotNull
+	@NonNull
 	private final String badge;
 	private final int userCnt;
 	private final double averageWinRate;

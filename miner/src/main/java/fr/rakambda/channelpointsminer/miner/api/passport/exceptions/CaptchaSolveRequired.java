@@ -1,6 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.api.passport.exceptions;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Error while login in, a captcha challenge has been requested.

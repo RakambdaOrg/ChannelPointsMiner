@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("biggestPredictor")
 @Getter
@@ -25,14 +25,14 @@ import org.jetbrains.annotations.NotNull;
 @JsonClassDescription("Choose the outcome with the biggest predictor.")
 public class BiggestPredictorOutcomePicker implements IOutcomePicker{
 	@Override
-	@NotNull
-	public Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction, @NotNull IDatabase database) throws BetPlacementException{
+	@NonNull
+	public Outcome chooseOutcome(@NonNull BettingPrediction bettingPrediction, @NonNull IDatabase database) throws BetPlacementException{
 		return bettingPrediction.getEvent().getOutcomes().stream()
 				.max(this::compare)
 				.orElseThrow(() -> new BetPlacementException("Couldn't get outcome with biggest predictor points"));
 	}
 	
-	private int compare(@NotNull Outcome o1, @NotNull Outcome o2){
+	private int compare(@NonNull Outcome o1, @NonNull Outcome o2){
 		var biggest1 = o1.getTopPredictors().stream().mapToInt(Predictor::getPoints).max().orElse(0);
 		var biggest2 = o2.getTopPredictors().stream().mapToInt(Predictor::getPoints).max().orElse(0);
 		return Integer.compare(biggest1, biggest2);

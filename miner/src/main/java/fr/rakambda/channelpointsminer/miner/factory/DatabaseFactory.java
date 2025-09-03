@@ -10,14 +10,14 @@ import fr.rakambda.channelpointsminer.miner.database.MariaDBDatabase;
 import fr.rakambda.channelpointsminer.miner.database.MysqlDatabase;
 import fr.rakambda.channelpointsminer.miner.database.NoOpDatabase;
 import fr.rakambda.channelpointsminer.miner.database.SQLiteDatabase;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.sql.SQLException;
 import java.util.Objects;
 
 public class DatabaseFactory{
     
-    @NotNull
+    @NonNull
     public static IDatabase createDatabase(@Nullable DatabaseConfiguration configuration) throws SQLException, HikariPool.PoolInitializationException{
         if(Objects.isNull(configuration)){
             return new NoOpDatabase();
@@ -41,8 +41,8 @@ public class DatabaseFactory{
         return database;
     }
     
-    @NotNull
-    private static HikariConfig createHikariConfiguration(@NotNull DatabaseConfiguration configuration, String driver){
+    @NonNull
+    private static HikariConfig createHikariConfiguration(@NonNull DatabaseConfiguration configuration, String driver){
         var config = new HikariConfig();
         config.setJdbcUrl(configuration.getJdbcUrl());
         config.setUsername(configuration.getUsername());
@@ -54,29 +54,29 @@ public class DatabaseFactory{
         return config;
     }
     
-    @NotNull
-    private static MariaDBDatabase createMariaDbDatabase(@NotNull DatabaseConfiguration configuration){
+    @NonNull
+    private static MariaDBDatabase createMariaDbDatabase(@NonNull DatabaseConfiguration configuration){
         var config = createHikariConfiguration(configuration, "org.mariadb.jdbc.Driver");
         config.setMaximumPoolSize(configuration.getMaxPoolSize());
         return new MariaDBDatabase(new HikariDataSource(config));
     }
     
-    @NotNull
-    private static MariaDBDatabase createMysqlDatabase(@NotNull DatabaseConfiguration configuration){
+    @NonNull
+    private static MariaDBDatabase createMysqlDatabase(@NonNull DatabaseConfiguration configuration){
         var config = createHikariConfiguration(configuration, "com.mysql.cj.jdbc.Driver");
         config.setMaximumPoolSize(configuration.getMaxPoolSize());
         return new MysqlDatabase(new HikariDataSource(config));
     }
     
-    @NotNull
-    private static SQLiteDatabase createSqliteDatabase(@NotNull DatabaseConfiguration configuration){
+    @NonNull
+    private static SQLiteDatabase createSqliteDatabase(@NonNull DatabaseConfiguration configuration){
         var config = createHikariConfiguration(configuration, "org.sqlite.JDBC");
         config.setMaximumPoolSize(1);
         return new SQLiteDatabase(new HikariDataSource(config));
     }
     
-    @NotNull
-    private static HikariDataSource createDatasource(@NotNull DatabaseConfiguration configuration, @NotNull String driver, int maxPoolSize){
+    @NonNull
+    private static HikariDataSource createDatasource(@NonNull DatabaseConfiguration configuration, @NonNull String driver, int maxPoolSize){
         var poolConfiguration = new HikariConfig();
         poolConfiguration.setJdbcUrl(configuration.getJdbcUrl());
         poolConfiguration.setUsername(configuration.getUsername());
@@ -87,8 +87,8 @@ public class DatabaseFactory{
         return new HikariDataSource(poolConfiguration);
     }
     
-    @NotNull
-    public static DatabaseEventHandler createDatabaseHandler(@NotNull IDatabase database, boolean recordUserPredictions){
+    @NonNull
+    public static DatabaseEventHandler createDatabaseHandler(@NonNull IDatabase database, boolean recordUserPredictions){
 	    return new DatabaseEventHandler(database, recordUserPredictions);
     }
 }

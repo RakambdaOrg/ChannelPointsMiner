@@ -44,8 +44,8 @@ import fr.rakambda.channelpointsminer.miner.api.passport.exceptions.InvalidCrede
 import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -71,13 +71,13 @@ public class GQLApi{
     private final UnirestInstance unirest;
     private final IIntegrityProvider integrityProvider;
     
-    @NotNull
-    public Optional<GQLResponse<ReportMenuItemData>> reportMenuItem(@NotNull String username){
+    @NonNull
+    public Optional<GQLResponse<ReportMenuItemData>> reportMenuItem(@NonNull String username){
         return postGqlRequest(new ReportMenuItemOperation(username));
     }
     
-    @NotNull
-    private <T> Optional<GQLResponse<T>> postGqlRequest(@NotNull IGQLOperation<T> operation){
+    @NonNull
+    private <T> Optional<GQLResponse<T>> postGqlRequest(@NonNull IGQLOperation<T> operation){
         try{
             log.debug("Sending GQL operation {}", operation);
             var integrity = integrityProvider.getIntegrity();
@@ -131,83 +131,83 @@ public class GQLApi{
         }
     }
     
-    private boolean isErrorExpected(@NotNull Collection<GQLError> errors){
+    private boolean isErrorExpected(@NonNull Collection<GQLError> errors){
         return errors.stream().allMatch(this::isErrorExpected);
     }
     
-    private boolean isErrorExpected(@NotNull GQLError error){
+    private boolean isErrorExpected(@NonNull GQLError error){
         return EXPECTED_ERROR_MESSAGES.contains(error.getMessage());
     }
     
-    private boolean isErrorIntegrity(@NotNull Collection<GQLError> errors){
+    private boolean isErrorIntegrity(@NonNull Collection<GQLError> errors){
         return errors.stream().anyMatch(this::isErrorIntegrity);
     }
     
-    private boolean isErrorIntegrity(@NotNull GQLError error){
+    private boolean isErrorIntegrity(@NonNull GQLError error){
         return INTEGRITY_ERROR_MESSAGES.contains(error.getMessage());
     }
     
-    @NotNull
-    public Optional<GQLResponse<ChannelPointsContextData>> channelPointsContext(@NotNull String username){
+    @NonNull
+    public Optional<GQLResponse<ChannelPointsContextData>> channelPointsContext(@NonNull String username){
         return postGqlRequest(new ChannelPointsContextOperation(username));
     }
     
-    @NotNull
-    public Optional<GQLResponse<VideoPlayerStreamInfoOverlayChannelData>> videoPlayerStreamInfoOverlayChannel(@NotNull String username){
+    @NonNull
+    public Optional<GQLResponse<VideoPlayerStreamInfoOverlayChannelData>> videoPlayerStreamInfoOverlayChannel(@NonNull String username){
         return postGqlRequest(new VideoPlayerStreamInfoOverlayChannelOperation(username));
     }
     
-    @NotNull
-    public Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(@NotNull String channelId){
+    @NonNull
+    public Optional<GQLResponse<DropsHighlightServiceAvailableDropsData>> dropsHighlightServiceAvailableDrops(@NonNull String channelId){
         return postGqlRequest(new DropsHighlightServiceAvailableDropsOperation(channelId));
     }
 	
-	@NotNull
-	public Optional<GQLResponse<SetDropsCommunityHighlightToHiddenData>> setDropsCommunityHighlightToHidden(@NotNull String channelId, @NotNull String campaignId){
+	@NonNull
+	public Optional<GQLResponse<SetDropsCommunityHighlightToHiddenData>> setDropsCommunityHighlightToHidden(@NonNull String channelId, @NonNull String campaignId){
 		return postGqlRequest(new SetDropsCommunityHighlightToHiddenOperation(channelId, campaignId));
 	}
     
-    @NotNull
-    public Optional<GQLResponse<ClaimCommunityPointsData>> claimCommunityPoints(@NotNull String channelId, @NotNull String claimId){
+    @NonNull
+    public Optional<GQLResponse<ClaimCommunityPointsData>> claimCommunityPoints(@NonNull String channelId, @NonNull String claimId){
         return postGqlRequest(new ClaimCommunityPointsOperation(channelId, claimId));
     }
     
-    @NotNull
-    public Optional<GQLResponse<CommunityMomentCalloutClaimData>> claimCommunityMoment(@NotNull String momentId){
+    @NonNull
+    public Optional<GQLResponse<CommunityMomentCalloutClaimData>> claimCommunityMoment(@NonNull String momentId){
         return postGqlRequest(new CommunityMomentCalloutClaimOperation(momentId));
     }
     
-    @NotNull
-    public Optional<GQLResponse<JoinRaidData>> joinRaid(@NotNull String raidId){
+    @NonNull
+    public Optional<GQLResponse<JoinRaidData>> joinRaid(@NonNull String raidId){
         return postGqlRequest(new JoinRaidOperation(raidId));
     }
     
-    @NotNull
+    @NonNull
     public Optional<GQLResponse<InventoryData>> inventory(){
         return postGqlRequest(new InventoryOperation());
     }
     
-    @NotNull
-    public Optional<GQLResponse<DropsPageClaimDropRewardsData>> dropsPageClaimDropRewards(@NotNull String dropInstanceId){
+    @NonNull
+    public Optional<GQLResponse<DropsPageClaimDropRewardsData>> dropsPageClaimDropRewards(@NonNull String dropInstanceId){
         return postGqlRequest(new DropsPageClaimDropRewardsOperation(dropInstanceId));
     }
     
-    @NotNull
-    public Optional<GQLResponse<MakePredictionData>> makePrediction(@NotNull String eventId, @NotNull String outcomeId, int amount, @NotNull String transactionId){
+    @NonNull
+    public Optional<GQLResponse<MakePredictionData>> makePrediction(@NonNull String eventId, @NonNull String outcomeId, int amount, @NonNull String transactionId){
         return postGqlRequest(new MakePredictionOperation(eventId, outcomeId, amount, transactionId));
     }
     
-    @NotNull
-    public Optional<GQLResponse<PlaybackAccessTokenData>> playbackAccessToken(@NotNull String login){
+    @NonNull
+    public Optional<GQLResponse<PlaybackAccessTokenData>> playbackAccessToken(@NonNull String login){
         return postGqlRequest(new PlaybackAccessTokenOperation(login));
     }
 	
-	@NotNull
-	public Optional<GQLResponse<WithIsStreamLiveData>> withIsStreamLive(@NotNull String id){
+	@NonNull
+	public Optional<GQLResponse<WithIsStreamLiveData>> withIsStreamLive(@NonNull String id){
 		return postGqlRequest(new WithIsStreamLiveOperation(id));
 	}
 	
-    @NotNull
+    @NonNull
     public List<User> allChannelFollows(){
         var follows = new ArrayList<User>();
         
@@ -242,13 +242,13 @@ public class GQLApi{
         return follows;
     }
 	
-    @NotNull
-    public Optional<GQLResponse<ChannelFollowsData>> channelFollows(int limit, @NotNull String order, @Nullable String cursor){
+    @NonNull
+    public Optional<GQLResponse<ChannelFollowsData>> channelFollows(int limit, @NonNull String order, @Nullable String cursor){
         return postGqlRequest(new ChannelFollowsOperation(limit, order, cursor));
     }
 	
-    @NotNull
-    public Optional<GQLResponse<ChatRoomBanStatusData>> chatRoomBanStatus(@NotNull String channelId, @NotNull String targetUserId){
+    @NonNull
+    public Optional<GQLResponse<ChatRoomBanStatusData>> chatRoomBanStatus(@NonNull String channelId, @NonNull String targetUserId){
         return postGqlRequest(new ChatRoomBanStatusOperation(channelId, targetUserId));
     }
 }

@@ -10,22 +10,22 @@ import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.event.ILoggableEvent;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DiscordMessageBuilder{
-	@NotNull
-	public Webhook createSimpleMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
+	@NonNull
+	public Webhook createSimpleMessage(@NonNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
 		var format = Optional.ofNullable(config).map(MessageEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
 		return Webhook.builder().content(formatMessage(event, format)).build();
 	}
 	
-	@NotNull
-	public Webhook createEmbedMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
+	@NonNull
+	public Webhook createEmbedMessage(@NonNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
 		var format = Optional.ofNullable(config).map(MessageEventConfiguration::getFormat).orElseGet(event::getDefaultFormat);
 		
 		var fields = event.getEmbedFields().entrySet().stream()
@@ -46,14 +46,14 @@ public class DiscordMessageBuilder{
 				.build();
 	}
 	
-	@NotNull
-	private String formatMessage(@NotNull StringLookup event, @NotNull String format){
+	@NonNull
+	private String formatMessage(@NonNull StringLookup event, @NonNull String format){
 		var substitutor = new StringSubstitutor(event, "{", "}", '$');
 		return substitutor.replace(format);
 	}
 	
 	@Nullable
-	protected Author getEmbedAuthor(@NotNull StringLookup event){
+	protected Author getEmbedAuthor(@NonNull StringLookup event){
 		return Optional.ofNullable(event.apply(EventVariableKey.STREAMER))
 				.map(username -> Author.builder().name(username)
 						.url(event.apply(EventVariableKey.STREAMER_URL))
@@ -64,14 +64,14 @@ public class DiscordMessageBuilder{
 	}
 	
 	@Nullable
-	protected Footer getEmbedFooter(@NotNull StringLookup event){
+	protected Footer getEmbedFooter(@NonNull StringLookup event){
 		return Optional.ofNullable(event.apply(EventVariableKey.USERNAME))
 				.map(username -> Footer.builder().text(username).build())
 				.orElse(null);
 	}
 	
 	@Nullable
-	protected Integer getEmbedColor(@NotNull StringLookup event){
+	protected Integer getEmbedColor(@NonNull StringLookup event){
 		return Optional.ofNullable(event.apply(EventVariableKey.COLOR))
 				.map(Integer::parseInt)
 				.orElse(null);

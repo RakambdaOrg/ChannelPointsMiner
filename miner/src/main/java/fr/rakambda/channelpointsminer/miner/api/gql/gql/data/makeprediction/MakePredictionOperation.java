@@ -7,13 +7,13 @@ import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class MakePredictionOperation extends IGQLOperation<MakePredictionData>{
-	public MakePredictionOperation(@NotNull String eventId, @NotNull String outcomeId, int amount, @NotNull String transactionId){
+	public MakePredictionOperation(@NonNull String eventId, @NonNull String outcomeId, int amount, @NonNull String transactionId){
 		super("MakePrediction");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "b44682ecc88358817009f20e69d75081b1e58825bb40aa53d5dbadcc17c881d8"));
 		addVariable("input", InputData.builder()
@@ -25,7 +25,7 @@ public class MakePredictionOperation extends IGQLOperation<MakePredictionData>{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public GenericType<GQLResponse<MakePredictionData>> getResponseType(){
 		return new GenericType<>(){};
 	}

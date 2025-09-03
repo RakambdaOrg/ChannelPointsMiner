@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -44,15 +44,15 @@ import static java.util.Optional.ofNullable;
 public class Streamer{
 	public static final Duration SEVEN_MINUTES = Duration.ofMinutes(7);
 	
-	@NotNull
+	@NonNull
 	@Getter
 	@EqualsAndHashCode.Include
 	private final String id;
-	@NotNull
+	@NonNull
 	@Getter
 	@ToString.Include
 	private final String username;
-	@NotNull
+	@NonNull
 	@Getter
 	@Setter
 	private StreamerSettings settings;
@@ -86,7 +86,7 @@ public class Streamer{
 	@Getter
 	private URL m3u8Url;
 	
-	public void addWatchedDuration(@NotNull Duration duration){
+	public void addWatchedDuration(@NonNull Duration duration){
 		watchedDuration = watchedDuration.plus(duration);
 	}
 	
@@ -111,7 +111,7 @@ public class Streamer{
 		return TimeFactory.now().isAfter(lastUpdated.plus(5, MINUTES));
 	}
 	
-	public int getScore(@NotNull IMiner miner, Predicate<IStreamerPriority> filterPriority){
+	public int getScore(@NonNull IMiner miner, Predicate<IStreamerPriority> filterPriority){
 		try(var ignored = LogContext.with(miner).withStreamer(this)){
 			var score = settings.getPriorities().stream()
 					.filter(filterPriority)
@@ -138,7 +138,7 @@ public class Streamer{
 				.orElse(List.of());
 	}
 	
-	@NotNull
+	@NonNull
 	public Optional<Integer> getChannelPoints(){
 		return ofNullable(channelPointsContext)
 				.map(ChannelPointsContextData::getCommunity)
@@ -171,7 +171,7 @@ public class Streamer{
 				.map(CommunityPointsClaim::getId);
 	}
 	
-	@NotNull
+	@NonNull
 	public Optional<Game> getGame(){
 		return ofNullable(videoPlayerStreamInfoOverlayChannel)
 				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
@@ -183,19 +183,19 @@ public class Streamer{
 		return settings.getIndex();
 	}
 	
-	@NotNull
+	@NonNull
 	public Optional<String> getStreamId(){
 		return getStream().map(Stream::getId);
 	}
 	
-	@NotNull
+	@NonNull
 	private Optional<Stream> getStream(){
 		return ofNullable(videoPlayerStreamInfoOverlayChannel)
 				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)
 				.map(User::getStream);
 	}
 	
-	@NotNull
+	@NonNull
 	public Optional<URL> getProfileImage(){
 		return Optional.ofNullable(videoPlayerStreamInfoOverlayChannel)
 				.map(VideoPlayerStreamInfoOverlayChannelData::getUser)

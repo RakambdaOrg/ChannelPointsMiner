@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("percentage")
 @Getter
@@ -34,7 +34,7 @@ public class PercentageAmount implements IAmountCalculator{
 	private int max;
 	
 	@Override
-	public int calculateAmount(@NotNull BettingPrediction bettingPrediction, @NotNull Outcome outcome) throws BetPlacementException{
+	public int calculateAmount(@NonNull BettingPrediction bettingPrediction, @NonNull Outcome outcome) throws BetPlacementException{
 		var currentPoints = bettingPrediction.getStreamer().getChannelPoints().orElseThrow(() -> new BetPlacementException("Failed to get current owned channel points"));
 		return (int) Math.min(currentPoints * percentage, max);
 	}

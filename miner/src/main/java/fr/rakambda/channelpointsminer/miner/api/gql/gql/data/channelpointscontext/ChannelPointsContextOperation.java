@@ -6,13 +6,13 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.PersistedQueryExten
 import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class ChannelPointsContextOperation extends IGQLOperation<ChannelPointsContextData>{
-    public ChannelPointsContextOperation(@NotNull String username){
+    public ChannelPointsContextOperation(@NonNull String username){
         super("ChannelPointsContext");
         addPersistedQueryExtension(new PersistedQueryExtension(1, "1530a003a7d374b0380b79db0be0534f30ff46e61cffa2bc0e2468a909fbc024"));
         addVariable("channelLogin", username);
@@ -20,7 +20,7 @@ public class ChannelPointsContextOperation extends IGQLOperation<ChannelPointsCo
     }
     
     @Override
-    @NotNull
+    @NonNull
     public GenericType<GQLResponse<ChannelPointsContextData>> getResponseType(){
         return new GenericType<>(){};
     }

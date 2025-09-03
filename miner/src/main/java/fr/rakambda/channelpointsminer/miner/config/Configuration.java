@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.List;
 
 @Getter
@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 @JsonClassDescription("Global configuration.")
 public class Configuration{
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "accounts", required = true)
 	@JsonPropertyDescription("List of account configurations.")
 	private List<AccountConfiguration> accounts;

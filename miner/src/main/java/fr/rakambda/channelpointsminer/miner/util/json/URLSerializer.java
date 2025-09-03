@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.util.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.net.URL;
 
@@ -17,7 +17,7 @@ public class URLSerializer extends StdSerializer<URL>{
 	}
 	
 	@Override
-	public void serialize(@NotNull URL url, @NotNull JsonGenerator jsonGenerator, @NotNull SerializerProvider serializerProvider) throws IOException{
+	public void serialize(@NonNull URL url, @NonNull JsonGenerator jsonGenerator, @NonNull SerializerProvider serializerProvider) throws IOException{
 		jsonGenerator.writeString(url.toString());
 	}
 }

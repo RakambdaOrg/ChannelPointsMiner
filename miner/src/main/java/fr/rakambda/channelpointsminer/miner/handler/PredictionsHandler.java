@@ -25,9 +25,7 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
-import org.jetbrains.annotations.VisibleForTesting;
+import org.jspecify.annotations.NonNull;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Objects;
@@ -45,19 +43,13 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 	private final BetPlacer betPlacer;
 	private final IEventManager eventManager;
 	
-	@Getter(value = PROTECTED, onMethod_ = {
-			@TestOnly,
-			@VisibleForTesting
-	})
+	@Getter(value = PROTECTED)
 	private final Map<String, BettingPrediction> predictions = new ConcurrentHashMap<>();
-	@Getter(value = PROTECTED, onMethod_ = {
-			@TestOnly,
-			@VisibleForTesting
-	})
+	@Getter(value = PROTECTED)
 	private final Map<String, PlacedPrediction> placedPredictions = new ConcurrentHashMap<>();
 	
 	@Override
-	public void onEventCreated(@NotNull Topic topic, @NotNull EventCreated message){
+	public void onEventCreated(@NonNull Topic topic, @NonNull EventCreated message){
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
 		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
@@ -71,7 +63,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 	}
 	
 	@Override
-	public void onEventUpdated(@NotNull Topic topic, @NotNull EventUpdated message){
+	public void onEventUpdated(@NonNull Topic topic, @NonNull EventUpdated message){
 		var streamer = miner.getStreamerById(topic.getTarget()).orElse(null);
 		var event = message.getData().getEvent();
 		try(var ignored = LogContext.with(miner).withStreamer(streamer).withEventId(event.getId())){
@@ -106,12 +98,12 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 	}
 	
 	@Override
-	public void onPredictionMade(@NotNull Topic topic, @NotNull PredictionMade message){
+	public void onPredictionMade(@NonNull Topic topic, @NonNull PredictionMade message){
 		predictionPlaced(message.getData().getPrediction());
 	}
 	
 	@Override
-	public void onPredictionResult(@NotNull Topic topic, @NotNull PredictionResult message){
+	public void onPredictionResult(@NonNull Topic topic, @NonNull PredictionResult message){
 		var predictionData = message.getData().getPrediction();
 		var streamerId = predictionData.getChannelId();
 		var streamer = miner.getStreamerById(streamerId).orElse(null);
@@ -129,11 +121,11 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 	}
 	
 	@Override
-	public void onPredictionUpdated(@NotNull Topic topic, @NotNull PredictionUpdated message){
+	public void onPredictionUpdated(@NonNull Topic topic, @NonNull PredictionUpdated message){
 		predictionPlaced(message.getData().getPrediction());
 	}
 	
-	private void predictionPlaced(@NotNull Prediction predictionData){
+	private void predictionPlaced(@NonNull Prediction predictionData){
 		var streamerId = predictionData.getChannelId();
 		var streamer = miner.getStreamerById(streamerId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
@@ -160,7 +152,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 		}
 	}
 	
-	private void onNewPrediction(@NotNull Streamer streamer, @NotNull Event event){
+	private void onNewPrediction(@NonNull Streamer streamer, @NonNull Event event){
 		if(event.getStatus() != EventStatus.ACTIVE){
 			log.debug("Event is not active");
 			return;
@@ -182,13 +174,13 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 		schedulePrediction(streamer, prediction);
 	}
 	
-	private boolean hasEnoughPoints(@NotNull Streamer streamer){
+	private boolean hasEnoughPoints(@NonNull Streamer streamer){
 		var requiredPoints = streamer.getSettings().getPredictions().getMinimumPointsRequired();
 		return streamer.getChannelPoints().map(points -> points >= requiredPoints).orElse(false);
 	}
 	
-	@NotNull
-	private BettingPrediction createPrediction(@NotNull Streamer streamer, @NotNull Event event){
+	@NonNull
+	private BettingPrediction createPrediction(@NonNull Streamer streamer, @NonNull Event event){
 		return BettingPrediction.builder()
 				.streamer(streamer)
 				.event(event)
@@ -196,7 +188,7 @@ public class PredictionsHandler extends PubSubMessageHandlerAdapter{
 				.build();
 	}
 	
-	private void schedulePrediction(@NotNull Streamer streamer, @NotNull BettingPrediction bettingPrediction){
+	private void schedulePrediction(@NonNull Streamer streamer, @NonNull BettingPrediction bettingPrediction){
 		var delayCalculator = streamer.getSettings().getPredictions().getDelayCalculator();
 		var event = bettingPrediction.getEvent();
 		

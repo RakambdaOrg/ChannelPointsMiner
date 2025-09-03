@@ -14,7 +14,7 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 @Log4j2
 @RequiredArgsConstructor
 public class StreamerConfigurationReload implements Runnable {
-    @NotNull
+    @NonNull
     private final IMiner miner;
-    @NotNull
+    @NonNull
     private final IEventManager eventManager;
-	@NotNull
+	@NonNull
     private final StreamerSettingsFactory streamerSettingsFactory;
     private final boolean loadFollows;
 
@@ -47,7 +47,7 @@ public class StreamerConfigurationReload implements Runnable {
         }
     }
 
-    @NotNull
+    @NonNull
     private Map<String, StreamerResult> getAllStreamers() {
         var streamers = new HashMap<String, StreamerResult>();
         streamers.putAll(getStreamersFromFollows(streamers.keySet()));
@@ -55,7 +55,7 @@ public class StreamerConfigurationReload implements Runnable {
         return streamers;
     }
 
-    private void removeStreamers(@NotNull Map<String, StreamerResult> newStreamers) {
+    private void removeStreamers(@NonNull Map<String, StreamerResult> newStreamers) {
         miner.getStreamers().stream()
                 .filter(oldStreamer -> !newStreamers.containsKey(oldStreamer.getUsername().toLowerCase(Locale.ROOT)))
                 .forEach(miner::removeStreamer);
@@ -65,8 +65,8 @@ public class StreamerConfigurationReload implements Runnable {
                 .forEach(miner::removeStreamer);
     }
 
-    @NotNull
-    private Optional<Streamer> getIfDisabled(@NotNull StreamerResult streamerResult) {
+    @NonNull
+    private Optional<Streamer> getIfDisabled(@NonNull StreamerResult streamerResult) {
         var settings = streamerResult.getStreamerSettingsSupplier().get();
         if (settings.isEnabled()) {
             return Optional.empty();
@@ -74,7 +74,7 @@ public class StreamerConfigurationReload implements Runnable {
         return streamerResult.getStreamerSupplier().apply(settings);
     }
 
-    private void updateStreamers(@NotNull Map<String, StreamerResult> newStreamers) {
+    private void updateStreamers(@NonNull Map<String, StreamerResult> newStreamers) {
         miner.getStreamers().stream()
                 .map(oldStreamer -> newStreamers.entrySet().stream()
                         .filter(entry -> Objects.equals(entry.getKey(), oldStreamer.getUsername().toLowerCase(Locale.ROOT)))
@@ -99,7 +99,7 @@ public class StreamerConfigurationReload implements Runnable {
                 });
     }
 
-    private void addStreamers(@NotNull Map<String, StreamerResult> newStreamers) {
+    private void addStreamers(@NonNull Map<String, StreamerResult> newStreamers) {
         var currentMinerNames = miner.getStreamers().stream()
                 .map(Streamer::getUsername)
                 .map(String::toLowerCase)
@@ -118,8 +118,8 @@ public class StreamerConfigurationReload implements Runnable {
                 .forEach(miner::addStreamer);
     }
 
-    @NotNull
-    private Map<String, StreamerResult> getStreamersFromFollows(@NotNull Collection<String> excludedNames) {
+    @NonNull
+    private Map<String, StreamerResult> getStreamersFromFollows(@NonNull Collection<String> excludedNames) {
         if (!loadFollows) {
             return Map.of();
         }
@@ -138,8 +138,8 @@ public class StreamerConfigurationReload implements Runnable {
                 }));
     }
 
-    @NotNull
-    private Map<String, StreamerResult> getStreamersFromConfiguration(@NotNull Collection<String> excludedNames) {
+    @NonNull
+    private Map<String, StreamerResult> getStreamersFromConfiguration(@NonNull Collection<String> excludedNames) {
         log.debug("Loading streamers from configuration");
         return streamerSettingsFactory.getStreamerConfigs()
                 .map(Path::getFileName)
@@ -158,8 +158,8 @@ public class StreamerConfigurationReload implements Runnable {
                         }));
     }
 
-    @NotNull
-    private Optional<String> getStreamerId(@NotNull String username) {
+    @NonNull
+    private Optional<String> getStreamerId(@NonNull String username) {
         var id = miner.getGqlApi().reportMenuItem(username)
                 .map(GQLResponse::getData)
                 .map(ReportMenuItemData::getUser)

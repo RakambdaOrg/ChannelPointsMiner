@@ -2,8 +2,8 @@ package fr.rakambda.channelpointsminer.miner.database;
 
 import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -15,47 +15,47 @@ public class NoOpDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void createChannel(@NotNull String channelId, @NotNull String username){
+	public void createChannel(@NonNull String channelId, @NonNull String username){
 	}
 	
 	@Override
-	public void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant){
+	public void updateChannelStatusTime(@NonNull String channelId, @NonNull Instant instant){
 	}
 	
 	@Override
-	public void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant instant){
+	public void addBalance(@NonNull String channelId, int balance, @Nullable String reason, @NonNull Instant instant){
 	}
 	
 	@Override
-	public void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant){
+	public void addPrediction(@NonNull String channelId, @NonNull String eventId, @NonNull String type, @NonNull String description, @NonNull Instant instant){
 	}
 	
 	@Override
-	public int addUserPrediction(@NotNull String username, @NotNull String streamerName, @NotNull String badge){
+	public int addUserPrediction(@NonNull String username, @NonNull String streamerName, @NonNull String badge){
 		return -1;
 	}
 	
 	@Override
-	public void cancelPrediction(@NotNull Event event){
+	public void cancelPrediction(@NonNull Event event){
 	}
 	
 	@Override
-	public void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnOnInvestment){
+	public void resolvePrediction(@NonNull Event event, @NonNull String outcome, @NonNull String badge, double returnOnInvestment){
 	}
 	
 	@Override
-	@NotNull
-	public Optional<String> getStreamerIdFromName(@NotNull String channelName){
+	@NonNull
+	public Optional<String> getStreamerIdFromName(@NonNull String channelName){
 		return Optional.empty();
 	}
 	
 	@Override
-	public void deleteUserPredictionsForChannel(@NotNull String channelId){
+	public void deleteUserPredictionsForChannel(@NonNull String channelId){
 	}
 	
 	@Override
-	@NotNull
-	public Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser){
+	@NonNull
+	public Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NonNull String channelId, int minBetsPlacedByUser){
 		return List.of();
 	}
 	

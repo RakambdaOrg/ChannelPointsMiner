@@ -14,7 +14,7 @@ import kong.unirest.core.Unirest;
 import kong.unirest.modules.jackson.JacksonObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import picocli.CommandLine;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,8 +52,8 @@ public class MinerApplication{
 		}
 	}
 	
-	@NotNull
-	private static CLIParameters parseCLIParameters(@NotNull String[] args){
+	@NonNull
+	private static CLIParameters parseCLIParameters(@NonNull String[] args){
 		var parameters = new CLIParameters();
 		var cli = new CommandLine(parameters);
 		cli.registerConverter(Path.class, Paths::get);

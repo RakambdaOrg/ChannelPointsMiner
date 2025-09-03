@@ -14,17 +14,17 @@ import fr.rakambda.channelpointsminer.miner.prediction.bet.exception.NotEnoughUs
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @RequiredArgsConstructor
 @Log4j2
 public class BetPlacer{
 	private static final int MINIMUM_BET_AMOUNT = 10;
 	
-	@NotNull
+	@NonNull
 	private final IMiner miner;
 	
-	public void placeBet(@NotNull BettingPrediction bettingPrediction){
+	public void placeBet(@NonNull BettingPrediction bettingPrediction){
 		var event = bettingPrediction.getEvent();
 		try(var ignored = LogContext.with(miner).withEventId(event.getId())){
 			if(event.getStatus() != EventStatus.ACTIVE){

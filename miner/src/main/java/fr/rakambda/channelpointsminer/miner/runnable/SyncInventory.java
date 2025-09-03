@@ -14,7 +14,7 @@ import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,9 +23,9 @@ import static java.util.Optional.ofNullable;
 @Log4j2
 @RequiredArgsConstructor
 public class SyncInventory implements Runnable{
-	@NotNull
+	@NonNull
 	private final IMiner miner;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Override
@@ -56,7 +56,7 @@ public class SyncInventory implements Runnable{
 		return miner.getStreamers().stream().anyMatch(Streamer::isParticipateCampaigns);
 	}
 	
-	private void claimDrops(@NotNull InventoryData inventory){
+	private void claimDrops(@NonNull InventoryData inventory){
 		var dropsToClaim = ofNullable(inventory.getCurrentUser().getInventory())
 				.map(Inventory::getDropCampaignsInProgress).stream().flatMap(Collection::stream)
 				.flatMap(dropCampaign -> dropCampaign.getTimeBasedDrops().stream())
@@ -73,7 +73,7 @@ public class SyncInventory implements Runnable{
 		dropsToClaim.forEach(this::claimDrop);
 	}
 	
-	private void claimDrop(@NotNull TimeBasedDrop timeBasedDrop){
+	private void claimDrop(@NonNull TimeBasedDrop timeBasedDrop){
 		eventManager.onEvent(new DropClaimEvent(timeBasedDrop, TimeFactory.now()));
 		
 		var dropInstanceId = Optional.ofNullable(timeBasedDrop.getSelf()).map(TimeBasedDropSelfEdge::getDropInstanceId);

@@ -13,7 +13,7 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.UnirestInstance;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
@@ -33,7 +33,7 @@ public class OauthLoginProvider implements ILoginProvider{
 	private final TwitchLoginCacher twitchLoginCacher;
 	private final IEventManager eventManager;
 	
-	public OauthLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull TwitchLoginCacher twitchLoginCacher, @NotNull IEventManager eventManager){
+	public OauthLoginProvider(@NonNull TwitchClient twitchClient, @NonNull UnirestInstance unirest, @NonNull String username, @NonNull TwitchLoginCacher twitchLoginCacher, @NonNull IEventManager eventManager){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
@@ -49,7 +49,7 @@ public class OauthLoginProvider implements ILoginProvider{
 	 * @throws IOException    Authentication file errors.
 	 * @throws LoginException Login request failed.
 	 */
-	@NotNull
+	@NonNull
 	public TwitchLogin login() throws LoginException, IOException{
 		var restoredAuthOptional = twitchLoginCacher.restoreAuthentication();
 		if(restoredAuthOptional.isPresent()){
@@ -79,7 +79,7 @@ public class OauthLoginProvider implements ILoginProvider{
 		return handleResponse(tokenResponse);
 	}
 	
-	@NotNull
+	@NonNull
 	private DeviceResponse generateDeviceToken() throws LoginException{
 		var response = unirest.post(ENDPOINT + "device")
 				.field("client_id", twitchClient.getClientId())
@@ -101,9 +101,9 @@ public class OauthLoginProvider implements ILoginProvider{
 		return response.getBody();
 	}
 	
-	@NotNull
+	@NonNull
 	@SneakyThrows(InterruptedException.class)
-	private TokenResponse fetchToken(@NotNull String deviceCode, @NotNull Duration interval, @NotNull Instant limit) throws LoginException{
+	private TokenResponse fetchToken(@NonNull String deviceCode, @NonNull Duration interval, @NonNull Instant limit) throws LoginException{
 		while(TimeFactory.now().isBefore(limit)){
 			var response = unirest.post(ENDPOINT + "token")
 					.field("client_id", twitchClient.getClientId())
@@ -141,8 +141,8 @@ public class OauthLoginProvider implements ILoginProvider{
 	 *
 	 * @throws IOException File failed to write.
 	 */
-	@NotNull
-	private TwitchLogin handleResponse(@NotNull TokenResponse response) throws IOException{
+	@NonNull
+	private TwitchLogin handleResponse(@NonNull TokenResponse response) throws IOException{
 		var twitchLogin = TwitchLogin.builder()
 				.twitchClient(twitchClient)
 				.username(username)

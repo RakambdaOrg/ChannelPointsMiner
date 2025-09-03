@@ -2,8 +2,8 @@ package fr.rakambda.channelpointsminer.miner.database;
 
 import fr.rakambda.channelpointsminer.miner.database.model.prediction.OutcomeStatistic;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -16,27 +16,27 @@ public interface IDatabase extends AutoCloseable{
 	@Override
 	void close() throws IOException;
 	
-	void createChannel(@NotNull String channelId, @NotNull String username) throws SQLException;
+	void createChannel(@NonNull String channelId, @NonNull String username) throws SQLException;
 	
-	void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException;
+	void updateChannelStatusTime(@NonNull String channelId, @NonNull Instant instant) throws SQLException;
 	
-	@NotNull
-	Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException;
+	@NonNull
+	Optional<String> getStreamerIdFromName(@NonNull String channelName) throws SQLException;
 	
-	void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant instant) throws SQLException;
+	void addBalance(@NonNull String channelId, int balance, @Nullable String reason, @NonNull Instant instant) throws SQLException;
 	
-	void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant) throws SQLException;
+	void addPrediction(@NonNull String channelId, @NonNull String eventId, @NonNull String type, @NonNull String description, @NonNull Instant instant) throws SQLException;
 	
-	int addUserPrediction(@NotNull String username, @NotNull String streamerId, @NotNull String badge) throws SQLException;
+	int addUserPrediction(@NonNull String username, @NonNull String streamerId, @NonNull String badge) throws SQLException;
 	
-	void cancelPrediction(@NotNull Event event) throws SQLException;
+	void cancelPrediction(@NonNull Event event) throws SQLException;
 	
-	void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnOnInvestment) throws SQLException;
+	void resolvePrediction(@NonNull Event event, @NonNull String outcome, @NonNull String badge, double returnOnInvestment) throws SQLException;
 	
 	void deleteAllUserPredictions() throws SQLException;
 	
-	void deleteUserPredictionsForChannel(@NotNull String channelId) throws SQLException;
+	void deleteUserPredictionsForChannel(@NonNull String channelId) throws SQLException;
 	
-	@NotNull
-	Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser) throws SQLException;
+	@NonNull
+	Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NonNull String channelId, int minBetsPlacedByUser) throws SQLException;
 }

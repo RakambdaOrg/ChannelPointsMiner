@@ -22,7 +22,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 	@Getter
 	private Instant lastPong;
 	
-	public TwitchPubSubWebSocketClient(@NotNull URI uri){
+	public TwitchPubSubWebSocketClient(@NonNull URI uri){
 		super(uri);
 		uuid = UUID.randomUUID().toString();
 		listenRequests = new HashMap<>();
@@ -117,7 +117,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 		send(new PingRequest());
 	}
 	
-	private void send(@NotNull ITwitchWebSocketRequest request){
+	private void send(@NonNull ITwitchWebSocketRequest request){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var data = JacksonUtils.writeAsString(request);
 			log.trace("Sending WebSocket message: {}", data);
@@ -133,17 +133,17 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 		onPong();
 	}
 	
-	public void addListener(@NotNull ITwitchPubSubWebSocketListener listener){
+	public void addListener(@NonNull ITwitchPubSubWebSocketListener listener){
 		listeners.add(listener);
 	}
 	
-	public boolean isTopicListened(@NotNull Topic topic){
+	public boolean isTopicListened(@NonNull Topic topic){
 		return topics.stream()
 				.flatMap(t -> t.getTopics().stream())
 				.anyMatch(t -> Objects.equals(t, topic));
 	}
 	
-	public void listenTopic(@NotNull Topics topics){
+	public void listenTopic(@NonNull Topics topics){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			if(this.topics.add(topics)){
 				var request = new ListenTopicRequest(topics);
@@ -153,7 +153,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 		}
 	}
 	
-	public void removeTopic(@NotNull Topic topic){
+	public void removeTopic(@NonNull Topic topic){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var topics = this.topics.stream()
 					.filter(t -> t.getTopics().contains(topic))

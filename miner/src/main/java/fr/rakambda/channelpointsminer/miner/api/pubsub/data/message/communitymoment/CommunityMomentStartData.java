@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class CommunityMomentStartData{
 	@JsonProperty("moment_id")
-	@NotNull
+	@NonNull
 	private String momentId;
 	@JsonProperty("channel_id")
-	@NotNull
+	@NonNull
 	private String channelId;
 }

@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,14 @@ import java.util.List;
 @Builder
 public class Event{
 	@JsonProperty("id")
-	@NotNull
+	@NonNull
 	private String id;
 	@JsonProperty("channel_id")
-	@NotNull
+	@NonNull
 	private String channelId;
 	@JsonProperty("created_at")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
+	@NonNull
 	private ZonedDateTime createdAt;
 	@JsonProperty("ended_at")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
@@ -39,16 +39,16 @@ public class Event{
 	@JsonProperty("prediction_window_seconds")
 	private int predictionWindowSeconds;
 	@JsonProperty("status")
-	@NotNull
+	@NonNull
 	private EventStatus status;
 	@JsonProperty("title")
-	@NotNull
+	@NonNull
 	private String title;
 	@JsonProperty("winning_outcome_id")
 	@Nullable
 	private String winningOutcomeId;
 	@JsonProperty("outcomes")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<Outcome> outcomes = new ArrayList<>();
 }

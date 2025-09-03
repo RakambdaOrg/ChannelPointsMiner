@@ -3,14 +3,14 @@ package fr.rakambda.channelpointsminer.miner.api.passport.http.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Data
 @Builder
 public class LoginRequest{
 	@JsonProperty(value = "client_id", required = true)
-	@NotNull
+	@NonNull
 	private String clientId;
 	@Builder.Default
 	@JsonProperty("undelete_user")
@@ -18,10 +18,10 @@ public class LoginRequest{
 	@Builder.Default
 	@JsonProperty("remember_me")
 	private boolean rememberMe = true;
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "username", required = true)
 	private String username;
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "password", required = true)
 	private String password;
 	@Nullable

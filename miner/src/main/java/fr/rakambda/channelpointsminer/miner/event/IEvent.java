@@ -1,15 +1,15 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 
 public interface IEvent{
-	@NotNull
+	@NonNull
 	Instant getInstant();
 	
-	@NotNull
+	@NonNull
 	IMiner getMiner();
 	
-	void setMiner(@NotNull IMiner miner);
+	void setMiner(@NonNull IMiner miner);
 }

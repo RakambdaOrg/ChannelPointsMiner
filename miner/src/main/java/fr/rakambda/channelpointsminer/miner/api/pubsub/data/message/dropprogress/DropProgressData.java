@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class DropProgressData{
 	@JsonProperty("channel_id")
-	@NotNull
+	@NonNull
 	private String channelId;
 	@JsonProperty("current_progress_min")
 	private int currentProgressMin;

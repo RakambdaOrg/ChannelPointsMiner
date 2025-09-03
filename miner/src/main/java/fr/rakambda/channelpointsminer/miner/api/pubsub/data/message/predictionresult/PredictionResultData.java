@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.ZonedDateTime;
 
 @Getter
@@ -22,9 +22,9 @@ import java.time.ZonedDateTime;
 public class PredictionResultData{
 	@JsonProperty("timestamp")
 	@JsonDeserialize(using = ISO8601ZonedDateTimeDeserializer.class)
-	@NotNull
+	@NonNull
 	private ZonedDateTime timestamp;
 	@JsonProperty("prediction")
-	@NotNull
+	@NonNull
 	private Prediction prediction;
 }

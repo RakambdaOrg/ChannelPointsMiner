@@ -4,43 +4,43 @@ import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class StreamerUnknownEvent extends AbstractLoggableStreamerEvent{
-	public StreamerUnknownEvent(@NotNull String streamerUsername, @NotNull Instant instant){
+	public StreamerUnknownEvent(@NonNull String streamerUsername, @NonNull Instant instant){
 		super("-1", streamerUsername, null, instant);
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Streamer unknown";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} {streamer} : Streamer unknown";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_INFO;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "❌";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Map<String, String> getEmbedFields(){
 		return Map.of("Streamer", EventVariableKey.STREAMER);
 	}

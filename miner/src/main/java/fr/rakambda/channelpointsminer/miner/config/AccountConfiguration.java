@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +25,11 @@ public class AccountConfiguration{
 	@JsonPropertyDescription("If the account is marked as enabled it'll be mined. Default: true")
 	@Builder.Default
 	private boolean enabled = true;
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "username", required = true)
 	@JsonPropertyDescription("Mining account's username.")
 	private String username;
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "loginMethod", required = true)
 	@JsonPropertyDescription("Login method to use.")
 	private ILoginMethod loginMethod;
@@ -41,17 +41,17 @@ public class AccountConfiguration{
 	@JsonPropertyDescription("Default streamer settings.")
 	@Builder.Default
 	private StreamerSettings defaultStreamerSettings = new StreamerSettings();
-	@NotNull
+	@NonNull
 	@JsonProperty("streamerConfigDirectories")
 	@JsonPropertyDescription("Paths containing overrides for streamer configurations.")
 	@Builder.Default
 	private List<StreamerDirectory> streamerConfigDirectories = new ArrayList<>();
-	@NotNull
+	@NonNull
 	@JsonProperty("discord")
 	@JsonPropertyDescription("Discord settings to send notifications.")
 	@Builder.Default
 	private DiscordConfiguration discord = new DiscordConfiguration();
-	@NotNull
+	@NonNull
 	@JsonProperty("telegram")
 	@JsonPropertyDescription("Telegram settings to send notifications.")
 	@Builder.Default
@@ -61,17 +61,17 @@ public class AccountConfiguration{
 	@Builder.Default
 	private int reloadEvery = 0;
 	@JsonProperty("analytics")
-	@NotNull
+	@NonNull
 	@JsonPropertyDescription("Analytics settings, recording account's evolution, bets, predictions.")
 	@Builder.Default
 	private AnalyticsConfiguration analytics = new AnalyticsConfiguration();
 	@JsonProperty("chatMode")
-	@NotNull
+	@NonNull
 	@JsonPropertyDescription("Method used to join chat. Default: WS")
 	@Builder.Default
 	private ChatMode chatMode = ChatMode.WS;
 	@JsonProperty("versionProvider")
-	@NotNull
+	@NonNull
 	@JsonPropertyDescription("Method used to get twitch version. Default: WEBPAGE")
 	@Builder.Default
 	private VersionProvider versionProvider = VersionProvider.WEBPAGE;

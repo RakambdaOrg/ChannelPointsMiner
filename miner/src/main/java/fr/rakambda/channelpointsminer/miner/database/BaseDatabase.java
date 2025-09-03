@@ -7,8 +7,8 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.flywaydb.core.Flyway;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import javax.sql.DataSource;
 import java.io.Closeable;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public abstract class BaseDatabase implements IDatabase{
 			new ReentrantLock()
 	};
 	
-	protected void applyFlyway(@NotNull String... migrationsPaths){
+	protected void applyFlyway(@NonNull String... migrationsPaths){
 		var flyway = Flyway.configure()
 				.dataSource(dataSource)
 				.locations(migrationsPaths)
@@ -46,7 +46,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void updateChannelStatusTime(@NotNull String channelId, @NotNull Instant instant) throws SQLException{
+	public void updateChannelStatusTime(@NonNull String channelId, @NonNull Instant instant) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
 						UPDATE `Channel` SET
@@ -62,14 +62,14 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public int addUserPrediction(@NotNull String username, @NotNull String channelId, @NotNull String badge) throws SQLException{
+	public int addUserPrediction(@NonNull String username, @NonNull String channelId, @NonNull String badge) throws SQLException{
 		var userId = getOrCreatePredictionUserId(username, channelId);
 		addUserPrediction(channelId, userId, badge);
 		return userId;
 	}
 	
 	@Override
-	public void addBalance(@NotNull String channelId, int balance, @Nullable String reason, @NotNull Instant instant) throws SQLException{
+	public void addBalance(@NonNull String channelId, int balance, @Nullable String reason, @NonNull Instant instant) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
 						INSERT INTO `Balance`(`ChannelId`, `BalanceDate`, `Balance`, `Reason`)
@@ -86,7 +86,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void addPrediction(@NotNull String channelId, @NotNull String eventId, @NotNull String type, @NotNull String description, @NotNull Instant instant) throws SQLException{
+	public void addPrediction(@NonNull String channelId, @NonNull String eventId, @NonNull String type, @NonNull String description, @NonNull Instant instant) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
 						INSERT INTO `Prediction`(`ChannelId`, `EventId`, `EventDate`, `Type`, `Description`)
@@ -103,7 +103,7 @@ public abstract class BaseDatabase implements IDatabase{
 		}
 	}
 	
-	protected int getOrCreatePredictionUserId(@NotNull String username, @NotNull String channelId) throws SQLException{
+	protected int getOrCreatePredictionUserId(@NonNull String username, @NonNull String channelId) throws SQLException{
 		username = username.toLowerCase(Locale.ROOT);
 		var lock = getOrCreatePredictionUserIdLocks[hashToIndex(username.hashCode(), getOrCreatePredictionUserIdLocks.length)];
 		lock.lock();
@@ -140,7 +140,7 @@ public abstract class BaseDatabase implements IDatabase{
 		}
 	}
 	
-	protected abstract void addUserPrediction(@NotNull String channelId, int userId, @NotNull String badge) throws SQLException;
+	protected abstract void addUserPrediction(@NonNull String channelId, int userId, @NonNull String badge) throws SQLException;
 	
 	private int hashToIndex(int hash, int length){
 		if(hash == Integer.MIN_VALUE){
@@ -150,7 +150,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void cancelPrediction(@NotNull Event event) throws SQLException{
+	public void cancelPrediction(@NonNull Event event) throws SQLException{
 		var ended = Optional.ofNullable(event.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
 		
 		try(var conn = getConnection();
@@ -170,7 +170,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void resolvePrediction(@NotNull Event event, @NotNull String outcome, @NotNull String badge, double returnRatioForWin) throws SQLException{
+	public void resolvePrediction(@NonNull Event event, @NonNull String outcome, @NonNull String badge, double returnRatioForWin) throws SQLException{
 		var ended = Optional.ofNullable(event.getEndedAt()).map(ZonedDateTime::toInstant).orElseGet(TimeFactory::now);
 		
 		resolveUserPredictions(returnRatioForWin, event.getChannelId(), badge);
@@ -194,7 +194,7 @@ public abstract class BaseDatabase implements IDatabase{
 		deleteUserPredictionsForChannel(event.getChannelId());
 	}
 	
-	protected abstract void resolveUserPredictions(double returnRatioForWin, @NotNull String channelId, @NotNull String badge) throws SQLException;
+	protected abstract void resolveUserPredictions(double returnRatioForWin, @NonNull String channelId, @NonNull String badge) throws SQLException;
 	
 	@Override
 	public void deleteAllUserPredictions() throws SQLException{
@@ -206,7 +206,7 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	public void deleteUserPredictionsForChannel(@NotNull String channelId) throws SQLException{
+	public void deleteUserPredictionsForChannel(@NonNull String channelId) throws SQLException{
 		log.debug("Removing user predictions for channelId '{}'.", channelId);
 		try(var conn = getConnection(); var statement = getDeleteUserPredictionsForChannelStmt(conn)){
 			statement.setString(1, channelId);
@@ -216,8 +216,8 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	@NotNull
-	public Optional<String> getStreamerIdFromName(@NotNull String channelName) throws SQLException{
+	@NonNull
+	public Optional<String> getStreamerIdFromName(@NonNull String channelName) throws SQLException{
 		log.debug("Getting streamerId from channel {}", channelName);
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
@@ -238,8 +238,8 @@ public abstract class BaseDatabase implements IDatabase{
 	}
 	
 	@Override
-	@NotNull
-	public Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NotNull String channelId, int minBetsPlacedByUser) throws SQLException{
+	@NonNull
+	public Collection<OutcomeStatistic> getOutcomeStatisticsForChannel(@NonNull String channelId, int minBetsPlacedByUser) throws SQLException{
 		log.debug("Getting most trusted prediction from already placed bets.");
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
@@ -277,13 +277,13 @@ public abstract class BaseDatabase implements IDatabase{
 		}
 	}
 	
-	@NotNull
+	@NonNull
 	protected Connection getConnection() throws SQLException{
 		return dataSource.getConnection();
 	}
 	
-	@NotNull
-	private PreparedStatement getDeleteUserPredictionsForChannelStmt(@NotNull Connection conn) throws SQLException{
+	@NonNull
+	private PreparedStatement getDeleteUserPredictionsForChannelStmt(@NonNull Connection conn) throws SQLException{
 		return conn.prepareStatement("""
 				DELETE FROM `UserPrediction`
 				WHERE `ChannelID`=?"""

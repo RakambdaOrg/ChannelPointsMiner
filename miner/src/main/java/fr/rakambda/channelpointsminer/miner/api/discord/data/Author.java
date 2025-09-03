@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 @ToString
 public class Author{
 	@JsonProperty("name")
-	@NotNull
+	@NonNull
 	private String name;
 	@JsonProperty("url")
 	@Nullable

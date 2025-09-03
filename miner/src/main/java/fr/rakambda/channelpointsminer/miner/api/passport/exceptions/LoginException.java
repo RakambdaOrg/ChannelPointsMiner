@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.passport.exceptions;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Error while login in.

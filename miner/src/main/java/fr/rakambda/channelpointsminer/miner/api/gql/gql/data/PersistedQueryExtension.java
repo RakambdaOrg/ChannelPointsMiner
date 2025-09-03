@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @NoArgsConstructor
@@ -17,6 +17,6 @@ public class PersistedQueryExtension{
 	@JsonProperty("version")
 	private int version;
 	@JsonProperty("sha256Hash")
-	@NotNull
+	@NonNull
 	private String sha256Hash;
 }

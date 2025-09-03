@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("drop-progress")
 @Getter
@@ -20,6 +20,6 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class DropProgress extends IPubSubMessage{
 	@JsonProperty("data")
-	@NotNull
+	@NonNull
 	private DropProgressData data;
 }

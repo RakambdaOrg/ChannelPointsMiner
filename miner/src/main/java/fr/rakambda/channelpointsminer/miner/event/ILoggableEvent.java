@@ -1,16 +1,16 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
 import org.apache.commons.text.lookup.StringLookup;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Map;
 
 public interface ILoggableEvent extends IEvent, StringLookup{
-	@NotNull
+	@NonNull
 	String getConsoleLogFormat();
 	
-	@NotNull
+	@NonNull
 	String getDefaultFormat();
 	
-	@NotNull
+	@NonNull
 	Map<String, String> getEmbedFields();
 }

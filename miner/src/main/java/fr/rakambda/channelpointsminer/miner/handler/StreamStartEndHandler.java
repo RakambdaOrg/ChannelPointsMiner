@@ -14,8 +14,8 @@ import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,27 +24,27 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @RequiredArgsConstructor
 @Log4j2
 public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
-	@NotNull
+	@NonNull
 	private final IMiner miner;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Override
-	public void onStreamUp(@NotNull Topic topic, @NotNull StreamUp message){
+	public void onStreamUp(@NonNull Topic topic, @NonNull StreamUp message){
 		var streamerId = topic.getTarget();
 		var streamer = miner.getStreamerById(streamerId);
 		streamUp(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), message.getServerTime(), true);
 	}
 	
 	@Override
-	public void onStreamDown(@NotNull Topic topic, @NotNull StreamDown message){
+	public void onStreamDown(@NonNull Topic topic, @NonNull StreamDown message){
 		var streamerId = topic.getTarget();
 		var streamer = miner.getStreamerById(streamerId);
 		streamDown(streamerId, streamer.orElse(null), streamer.map(Streamer::getUsername).orElse(null), message.getServerTime(), true);
 	}
 	
 	@Override
-	public void onBroadcastSettingsUpdate(@NotNull Topic topic, @NotNull BroadcastSettingsUpdate message){
+	public void onBroadcastSettingsUpdate(@NonNull Topic topic, @NonNull BroadcastSettingsUpdate message){
 		var streamerId = message.getChannelId();
 		var streamer = miner.getStreamerById(streamerId);
 		
@@ -63,7 +63,7 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 		}
 	}
 	
-	private void streamUp(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime, boolean fireEvent){
+	private void streamUp(@NonNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NonNull Instant serverTime, boolean fireEvent){
 		updateStream(streamerId, streamer);
 		if(fireEvent){
 			Optional.ofNullable(streamer)
@@ -74,7 +74,7 @@ public class StreamStartEndHandler extends PubSubMessageHandlerAdapter{
 		}
 	}
 	
-	private void streamDown(@NotNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NotNull Instant serverTime, boolean fireEvent){
+	private void streamDown(@NonNull String streamerId, @Nullable Streamer streamer, @Nullable String username, @NonNull Instant serverTime, boolean fireEvent){
 		updateStream(streamerId, streamer);
 		if(fireEvent){
 			Optional.ofNullable(streamer)

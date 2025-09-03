@@ -10,8 +10,8 @@ import fr.rakambda.channelpointsminer.miner.event.IStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 
 @Log4j2
@@ -22,7 +22,7 @@ public class TelegramEventListener extends EventHandlerAdapter{
 	private final TelegramMessageBuilder telegramMessageBuilder;
 	
 	@Override
-	public void onILoggableEvent(@NotNull ILoggableEvent event){
+	public void onILoggableEvent(@NonNull ILoggableEvent event){
 		try(var context = LogContext.with(event.getMiner())){
 			if(event instanceof IStreamerEvent e){
 				e.getStreamerUsername().ifPresent(context::withStreamer);
@@ -39,8 +39,8 @@ public class TelegramEventListener extends EventHandlerAdapter{
 		}
 	}
 	
-	@NotNull
-	private Message buildMessage(@NotNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
+	@NonNull
+	private Message buildMessage(@NonNull ILoggableEvent event, @Nullable MessageEventConfiguration config){
 		return telegramMessageBuilder.createSimpleMessage(event, config, telegramConfiguration.getChatId());
 	}
 }

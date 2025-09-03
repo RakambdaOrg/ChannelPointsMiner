@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,12 +33,12 @@ import static lombok.AccessLevel.PRIVATE;
 public class JacksonUtils{
 	private static JsonMapper mapper;
 	
-	@NotNull
-	public static <T> T read(@NotNull InputStream is, @NotNull TypeReference<T> type) throws IOException{
+	@NonNull
+	public static <T> T read(@NonNull InputStream is, @NonNull TypeReference<T> type) throws IOException{
 		return getMapper().readValue(is, type);
 	}
 	
-	@NotNull
+	@NonNull
 	public static JsonMapper getMapper(){
 		if(Objects.isNull(mapper)){
 			mapper = JsonMapper.builder()
@@ -61,21 +61,21 @@ public class JacksonUtils{
 		return mapper;
 	}
 	
-	@NotNull
-	public static <T> T read(@NotNull String value, @NotNull TypeReference<T> type) throws IOException{
+	@NonNull
+	public static <T> T read(@NonNull String value, @NonNull TypeReference<T> type) throws IOException{
 		return getMapper().readValue(value, type);
 	}
 	
-	@NotNull
+	@NonNull
 	public static <T> T update(InputStream is, T object) throws IOException{
 		return getMapper().readerForUpdating(object).readValue(is);
 	}
 	
-	public static void write(@NotNull OutputStream os, @NotNull Object value) throws IOException{
+	public static void write(@NonNull OutputStream os, @NonNull Object value) throws IOException{
 		getMapper().writeValue(os, value);
 	}
 	
-	public static String writeAsString(@NotNull Object value) throws JsonProcessingException{
+	public static String writeAsString(@NonNull Object value) throws JsonProcessingException{
 		return getMapper().writeValueAsString(value);
 	}
 }

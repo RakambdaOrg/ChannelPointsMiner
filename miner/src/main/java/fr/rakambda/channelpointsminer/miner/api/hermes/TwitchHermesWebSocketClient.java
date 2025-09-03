@@ -28,7 +28,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
@@ -47,13 +47,13 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	private final String uuid;
 	@Getter
 	private final Map<String, SubscribeRequest> subscribeRequests;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Getter
 	private Instant lastPong;
 	
-	public TwitchHermesWebSocketClient(@NotNull URI uri, @NotNull IEventManager eventManager){
+	public TwitchHermesWebSocketClient(@NonNull URI uri, @NonNull IEventManager eventManager){
 		super(uri);
 		this.eventManager = eventManager;
 		uuid = UUID.randomUUID().toString();
@@ -127,11 +127,11 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		lastPong = TimeFactory.now();
 	}
 	
-	public void authenticate(@NotNull TwitchLogin twitchLogin){
+	public void authenticate(@NonNull TwitchLogin twitchLogin){
 		send(new AuthenticateRequest(twitchLogin.getAccessToken()));
 	}
 	
-	public void send(@NotNull ITwitchHermesWebSocketRequest request){
+	public void send(@NonNull ITwitchHermesWebSocketRequest request){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var data = JacksonUtils.writeAsString(request);
 			log.trace("Sending Hermes WebSocket message: {}", data);
@@ -147,11 +147,11 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		onPong();
 	}
 	
-	public void addListener(@NotNull ITwitchHermesWebSocketListener listener){
+	public void addListener(@NonNull ITwitchHermesWebSocketListener listener){
 		listeners.add(listener);
 	}
 	
-	public boolean isPubSubTopicListened(@NotNull Topic topic){
+	public boolean isPubSubTopicListened(@NonNull Topic topic){
 		return subscribeRequests.values().stream()
 				.map(SubscribeRequest::getSubscribe)
 				.filter(PubSubSubscribeType.class::isInstance)
@@ -159,7 +159,7 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 				.anyMatch(t -> Objects.equals(t.getPubsub().getTopic(), topic.getValue()));
 	}
 	
-	public Optional<String> listenPubSubTopic(@NotNull Topic topic){
+	public Optional<String> listenPubSubTopic(@NonNull Topic topic){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			var request = SubscribeRequest.pubsub(topic.getValue());
 			subscribeRequests.put(request.getSubscribe().getId(), request);
@@ -168,7 +168,7 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		}
 	}
 	
-	public void removeSubscription(@NotNull String id){
+	public void removeSubscription(@NonNull String id){
 		try(var ignored = LogContext.empty().withSocketId(uuid)){
 			if(subscribeRequests.containsKey(id)){
 				send(new UnsubscribeRequest(id));

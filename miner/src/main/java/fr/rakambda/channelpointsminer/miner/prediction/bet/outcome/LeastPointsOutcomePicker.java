@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Comparator;
 
 @JsonTypeName("leastPoints")
@@ -25,8 +25,8 @@ import java.util.Comparator;
 @JsonClassDescription("Choose the outcome with the least points. This is the same as 'the outcome with higher odds'.")
 public class LeastPointsOutcomePicker implements IOutcomePicker{
 	@Override
-	@NotNull
-	public Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction, @NotNull IDatabase database) throws BetPlacementException{
+	@NonNull
+	public Outcome chooseOutcome(@NonNull BettingPrediction bettingPrediction, @NonNull IDatabase database) throws BetPlacementException{
 		return bettingPrediction.getEvent().getOutcomes().stream()
 				.min(Comparator.comparingLong(Outcome::getTotalPoints))
 				.orElseThrow(() -> new BetPlacementException("Couldn't get outcome with least points"));

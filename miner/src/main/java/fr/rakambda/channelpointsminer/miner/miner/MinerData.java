@@ -4,7 +4,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.Inventory
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 @Setter

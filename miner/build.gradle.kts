@@ -33,8 +33,8 @@ dependencies {
     implementation(libs.sqlite)
     implementation(libs.mysql)
     implementation(libs.bundles.flyway)
+    implementation(libs.jSpecify)
 
-    compileOnly(libs.jetbrainsAnnotations)
     compileOnly(libs.lombok)
 
     annotationProcessor(libs.lombok)

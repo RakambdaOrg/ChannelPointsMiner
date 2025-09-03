@@ -18,7 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +34,7 @@ import java.util.List;
 public class PredictionSettings{
 	@JsonProperty("delayCalculator")
 	@JsonPropertyDescription("How to calculate when to place the bet. Default: 10s from end")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private IDelayCalculator delayCalculator = FromEndDelay.builder().seconds(10).build();
 	@JsonProperty("minimumPointsRequired")
@@ -43,17 +43,17 @@ public class PredictionSettings{
 	private int minimumPointsRequired = 0;
 	@JsonProperty("outcomePicker")
 	@JsonPropertyDescription("How to choose what outcome to place the bet on. Default: smart(0.2)")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private IOutcomePicker outcomePicker = SmartOutcomePicker.builder().percentageGap(.2f).build();
 	@JsonProperty("amountCalculator")
 	@JsonPropertyDescription("How to calculate the amount to the bet. Default: percentage(percentage: 20, max: 50000)")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private IAmountCalculator amountCalculator = PercentageAmount.builder().percentage(.2F).max(50_000).build();
 	@JsonProperty("actions")
 	@JsonPropertyDescription("Actions to perform before a bet is placed.")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<IPredictionAction> actions = new ArrayList<>();
 	

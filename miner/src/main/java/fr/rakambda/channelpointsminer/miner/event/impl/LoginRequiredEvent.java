@@ -4,7 +4,7 @@ import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableEvent;
 import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
@@ -12,7 +12,7 @@ import java.time.Instant;
 public class LoginRequiredEvent extends AbstractLoggableEvent{
 	private final String message;
 	
-	public LoginRequiredEvent(@NotNull Instant instant, @NotNull String message){
+	public LoginRequiredEvent(@NonNull Instant instant, @NonNull String message){
 		super(instant);
 		this.message = message;
 	}
@@ -26,25 +26,25 @@ public class LoginRequiredEvent extends AbstractLoggableEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "{message} for account {username}";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} : {message}";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_WARN;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "⚠️";
 	}

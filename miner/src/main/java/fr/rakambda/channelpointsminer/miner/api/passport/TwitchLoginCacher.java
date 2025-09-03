@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.api.passport;
 import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +22,7 @@ public class TwitchLoginCacher{
 	 *
 	 * @throws IOException Failed to read authentication file.
 	 */
-	@NotNull
+	@NonNull
 	public Optional<TwitchLogin> restoreAuthentication() throws IOException{
 		if(!Files.exists(userAuthenticationFile)){
 			return Optional.empty();
@@ -39,7 +39,7 @@ public class TwitchLoginCacher{
 	 *
 	 * @throws IOException File failed to write.
 	 */
-	public void saveAuthentication(@NotNull TwitchLogin twitchLogin) throws IOException{
+	public void saveAuthentication(@NonNull TwitchLogin twitchLogin) throws IOException{
 		Files.createDirectories(userAuthenticationFile.getParent());
 		JacksonUtils.write(Files.newOutputStream(userAuthenticationFile, CREATE, TRUNCATE_EXISTING), twitchLogin);
 	}

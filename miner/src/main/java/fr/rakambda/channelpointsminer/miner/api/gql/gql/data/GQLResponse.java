@@ -7,8 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +23,11 @@ import java.util.Objects;
 @EqualsAndHashCode
 public class GQLResponse<T>{
 	@JsonProperty("errors")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<GQLError> errors = new ArrayList<>();
 	@JsonProperty("extensions")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private Map<String, Object> extensions = new HashMap<>();
 	@JsonProperty("data")

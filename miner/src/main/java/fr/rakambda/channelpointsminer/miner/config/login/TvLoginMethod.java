@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,19 +24,19 @@ import java.nio.file.Paths;
 @AllArgsConstructor
 @JsonClassDescription("Login though Twitch's Oauth API (as android tv).")
 public class TvLoginMethod implements ILoginMethod, IOauthApiLoginProvider{
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "password", required = true)
 	@JsonPropertyDescription("Password of your Twitch account.")
 	@ToString.Exclude
 	private String password;
-	@NotNull
+	@NonNull
 	@JsonProperty("authenticationFolder")
 	@JsonPropertyDescription(value = "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication")
 	@Builder.Default
 	private Path authenticationFolder = Paths.get("authentication");
 	
 	@Override
-	@NotNull
+	@NonNull
 	public TwitchClient getTwitchClient(){
 		return TwitchClient.ANDROID_TV;
 	}

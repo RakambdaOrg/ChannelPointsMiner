@@ -1,11 +1,11 @@
 package fr.rakambda.channelpointsminer.miner.api.pubsub;
 
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.response.ITwitchWebSocketResponse;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public interface ITwitchPubSubWebSocketListener{
-	void onWebSocketMessage(@NotNull ITwitchWebSocketResponse message);
+	void onWebSocketMessage(@NonNull ITwitchWebSocketResponse message);
 	
-	void onWebSocketClosed(@NotNull TwitchPubSubWebSocketClient client, int code, @Nullable String reason, boolean remote);
+	void onWebSocketClosed(@NonNull TwitchPubSubWebSocketClient client, int code, @Nullable String reason, boolean remote);
 }

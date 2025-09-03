@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @ToString(callSuper = true)
 @Getter
@@ -25,7 +25,7 @@ public class UnsubscribeRequest extends ITwitchHermesWebSocketRequest{
 	@JsonProperty("unsubscribe")
 	private Data unsubscribe;
 	
-	public UnsubscribeRequest(@NotNull String id){
+	public UnsubscribeRequest(@NonNull String id){
 		super("unsubscribe");
 		unsubscribe = new Data(id);
 	}

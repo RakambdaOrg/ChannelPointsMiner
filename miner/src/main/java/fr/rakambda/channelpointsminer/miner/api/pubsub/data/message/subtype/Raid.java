@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @NoArgsConstructor
@@ -17,6 +17,6 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class Raid{
 	@JsonProperty("id")
-	@NotNull
+	@NonNull
 	private String id;
 }

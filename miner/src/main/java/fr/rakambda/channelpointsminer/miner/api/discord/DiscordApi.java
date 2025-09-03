@@ -6,7 +6,7 @@ import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -19,15 +19,15 @@ import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 @RequiredArgsConstructor
 @Log4j2
 public class DiscordApi{
-	@NotNull
+	@NonNull
 	private final URL webhookUrl;
-	@NotNull
+	@NonNull
 	private final UnirestInstance unirest;
-	@NotNull
+	@NonNull
 	private final Semaphore semaphore = new Semaphore(1, true);
 	
 	@SneakyThrows
-	public void sendMessage(@NotNull Webhook webhook){
+	public void sendMessage(@NonNull Webhook webhook){
 		webhook.setUsername("ChannelPointsMiner");
 		semaphore.acquire();
 		try{

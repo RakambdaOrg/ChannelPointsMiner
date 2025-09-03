@@ -5,14 +5,14 @@ import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Log4j2
 public class NoIntegrityProvider implements IIntegrityProvider{
 	@Override
-	@NotNull
+	@NonNull
 	public Optional<IntegrityData> getIntegrity(){
 		return Optional.empty();
 	}

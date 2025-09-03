@@ -6,16 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Placement{
-	@NotNull
+	@NonNull
 	private BettingPrediction bettingPrediction;
-	@NotNull
+	@NonNull
 	private Outcome outcome;
 	private int amount;
 }

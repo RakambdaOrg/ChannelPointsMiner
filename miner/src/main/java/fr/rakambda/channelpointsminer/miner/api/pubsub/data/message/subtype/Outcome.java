@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,23 +19,23 @@ import java.util.List;
 @Builder
 public class Outcome{
 	@JsonProperty("id")
-	@NotNull
+	@NonNull
 	private String id;
 	@JsonProperty("color")
-	@NotNull
+	@NonNull
 	private OutcomeColor color;
 	@JsonProperty("title")
-	@NotNull
+	@NonNull
 	private String title;
 	@JsonProperty("total_points")
 	private long totalPoints;
 	@JsonProperty("total_users")
 	private int totalUsers;
 	@JsonProperty("top_predictors")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<Predictor> topPredictors = new ArrayList<>();
 	@JsonProperty("badge")
-	@NotNull
+	@NonNull
 	private Badge badge;
 }

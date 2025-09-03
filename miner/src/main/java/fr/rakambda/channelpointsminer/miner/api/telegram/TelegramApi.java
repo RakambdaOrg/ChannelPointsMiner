@@ -6,7 +6,7 @@ import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Optional;
 import static kong.unirest.core.ContentType.APPLICATION_JSON;
 import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
@@ -16,16 +16,16 @@ import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 public class TelegramApi{
 	private static final int MAX_ATTEMPT = 3;
 	
-	@NotNull
+	@NonNull
 	private final UnirestInstance unirest;
 	
 	@SneakyThrows
-	public synchronized void sendMessage(@NotNull Message message){
+	public synchronized void sendMessage(@NonNull Message message){
 		sendMessage(message, 0);
 	}
 	
 	@SneakyThrows
-	private synchronized void sendMessage(@NotNull Message message, int attempt){
+	private synchronized void sendMessage(@NonNull Message message, int attempt){
 		if(attempt >= MAX_ATTEMPT){
 			log.error("Failed to send telegram message after {} attempts", MAX_ATTEMPT);
 			return;

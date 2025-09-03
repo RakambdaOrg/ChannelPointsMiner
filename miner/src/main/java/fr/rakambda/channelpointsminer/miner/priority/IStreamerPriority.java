@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 
 @Getter
@@ -38,7 +38,7 @@ public abstract class IStreamerPriority{
 	@JsonPropertyDescription("Score to give.")
 	private int score;
 	
-	public abstract int getScore(@NotNull IMiner miner, @NotNull Streamer streamer);
+	public abstract int getScore(@NonNull IMiner miner, @NonNull Streamer streamer);
 	
 	public boolean isDropsRelated(){
 		return false;

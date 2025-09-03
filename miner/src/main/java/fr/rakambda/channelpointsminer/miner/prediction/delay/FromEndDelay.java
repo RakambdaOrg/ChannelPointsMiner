@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.ZonedDateTime;
 
 @JsonTypeName("fromEnd")
@@ -30,8 +30,8 @@ public class FromEndDelay implements IDelayCalculator{
 	private int seconds;
 	
 	@Override
-	@NotNull
-	public ZonedDateTime calculate(@NotNull Event event){
+	@NonNull
+	public ZonedDateTime calculate(@NonNull Event event){
 		return event.getCreatedAt()
 				.plusSeconds(event.getPredictionWindowSeconds())
 				.minusSeconds(seconds);

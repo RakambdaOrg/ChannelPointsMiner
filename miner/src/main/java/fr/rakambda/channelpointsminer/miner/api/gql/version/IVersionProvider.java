@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.version;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public interface IVersionProvider{
-	@NotNull
+	@NonNull
 	String getVersion() throws VersionException;
 }

@@ -17,8 +17,8 @@ import fr.rakambda.channelpointsminer.miner.event.impl.StreamUpEvent;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerAddedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
@@ -30,17 +30,17 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	private static final Pattern CHAT_PREDICTION_BADGE_PATTERN = Pattern.compile("predictions/([^,]*)");
 	private static final double INFINITE_RETURN_RATIO = 100_000D;
 	
-	@NotNull
+	@NonNull
 	private final IDatabase database;
 	private final boolean recordUserPredictions;
 	
 	@Override
-	public void onEventCreatedEvent(@NotNull EventCreatedEvent event) throws Exception{
+	public void onEventCreatedEvent(@NonNull EventCreatedEvent event) throws Exception{
 		database.deleteUserPredictionsForChannel(event.getStreamerUsername().orElseThrow());
 	}
 	
 	@Override
-	public void onEventUpdatedEvent(@NotNull EventUpdatedEvent event) throws Exception{
+	public void onEventUpdatedEvent(@NonNull EventUpdatedEvent event) throws Exception{
 		var streamerUsername = event.getStreamerUsername();
 		var predictionEvent = event.getEvent();
 		
@@ -75,19 +75,19 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	}
 	
 	@Override
-	public void onPointsEarnedEvent(@NotNull PointsEarnedEvent event) throws SQLException{
+	public void onPointsEarnedEvent(@NonNull PointsEarnedEvent event) throws SQLException{
 		var pointsEarnedData = event.getPointsEarnedData();
 		var reasonCode = pointsEarnedData.getPointGain().getReasonCode();
 		updateBalance(event, pointsEarnedData.getBalance(), reasonCode);
 	}
 	
 	@Override
-	public void onPointsSpentEvent(@NotNull PointsSpentEvent event) throws SQLException{
+	public void onPointsSpentEvent(@NonNull PointsSpentEvent event) throws SQLException{
 		updateBalance(event, event.getPointsSpentData().getBalance(), null);
 	}
 	
 	@Override
-	public void onPredictionMadeEvent(@NotNull PredictionMadeEvent event) throws SQLException{
+	public void onPredictionMadeEvent(@NonNull PredictionMadeEvent event) throws SQLException{
 		var placedPrediction = event.getPlacedPrediction();
 		addPrediction(event, placedPrediction.getEventId(), "PREDICTED", Integer.toString(placedPrediction.getAmount()));
 		
@@ -103,27 +103,27 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 	}
 	
 	@Override
-	public void onPredictionResultEvent(@NotNull PredictionResultEvent event) throws Exception{
+	public void onPredictionResultEvent(@NonNull PredictionResultEvent event) throws Exception{
 		addPrediction(event, event.getPredictionResultData().getPrediction().getEventId(), "RESULT", event.getGain());
 	}
 	
 	@Override
-	public void onStreamDownEvent(@NotNull StreamDownEvent event) throws SQLException{
+	public void onStreamDownEvent(@NonNull StreamDownEvent event) throws SQLException{
 		updateStreamer(event);
 	}
 	
 	@Override
-	public void onStreamerAddedEvent(@NotNull StreamerAddedEvent event) throws SQLException{
+	public void onStreamerAddedEvent(@NonNull StreamerAddedEvent event) throws SQLException{
 		database.createChannel(event.getStreamerId(), event.getStreamerUsername().orElseThrow(() -> new IllegalStateException("No username present in streamer")));
 	}
 	
 	@Override
-	public void onStreamUpEvent(@NotNull StreamUpEvent event) throws SQLException{
+	public void onStreamUpEvent(@NonNull StreamUpEvent event) throws SQLException{
 		updateStreamer(event);
 	}
 	
 	@Override
-	public void onChatMessageEvent(@NotNull ChatMessageEvent event){
+	public void onChatMessageEvent(@NonNull ChatMessageEvent event){
 		var matcher = CHAT_PREDICTION_BADGE_PATTERN.matcher(event.getBadges());
 		if(matcher.find()){
 			try{
@@ -143,15 +143,15 @@ public class DatabaseEventHandler extends EventHandlerAdapter{
 		}
 	}
 	
-	private void updateStreamer(@NotNull IStreamerEvent event) throws SQLException{
+	private void updateStreamer(@NonNull IStreamerEvent event) throws SQLException{
 		database.updateChannelStatusTime(event.getStreamerId(), event.getInstant());
 	}
 	
-	private void addPrediction(@NotNull IStreamerEvent event, @NotNull String eventId, @NotNull String type, @NotNull String description) throws SQLException{
+	private void addPrediction(@NonNull IStreamerEvent event, @NonNull String eventId, @NonNull String type, @NonNull String description) throws SQLException{
 		database.addPrediction(event.getStreamerId(), eventId, type, description, event.getInstant());
 	}
 	
-	private void updateBalance(@NotNull IStreamerEvent event, @NotNull Balance balance, @Nullable String reason) throws SQLException{
+	private void updateBalance(@NonNull IStreamerEvent event, @NonNull Balance balance, @Nullable String reason) throws SQLException{
 		database.addBalance(event.getStreamerId(), balance.getBalance(), reason, event.getInstant());
 	}
 	

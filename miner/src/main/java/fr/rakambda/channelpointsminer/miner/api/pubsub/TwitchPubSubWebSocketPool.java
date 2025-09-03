@@ -8,8 +8,8 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Queue;
@@ -49,18 +49,18 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
 	}
 	
-	public void removeTopic(@NotNull Topic topic){
+	public void removeTopic(@NonNull Topic topic){
 		clients.stream()
 				.filter(client -> client.isTopicListened(topic))
 				.forEach(client -> client.removeTopic(topic));
 	}
 	
-	public void addListener(@NotNull ITwitchPubSubMessageListener listener){
+	public void addListener(@NonNull ITwitchPubSubMessageListener listener){
 		listeners.add(listener);
 	}
 	
 	@Override
-	public void onWebSocketMessage(@NotNull ITwitchWebSocketResponse response){
+	public void onWebSocketMessage(@NonNull ITwitchWebSocketResponse response){
 		if(response instanceof MessageResponse m){
 			var topic = m.getData().getTopic();
 			var message = m.getData().getMessage();
@@ -69,7 +69,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	}
 	
 	@Override
-	public void onWebSocketClosed(@NotNull TwitchPubSubWebSocketClient client, int code, @Nullable String reason, boolean remote){
+	public void onWebSocketClosed(@NonNull TwitchPubSubWebSocketClient client, int code, @Nullable String reason, boolean remote){
 		clients.remove(client);
 		if(code != NORMAL){
 			pendingTopics.addAll(client.getTopics());
@@ -88,7 +88,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 		}
 	}
 	
-	public void listenTopic(@NotNull Topics topics){
+	public void listenTopic(@NonNull Topics topics){
 		var isListened = topics.getTopics().stream().anyMatch(this::isTopicListened);
 		if(isListened){
 			log.debug("Topic {} is already being listened", topics);
@@ -104,11 +104,11 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 		}
 	}
 	
-	private boolean isTopicListened(@NotNull Topic topic){
+	private boolean isTopicListened(@NonNull Topic topic){
 		return clients.stream().anyMatch(client -> client.isTopicListened(topic));
 	}
 	
-	@NotNull
+	@NonNull
 	private TwitchPubSubWebSocketClient getAvailableClient(){
 		return clients.stream()
 				.filter(client -> !client.isClosing() && !client.isClosed())
@@ -117,7 +117,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 				.orElseGet(this::createNewClient);
 	}
 	
-	@NotNull
+	@NonNull
 	private TwitchPubSubWebSocketClient createNewClient(){
 		try{
 			var client = TwitchWebSocketClientFactory.createPubSubClient();

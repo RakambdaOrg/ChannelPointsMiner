@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @JsonClassDescription("Return a score if a drop campaign may be progressed by watching this stream.")
 public class DropsPriority extends IStreamerPriority{
 	@Override
-	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
+	public int getScore(@NonNull IMiner miner, @NonNull Streamer streamer){
 		if(streamer.isParticipateCampaigns()
 				&& streamer.isStreamingGame()
 				&& hasCampaigns(miner, streamer)){
@@ -54,7 +54,7 @@ public class DropsPriority extends IStreamerPriority{
 		return true;
 	}
 	
-	private boolean hasCampaigns(@NotNull IMiner miner, @NotNull Streamer streamer){
+	private boolean hasCampaigns(@NonNull IMiner miner, @NonNull Streamer streamer){
 		return Optional.ofNullable(streamer.getDropsHighlightServiceAvailableDrops())
 				.map(DropsHighlightServiceAvailableDropsData::getChannel)
 				.map(Channel::getViewerDropCampaigns)
@@ -63,7 +63,7 @@ public class DropsPriority extends IStreamerPriority{
 				.anyMatch(dropCampaign -> isValidCampaign(miner, streamer, dropCampaign));
 	}
 	
-	private boolean isValidCampaign(@NotNull IMiner miner, @NotNull Streamer streamer, @NotNull DropCampaign dropCampaign){
+	private boolean isValidCampaign(@NonNull IMiner miner, @NonNull Streamer streamer, @NonNull DropCampaign dropCampaign){
 		var now = TimeFactory.nowZoned();
 		
 		if(Optional.ofNullable(dropCampaign.getStartAt()).map(date -> date.isAfter(now)).orElse(false)){
@@ -102,7 +102,7 @@ public class DropsPriority extends IStreamerPriority{
 		return result;
 	}
 	
-	private boolean isValidDrop(@NotNull IMiner miner, @NotNull TimeBasedDrop timeBasedDrop, @NotNull List<DropBenefitEdge> possibleEntitlements){
+	private boolean isValidDrop(@NonNull IMiner miner, @NonNull TimeBasedDrop timeBasedDrop, @NonNull List<DropBenefitEdge> possibleEntitlements){
 		var now = TimeFactory.nowZoned();
 		
 		if(Optional.ofNullable(timeBasedDrop.getStartAt()).map(date -> date.isAfter(now)).orElse(false)){
@@ -130,7 +130,7 @@ public class DropsPriority extends IStreamerPriority{
 		return result;
 	}
 	
-	private boolean isValidBenefit(@NotNull IMiner miner, @Nullable ZonedDateTime startAt, @NotNull DropBenefitEdge dropBenefitEdge){
+	private boolean isValidBenefit(@NonNull IMiner miner, @Nullable ZonedDateTime startAt, @NonNull DropBenefitEdge dropBenefitEdge){
 		return Optional.ofNullable(miner.getMinerData().getInventory())
 				.map(InventoryData::getCurrentUser)
 				.map(User::getInventory)

@@ -6,7 +6,7 @@ import fr.rakambda.channelpointsminer.miner.event.EventVariableKey;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
@@ -14,19 +14,19 @@ import java.util.Map;
 public class EventCreatedEvent extends AbstractLoggableStreamerEvent{
 	private final Event event;
 	
-	public EventCreatedEvent(@NotNull Streamer streamer, @NotNull Event event){
+	public EventCreatedEvent(@NonNull Streamer streamer, @NonNull Event event){
 		super(streamer, event.getCreatedAt().toInstant());
 		this.event = event;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Prediction created [{prediction_name}]";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} {streamer} : Prediction created [{prediction_name}]";
 	}
@@ -40,19 +40,19 @@ public class EventCreatedEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Map<String, String> getEmbedFields(){
 		return Map.of("Title", EventVariableKey.PREDICTION_NAME);
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_PREDICTION;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "📑";
 	}

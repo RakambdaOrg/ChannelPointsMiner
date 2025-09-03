@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("constant")
 @Getter
@@ -30,7 +30,7 @@ public class ConstantAmount implements IAmountCalculator{
 	private int amount;
 	
 	@Override
-	public int calculateAmount(@NotNull BettingPrediction bettingPrediction, @NotNull Outcome outcome){
+	public int calculateAmount(@NonNull BettingPrediction bettingPrediction, @NonNull Outcome outcome){
 		return amount;
 	}
 }

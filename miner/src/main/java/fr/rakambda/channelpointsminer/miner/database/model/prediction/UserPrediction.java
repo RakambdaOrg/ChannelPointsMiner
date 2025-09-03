@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @NoArgsConstructor
@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class UserPrediction{
     
-    @NotNull
+    @NonNull
     private String channelId;
     private int userId;
-    @NotNull
+    @NonNull
     private String badge;
 }

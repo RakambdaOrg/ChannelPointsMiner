@@ -8,47 +8,47 @@ import fr.rakambda.channelpointsminer.miner.api.twitch.TwitchApi;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.TwitchPubSubWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public interface IMiner{
-	@NotNull
-	Optional<Streamer> getStreamerById(@NotNull String id);
+	@NonNull
+	Optional<Streamer> getStreamerById(@NonNull String id);
 	
 	/**
 	 * Add a streamer to the list being mined.
 	 *
 	 * @param streamer Streamer to add.
 	 */
-	void addStreamer(@NotNull Streamer streamer);
+	void addStreamer(@NonNull Streamer streamer);
 	
-	void updateStreamer(@NotNull Streamer streamer);
+	void updateStreamer(@NonNull Streamer streamer);
 	
-	boolean removeStreamer(@NotNull Streamer streamer);
+	boolean removeStreamer(@NonNull Streamer streamer);
 	
-	void updateStreamerInfos(@NotNull Streamer streamer);
+	void updateStreamerInfos(@NonNull Streamer streamer);
 	
 	void syncInventory();
 	
-	boolean containsStreamer(@NotNull Streamer streamer);
+	boolean containsStreamer(@NonNull Streamer streamer);
 	
-	@NotNull
-	ScheduledFuture<?> schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit unit);
+	@NonNull
+	ScheduledFuture<?> schedule(@NonNull Runnable runnable, long delay, @NonNull TimeUnit unit);
 	
 	@Nullable
 	GQLApi getGqlApi();
 	
-	@NotNull
+	@NonNull
 	ITwitchChatClient getChatClient();
 	
-	@NotNull
+	@NonNull
 	MinerData getMinerData();
 	
-	@NotNull
+	@NonNull
 	Collection<Streamer> getStreamers();
 	
 	@Nullable
@@ -57,12 +57,12 @@ public interface IMiner{
 	@Nullable
 	TwitchLogin getTwitchLogin();
 	
-	@NotNull
+	@NonNull
 	String getUsername();
 	
-	@NotNull
+	@NonNull
 	TwitchHermesWebSocketPool getHermesWebSocketPool();
 	
-	@NotNull
+	@NonNull
 	IDatabase getDatabase();
 }

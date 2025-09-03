@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("constant")
 @Getter
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 @JsonClassDescription("Adds a constant value to the score of the streamer.")
 public class ConstantPriority extends IStreamerPriority{
 	@Override
-	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
+	public int getScore(@NonNull IMiner miner, @NonNull Streamer streamer){
 		return getScore();
 	}
 }

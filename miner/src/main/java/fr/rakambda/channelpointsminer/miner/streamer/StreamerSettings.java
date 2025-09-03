@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,16 +66,16 @@ public class StreamerSettings{
 	@JsonProperty("predictions")
 	@JsonPropertyDescription("Prediction settings.")
 	@JsonMerge
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private PredictionSettings predictions = new PredictionSettings();
 	@JsonProperty("priorities")
 	@JsonPropertyDescription("A list of conditions that, if met, will prioritize this streamer.")
 	@Builder.Default
-	@NotNull
+	@NonNull
 	private List<IStreamerPriority> priorities = new ArrayList<>();
 	
-	public StreamerSettings(@NotNull StreamerSettings origin){
+	public StreamerSettings(@NonNull StreamerSettings origin){
 		this();
 		enabled = origin.enabled;
 		makePredictions = origin.makePredictions;

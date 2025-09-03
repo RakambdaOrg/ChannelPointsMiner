@@ -9,7 +9,7 @@ import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.BrowserFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import java.io.IOException;
@@ -19,13 +19,13 @@ import java.util.Optional;
 @Log4j2
 @RequiredArgsConstructor
 public class BrowserLoginProvider implements ILoginProvider{
-	@NotNull
+	@NonNull
 	private final BrowserConfiguration browserConfiguration;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Override
-	@NotNull
+	@NonNull
 	public TwitchLogin login() throws LoginException{
 		log.info("Logging in");
 		try(var browser = BrowserFactory.createBrowser(browserConfiguration, eventManager)){
@@ -40,7 +40,7 @@ public class BrowserLoginProvider implements ILoginProvider{
 		}
 	}
 	
-	@NotNull
+	@NonNull
 	private TwitchLogin extractPassportInfo(WebDriver.Options manage) throws LoginException{
 		var username = Optional.ofNullable(manage.getCookieNamed("login")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no username found"));
 		var authToken = Optional.ofNullable(manage.getCookieNamed("auth-token")).map(Cookie::getValue).orElseThrow(() -> new LoginException("Failed to get login info from browser, no auth-token found"));

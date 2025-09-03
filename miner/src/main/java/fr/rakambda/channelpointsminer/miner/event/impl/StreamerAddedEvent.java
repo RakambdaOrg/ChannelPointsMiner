@@ -4,36 +4,36 @@ import fr.rakambda.channelpointsminer.miner.event.AbstractLoggableStreamerEvent;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class StreamerAddedEvent extends AbstractLoggableStreamerEvent{
-	public StreamerAddedEvent(@NotNull Streamer streamer, @NotNull Instant instant){
+	public StreamerAddedEvent(@NonNull Streamer streamer, @NonNull Instant instant){
 		super(streamer, instant);
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Streamer added";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} {streamer} : Streamer added";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_INFO;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "➕";
 	}

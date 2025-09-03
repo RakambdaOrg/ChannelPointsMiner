@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.ZonedDateTime;
 
 @NoArgsConstructor
@@ -19,13 +19,13 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 @ToString
 public class BettingPrediction{
-	@NotNull
+	@NonNull
 	private Streamer streamer;
 	@Setter
-	@NotNull
+	@NonNull
 	private Event event;
 	@Setter
-	@NotNull
+	@NonNull
 	private ZonedDateTime lastUpdate;
 	@Setter
 	@Builder.Default

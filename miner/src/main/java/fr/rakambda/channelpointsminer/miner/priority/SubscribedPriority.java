@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T1;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T2;
 import static fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.MultiplierReasonCode.SUB_T3;
@@ -35,7 +35,7 @@ public class SubscribedPriority extends IStreamerPriority{
 	private int score3;
 	
 	@Override
-	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
+	public int getScore(@NonNull IMiner miner, @NonNull Streamer streamer){
 		var reasons = streamer.getActiveMultipliers().stream()
 				.map(CommunityPointsMultiplier::getReasonCode).toList();
 		if(reasons.contains(SUB_T3)){

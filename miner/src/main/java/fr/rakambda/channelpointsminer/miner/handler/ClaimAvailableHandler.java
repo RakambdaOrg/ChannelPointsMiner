@@ -7,18 +7,18 @@ import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 
 @RequiredArgsConstructor
 public class ClaimAvailableHandler extends PubSubMessageHandlerAdapter{
-	@NotNull
+	@NonNull
 	private final IMiner miner;
-	@NotNull
+	@NonNull
 	private final IEventManager eventManager;
 	
 	@Override
-	public void onClaimAvailable(@NotNull Topic topic, @NotNull ClaimAvailable message){
+	public void onClaimAvailable(@NonNull Topic topic, @NonNull ClaimAvailable message){
 		var channelId = message.getData().getClaim().getChannelId();
 		var streamer = miner.getStreamerById(channelId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();

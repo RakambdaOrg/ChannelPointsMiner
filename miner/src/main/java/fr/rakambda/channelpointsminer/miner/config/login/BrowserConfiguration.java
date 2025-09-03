@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("browser")
 @Getter
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 @JsonClassDescription("Login though controlled browser (selenium).")
 public class BrowserConfiguration implements ILoginMethod{
-	@NotNull
+	@NonNull
 	@JsonProperty("driver")
 	@JsonPropertyDescription("Driver to use. Default: CHROME")
 	@Builder.Default

@@ -5,8 +5,8 @@ import fr.rakambda.channelpointsminer.miner.api.chat.ITwitchChatMessageListener;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.defaults.element.messagetag.DefaultMessageTagLabel;
 import java.util.Collection;
@@ -22,7 +22,7 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 	private static final String TAGS_CAPABILITY = "twitch.tv/tags";
 	private static final String EMOTE_SETS_TAG_NAME = "emote-sets";
 	
-	@NotNull
+	@NonNull
 	private final TwitchLogin twitchLogin;
 	private final boolean listenMessages;
 	private final Collection<ITwitchChatMessageListener> chatMessageListeners = new LinkedList<>();
@@ -33,7 +33,7 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 	private TwitchIrcMessageHandler ircMessageHandler;
 	
 	@Override
-	public void join(@NotNull String channel){
+	public void join(@NonNull String channel){
 		var client = getIrcClient();
 		var ircChannelName = "#%s".formatted(channel.toLowerCase(Locale.ROOT));
 		if(client.getChannel(ircChannelName).isPresent()){
@@ -50,13 +50,13 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 	}
 	
 	@Override
-	public void addChatMessageListener(@NotNull ITwitchChatMessageListener listener){
+	public void addChatMessageListener(@NonNull ITwitchChatMessageListener listener){
 		chatMessageListeners.add(listener);
 		Optional.ofNullable(ircMessageHandler).ifPresent(i -> i.addListener(listener));
 	}
 	
 	@Override
-	public void leave(@NotNull String channel){
+	public void leave(@NonNull String channel){
 		if(Objects.isNull(ircClient)){
 			log.debug("Didn't leave irc channel #{} as no connection has been made", channel);
 			return;
@@ -81,7 +81,7 @@ public class TwitchIrcChatClient implements ITwitchChatClient{
 		Optional.ofNullable(ircClient).ifPresent(Client::shutdown);
 	}
 	
-	@NotNull
+	@NonNull
 	private synchronized Client getIrcClient(){
 		if(Objects.isNull(ircClient)){
 			log.info("Creating new Twitch IRC client");

@@ -7,7 +7,7 @@ import com.github.victools.jsonschema.module.jackson.JacksonModule;
 import fr.rakambda.channelpointsminer.miner.config.Configuration;
 import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -46,7 +46,7 @@ public class ConfigSchemaGenerator{
 		generate(generator, StreamerSettings.class, exampleFolder.resolve("streamer-config-schema.json"));
 	}
 	
-	private static void generate(@NotNull SchemaGenerator generator, @NotNull Class<?> klazz, @NotNull Path outPath) throws IOException{
+	private static void generate(@NonNull SchemaGenerator generator, @NonNull Class<?> klazz, @NonNull Path outPath) throws IOException{
 		log.info("Generating JSON schema for class {} in {}", klazz, outPath.toAbsolutePath());
 		var jsonSchema = generator.generateSchema(klazz);
 		Files.writeString(outPath, jsonSchema.toPrettyString(), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

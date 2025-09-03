@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.Placement;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 
 @JsonTypeInfo(use = NAME, property = "type")
@@ -14,5 +14,5 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 })
 @JsonClassDescription("Prediction actions are a way to perform actions / verifications before a bet is placed.")
 public interface IPredictionAction{
-	void perform(@NotNull Placement placement) throws BetPlacementException;
+	void perform(@NonNull Placement placement) throws BetPlacementException;
 }

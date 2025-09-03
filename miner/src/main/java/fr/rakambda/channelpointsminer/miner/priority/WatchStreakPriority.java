@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("watchStreak")
 @Getter
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 @JsonClassDescription("Return a score if the streamer has a potential watch streak to claim.")
 public class WatchStreakPriority extends IStreamerPriority{
 	@Override
-	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
+	public int getScore(@NonNull IMiner miner, @NonNull Streamer streamer){
 		return streamer.mayClaimStreak() ? getScore() : 0;
 	}
 }

@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("viewcount")
 @Getter
@@ -19,6 +19,6 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class ViewCount extends IPubSubMessage{
 	@JsonProperty("viewers")
-	@NotNull
+	@NonNull
 	private Long viewers;
 }

@@ -5,23 +5,23 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.util.CommonUtils;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 
 @ToString
 @Getter
 public abstract class ITwitchHermesWebSocketRequest{
 	@JsonProperty("id")
-	@NotNull
+	@NonNull
 	private String id;
 	@JsonProperty("timestamp")
-	@NotNull
+	@NonNull
 	private Instant timestamp;
 	@JsonProperty("type")
-	@NotNull
+	@NonNull
 	private String type;
 	
-	public ITwitchHermesWebSocketRequest(@NotNull String type){
+	public ITwitchHermesWebSocketRequest(@NonNull String type){
 		id = CommonUtils.randomAlphanumeric(21);
 		timestamp = TimeFactory.now();
 		this.type = type;

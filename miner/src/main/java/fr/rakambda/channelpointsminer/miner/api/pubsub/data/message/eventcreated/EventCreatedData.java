@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @NoArgsConstructor
@@ -14,6 +14,6 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 public class EventCreatedData{
 	@JsonProperty("event")
-	@NotNull
+	@NonNull
 	private Event event;
 }

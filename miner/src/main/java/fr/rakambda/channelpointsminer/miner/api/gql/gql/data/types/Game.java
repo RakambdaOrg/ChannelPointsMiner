@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("Game")
 @Getter
@@ -19,9 +19,9 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 public class Game extends GQLType{
 	@JsonProperty("id")
-	@NotNull
+	@NonNull
 	private String id;
 	@JsonProperty("name")
-	@NotNull
+	@NonNull
 	private String name;
 }

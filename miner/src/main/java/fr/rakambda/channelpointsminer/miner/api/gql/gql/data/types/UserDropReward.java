@@ -10,8 +10,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.ZonedDateTime;
 
 @JsonTypeName("UserDropReward")
@@ -23,7 +23,7 @@ import java.time.ZonedDateTime;
 @ToString
 public class UserDropReward extends GQLType{
 	@JsonProperty("id")
-	@NotNull
+	@NonNull
 	private String id;
 	@JsonProperty("totalCount")
 	private int totalCount;

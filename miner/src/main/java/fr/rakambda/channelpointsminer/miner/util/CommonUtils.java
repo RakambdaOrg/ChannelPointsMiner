@@ -3,7 +3,7 @@ package fr.rakambda.channelpointsminer.miner.util;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -26,8 +26,8 @@ public class CommonUtils{
 	 *
 	 * @return User input.
 	 */
-	@NotNull
-	public static String getUserInput(@NotNull String message){
+	@NonNull
+	public static String getUserInput(@NonNull String message){
 		try{
 			System.out.println(message);
 			
@@ -39,12 +39,12 @@ public class CommonUtils{
 		}
 	}
 	
-	@NotNull
+	@NonNull
 	public static String randomHex(int count) {
 		return RandomStringUtils.secure().next(count, HEX_CHARS);
 	}
 	
-	@NotNull
+	@NonNull
 	public static String randomAlphanumeric(int count) {
 		return RandomStringUtils.secure().nextAlphanumeric(count);
 	}

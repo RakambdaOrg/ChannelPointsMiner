@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outcome;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 
 @JsonTypeInfo(use = NAME, property = "type")
@@ -16,5 +16,5 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 })
 @JsonClassDescription("Prediction amount calculator. The minimum amount that can be placed is 10.")
 public interface IAmountCalculator{
-	int calculateAmount(@NotNull BettingPrediction bettingPrediction, @NotNull Outcome outcome) throws BetPlacementException;
+	int calculateAmount(@NonNull BettingPrediction bettingPrediction, @NonNull Outcome outcome) throws BetPlacementException;
 }

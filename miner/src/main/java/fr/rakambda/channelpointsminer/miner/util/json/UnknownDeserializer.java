@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 
 @Log4j2
@@ -20,7 +20,7 @@ public class UnknownDeserializer extends StdDeserializer<String>{
 	
 	@Override
 	@Nullable
-	public String deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext deserializationContext) throws IOException{
+	public String deserialize(@NonNull JsonParser jsonParser, @NonNull DeserializationContext deserializationContext) throws IOException{
 		var currentLocation = jsonParser.currentLocation();
 		var treeNode = jsonParser.readValueAsTree();
 		var treeNodeStr = treeNode == null ? null : treeNode.toString();

@@ -10,7 +10,7 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class MobileIntegrityProvider implements IIntegrityProvider{
 	private IntegrityData currentIntegrity;
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Optional<IntegrityData> getIntegrity() throws IntegrityException{
 		synchronized(this){
 			if(Objects.nonNull(currentIntegrity) && currentIntegrity.getExpiration().minus(Duration.ofMinutes(5)).isAfter(TimeFactory.now())){

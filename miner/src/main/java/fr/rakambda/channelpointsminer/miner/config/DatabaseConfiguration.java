@@ -8,8 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class DatabaseConfiguration{
     @JsonProperty(value = "jdbcUrl", required = true)
     @JsonPropertyDescription(value = "JDBC connection URL. (supported: mariadb, mysql, sqlite)")
-    @NotNull
+    @NonNull
     private String jdbcUrl;
     @JsonProperty("username")
     @JsonPropertyDescription(value = "Database username.")

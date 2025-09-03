@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.integrity;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Error while getting integrity token.
@@ -11,7 +11,7 @@ public class IntegrityException extends Exception{
 		this("Failed to get integrity token. Status code is " + statusCode + " : " + description);
 	}
 	
-	public IntegrityException(@NotNull String description){
+	public IntegrityException(@NonNull String description){
 		super(description);
 	}
 	

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +17,6 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public class CreateNotificationData{
 	@JsonProperty("notification")
-	@NotNull
+	@NonNull
 	private Notification notification;
 }

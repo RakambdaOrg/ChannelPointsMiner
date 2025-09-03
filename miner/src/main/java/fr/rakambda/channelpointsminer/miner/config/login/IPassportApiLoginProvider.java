@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.config.login;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public interface IPassportApiLoginProvider extends ISavedLoginProvider{
-	@NotNull
+	@NonNull
 	String getPassword();
 	
 	boolean isUse2Fa();

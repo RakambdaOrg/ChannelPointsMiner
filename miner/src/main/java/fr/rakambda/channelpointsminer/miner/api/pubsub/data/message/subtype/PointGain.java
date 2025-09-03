@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @NoArgsConstructor
@@ -19,6 +19,6 @@ public class PointGain{
 	@JsonProperty("total_points")
 	private int totalPoints;
 	@JsonProperty("reason_code")
-	@NotNull
+	@NonNull
 	private String reasonCode;
 }

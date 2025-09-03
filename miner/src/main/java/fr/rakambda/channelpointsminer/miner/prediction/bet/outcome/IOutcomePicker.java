@@ -7,7 +7,7 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Outc
 import fr.rakambda.channelpointsminer.miner.database.IDatabase;
 import fr.rakambda.channelpointsminer.miner.handler.data.BettingPrediction;
 import fr.rakambda.channelpointsminer.miner.prediction.bet.exception.BetPlacementException;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 
 @JsonTypeInfo(use = NAME, property = "type")
@@ -22,6 +22,6 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 })
 @JsonClassDescription("Prediction outcome picker")
 public interface IOutcomePicker{
-	@NotNull
-	Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction, @NotNull IDatabase database) throws BetPlacementException;
+	@NonNull
+	Outcome chooseOutcome(@NonNull BettingPrediction bettingPrediction, @NonNull IDatabase database) throws BetPlacementException;
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -31,14 +31,14 @@ public abstract class AbstractLoggableEvent implements IEvent, ILoggableEvent{
 	});
 	
 	@Getter
-	@NotNull
+	@NonNull
 	private final Instant instant;
 	
 	@Setter
 	@Getter
 	private IMiner miner;
 	
-	@NotNull
+	@NonNull
 	public String millify(int value, boolean includeSign){
 		var sign = (includeSign && value > 0) ? "+" : "";
 		return sign + numberFormatLocal.get().format(value);
@@ -59,14 +59,14 @@ public abstract class AbstractLoggableEvent implements IEvent, ILoggableEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Map<String, String> getEmbedFields(){
 		return Map.of();
 	}
 	
-	@NotNull
+	@NonNull
 	protected abstract String getColor();
 	
-	@NotNull
+	@NonNull
 	protected abstract String getEmoji();
 }

@@ -7,20 +7,20 @@ import kong.unirest.core.GenericType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class DropsPageClaimDropRewardsOperation extends IGQLOperation<DropsPageClaimDropRewardsData>{
-	public DropsPageClaimDropRewardsOperation(@NotNull String dropInstanceId){
+	public DropsPageClaimDropRewardsOperation(@NonNull String dropInstanceId){
 		super("DropsPage_ClaimDropRewards");
 		addPersistedQueryExtension(new PersistedQueryExtension(1, "a455deea71bdc9015b78eb49f4acfbce8baa7ccbedd28e549bb025bd0f751930"));
 		addVariable("input", InputData.builder().dropInstanceId(dropInstanceId).build());
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public GenericType<GQLResponse<DropsPageClaimDropRewardsData>> getResponseType(){
 		return new GenericType<>(){};
 	}

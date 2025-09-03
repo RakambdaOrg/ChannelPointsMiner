@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.database;
 
 import fr.rakambda.channelpointsminer.miner.database.converter.Converters;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -18,7 +18,7 @@ public class SQLiteDatabase extends BaseDatabase{
 	}
 	
 	@Override
-	public void createChannel(@NotNull String channelId, @NotNull String username) throws SQLException{
+	public void createChannel(@NonNull String channelId, @NonNull String username) throws SQLException{
 		try(var conn = getConnection();
 				var statement = conn.prepareStatement("""
 						INSERT OR IGNORE INTO `Channel`(`ID`, `Username`, `LastStatusChange`)
@@ -34,7 +34,7 @@ public class SQLiteDatabase extends BaseDatabase{
 	}
 	
 	@Override
-	protected void addUserPrediction(@NotNull String channelId, int userId, @NotNull String badge) throws SQLException{
+	protected void addUserPrediction(@NonNull String channelId, int userId, @NonNull String badge) throws SQLException{
 		try(var conn = getConnection();
 				var predictionStatement = conn.prepareStatement("""
 						INSERT OR IGNORE INTO `UserPrediction`(`ChannelID`, `UserID`, `Badge`)
@@ -50,7 +50,7 @@ public class SQLiteDatabase extends BaseDatabase{
 	}
 	
 	@Override
-	protected void resolveUserPredictions(double returnRatioForWin, @NotNull String channelId, @NotNull String badge) throws SQLException{
+	protected void resolveUserPredictions(double returnRatioForWin, @NonNull String channelId, @NonNull String badge) throws SQLException{
 		try(var conn = getConnection();
 				var getOpenPredictionStmt = conn.prepareStatement("""
 						SELECT * FROM `UserPrediction` WHERE `ChannelID`=?""");

@@ -1,16 +1,16 @@
 package fr.rakambda.channelpointsminer.miner.event;
 
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Optional;
 
 public interface IStreamerEvent extends IEvent{
-	@NotNull
+	@NonNull
 	Optional<Streamer> getStreamer();
 	
-	@NotNull
+	@NonNull
 	String getStreamerId();
 	
-	@NotNull
+	@NonNull
 	Optional<String> getStreamerUsername();
 }

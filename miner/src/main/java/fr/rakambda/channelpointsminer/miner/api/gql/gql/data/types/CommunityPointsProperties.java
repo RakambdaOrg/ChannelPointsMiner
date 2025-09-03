@@ -8,8 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class CommunityPointsProperties extends GQLType{
 	@JsonProperty("balance")
 	private int balance;
 	@JsonProperty("activeMultipliers")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<CommunityPointsMultiplier> activeMultipliers = new ArrayList<>();
 }

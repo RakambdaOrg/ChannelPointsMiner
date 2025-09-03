@@ -18,7 +18,7 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.UnirestInstance;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 import java.util.Objects;
 import static fr.rakambda.channelpointsminer.miner.util.CommonUtils.getUserInput;
@@ -36,7 +36,7 @@ public class HttpLoginProvider implements ILoginProvider{
 	private final boolean ask2FA;
 	private final IEventManager eventManager;
 	
-	public HttpLoginProvider(@NotNull TwitchClient twitchClient, @NotNull UnirestInstance unirest, @NotNull String username, @NotNull IPassportApiLoginProvider passportApiLoginProvider, @NotNull TwitchLoginCacher twitchLoginCacher, @NotNull IEventManager eventManager){
+	public HttpLoginProvider(@NonNull TwitchClient twitchClient, @NonNull UnirestInstance unirest, @NonNull String username, @NonNull IPassportApiLoginProvider passportApiLoginProvider, @NonNull TwitchLoginCacher twitchLoginCacher, @NonNull IEventManager eventManager){
 		this.twitchClient = twitchClient;
 		this.unirest = unirest;
 		this.username = username;
@@ -55,7 +55,7 @@ public class HttpLoginProvider implements ILoginProvider{
 	 * @throws IOException    Authentication file errors.
 	 * @throws LoginException Login request failed.
 	 */
-	@NotNull
+	@NonNull
 	public TwitchLogin login() throws LoginException, IOException{
 		var restoredAuthOptional = twitchLoginCacher.restoreAuthentication();
 		if(restoredAuthOptional.isPresent()){
@@ -106,7 +106,7 @@ public class HttpLoginProvider implements ILoginProvider{
 	 *
 	 * @throws LoginException Login request failed.
 	 */
-	@NotNull
+	@NonNull
 	private HttpResponse<LoginResponse> twoFactorLogin() throws LoginException{
 		eventManager.onEvent(new LoginRequiredEvent(TimeFactory.now(), "2FA required"));
 		var authToken = getUserInput("Enter 2FA token for user " + username + ":");
@@ -127,8 +127,8 @@ public class HttpLoginProvider implements ILoginProvider{
 	 *
 	 * @throws LoginException Login failed.
 	 */
-	@NotNull
-	private HttpResponse<LoginResponse> login(@NotNull LoginRequest loginRequest) throws LoginException{
+	@NonNull
+	private HttpResponse<LoginResponse> login(@NonNull LoginRequest loginRequest) throws LoginException{
 		log.debug("Sending passport login request");
 		var response = unirest.post(ENDPOINT + "/login")
 				.header(CONTENT_TYPE, APPLICATION_JSON.toString())
@@ -169,8 +169,8 @@ public class HttpLoginProvider implements ILoginProvider{
 	 *
 	 * @throws IOException File failed to write.
 	 */
-	@NotNull
-	private TwitchLogin handleResponse(@NotNull HttpResponse<LoginResponse> response) throws IOException{
+	@NonNull
+	private TwitchLogin handleResponse(@NonNull HttpResponse<LoginResponse> response) throws IOException{
 		var twitchLogin = TwitchLogin.builder()
 				.twitchClient(twitchClient)
 				.username(username)

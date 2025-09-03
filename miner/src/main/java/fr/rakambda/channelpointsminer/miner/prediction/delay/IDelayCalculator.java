@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.Event;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.time.ZonedDateTime;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 
@@ -16,6 +16,6 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
 })
 @JsonClassDescription("Prediction delay calculator")
 public interface IDelayCalculator{
-	@NotNull
-	ZonedDateTime calculate(@NotNull Event event);
+	@NonNull
+	ZonedDateTime calculate(@NonNull Event event);
 }

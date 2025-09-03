@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.nio.file.Path;
 
 @Getter
@@ -18,7 +18,7 @@ import java.nio.file.Path;
 @ToString
 @JsonClassDescription("Folder used to override streamer configurations.")
 public class StreamerDirectory{
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "path", required = true)
 	@JsonPropertyDescription("Path to a folder that contains streamer configurations.")
 	private Path path;

@@ -18,8 +18,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,18 +37,18 @@ public class TwitchLogin{
 	
 	@Getter
 	@JsonProperty("username")
-	@NotNull
+	@NonNull
 	@ToString.Include
 	private String username;
 	@Getter
 	@JsonProperty("accessToken")
-	@NotNull
+	@NonNull
 	private String accessToken;
 	@JsonProperty("cookies")
 	@JsonDeserialize(contentUsing = CookieDeserializer.class)
 	@JsonSerialize(contentUsing = CookieSerializer.class)
 	@Builder.Default
-	@NotNull
+	@NonNull
 	@EqualsAndHashCode.Exclude
 	private List<Cookie> cookies = new ArrayList<>();
 	@JsonProperty("userId")
@@ -56,16 +56,16 @@ public class TwitchLogin{
 	@ToString.Include
 	private String userId;
 	@JsonProperty("twitchClient")
-	@NotNull
+	@NonNull
 	@Getter
 	private TwitchClient twitchClient;
 	
-	public int getUserIdAsInt(@NotNull GQLApi gqlApi){
+	public int getUserIdAsInt(@NonNull GQLApi gqlApi){
 		return Integer.parseInt(fetchUserId(gqlApi));
 	}
 	
-	@NotNull
-	public String fetchUserId(@NotNull GQLApi gqlApi){
+	@NonNull
+	public String fetchUserId(@NonNull GQLApi gqlApi){
 		if(Objects.isNull(userId)){
 			userId = cookies.stream()
 					.filter(c -> Objects.equals(c.getName(), PERSISTENT_COOKIE_NAME))

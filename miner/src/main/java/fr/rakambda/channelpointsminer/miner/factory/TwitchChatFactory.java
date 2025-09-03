@@ -6,11 +6,11 @@ import fr.rakambda.channelpointsminer.miner.api.chat.ws.TwitchChatWebSocketPool;
 import fr.rakambda.channelpointsminer.miner.api.passport.TwitchLogin;
 import fr.rakambda.channelpointsminer.miner.config.ChatMode;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class TwitchChatFactory{
-	@NotNull
-	public static ITwitchChatClient createChat(@NotNull IMiner miner, @NotNull ChatMode chatMode, boolean listenMessages){
+	@NonNull
+	public static ITwitchChatClient createChat(@NonNull IMiner miner, @NonNull ChatMode chatMode, boolean listenMessages){
 		var twitchLogin = miner.getTwitchLogin();
 		
 		return switch(chatMode){
@@ -19,13 +19,13 @@ public class TwitchChatFactory{
 		};
 	}
 	
-	@NotNull
-	private static ITwitchChatClient createIrcChat(@NotNull TwitchLogin twitchLogin, boolean listenMessages){
+	@NonNull
+	private static ITwitchChatClient createIrcChat(@NonNull TwitchLogin twitchLogin, boolean listenMessages){
 		return new TwitchIrcChatClient(twitchLogin, listenMessages);
 	}
 	
-	@NotNull
-	private static ITwitchChatClient createWsChat(@NotNull TwitchLogin twitchLogin, boolean listenMessages){
+	@NonNull
+	private static ITwitchChatClient createWsChat(@NonNull TwitchLogin twitchLogin, boolean listenMessages){
 		return new TwitchChatWebSocketPool(Integer.MAX_VALUE, twitchLogin, listenMessages);
 	}
 }

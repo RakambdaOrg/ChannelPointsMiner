@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("FollowEdge")
 @Getter
@@ -19,9 +19,9 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 public class FollowEdge extends GQLType{
 	@JsonProperty("cursor")
-	@NotNull
+	@NonNull
 	private String cursor;
 	@JsonProperty("node")
-	@NotNull
+	@NonNull
 	private User node;
 }

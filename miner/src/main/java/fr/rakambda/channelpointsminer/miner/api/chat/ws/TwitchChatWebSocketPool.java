@@ -7,8 +7,8 @@ import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.factory.TwitchWebSocketClientFactory;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	private final TwitchLogin twitchLogin;
 	private final Queue<String> pendingJoin;
 	
-	public TwitchChatWebSocketPool(int maxTopicPerClient, @NotNull TwitchLogin twitchLogin, boolean listenMessages){
+	public TwitchChatWebSocketPool(int maxTopicPerClient, @NonNull TwitchLogin twitchLogin, boolean listenMessages){
 		this.maxTopicPerClient = maxTopicPerClient;
 		this.twitchLogin = twitchLogin;
 		this.listenMessages = listenMessages;
@@ -55,7 +55,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	}
 	
 	@Override
-	public void onWebSocketClosed(@NotNull TwitchChatWebSocketClient client, int code, @Nullable String reason, boolean remote){
+	public void onWebSocketClosed(@NonNull TwitchChatWebSocketClient client, int code, @Nullable String reason, boolean remote){
 		clients.remove(client);
 		if(code != NORMAL){
 			pendingJoin.addAll(client.getChannels());
@@ -63,7 +63,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	}
 	
 	@Override
-	public void join(@NotNull String channel){
+	public void join(@NonNull String channel){
 		var lowerChannel = channel.toLowerCase();
 		var isListened = isChannelJoined(lowerChannel);
 		if(isListened){
@@ -94,18 +94,18 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	}
 	
 	@Override
-	public void leave(@NotNull String channel){
+	public void leave(@NonNull String channel){
 		var lowerChannel = channel.toLowerCase();
 		clients.stream()
 				.filter(client -> client.isChannelJoined(lowerChannel))
 				.forEach(client -> client.leave(lowerChannel));
 	}
 	
-	private boolean isChannelJoined(@NotNull String channel){
+	private boolean isChannelJoined(@NonNull String channel){
 		return clients.stream().anyMatch(client -> client.isChannelJoined(channel));
 	}
 	
-	@NotNull
+	@NonNull
 	private TwitchChatWebSocketClient getAvailableClient(){
 		return clients.stream()
 				.filter(client -> !client.isClosing() && !client.isClosed())
@@ -114,7 +114,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 				.orElseGet(this::createNewClient);
 	}
 	
-	@NotNull
+	@NonNull
 	private TwitchChatWebSocketClient createNewClient(){
 		try{
 			var client = TwitchWebSocketClientFactory.createChatClient(twitchLogin, listenMessages);
@@ -141,7 +141,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	}
 	
 	@Override
-	public void addChatMessageListener(@NotNull ITwitchChatMessageListener listener){
+	public void addChatMessageListener(@NonNull ITwitchChatMessageListener listener){
 		chatMessageListeners.add(listener);
 		clients.forEach(c -> c.addChatMessageListener(listener));
 	}

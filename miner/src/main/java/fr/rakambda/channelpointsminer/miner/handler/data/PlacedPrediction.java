@@ -6,8 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 
 @NoArgsConstructor
@@ -17,13 +17,13 @@ import java.time.Instant;
 @EqualsAndHashCode
 @ToString
 public class PlacedPrediction{
-	@NotNull
+	@NonNull
 	private String eventId;
 	@Nullable
 	private BettingPrediction bettingPrediction;
 	private int amount;
-	@NotNull
+	@NonNull
 	private String outcomeId;
-	@NotNull
+	@NonNull
 	private Instant predictedAt;
 }

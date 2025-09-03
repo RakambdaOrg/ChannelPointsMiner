@@ -7,8 +7,8 @@ import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
@@ -17,19 +17,19 @@ public class PointsSpentEvent extends AbstractLoggableStreamerEvent{
 	@Getter
 	private final PointsSpentData pointsSpentData;
 	
-	public PointsSpentEvent(@NotNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NotNull PointsSpentData pointsSpentData){
+	public PointsSpentEvent(@NonNull String streamerId, @Nullable String streamerUsername, @Nullable Streamer streamer, @NonNull PointsSpentData pointsSpentData){
 		super(streamerId, streamerUsername, streamer, pointsSpentData.getTimestamp().toInstant());
 		this.pointsSpentData = pointsSpentData;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getConsoleLogFormat(){
 		return "Points spent [{balance}]";
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getDefaultFormat(){
 		return "[{username}] {emoji} {streamer} : Points spent [{balance}]";
 	}
@@ -43,19 +43,19 @@ public class PointsSpentEvent extends AbstractLoggableStreamerEvent{
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	public Map<String, String> getEmbedFields(){
 		return Map.of("Balance", EventVariableKey.BALANCE);
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getColor(){
 		return COLOR_POINTS_LOST;
 	}
 	
 	@Override
-	@NotNull
+	@NonNull
 	protected String getEmoji(){
 		return "💸";
 	}

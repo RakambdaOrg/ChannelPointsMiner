@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +21,10 @@ import java.util.List;
 @ToString
 public class Inventory extends GQLType{
     @JsonProperty("dropCampaignsInProgress")
-    @NotNull
+    @NonNull
     @Builder.Default
     private List<DropCampaign> dropCampaignsInProgress = new ArrayList<>();    @JsonProperty("gameEventDrops")
-	@NotNull
+	@NonNull
 	@Builder.Default
 	private List<UserDropReward> gameEventDrops = new ArrayList<>();
 }

@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -25,7 +25,7 @@ import java.nio.file.Paths;
 @JsonClassDescription("Deprecated. Login though Twitch's Passport API (web client).")
 @Deprecated
 public class HttpLoginMethod implements ILoginMethod, IPassportApiLoginProvider{
-	@NotNull
+	@NonNull
 	@JsonProperty(value = "password", required = true)
 	@JsonPropertyDescription("Password of your Twitch account.")
 	@ToString.Exclude
@@ -34,14 +34,14 @@ public class HttpLoginMethod implements ILoginMethod, IPassportApiLoginProvider{
 	@JsonPropertyDescription("If this account uses 2FA set this to true to directly ask for it. Default: false")
 	@Builder.Default
 	private boolean use2Fa = false;
-	@NotNull
+	@NonNull
 	@JsonProperty("authenticationFolder")
 	@JsonPropertyDescription(value = "Path to a folder that contains authentication files used to log back in after a restart. Default: ./authentication")
 	@Builder.Default
 	private Path authenticationFolder = Paths.get("authentication");
 	
 	@Override
-	@NotNull
+	@NonNull
 	public TwitchClient getTwitchClient(){
 		return TwitchClient.WEB;
 	}

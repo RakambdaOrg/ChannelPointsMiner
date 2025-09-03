@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.util;
 
 import fr.rakambda.channelpointsminer.miner.MinerApplication;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -21,8 +21,8 @@ public class GitProperties{
 		return gitProperties;
 	}
 	
-	@NotNull
-	private static Properties loadProperties(@NotNull String resource){
+	@NonNull
+	private static Properties loadProperties(@NonNull String resource){
 		var properties = new Properties();
 		try{
 			var versionPropertiesFile = MinerApplication.class.getResource(resource);

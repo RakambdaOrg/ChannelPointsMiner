@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.awt.Color;
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ public class ColorDeserializer extends StdDeserializer<Color>{
 	
 	@Override
 	@Nullable
-	public Color deserialize(@NotNull JsonParser jsonParser, @NotNull DeserializationContext deserializationContext) throws IOException{
+	public Color deserialize(@NonNull JsonParser jsonParser, @NonNull DeserializationContext deserializationContext) throws IOException{
 		var value = jsonParser.getValueAsString();
 		if(value.isBlank()){
 			return null;

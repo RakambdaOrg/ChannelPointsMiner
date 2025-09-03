@@ -11,19 +11,19 @@ import fr.rakambda.channelpointsminer.miner.log.LogContext;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ClaimDropHandler extends PubSubMessageHandlerAdapter{
-	@NotNull
+	@NonNull
 	private IMiner miner;
-	@NotNull
+	@NonNull
 	private IEventManager eventManager;
 	
 	@Override
-	public void onDropProgress(@NotNull Topic topic, @NotNull DropProgress message){
+	public void onDropProgress(@NonNull Topic topic, @NonNull DropProgress message){
 		var channelId = message.getData().getChannelId();
 		var streamer = miner.getStreamerById(channelId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();
@@ -36,7 +36,7 @@ public class ClaimDropHandler extends PubSubMessageHandlerAdapter{
 	}
 	
 	@Override
-	public void onDropClaim(@NotNull Topic topic, @NotNull DropClaim message){
+	public void onDropClaim(@NonNull Topic topic, @NonNull DropClaim message){
 		var channelId = message.getData().getChannelId();
 		var streamer = miner.getStreamerById(channelId).orElse(null);
 		var username = Objects.isNull(streamer) ? null : streamer.getUsername();

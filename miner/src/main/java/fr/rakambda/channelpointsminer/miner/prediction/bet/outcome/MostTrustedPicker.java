@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Comparator;
 
 @JsonTypeName("mostTrusted")
@@ -45,8 +45,8 @@ public class MostTrustedPicker implements IOutcomePicker{
 	private int minTotalBetsPlacedOnOutcome = 5;
 	
 	@Override
-	@NotNull
-	public Outcome chooseOutcome(@NotNull BettingPrediction bettingPrediction, @NotNull IDatabase database) throws BetPlacementException{
+	@NonNull
+	public Outcome chooseOutcome(@NonNull BettingPrediction bettingPrediction, @NonNull IDatabase database) throws BetPlacementException{
 		
 		try{
 			if(database instanceof NoOpDatabase){

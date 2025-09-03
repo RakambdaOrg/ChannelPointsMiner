@@ -5,7 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.version.VersionException;
 import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -17,7 +17,7 @@ public class WebpageVersionProvider implements IVersionProvider{
 	private final UnirestInstance unirest;
 	
 	@Override
-	@NotNull
+	@NonNull
 	public String getVersion() throws VersionException{
 		log.info("Querying new client version");
 		var response = unirest.get("https://www.twitch.tv").asString();

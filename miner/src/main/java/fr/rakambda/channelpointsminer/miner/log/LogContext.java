@@ -4,8 +4,8 @@ import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import org.apache.logging.log4j.CloseableThreadContext;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,17 +29,17 @@ public class LogContext implements AutoCloseable{
 		}
 	}
 	
-	public LogContext(@NotNull Map<String, String> values, @NotNull List<String> messages){
+	public LogContext(@NonNull Map<String, String> values, @NonNull List<String> messages){
 		ctc = CloseableThreadContext.putAll(values).pushAll(messages);
 	}
 	
-	@NotNull
+	@NonNull
 	public static LogContext empty(){
 		return new LogContext(null);
 	}
 	
-	@NotNull
-	public static LogContext restore(@NotNull Map<String, String> values, @NotNull List<String> messages){
+	@NonNull
+	public static LogContext restore(@NonNull Map<String, String> values, @NonNull List<String> messages){
 		return new LogContext(values, messages);
 	}
 	
@@ -51,7 +51,7 @@ public class LogContext implements AutoCloseable{
 		return new LogContext(accountName);
 	}
 	
-	@NotNull
+	@NonNull
 	public LogContext withStreamer(@Nullable Streamer streamer){
 		if(Objects.nonNull(streamer)){
 			return withStreamer(streamer.getUsername());
@@ -59,7 +59,7 @@ public class LogContext implements AutoCloseable{
 		return this;
 	}
 	
-	@NotNull
+	@NonNull
 	public LogContext withStreamer(@Nullable String streamer){
 		if(Objects.nonNull(streamer)){
 			ctc.put(STREAMER_NAME_KEY, streamer);
@@ -67,20 +67,20 @@ public class LogContext implements AutoCloseable{
 		return this;
 	}
 	
-	@NotNull
-	public LogContext withSocketId(@NotNull String uuid){
+	@NonNull
+	public LogContext withSocketId(@NonNull String uuid){
 		ctc.put(WEBSOCKET_ID_KEY, uuid);
 		return this;
 	}
 	
-	@NotNull
-	public LogContext withTopic(@NotNull Topic topic){
+	@NonNull
+	public LogContext withTopic(@NonNull Topic topic){
 		ctc.put(WEBSOCKET_TOPIC, topic.getValue());
 		return this;
 	}
 	
-	@NotNull
-	public LogContext withEventId(@NotNull String eventId){
+	@NonNull
+	public LogContext withEventId(@NonNull String eventId){
 		ctc.put(EVENT_ID, eventId);
 		return this;
 	}

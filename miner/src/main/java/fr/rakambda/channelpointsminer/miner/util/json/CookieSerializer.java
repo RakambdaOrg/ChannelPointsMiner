@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import kong.unirest.core.Cookie;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import java.io.IOException;
 
 public class CookieSerializer extends StdSerializer<Cookie>{
@@ -17,7 +17,7 @@ public class CookieSerializer extends StdSerializer<Cookie>{
 	}
 	
 	@Override
-	public void serialize(@NotNull Cookie cookie, @NotNull JsonGenerator jsonGenerator, @NotNull SerializerProvider serializerProvider) throws IOException{
+	public void serialize(@NonNull Cookie cookie, @NonNull JsonGenerator jsonGenerator, @NonNull SerializerProvider serializerProvider) throws IOException{
 		jsonGenerator.writeString(cookie.toString());
 	}
 }

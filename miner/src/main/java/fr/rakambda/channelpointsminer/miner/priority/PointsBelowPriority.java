@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @JsonTypeName("pointsBelow")
 @Getter
@@ -28,7 +28,7 @@ public class PointsBelowPriority extends IStreamerPriority{
 	private int threshold;
 	
 	@Override
-	public int getScore(@NotNull IMiner miner, @NotNull Streamer streamer){
+	public int getScore(@NonNull IMiner miner, @NonNull Streamer streamer){
 		return streamer.getChannelPoints()
 				.map(val -> val < threshold ? getScore() : 0)
 				.orElse(0);
