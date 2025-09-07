@@ -99,7 +99,7 @@ class TwitchApiTest{
     
     @Test
     void sendMinutesWatched(UnirestMock unirest){
-	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"live\":true,\"player\":\"%s\",\"user_id\":%d}}]"
+	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"hidden\":false,\"live\":true,\"location\":\"channel\",\"logged_in\":true,\"muted\":false,\"player\":\"%s\",\"user_id\":%d}}]"
 			    .formatted(BROADCAST_ID, CHANNEL_NAME, CHANNEL_ID, PLAYER, USER_ID);
         var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
         
@@ -116,6 +116,10 @@ class TwitchApiTest{
 		                .channel(CHANNEL_NAME)
                         .player(PLAYER)
 		                .live(true)
+		                .hidden(false)
+		                .loggedIn(true)
+		                .muted(false)
+		                .location("channel")
                         .build())
                 .build();
         assertThat(tested.sendPlayerEvents(spadeUrl, request)).isTrue();
@@ -125,7 +129,7 @@ class TwitchApiTest{
     
     @Test
     void sendMinutesWatchedWithGame(UnirestMock unirest){
-	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"game\":\"%s\",\"game_id\":\"%s\",\"live\":true,\"player\":\"%s\",\"user_id\":%d}}]"
+	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"game\":\"%s\",\"game_id\":\"%s\",\"hidden\":false,\"live\":true,\"location\":\"channel\",\"logged_in\":true,\"muted\":false,\"player\":\"%s\",\"user_id\":%d}}]"
 			    .formatted(BROADCAST_ID, CHANNEL_NAME, CHANNEL_ID, GAME, GAME_ID, PLAYER, USER_ID);
         var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
         
@@ -144,6 +148,10 @@ class TwitchApiTest{
                         .game(GAME)
 		                .gameId(GAME_ID)
 		                .live(true)
+		                .hidden(false)
+		                .loggedIn(true)
+		                .muted(false)
+		                .location("channel")
                         .build())
                 .build();
         assertThat(tested.sendPlayerEvents(spadeUrl, request)).isTrue();
@@ -153,7 +161,7 @@ class TwitchApiTest{
     
     @Test
     void sendMinutesWatchedNotSuccess(UnirestMock unirest){
-	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"live\":true,\"player\":\"%s\",\"user_id\":%d}}]"
+	    var json = "[{\"event\":\"minute-watched\",\"properties\":{\"broadcast_id\":\"%s\",\"channel\":\"%s\",\"channel_id\":\"%s\",\"hidden\":false,\"live\":true,\"location\":\"channel\",\"logged_in\":true,\"muted\":false,\"player\":\"%s\",\"user_id\":%d}}]"
 			    .formatted(BROADCAST_ID, CHANNEL_NAME, CHANNEL_ID, PLAYER, USER_ID);
         var expectedData = new String(Base64.getEncoder().encode(json.getBytes(UTF_8)));
         
@@ -170,6 +178,10 @@ class TwitchApiTest{
 		                .channel(CHANNEL_NAME)
                         .player(PLAYER)
 		                .live(true)
+		                .hidden(false)
+		                .loggedIn(true)
+		                .muted(false)
+		                .location("channel")
                         .build())
                 .build();
         assertThat(tested.sendPlayerEvents(spadeUrl, request)).isFalse();
@@ -192,6 +204,10 @@ class TwitchApiTest{
 		                    .channel(CHANNEL_NAME)
                             .player(PLAYER)
 		                    .live(true)
+		                    .hidden(false)
+		                    .loggedIn(true)
+		                    .muted(false)
+		                    .location("channel")
                             .build())
                     .build();
             assertThat(tested.sendPlayerEvents(spadeUrl, request)).isFalse();
