@@ -92,6 +92,10 @@ class SendSpadeMinutesWatchedTest{
 						.gameId(GAME_ID)
 						.game(GAME_NAME)
 						.live(true)
+						.hidden(false)
+						.loggedIn(true)
+						.muted(false)
+						.location("channel")
 						.build())
 				.build();
 		
@@ -114,6 +118,10 @@ class SendSpadeMinutesWatchedTest{
 						.player(SITE_PLAYER)
 						.userId(USER_ID)
 						.live(true)
+						.hidden(false)
+						.loggedIn(true)
+						.muted(false)
+						.location("channel")
 						.build())
 				.build();
 		
@@ -132,6 +140,10 @@ class SendSpadeMinutesWatchedTest{
 						.player(SITE_PLAYER)
 						.userId(USER_ID)
 						.live(true)
+						.hidden(false)
+						.loggedIn(true)
+						.muted(false)
+						.location("channel")
 						.build())
 				.build();
 		

@@ -44,6 +44,10 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 						.gameId(streamer.getGame().map(Game::getId).orElse(null))
 						.game(streamer.getGame().map(Game::getName).orElse(null))
 						.live(true)
+						.hidden(false)
+						.loggedIn(true)
+						.muted(false)
+						.location("channel")
 						.build())
 				.build();
 		

@@ -32,9 +32,17 @@ public class MinuteWatchedProperties{
 	private String gameId;
 	@JsonProperty("live")
 	private boolean live;
+	@JsonProperty("hidden")
+	private boolean hidden;
 	@JsonProperty("player")
 	@NonNull
 	private String player;
 	@JsonProperty("user_id")
 	private int userId;
+	@JsonProperty("location")
+	private String location;
+	@JsonProperty("logged_in")
+	private boolean loggedIn;
+	@JsonProperty("muted")
+	private boolean muted;
 }
