@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.4.2
+        uses: gradle/actions/setup-gradle@v4.4.3
 
       - name: Push latest on Docker Hub
         run: |
@@ -44,7 +44,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.4.2
+        uses: gradle/actions/setup-gradle@v4.4.3
 
       - name: Push latest on Docker Hub
         run: |
@@ -68,7 +68,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.4.2
+        uses: gradle/actions/setup-gradle@v4.4.3
 
       - name: Build project
         run: |

@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.4.2
+        uses: gradle/actions/setup-gradle@v4.4.3
 
       - name: Calculate miner image name
         id: miner-image-name
@@ -66,7 +66,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.4.2
+        uses: gradle/actions/setup-gradle@v4.4.3
 
       - name: Calculate viewer image name
         id: viewer-image-name
