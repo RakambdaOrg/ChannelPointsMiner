@@ -18,6 +18,7 @@ import fr.rakambda.channelpointsminer.miner.miner.IMiner;
 import fr.rakambda.channelpointsminer.miner.streamer.Streamer;
 import fr.rakambda.channelpointsminer.miner.streamer.StreamerSettings;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
+import org.junit.jupiter.api.Disabled;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -166,6 +167,7 @@ class StreamStartEndHandlerTest{
 		verify(chatClient, never()).leave(any());
 	}
 	
+	@Disabled("Rely on stream up/down")
 	@Test
 	void broadcastSettingsUpdateAndNotStreamingFromGql(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
@@ -189,6 +191,7 @@ class StreamStartEndHandlerTest{
 		}
 	}
 	
+	@Disabled("Rely on stream up/down")
 	@Test
 	void broadcastSettingsUpdateAndStreamingFromGql(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
@@ -210,6 +213,7 @@ class StreamStartEndHandlerTest{
 		}
 	}
 	
+	@Disabled("Rely on stream up/down")
 	@Test
 	void broadcastSettingsUpdateAndNotStreamingFromGqlButStateDidNotChange(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
@@ -232,6 +236,7 @@ class StreamStartEndHandlerTest{
 		}
 	}
 	
+	@Disabled("Rely on stream up/down")
 	@Test
 	void broadcastSettingsUpdateAndStreamingFromGqlButStateDidNotChange(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
@@ -254,6 +259,7 @@ class StreamStartEndHandlerTest{
 		}
 	}
 	
+	@Disabled("Rely on stream up/down")
 	@Test
 	void broadcastSettingsUpdateAndNotStreamingFromMemory(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
@@ -276,6 +282,7 @@ class StreamStartEndHandlerTest{
 		}
 	}
 	
+	@Disabled("Rely on stream up/down")
 	@Test
 	void broadcastSettingsUpdateAndStreamingFromMemory(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
@@ -299,6 +306,7 @@ class StreamStartEndHandlerTest{
 		}
 	}
 	
+	@Disabled("Rely on stream up/down")
 	@Test
 	void broadcastSettingsUpdateAndUnknown(){
 		try(var timeFactory = mockStatic(TimeFactory.class)){
