@@ -15,7 +15,7 @@ import org.jspecify.annotations.NonNull;
 public class InventoryOperation extends IGQLOperation<InventoryData>{
     public InventoryOperation(){
         super("Inventory");
-        addPersistedQueryExtension(new PersistedQueryExtension(1, "37fea486d6179047c41d0f549088a4c3a7dd60c05c70956a1490262f532dccd9"));
+        addPersistedQueryExtension(new PersistedQueryExtension(1, "d86775d0ef16a63a33ad52e80eaff963b2d5b72fada7c991504a57496e1d8e4b"));
         addVariable("fetchRewardCampaigns", true);
     }
     

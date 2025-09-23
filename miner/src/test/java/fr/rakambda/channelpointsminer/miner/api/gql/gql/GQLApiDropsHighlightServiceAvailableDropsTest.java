@@ -94,6 +94,6 @@ class GQLApiDropsHighlightServiceAvailableDropsTest extends AbstractGQLTest{
     
     @Override
     protected String getValidRequest(){
-	    return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"eff13f4a43157238e40b4cd74b0dac3a41b5f8fb31de1a3b19347fae84e60b92\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
+	    return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"782dad0f032942260171d2d80a654f88bdd0c5a9dddc392e9bc92218a0f42d20\",\"version\":1}},\"operationName\":\"DropsHighlightService_AvailableDrops\",\"variables\":{\"channelID\":\"%s\"}}".formatted(STREAMER_ID);
     }
 }
