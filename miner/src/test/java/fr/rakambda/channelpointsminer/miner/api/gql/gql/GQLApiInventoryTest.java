@@ -96,6 +96,6 @@ class GQLApiInventoryTest extends AbstractGQLTest{
 	
 	@Override
 	protected String getValidRequest(){
-		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"37fea486d6179047c41d0f549088a4c3a7dd60c05c70956a1490262f532dccd9\",\"version\":1}},\"operationName\":\"Inventory\",\"variables\":{\"fetchRewardCampaigns\":true}}";
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"d86775d0ef16a63a33ad52e80eaff963b2d5b72fada7c991504a57496e1d8e4b\",\"version\":1}},\"operationName\":\"Inventory\",\"variables\":{\"fetchRewardCampaigns\":true}}";
 	}
 }

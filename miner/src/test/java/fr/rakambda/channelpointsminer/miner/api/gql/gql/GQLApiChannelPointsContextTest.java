@@ -78,6 +78,6 @@ class GQLApiChannelPointsContextTest extends AbstractGQLTest{
 	
 	@Override
 	protected String getValidRequest(){
-		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"1530a003a7d374b0380b79db0be0534f30ff46e61cffa2bc0e2468a909fbc024\",\"version\":1}},\"operationName\":\"ChannelPointsContext\",\"variables\":{\"channelLogin\":\"%s\",\"includeGoalTypes\":[\"CREATOR\",\"BOOST\"]}}".formatted(USERNAME);
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"374314de591e69925fce3ddc2bcf085796f56ebb8cad67a0daa3165c03adc345\",\"version\":1}},\"operationName\":\"ChannelPointsContext\",\"variables\":{\"channelLogin\":\"%s\",\"includeGoalTypes\":[\"CREATOR\",\"BOOST\"]}}".formatted(USERNAME);
 	}
 }
