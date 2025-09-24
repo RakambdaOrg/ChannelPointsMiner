@@ -62,7 +62,7 @@ public class SendSpadeMinutesWatched extends SendMinutesWatched{
 	@Override
 	@NonNull
 	protected Predicate<IStreamerPriority> getPriorityFilter(){
-		return Predicate.not(IStreamerPriority::isDropsRelated);
+		return priority -> true;
 	}
 	
 	@Override
