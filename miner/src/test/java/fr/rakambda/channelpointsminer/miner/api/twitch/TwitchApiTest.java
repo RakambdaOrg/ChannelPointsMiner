@@ -91,8 +91,8 @@ class TwitchApiTest{
     
     @BeforeEach
     void setUp(UnirestMock unirestMock) throws MalformedURLException{
-        streamerUrl = new URL(STREAMER_URL);
-        spadeUrl = new URL(SPADE_URL);
+        streamerUrl = URI.create(STREAMER_URL).toURL();
+        spadeUrl = URI.create(SPADE_URL).toURL();
         
         tested = new TwitchApi(unirestMock.getUnirestInstance());
     }

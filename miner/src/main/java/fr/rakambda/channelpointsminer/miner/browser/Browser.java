@@ -16,10 +16,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v137.network.Network;
-import org.openqa.selenium.devtools.v137.network.model.RequestId;
-import org.openqa.selenium.devtools.v137.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v137.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v140.network.Network;
+import org.openqa.selenium.devtools.v140.network.model.RequestId;
+import org.openqa.selenium.devtools.v140.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v140.network.model.ResponseReceived;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
+import static java.util.Optional.empty;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -97,7 +98,7 @@ public class Browser implements AutoCloseable{
 	}
 	
 	private void listenNetwork(@NonNull DevTools devTools){
-		devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		devTools.send(Network.enable(empty(), empty(), empty(), empty()));
 		devTools.addListener(Network.requestWillBeSent(), sentRequests::add);
 		devTools.addListener(Network.responseReceived(), receivedResponses::add);
 	}

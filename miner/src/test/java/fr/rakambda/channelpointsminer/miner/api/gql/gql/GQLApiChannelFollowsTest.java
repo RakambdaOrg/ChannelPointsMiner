@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ class GQLApiChannelFollowsTest extends AbstractGQLTest{
 												.node(User.builder()
 														.id("987654321")
 														.login("login")
-														.profileImageUrl(new URL("https://profile-image"))
+														.profileImageUrl(URI.create("https://profile-image").toURL())
 														.build())
 												.build()))
 										.pageInfo(PageInfo.builder()
@@ -78,7 +79,7 @@ class GQLApiChannelFollowsTest extends AbstractGQLTest{
 												.node(User.builder()
 														.id("987654321")
 														.login("login")
-														.profileImageUrl(new URL("https://profile-image"))
+														.profileImageUrl(URI.create("https://profile-image").toURL())
 														.build())
 												.build()))
 										.pageInfo(PageInfo.builder()

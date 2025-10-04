@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import static kong.unirest.core.ContentType.APPLICATION_JSON;
 import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
@@ -27,7 +28,7 @@ class DiscordApiTest{
 	
 	@BeforeEach
 	void setUp(UnirestMock unirestMock) throws MalformedURLException{
-		var url = new URL(URL);
+		var url = URI.create(URL).toURL();
 		tested = new DiscordApi(url, unirestMock.getUnirestInstance());
 	}
 	

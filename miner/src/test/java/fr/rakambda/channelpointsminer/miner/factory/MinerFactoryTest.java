@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -119,7 +120,7 @@ class MinerFactoryTest{
 	void nominalWithDiscord() throws MalformedURLException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var minerRunnableFactory = mockStatic(MinerRunnableFactory.class)){
-			var discordWebhook = new URL("https://discord-webhook");
+			var discordWebhook = URI.create("https://discord-webhook").toURL();
 			
 			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			apiFactory.when(() -> ApiFactory.createDiscordApi(discordWebhook)).thenReturn(discordApi);
@@ -153,7 +154,7 @@ class MinerFactoryTest{
 	void nominalWithTelegram() throws MalformedURLException{
 		try(var apiFactory = mockStatic(ApiFactory.class);
 				var minerRunnableFactory = mockStatic(MinerRunnableFactory.class)){
-			var botUrl = new URL("https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11");
+			var botUrl = URI.create("https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11").toURL();
 			
 			apiFactory.when(() -> ApiFactory.createLoginProvider(USERNAME, loginMethod, eventManager)).thenReturn(passportApi);
 			apiFactory.when(() -> ApiFactory.createTelegramApi(botUrl)).thenReturn(telegramApi);

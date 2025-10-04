@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.List;
@@ -64,7 +65,7 @@ class ConfigurationFactoryTest{
 								.recursive(false)
 								.build()))
 						.discord(DiscordConfiguration.builder()
-								.url(new URL("https://discord-webhook"))
+								.url(URI.create("https://discord-webhook").toURL())
 								.embeds(false)
 								.build())
 						.reloadEvery(15)
@@ -111,7 +112,7 @@ class ConfigurationFactoryTest{
 								.recursive(true)
 								.build()))
 						.discord(DiscordConfiguration.builder()
-								.url(new URL("https://discord-webhook"))
+								.url(URI.create("https://discord-webhook").toURL())
 								.embeds(true)
 								.build())
 						.telegram(TelegramConfiguration.builder()

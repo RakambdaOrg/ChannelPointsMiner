@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -37,7 +38,7 @@ class SendM3u8MinutesWatchedTest {
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		m3u8Url = new URL("https://google.com/");
+		m3u8Url = URI.create("https://google.com/").toURL();
 		
 		lenient().when(miner.getTwitchApi()).thenReturn(twitchApi);
 		lenient().when(streamer.getM3u8Url()).thenReturn(m3u8Url);

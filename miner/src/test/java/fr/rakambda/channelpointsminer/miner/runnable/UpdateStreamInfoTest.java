@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.util.List;
@@ -102,9 +103,9 @@ class UpdateStreamInfoTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		spadeUrl = new URL("https://google.com/");
-		m3u8Url = new URL("https://google.m3u8/");
-		streamerUrl = new URL("https://google.com/streamer");
+		spadeUrl = URI.create("https://google.com/").toURL();
+		m3u8Url = URI.create("https://google.m3u8/").toURL();
+		streamerUrl = URI.create("https://google.com/streamer").toURL();
 		
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getTwitchApi()).thenReturn(twitchApi);
