@@ -24,6 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -131,7 +132,7 @@ class StreamerTest{
 	
 	@Test
 	void getChannelUrl() throws MalformedURLException{
-		assertThat(tested.getChannelUrl()).isEqualTo(new URL("https://www.twitch.tv/" + USERNAME));
+		assertThat(tested.getChannelUrl()).isEqualTo(URI.create("https://www.twitch.tv/" + USERNAME).toURL());
 	}
 	
 	@Test
@@ -530,7 +531,7 @@ class StreamerTest{
 	
 	@Test
 	void getProfileImage() throws MalformedURLException{
-		var profileImage = new URL("https://profileImage");
+		var profileImage = URI.create("https://profileImage").toURL();
 		
 		when(videoPlayerStreamInfoOverlayChannelData.getUser()).thenReturn(user);
 		when(user.getProfileImageUrl()).thenReturn(profileImage);

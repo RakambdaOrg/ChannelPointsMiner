@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +57,7 @@ class SendSpadeMinutesWatchedTest{
 	
 	@BeforeEach
 	void setUp() throws MalformedURLException{
-		spadeUrl = new URL("https://google.com/");
+		spadeUrl = URI.create("https://google.com/").toURL();
 		
 		lenient().when(miner.getTwitchApi()).thenReturn(twitchApi);
 		lenient().when(miner.getTwitchLogin()).thenReturn(twitchLogin);

@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +34,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest extends AbstractGQLTest{
 						.user(User.builder()
 								.id("123456789")
 								.login("streamer")
-								.profileImageUrl(new URL("https://google.com/streamer/profile"))
+								.profileImageUrl(URI.create("https://google.com/streamer/profile").toURL())
 								.broadcastSettings(BroadcastSettings.builder()
 										.game(Game.builder()
 												.id("123")
@@ -66,7 +67,7 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest extends AbstractGQLTest{
 						.user(User.builder()
 								.id("123456789")
 								.login("streamer")
-								.profileImageUrl(new URL("https://google.com/streamer/profile"))
+								.profileImageUrl(URI.create("https://google.com/streamer/profile").toURL())
 								.broadcastSettings(BroadcastSettings.builder()
 										.game(Game.builder()
 												.id("123")
