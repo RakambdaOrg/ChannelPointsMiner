@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.mariadb)
     implementation(libs.sqlite)
     implementation(libs.mysql)
+    implementation(libs.postgresql)
     implementation(libs.bundles.flyway)
     implementation(libs.jSpecify)
 
