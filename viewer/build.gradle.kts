@@ -39,6 +39,7 @@ dependencies {
 
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     runtimeOnly("org.xerial:sqlite-jdbc")
+    runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 }

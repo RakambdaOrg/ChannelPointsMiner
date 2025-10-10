@@ -55,7 +55,7 @@ public class MariaDBDatabase extends BaseDatabase{
 						SET
 						`PredictionCnt`=`PredictionCnt`+1,
 						`WinCnt`=`WinCnt`+?,
-						`WinRate`=`WinCnt`/`PredictionCnt`,
+						`WinRate`=(`WinCnt` + ?)/`PredictionCnt`,
 						`ReturnOnInvestment`=`ReturnOnInvestment`+?
 						WHERE `ID`=? AND `ChannelID`=?""")
 		){
@@ -65,16 +65,13 @@ public class MariaDBDatabase extends BaseDatabase{
 			try(var result = getOpenPredictionStmt.executeQuery()){
 				while(result.next()){
 					var userPrediction = Converters.convertUserPrediction(result);
-					if(badge.equals(userPrediction.getBadge())){
-						updatePredictionUserStmt.setInt(1, 1);
-						updatePredictionUserStmt.setDouble(2, returnOnInvestment);
-					}
-					else{
-						updatePredictionUserStmt.setInt(1, 0);
-						updatePredictionUserStmt.setDouble(2, -1);
-					}
-					updatePredictionUserStmt.setInt(3, userPrediction.getUserId());
-					updatePredictionUserStmt.setString(4, userPrediction.getChannelId());
+					boolean isWinner = badge.equals(userPrediction.getBadge());
+					
+					updatePredictionUserStmt.setInt(1, isWinner ? 1 : 0);
+					updatePredictionUserStmt.setInt(2, isWinner ? 1 : 0);
+					updatePredictionUserStmt.setDouble(3, isWinner ? returnOnInvestment : -1);
+					updatePredictionUserStmt.setInt(4, userPrediction.getUserId());
+					updatePredictionUserStmt.setString(5, userPrediction.getChannelId());
 					updatePredictionUserStmt.addBatch();
 				}
 				updatePredictionUserStmt.executeBatch();

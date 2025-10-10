@@ -71,14 +71,10 @@ public class SQLiteDatabase extends BaseDatabase{
 			try(var result = getOpenPredictionStmt.executeQuery()){
 				while(result.next()){
 					var userPrediction = Converters.convertUserPrediction(result);
-					if(badge.equals(userPrediction.getBadge())){
-						updatePredictionUserStmt.setInt(1, 1);
-						updatePredictionUserStmt.setDouble(2, returnOnInvestment);
-					}
-					else{
-						updatePredictionUserStmt.setInt(1, 0);
-						updatePredictionUserStmt.setDouble(2, -1);
-					}
+					boolean isWinner = badge.equals(userPrediction.getBadge());
+					
+					updatePredictionUserStmt.setInt(1, isWinner ? 1 : 0);
+					updatePredictionUserStmt.setDouble(2, isWinner ? returnOnInvestment : -1);
 					updatePredictionUserStmt.setInt(3, userPrediction.getUserId());
 					updatePredictionUserStmt.setString(4, userPrediction.getChannelId());
 					updatePredictionUserStmt.addBatch();

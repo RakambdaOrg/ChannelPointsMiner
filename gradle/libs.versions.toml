@@ -21,6 +21,7 @@ hikari-cp-version = "7.0.2"
 mariadb-version = "3.5.6"
 sqlite-version = "3.50.3.0"
 mysql-version = "9.4.0"
+postgresql-version = "42.7.8"
 rerunner-jupiter-version = "2.1.6"
 flyway-version = "11.14.0"
 selenide-version = "7.11.1"
@@ -64,8 +65,10 @@ hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari-cp-v
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb-version" }
 sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-version" }
 mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql-version" }
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql-version" }
 flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway-version" }
 flyway-mysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway-version" }
+flyway-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway-version"}
 selenide = { group = "com.codeborne", name = "selenide", version.ref = "selenide-version" }
 selenide-proxy = { group = "com.codeborne", name = "selenide-proxy", version.ref = "selenide-version" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok-version" }
@@ -88,7 +91,7 @@ rerunnerJupiter = { group = "io.github.artsok", name = "rerunner-jupiter", versi
 jackson = ["jackson-core", "jackson-annotations", "jackson-databind", "jackson-jsr310"]
 log4j2 = ["log4j2-core", "log4j2-slf4j", "log4j2-json"]
 unirest = ["unirest-java", "unirest-modules-jackson"]
-flyway = ["flyway-core", "flyway-mysql"]
+flyway = ["flyway-core", "flyway-mysql", "flyway-postgresql"]
 selenide = ["selenide", "selenide-proxy"]
 jsonschemaGenerator = ["jsonschema-generator", "jsonschema-module-jackson"]
 junit = ["junit-api", "junit-params", "junit-engine"]

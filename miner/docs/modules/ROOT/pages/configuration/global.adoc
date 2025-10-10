@@ -60,4 +60,5 @@ You'll therefore have to adjust the settings for each mined account to not point
 link:https://www.baeldung.com/java-jdbc-url-format[JDBC url]:
 
 * MariaDB: `jdbc:mariadb://host:port/database` (great if you have a DB available or running inside docker as you can set a mariadb container)
+* PostgreSQL: `jdbc:postgresql://host:port/database` (just like MariaDB, reliable and efficient for both local and Docker setups)
 * SQLite: `jdbc:sqlite:/path/to/file` (great running locally and want to store it to a file, however less resilient and more prone to corruption).
