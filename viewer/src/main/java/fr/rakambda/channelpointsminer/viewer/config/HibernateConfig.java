@@ -11,21 +11,22 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor
 @Log4j2
-public class HibernateConfig implements HibernatePropertiesCustomizer {
-
-    private final DataSource dataSource;
-
-    @Override
-    public void customize(Map<String, Object> hibernateProperties) {
-        try (Connection conn = dataSource.getConnection()) {
-            String dbName = conn.getMetaData().getDatabaseProductName().toLowerCase();
-            if (dbName.contains("postgresql")) {
-                hibernateProperties.put("hibernate.globally_quoted_identifiers", true);
-                log.info("Set property hibernate.globally_quoted_identifiers to true");
-            }
-        } catch (Exception e) {
-            log.error("Could not determine database type", e);
-            log.warn("Skipping automatic database configuration.");
-        }
-    }
+public class HibernateConfig implements HibernatePropertiesCustomizer{
+	
+	private final DataSource dataSource;
+	
+	@Override
+	public void customize(Map<String, Object> hibernateProperties){
+		try(Connection conn = dataSource.getConnection()){
+			String dbName = conn.getMetaData().getDatabaseProductName().toLowerCase();
+			if(dbName.contains("postgresql")){
+				hibernateProperties.put("hibernate.globally_quoted_identifiers", true);
+				log.info("Set property hibernate.globally_quoted_identifiers to true");
+			}
+		}
+		catch(Exception e){
+			log.error("Could not determine database type", e);
+			log.warn("Skipping automatic database configuration.");
+		}
+	}
 }
