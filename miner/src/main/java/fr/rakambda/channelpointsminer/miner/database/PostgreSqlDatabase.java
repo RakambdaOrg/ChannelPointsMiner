@@ -54,9 +54,7 @@ public class PostgreSqlDatabase extends BaseDatabase {
                 SET
                     PredictionCnt = PredictionCnt + 1,
                     WinCnt = WinCnt + ?,
-                    WinRate = CASE WHEN PredictionCnt + 1 > 0
-                                     THEN (WinCnt + ?)::FLOAT / (PredictionCnt + 1)
-                                     ELSE 0 END,
+                    WinRate = (WinCnt + ?)::FLOAT / (PredictionCnt + 1),
                     ReturnOnInvestment = ReturnOnInvestment + ?
                 WHERE ID = ? AND ChannelID = ?;
                 """)) {
