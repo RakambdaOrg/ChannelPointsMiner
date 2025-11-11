@@ -75,7 +75,7 @@ class StreamerConfigurationReloadUpdateTest{
 		
 		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 		verify(miner).addStreamer(expectedStreamer);
-		verify(gqlApi, never()).reportMenuItem(anyString());
+		verify(gqlApi, never()).getUserIdFromLogin(anyString());
 	}
 	
 	@Test
@@ -89,7 +89,7 @@ class StreamerConfigurationReloadUpdateTest{
 		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 		verify(miner, never()).addStreamer(expectedStreamer);
 		verify(miner).removeStreamer(expectedStreamer);
-		verify(gqlApi, never()).reportMenuItem(anyString());
+		verify(gqlApi, never()).getUserIdFromLogin(anyString());
 	}
 	
 	@Test
@@ -101,7 +101,7 @@ class StreamerConfigurationReloadUpdateTest{
 		
 		verify(existingStreamer).setSettings(streamerSettings);
 		verify(miner).updateStreamer(existingStreamer);
-		verify(gqlApi, never()).reportMenuItem(anyString());
+		verify(gqlApi, never()).getUserIdFromLogin(anyString());
 	}
 	
 	@Test
@@ -111,6 +111,6 @@ class StreamerConfigurationReloadUpdateTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(miner).removeStreamer(existingStreamer);
-		verify(gqlApi, never()).reportMenuItem(anyString());
+		verify(gqlApi, never()).getUserIdFromLogin(anyString());
 	}
 }

@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerUnknownEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
@@ -160,9 +160,9 @@ public class StreamerConfigurationReload implements Runnable {
 
     @NonNull
     private Optional<String> getStreamerId(@NonNull String username) {
-        var id = miner.getGqlApi().reportMenuItem(username)
+        var id = miner.getGqlApi().getUserIdFromLogin(username)
                 .map(GQLResponse::getData)
-                .map(ReportMenuItemData::getUser)
+                .map(GetUserIdFromLoginData::getUser)
                 .map(User::getId);
         if (id.isEmpty()) {
 	        eventManager.onEvent(new StreamerUnknownEvent(username, TimeFactory.now()));

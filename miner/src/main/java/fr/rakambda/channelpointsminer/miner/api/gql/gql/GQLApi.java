@@ -25,8 +25,8 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.joinraid.JoinRaidDa
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.joinraid.JoinRaidOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.makeprediction.MakePredictionData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.makeprediction.MakePredictionOperation;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemOperation;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenOperation;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.FollowConnection;
@@ -72,8 +72,8 @@ public class GQLApi{
     private final IIntegrityProvider integrityProvider;
     
     @NonNull
-    public Optional<GQLResponse<ReportMenuItemData>> reportMenuItem(@NonNull String username){
-        return postGqlRequest(new ReportMenuItemOperation(username));
+    public Optional<GQLResponse<GetUserIdFromLoginData>> getUserIdFromLogin(@NonNull String username){
+        return postGqlRequest(new GetUserIdFromLoginOperation(username));
     }
     
     @NonNull

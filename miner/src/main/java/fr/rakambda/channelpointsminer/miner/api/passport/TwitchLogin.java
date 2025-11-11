@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.util.json.CookieDeserializer;
 import fr.rakambda.channelpointsminer.miner.util.json.CookieSerializer;
@@ -72,9 +72,9 @@ public class TwitchLogin{
 					.findAny()
 					.map(Cookie::getValue)
 					.map(v -> v.split("%")[0])
-					.or(() -> gqlApi.reportMenuItem(username)
+					.or(() -> gqlApi.getUserIdFromLogin(username)
 							.map(GQLResponse::getData)
-							.map(ReportMenuItemData::getUser)
+							.map(GetUserIdFromLoginData::getUser)
 							.map(User::getId))
 					.orElseThrow(() -> new IllegalStateException("Failed to get current user id"));
 		}
