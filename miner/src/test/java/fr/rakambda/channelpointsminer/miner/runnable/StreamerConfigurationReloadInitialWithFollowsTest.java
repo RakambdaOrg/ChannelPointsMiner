@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.StreamerSettingsFactory;
@@ -50,9 +50,9 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 	private StreamerSettings streamerSettings;
 	
 	@Mock
-	private GQLResponse<ReportMenuItemData> reportMenuItemDataGQLResponse;
+	private GQLResponse<GetUserIdFromLoginData> reportMenuItemDataGQLResponse;
 	@Mock
-	private ReportMenuItemData reportMenuItemData;
+	private GetUserIdFromLoginData getUserIdFromLoginData;
 	
 	@BeforeEach
 	void setUp(){
@@ -65,9 +65,9 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getStreamers()).thenReturn(List.of());
 		
-		lenient().when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
-		lenient().when(reportMenuItemDataGQLResponse.getData()).thenReturn(reportMenuItemData);
-		lenient().when(reportMenuItemData.getUser()).thenReturn(user);
+		lenient().when(gqlApi.getUserIdFromLogin(STREAMER_USERNAME)).thenReturn(Optional.empty());
+		lenient().when(reportMenuItemDataGQLResponse.getData()).thenReturn(getUserIdFromLoginData);
+		lenient().when(getUserIdFromLoginData.getUser()).thenReturn(user);
 	}
 	
 	@Test
@@ -81,7 +81,7 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 		
 		var expectedStreamer = new Streamer(STREAMER_ID, STREAMER_USERNAME, streamerSettings);
 		verify(miner).addStreamer(expectedStreamer);
-		verify(gqlApi, never()).reportMenuItem(anyString());
+		verify(gqlApi, never()).getUserIdFromLogin(anyString());
 	}
 	
 	@Test
@@ -91,7 +91,7 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 		assertDoesNotThrow(() -> tested.run());
 		
 		verify(miner, never()).addStreamer(any());
-		verify(gqlApi, never()).reportMenuItem(anyString());
+		verify(gqlApi, never()).getUserIdFromLogin(anyString());
 	}
 	
 	@Test
@@ -99,7 +99,7 @@ class StreamerConfigurationReloadInitialWithFollowsTest{
 		when(user.getId()).thenReturn(STREAMER_ID);
 		
 		when(streamerSettingsFactory.getStreamerConfigs()).thenReturn(Stream.of(Paths.get(STREAMER_USERNAME + ".json")));
-		when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemDataGQLResponse));
+		when(gqlApi.getUserIdFromLogin(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemDataGQLResponse));
 		
 		assertDoesNotThrow(() -> tested.run());
 		

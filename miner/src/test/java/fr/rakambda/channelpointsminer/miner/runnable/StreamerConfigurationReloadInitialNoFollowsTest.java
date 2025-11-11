@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.event.impl.StreamerUnknownEvent;
 import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
@@ -55,9 +55,9 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 	private GQLApi gqlApi;
 	
 	@Mock
-	private ReportMenuItemData reportMenuItemData;
+	private GetUserIdFromLoginData getUserIdFromLoginData;
 	@Mock
-	private GQLResponse<ReportMenuItemData> reportMenuItemResponse;
+	private GQLResponse<GetUserIdFromLoginData> reportMenuItemResponse;
 	@Mock
 	private User user;
 	@Mock
@@ -74,14 +74,14 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		lenient().when(miner.getGqlApi()).thenReturn(gqlApi);
 		lenient().when(miner.getStreamers()).thenReturn(List.of());
 		
-		lenient().when(reportMenuItemResponse.getData()).thenReturn(reportMenuItemData);
-		lenient().when(reportMenuItemData.getUser()).thenReturn(user);
+		lenient().when(reportMenuItemResponse.getData()).thenReturn(getUserIdFromLoginData);
+		lenient().when(getUserIdFromLoginData.getUser()).thenReturn(user);
 		lenient().when(user.getId()).thenReturn(STREAMER_ID);
 	}
 	
 	@Test
 	void loadFromConfig(){
-		when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+		when(gqlApi.getUserIdFromLogin(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
 		
 		setupStreamerConfig(STREAMER_USERNAME);
 		
@@ -96,7 +96,7 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 
 	@Test
 	void loadFromConfigWithDuplicateNames() {
-		when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
+		when(gqlApi.getUserIdFromLogin(STREAMER_USERNAME)).thenReturn(Optional.of(reportMenuItemResponse));
 
 		setupStreamerConfig(STREAMER_USERNAME, STREAMER_USERNAME, STREAMER_USERNAME);
 
@@ -123,7 +123,7 @@ class StreamerConfigurationReloadInitialNoFollowsTest{
 		try(var timeFactory = mockStatic(TimeFactory.class)){
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(gqlApi.reportMenuItem(STREAMER_USERNAME)).thenReturn(Optional.empty());
+			when(gqlApi.getUserIdFromLogin(STREAMER_USERNAME)).thenReturn(Optional.empty());
 			
 			setupStreamerConfig(STREAMER_USERNAME);
 			

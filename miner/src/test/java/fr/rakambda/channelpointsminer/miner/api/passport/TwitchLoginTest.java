@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.api.passport;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.ReportMenuItemData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.factory.ApiFactory;
 import kong.unirest.core.Cookie;
@@ -28,17 +28,17 @@ class TwitchLoginTest{
 	@Mock
 	private GQLApi gqlApi;
 	@Mock
-	private GQLResponse<ReportMenuItemData> gqlResponse;
+	private GQLResponse<GetUserIdFromLoginData> gqlResponse;
 	@Mock
-	private ReportMenuItemData reportMenuItemData;
+	private GetUserIdFromLoginData getUserIdFromLoginData;
 	@Mock
 	private User user;
 	
 	@BeforeEach
 	void setUp(){
-		lenient().when(gqlApi.reportMenuItem(USERNAME)).thenReturn(Optional.of(gqlResponse));
-		lenient().when(gqlResponse.getData()).thenReturn(reportMenuItemData);
-		lenient().when(reportMenuItemData.getUser()).thenReturn(user);
+		lenient().when(gqlApi.getUserIdFromLogin(USERNAME)).thenReturn(Optional.of(gqlResponse));
+		lenient().when(gqlResponse.getData()).thenReturn(getUserIdFromLoginData);
+		lenient().when(getUserIdFromLoginData.getUser()).thenReturn(user);
 		lenient().when(user.getId()).thenReturn(USER_ID);
 	}
 	
@@ -88,7 +88,7 @@ class TwitchLoginTest{
 				.username(USERNAME)
 				.build();
 		
-		when(gqlApi.reportMenuItem(USERNAME)).thenReturn(Optional.empty());
+		when(gqlApi.getUserIdFromLogin(USERNAME)).thenReturn(Optional.empty());
 		
 		assertThrows(IllegalStateException.class, () -> tested.fetchUserId(gqlApi));
 	}

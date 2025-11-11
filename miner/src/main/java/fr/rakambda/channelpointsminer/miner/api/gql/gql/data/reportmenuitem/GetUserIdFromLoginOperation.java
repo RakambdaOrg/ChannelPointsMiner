@@ -10,16 +10,17 @@ import org.jspecify.annotations.NonNull;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class ReportMenuItemOperation extends IGQLOperation<ReportMenuItemData>{
-	public ReportMenuItemOperation(@NonNull String username){
-		super("ReportMenuItem");
-		addPersistedQueryExtension(new PersistedQueryExtension(1, "8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c"));
-		addVariable("channelLogin", username);
+public class GetUserIdFromLoginOperation extends IGQLOperation<GetUserIdFromLoginData>{
+	public GetUserIdFromLoginOperation(@NonNull String username){
+		super("GetUserIDFromLogin");
+		addPersistedQueryExtension(new PersistedQueryExtension(1, "c8502d09d4f290bb5155e6953a2c3119d4296d7ce647a2e21d1cf4c805583e43"));
+		addVariable("login", username);
+		addVariable("lookupType", "ACTIVE");
 	}
 	
 	@Override
 	@NonNull
-	public GenericType<GQLResponse<ReportMenuItemData>> getResponseType(){
+	public GenericType<GQLResponse<GetUserIdFromLoginData>> getResponseType(){
 		return new GenericType<>(){};
 	}
 }

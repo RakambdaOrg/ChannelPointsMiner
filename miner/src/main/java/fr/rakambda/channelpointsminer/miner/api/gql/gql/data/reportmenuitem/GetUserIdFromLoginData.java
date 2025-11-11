@@ -16,7 +16,7 @@ import org.jspecify.annotations.NonNull;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class ReportMenuItemData{
+public class GetUserIdFromLoginData {
 	@JsonProperty("user")
 	@NonNull
 	private User user;
