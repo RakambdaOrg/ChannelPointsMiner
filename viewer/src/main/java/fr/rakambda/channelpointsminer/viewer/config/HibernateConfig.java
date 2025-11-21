@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.viewer.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
+import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer;
 import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 import java.sql.Connection;

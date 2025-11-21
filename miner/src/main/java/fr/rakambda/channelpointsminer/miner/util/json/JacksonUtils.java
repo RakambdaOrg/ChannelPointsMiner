@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter.Value;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -53,7 +54,7 @@ public class JacksonUtils{
 					.visibility(GETTER, NONE)
 					.visibility(SETTER, NONE)
 					.visibility(CREATOR, NONE)
-					.serializationInclusion(NON_NULL)
+					.defaultPropertyInclusion(JsonInclude.Value.construct(NON_NULL, NON_NULL))
 					.withConfigOverride(List.class, o -> o.setSetterInfo(Value.forValueNulls(AS_EMPTY)))
 					.addModule(new JavaTimeModule())
 					.build();

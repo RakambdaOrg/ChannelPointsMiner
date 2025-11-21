@@ -17,7 +17,7 @@ ext["junit-jupiter.version"] = libs.versions.junitVersion.get()
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.apache.logging.log4j:log4j-layout-template-json")
     implementation("org.jspecify:jspecify:1.0.0")
 
@@ -32,6 +32,7 @@ dependencies {
     testImplementation(libs.bundles.jsonUnit)
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
