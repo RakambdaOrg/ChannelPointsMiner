@@ -29,7 +29,7 @@ lombok-version = "1.18.42"
 jacocoVersion = "0.8.12"
 log4j-ecs-version = "1.7.0"
 
-shadow-version = "9.2.2"
+shadow-version = "9.3.0"
 jib-version = "3.5.1"
 git-properties-version = "2.5.4"
 springboot-version = "4.0.0"
