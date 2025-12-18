@@ -87,6 +87,6 @@ class GQLApiVideoPlayerStreamInfoOverlayChannelTest extends AbstractGQLTest{
 	
 	@Override
 	protected String getValidRequest(){
-		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"a5f2e34d626a9f4f5c0204f910bab2194948a9502089be558bb6e779a9e1b3d2\",\"version\":1}},\"operationName\":\"VideoPlayerStreamInfoOverlayChannel\",\"variables\":{\"channel\":\"%s\"}}".formatted(USERNAME);
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"e785b65ff71ad7b363b34878335f27dd9372869ad0c5740a130b9268bcdbe7e7\",\"version\":1}},\"operationName\":\"VideoPlayerStreamInfoOverlayChannel\",\"variables\":{\"channel\":\"%s\"}}".formatted(USERNAME);
 	}
 }

@@ -11,7 +11,7 @@ import org.jspecify.annotations.NonNull;
 public class VideoPlayerStreamInfoOverlayChannelOperation extends IGQLOperation<VideoPlayerStreamInfoOverlayChannelData>{
 	public VideoPlayerStreamInfoOverlayChannelOperation(@NonNull String username){
 		super("VideoPlayerStreamInfoOverlayChannel");
-		addPersistedQueryExtension(new PersistedQueryExtension(1, "a5f2e34d626a9f4f5c0204f910bab2194948a9502089be558bb6e779a9e1b3d2"));
+		addPersistedQueryExtension(new PersistedQueryExtension(1, "e785b65ff71ad7b363b34878335f27dd9372869ad0c5740a130b9268bcdbe7e7"));
 		addVariable("channel", username);
 	}
 	
