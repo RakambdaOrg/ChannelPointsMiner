@@ -1,23 +1,19 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 public class TwitchTimestampDeserializer extends StdDeserializer<Instant>{
 	protected TwitchTimestampDeserializer(){
-		this(null);
-	}
-	
-	protected TwitchTimestampDeserializer(Class<?> vc){
-		super(vc);
+		super(Instant.class);
 	}
 	
 	@Override
-	public Instant deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
+	public Instant deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException{
 		var value = p.getValueAsString();
 		if(value.isBlank()){
 			return null;

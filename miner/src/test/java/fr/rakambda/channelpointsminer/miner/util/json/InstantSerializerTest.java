@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
+import tools.jackson.databind.ValueSerializer;
 import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +15,7 @@ class InstantSerializerTest extends SerializerTest<Instant>{
 	}
 	
 	@Override
-	protected JsonSerializer<Instant> getSerializer(){
+	protected ValueSerializer<Instant> getSerializer(){
 		return new InstantSerializer();
 	}
 }

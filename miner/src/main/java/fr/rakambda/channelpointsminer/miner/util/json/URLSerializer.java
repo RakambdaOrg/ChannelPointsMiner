@@ -1,23 +1,18 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.jspecify.annotations.NonNull;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 import java.net.URL;
 
 public class URLSerializer extends StdSerializer<URL>{
 	public URLSerializer(){
-		this(null);
-	}
-	
-	protected URLSerializer(Class<URL> t){
-		super(t);
+		super(URL.class);
 	}
 	
 	@Override
-	public void serialize(@NonNull URL url, @NonNull JsonGenerator jsonGenerator, @NonNull SerializerProvider serializerProvider) throws IOException{
-		jsonGenerator.writeString(url.toString());
+	public void serialize(URL value, JsonGenerator gen, SerializationContext provider) throws JacksonException{
+		gen.writeString(value.toString());
 	}
 }

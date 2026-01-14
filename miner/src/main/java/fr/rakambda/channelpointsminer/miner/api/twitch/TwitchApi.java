@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.api.twitch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.PlayerEvent;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.UnirestException;
@@ -8,10 +7,10 @@ import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
+import tools.jackson.core.JacksonException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpConnectTimeoutException;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Objects;
@@ -119,7 +118,7 @@ public class TwitchApi{
 			
 			return response.isSuccess();
 		}
-		catch(JsonProcessingException e){
+		catch(JacksonException e){
 			log.error("Failed to send minute watched", e);
 			return false;
 		}

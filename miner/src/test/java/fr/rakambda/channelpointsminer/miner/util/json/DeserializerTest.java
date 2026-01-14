@@ -1,22 +1,13 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeEach;
+import tools.jackson.databind.ValueDeserializer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public abstract class DeserializerTest<T>{
-	private ObjectMapper mapper;
-	
-	@BeforeEach
-	void setUp(){
-		mapper = new ObjectMapper();
-	}
-	
+public abstract class DeserializerTest<T> extends JacksonTest{
 	@SneakyThrows({
 			JsonParseException.class,
 			IOException.class
@@ -28,9 +19,9 @@ public abstract class DeserializerTest<T>{
 				}
 				""".formatted(innerJson);
 		
-		try(var stream = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))){
-			var parser = mapper.getFactory().createParser(stream);
-			var ctxt = mapper.getDeserializationContext();
+		try(var stream = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+				var parser = getMapper().reader().createParser(stream)){
+			var ctxt = getMapper()._deserializationContext();
 			
 			parser.nextToken();
 			parser.nextToken();
@@ -40,5 +31,5 @@ public abstract class DeserializerTest<T>{
 		}
 	}
 	
-	protected abstract JsonDeserializer<T> getDeserializer();
+	protected abstract ValueDeserializer<T> getDeserializer();
 }

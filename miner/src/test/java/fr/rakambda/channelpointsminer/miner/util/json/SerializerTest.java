@@ -1,24 +1,17 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import java.io.IOException;
+import tools.jackson.databind.ValueSerializer;
 import java.io.StringWriter;
 
-public abstract class SerializerTest<T>{
-	@SneakyThrows({
-			IOException.class
-	})
+public abstract class SerializerTest<T> extends JacksonTest{
 	public String serialize(T object){
 		var jsonWriter = new StringWriter();
-		var jsonGenerator = new JsonFactory().createGenerator(jsonWriter);
-		var serializerProvider = new ObjectMapper().getSerializerProvider();
+		var jsonGenerator = getMapper().writer().createGenerator(jsonWriter);
+		var serializerProvider = getMapper()._serializationContext();
 		getSerializer().serialize(object, jsonGenerator, serializerProvider);
 		jsonGenerator.flush();
 		return jsonWriter.toString();
 	}
 	
-	protected abstract JsonSerializer<T> getSerializer();
+	protected abstract ValueSerializer<T> getSerializer();
 }

@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.api.gql.gql;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.reportmenuitem.GetUserIdFromLoginData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Stream;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,6 +39,6 @@ class GQLApiGetUserIdFromLoginTest extends AbstractGQLTest{
 	
 	@Override
 	protected String getValidRequest(){
-		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"c8502d09d4f290bb5155e6953a2c3119d4296d7ce647a2e21d1cf4c805583e43\",\"version\":1}},\"operationName\":\"GetUserIDFromLogin\",\"variables\":{\"lookupType\":\"ACTIVE\",\"login\":\"%s\"}}".formatted(USERNAME);
+		return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"c8502d09d4f290bb5155e6953a2c3119d4296d7ce647a2e21d1cf4c805583e43\",\"version\":1}},\"operationName\":\"GetUserIDFromLogin\",\"variables\":{\"login\":\"%s\",\"lookupType\":\"ACTIVE\"}}".formatted(USERNAME);
 	}
 }

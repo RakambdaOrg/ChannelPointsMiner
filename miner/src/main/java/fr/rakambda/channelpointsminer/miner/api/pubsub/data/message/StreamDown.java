@@ -2,7 +2,7 @@ package fr.rakambda.channelpointsminer.miner.api.pubsub.data.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import fr.rakambda.channelpointsminer.miner.util.json.TwitchTimestampDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

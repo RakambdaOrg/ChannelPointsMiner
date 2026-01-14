@@ -3,17 +3,17 @@ package fr.rakambda.channelpointsminer.miner.api.discord.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.ser.std.StdSerializer;
 import static java.lang.Math.min;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -46,7 +46,7 @@ public class Field{
 		}
 		
 		@Override
-		public void serialize(String value, JsonGenerator gen, SerializerProvider provider) throws IOException{
+		public void serialize(String value, JsonGenerator gen, SerializationContext provider) throws JacksonException{
 			gen.writeString(value.substring(0, min(value.length(), MAX_VALUE_SIZE)));
 		}
 	}

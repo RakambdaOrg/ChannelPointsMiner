@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.integrity.browser;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityData;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityException;
 import fr.rakambda.channelpointsminer.miner.api.gql.integrity.IntegrityResponse;
@@ -22,6 +21,7 @@ import org.openqa.selenium.devtools.v143.network.model.RequestWillBeSent;
 import org.openqa.selenium.devtools.v143.network.model.Response;
 import org.openqa.selenium.devtools.v143.network.model.ResponseReceived;
 import org.openqa.selenium.devtools.v143.page.model.FrameId;
+import tools.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

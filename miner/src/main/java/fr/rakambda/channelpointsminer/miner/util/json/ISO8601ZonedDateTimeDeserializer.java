@@ -1,27 +1,20 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import java.time.ZonedDateTime;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class ISO8601ZonedDateTimeDeserializer extends StdDeserializer<ZonedDateTime>{
-	public ISO8601ZonedDateTimeDeserializer(){
-		this(null);
-	}
-	
-	protected ISO8601ZonedDateTimeDeserializer(Class<?> vc){
-		super(vc);
+	protected ISO8601ZonedDateTimeDeserializer(){
+		super(ZonedDateTime.class);
 	}
 	
 	@Override
-	@Nullable
-	public ZonedDateTime deserialize(@NonNull JsonParser jsonParser, @NonNull DeserializationContext context) throws IOException{
-		var value = jsonParser.getValueAsString();
+	public ZonedDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException{
+		var value = p.getValueAsString();
 		if(value.isBlank()){
 			return null;
 		}

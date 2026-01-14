@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import kong.unirest.core.Cookie;
+import tools.jackson.databind.ValueSerializer;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,7 +29,7 @@ class CookieSerializerTest extends SerializerTest<Cookie>{
 	}
 	
 	@Override
-	protected JsonSerializer<Cookie> getSerializer(){
+	protected ValueSerializer<Cookie> getSerializer(){
 		return new CookieSerializer();
 	}
 }

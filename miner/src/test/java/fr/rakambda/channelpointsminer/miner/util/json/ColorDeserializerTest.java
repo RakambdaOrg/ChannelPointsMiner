@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
+import tools.jackson.databind.ValueDeserializer;
 import org.junit.jupiter.api.Test;
-import java.awt.Color;
+import java.awt.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ParallelizableTest
@@ -24,7 +24,7 @@ class ColorDeserializerTest extends DeserializerTest<Color>{
 	}
 	
 	@Override
-	protected JsonDeserializer<Color> getDeserializer(){
+	protected ValueDeserializer<Color> getDeserializer(){
 		return new ColorDeserializer();
 	}
 }
