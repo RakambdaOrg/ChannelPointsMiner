@@ -2,7 +2,6 @@ package fr.rakambda.channelpointsminer.miner.api.pubsub.data.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic.Topic;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
@@ -12,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import tools.jackson.core.type.TypeReference;
 import java.io.IOException;
 
 @Getter

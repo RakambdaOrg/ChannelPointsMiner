@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.api.passport;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import tools.jackson.core.type.TypeReference;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,22 +1,18 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import kong.unirest.core.Cookie;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 public class CookieDeserializer extends StdDeserializer<Cookie>{
 	public CookieDeserializer(){
-		this(null);
-	}
-	
-	protected CookieDeserializer(Class<?> vc){
-		super(vc);
+		super(Cookie.class);
 	}
 	
 	@Override
-	public Cookie deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
+	public Cookie deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException{
 		var value = p.getValueAsString();
 		if(value.isBlank()){
 			return null;

@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
+import tools.jackson.databind.ValueDeserializer;
 import org.junit.jupiter.api.Test;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -31,7 +31,7 @@ class URLDeserializerTest extends DeserializerTest<URL>{
 	}
 	
 	@Override
-	protected JsonDeserializer<URL> getDeserializer(){
+	protected ValueDeserializer<URL> getDeserializer(){
 		return new URLDeserializer();
 	}
 }

@@ -1,30 +1,23 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import lombok.extern.log4j.Log4j2;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 @Log4j2
 public class UnknownDeserializer extends StdDeserializer<String>{
 	public UnknownDeserializer(){
-		this(null);
-	}
-	
-	protected UnknownDeserializer(Class<?> vc){
-		super(vc);
+		super(String.class);
 	}
 	
 	@Override
-	@Nullable
-	public String deserialize(@NonNull JsonParser jsonParser, @NonNull DeserializationContext deserializationContext) throws IOException{
-		var currentLocation = jsonParser.currentLocation();
-		var treeNode = jsonParser.readValueAsTree();
+	public String deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException{
+		var currentLocation = p.currentLocation();
+		var treeNode = p.readValueAsTree();
 		var treeNodeStr = treeNode == null ? null : treeNode.toString();
-		log.warn("Got actual value for unknown field {} (l:{},c:{}) : {}", jsonParser.currentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), treeNodeStr);
+		log.warn("Got actual value for unknown field {} (l:{},c:{}) : {}", p.currentName(), currentLocation.getLineNr(), currentLocation.getColumnNr(), treeNodeStr);
 		return treeNodeStr;
 	}
 }

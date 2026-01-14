@@ -1,8 +1,8 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import kong.unirest.core.Cookie;
+import tools.jackson.databind.ValueDeserializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,7 +28,7 @@ class CookieDeserializerTest extends DeserializerTest<Cookie>{
 	}
 	
 	@Override
-	protected JsonDeserializer<Cookie> getDeserializer(){
+	protected ValueDeserializer<Cookie> getDeserializer(){
 		return new CookieDeserializer();
 	}
 }

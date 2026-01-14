@@ -1,18 +1,18 @@
 package fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.topic;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.ser.std.StdSerializer;
 import java.util.Optional;
 
 @Getter
@@ -27,30 +27,22 @@ public class Topic{
 	
 	static class Serializer extends StdSerializer<Topic>{
 		public Serializer(){
-			this(null);
-		}
-		
-		protected Serializer(Class<Topic> t){
-			super(t);
+			super(Topic.class);
 		}
 		
 		@Override
-		public void serialize(Topic value, JsonGenerator gen, SerializerProvider provider) throws IOException{
+		public void serialize(Topic value, JsonGenerator gen, SerializationContext provider) throws JacksonException{
 			gen.writeString(value.getValue());
 		}
 	}
 	
 	static class Deserializer extends StdDeserializer<Topic>{
 		protected Deserializer(){
-			this(null);
-		}
-		
-		protected Deserializer(Class<?> vc){
-			super(vc);
+			super(Topic.class);
 		}
 		
 		@Override
-		public Topic deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
+		public Topic deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException{
 			return Optional.ofNullable(p.getValueAsString())
 					.map(t -> t.split("\\."))
 					.flatMap(t -> TopicName.fromValue(t[0]).map(name -> new Topic(name, t[1])))

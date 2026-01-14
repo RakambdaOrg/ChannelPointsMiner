@@ -1,6 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.api.twitch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedEvent;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.MinuteWatchedProperties;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.PlayerEvent;
@@ -10,6 +9,7 @@ import fr.rakambda.channelpointsminer.miner.tests.UnirestMockExtension;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.JacksonException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -192,7 +192,7 @@ class TwitchApiTest{
     @Test
     void sendMinutesWatchedJsonError(){
         try(var jacksonUtils = Mockito.mockStatic(JacksonUtils.class)){
-            var exception = mock(JsonProcessingException.class);
+            var exception = mock(JacksonException.class);
             when(exception.getStackTrace()).thenReturn(new StackTraceElement[0]);
             jacksonUtils.when(() -> JacksonUtils.writeAsString(any(PlayerEvent[].class))).thenThrow(exception);
             

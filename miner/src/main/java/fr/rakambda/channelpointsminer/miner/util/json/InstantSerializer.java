@@ -1,9 +1,9 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -11,15 +11,11 @@ public class InstantSerializer extends StdSerializer<Instant>{
 	private static final DateTimeFormatter DF = DateTimeFormatter.ISO_INSTANT;
 	
 	public InstantSerializer(){
-		this(null);
-	}
-	
-	public InstantSerializer(Class<Instant> t){
-		super(t);
+		super(Instant.class);
 	}
 	
 	@Override
-	public void serialize(Instant value, JsonGenerator gen, SerializerProvider provider) throws IOException{
+	public void serialize(Instant value, JsonGenerator gen, SerializationContext provider) throws JacksonException{
 		gen.writeString(DF.format(value));
 	}
 }

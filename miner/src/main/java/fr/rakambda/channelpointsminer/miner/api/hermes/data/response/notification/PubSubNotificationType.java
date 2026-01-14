@@ -3,7 +3,6 @@ package fr.rakambda.channelpointsminer.miner.api.hermes.data.response.notificati
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.IPubSubMessage;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.AllArgsConstructor;
@@ -12,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import tools.jackson.core.type.TypeReference;
 import java.io.IOException;
 
 @JsonTypeName("pubsub")

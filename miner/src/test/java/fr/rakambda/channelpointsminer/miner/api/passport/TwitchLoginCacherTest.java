@@ -4,11 +4,11 @@ import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
 import fr.rakambda.channelpointsminer.miner.tests.TestUtils;
 import kong.unirest.core.Cookie;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
+import tools.jackson.core.JacksonException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,7 +93,7 @@ class TwitchLoginCacherTest{
 	void restoreAuthBadFile(){
 		TestUtils.copyFromResources("api/passport/badAuthFile.json", authFile);
 		
-		assertThrows(IOException.class, () -> tested.restoreAuthentication());
+		assertThrows(JacksonException.class, () -> tested.restoreAuthentication());
 		assertThat(authFile).exists();
 	}
 	

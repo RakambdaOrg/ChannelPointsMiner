@@ -1,7 +1,5 @@
 package fr.rakambda.channelpointsminer.miner.api.pubsub;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.ITwitchWebSocketRequest;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.ListenTopicRequest;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.request.PingRequest;
@@ -23,6 +21,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jspecify.annotations.NonNull;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
@@ -123,7 +123,7 @@ public class TwitchPubSubWebSocketClient extends WebSocketClient{
 			log.trace("Sending WebSocket message: {}", data);
 			send(data);
 		}
-		catch(JsonProcessingException e){
+		catch(JacksonException e){
 			log.error("Failed to convert WebSocket message to json", e);
 		}
 	}

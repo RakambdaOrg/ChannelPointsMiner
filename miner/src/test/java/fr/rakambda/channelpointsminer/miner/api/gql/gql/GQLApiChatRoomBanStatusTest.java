@@ -59,6 +59,6 @@ class GQLApiChatRoomBanStatusTest extends AbstractGQLTest{
     
     @Override
     protected String getValidRequest(){
-        return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"319f2a9a3ac7ddecd7925944416c14b818b65676ab69da604460b68938d22bea\",\"version\":1}},\"operationName\":\"ChatRoomBanStatus\",\"variables\":{\"targetUserID\":\"%s\",\"channelID\":\"%s\"}}".formatted(USERNAME, CHANNEL);
+        return "{\"extensions\":{\"persistedQuery\":{\"sha256Hash\":\"319f2a9a3ac7ddecd7925944416c14b818b65676ab69da604460b68938d22bea\",\"version\":1}},\"operationName\":\"ChatRoomBanStatus\",\"variables\":{\"channelID\":\"%s\",\"targetUserID\":\"%s\"}}".formatted(CHANNEL, USERNAME);
     }
 }

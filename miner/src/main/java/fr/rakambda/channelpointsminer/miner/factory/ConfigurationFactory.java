@@ -1,11 +1,11 @@
 package fr.rakambda.channelpointsminer.miner.factory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.rakambda.channelpointsminer.miner.cli.CLIHolder;
 import fr.rakambda.channelpointsminer.miner.config.Configuration;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.type.TypeReference;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;

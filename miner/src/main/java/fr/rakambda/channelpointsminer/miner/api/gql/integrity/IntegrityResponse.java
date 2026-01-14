@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.gql.integrity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import fr.rakambda.channelpointsminer.miner.util.json.MillisecondsTimestampDeserializer;
 import fr.rakambda.channelpointsminer.miner.util.json.UnknownDeserializer;
 import lombok.AllArgsConstructor;

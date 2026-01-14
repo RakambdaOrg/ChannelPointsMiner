@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
+import tools.jackson.databind.ValueDeserializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,7 +28,7 @@ class UnknownDeserializerTest extends DeserializerTest<String>{
 	}
 	
 	@Override
-	protected JsonDeserializer<String> getDeserializer(){
+	protected ValueDeserializer<String> getDeserializer(){
 		return new UnknownDeserializer();
 	}
 }

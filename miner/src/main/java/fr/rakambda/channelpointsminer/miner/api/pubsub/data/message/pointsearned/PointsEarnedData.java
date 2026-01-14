@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.pointsearned;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import fr.rakambda.channelpointsminer.miner.api.pubsub.data.message.subtype.PointGain;
 import fr.rakambda.channelpointsminer.miner.util.json.ISO8601ZonedDateTimeDeserializer;
 import lombok.AllArgsConstructor;

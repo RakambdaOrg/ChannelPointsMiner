@@ -1,7 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import fr.rakambda.channelpointsminer.miner.tests.ParallelizableTest;
+import tools.jackson.databind.ValueDeserializer;
 import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +19,7 @@ class TwitchTimestampDeserializerTest extends DeserializerTest<Instant>{
 	}
 	
 	@Override
-	protected JsonDeserializer<Instant> getDeserializer(){
+	protected ValueDeserializer<Instant> getDeserializer(){
 		return new TwitchTimestampDeserializer();
 	}
 }

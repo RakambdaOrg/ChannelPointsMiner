@@ -1,12 +1,10 @@
 package fr.rakambda.channelpointsminer.miner.util.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import lombok.extern.log4j.Log4j2;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -18,18 +16,13 @@ public class URLDeserializer extends StdDeserializer<URL>{
 	private static final Pattern SCHEME_PATTERN = Pattern.compile("^\\w+://.*");
 	
 	public URLDeserializer(){
-		this(null);
-	}
-	
-	protected URLDeserializer(Class<?> vc){
-		super(vc);
+		super(URL.class);
 	}
 	
 	@Override
-	@Nullable
-	public URL deserialize(@NonNull JsonParser jsonParser, @NonNull DeserializationContext deserializationContext) throws IOException{
+	public URL deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException{
 		try{
-			var value = jsonParser.getValueAsString();
+			var value = p.getValueAsString();
 			if(nonNull(value) && !value.isBlank()){
 				if(!SCHEME_PATTERN.matcher(value).matches()){
 					value = "https://" + value;
@@ -38,7 +31,7 @@ public class URLDeserializer extends StdDeserializer<URL>{
 			}
 		}
 		catch(MalformedURLException | IllegalArgumentException e){
-			log.warn("Failed to parse URL: {} at {} in {}", jsonParser.getValueAsString(), jsonParser.currentName(), jsonParser.currentLocation(), e);
+			log.warn("Failed to parse URL: {} at {} in {}", p.getValueAsString(), p.currentName(), p.currentLocation(), e);
 		}
 		return null;
 	}
