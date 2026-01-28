@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 @NoArgsConstructor
@@ -19,6 +20,7 @@ public class PredictionResultPayload{
 	@JsonProperty("type")
 	@NonNull
 	private PredictionResultType type;
+	@Nullable
 	@JsonProperty("points_won")
-	private int pointsWon;
+	private Integer pointsWon;
 }

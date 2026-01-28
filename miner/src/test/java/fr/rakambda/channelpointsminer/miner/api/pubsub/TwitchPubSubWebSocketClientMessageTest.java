@@ -233,6 +233,37 @@ class TwitchPubSubWebSocketClientMessageTest{
 	}
 	
 	@Test
+	void onPredictionResultNullAmount(WebsocketMockServer server){
+		server.send(TestUtils.getAllResourceContent("api/ws/predictionResult_nullAmount.json"));
+		
+		var expected = MessageResponse.builder()
+				.data(MessageData.builder()
+						.topic(Topic.builder()
+								.name(PREDICTIONS_USER_V1)
+								.target("123456789")
+								.build())
+						.message(PredictionResult.builder()
+								.data(PredictionResultData.builder()
+										.timestamp(ZonedDateTime.of(2021, 11, 4, 18, 48, 18, 104721127, UTC))
+										.prediction(Prediction.builder()
+												.eventId("event-id")
+												.outcomeId("outcome-id")
+												.channelId("987654321")
+												.points(1000)
+												.predictedAt(ZonedDateTime.of(2021, 11, 4, 18, 45, 42, 619835769, UTC))
+												.result(PredictionResultPayload.builder()
+														.type(PredictionResultType.LOSE)
+														.pointsWon(null)
+														.build())
+												.build())
+										.build())
+								.build())
+						.build())
+				.build();
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
+	}
+	
+	@Test
 	void onClaimAvailable(WebsocketMockServer server){
 		server.send(TestUtils.getAllResourceContent("api/ws/claimAvailable.json"));
 		
