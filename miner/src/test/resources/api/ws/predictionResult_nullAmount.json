@@ -1,0 +1,7 @@
+{
+  "type": "MESSAGE",
+  "data": {
+    "topic": "predictions-user-v1.123456789",
+    "message": "{\"type\":\"prediction-result\",\"data\":{\"timestamp\":\"2021-11-04T18:48:18.104721127Z\",\"prediction\":{\"id\":\"prediction-id\",\"event_id\":\"event-id\",\"outcome_id\":\"outcome-id\",\"channel_id\":\"987654321\",\"points\":1000,\"predicted_at\":\"2021-11-04T18:45:42.619835769Z\",\"updated_at\":\"2021-11-04T18:48:18.098606115Z\",\"user_id\":\"123456789\",\"result\":{\"type\":\"LOSE\",\"points_won\":null,\"is_acknowledged\":false},\"user_display_name\":null}}}"
+  }
+}
