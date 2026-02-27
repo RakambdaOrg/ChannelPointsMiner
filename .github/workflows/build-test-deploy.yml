@@ -34,7 +34,7 @@ jobs:
           --scan
 
       - name: Upload miner jar file
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: miner-jar
           path: |
@@ -42,7 +42,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload viewer jar file
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: viewer-jar
           path: |
@@ -94,7 +94,7 @@ jobs:
           flags: unittests-miner
           name: codecov-github-actions
       - name: Upload JUnit reports
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         if: always()
         with:
           name: junit-test-results-miner
@@ -104,7 +104,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload JaCoCo reports
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         if: always()
         with:
           name: jacoco-test-results-miner
@@ -158,7 +158,7 @@ jobs:
           flags: unittests-viewer
           name: codecov-github-actions
       - name: Upload JUnit reports
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         if: always()
         with:
           name: junit-test-results-viewer
@@ -168,7 +168,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload JaCoCo reports
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         if: always()
         with:
           name: jacoco-test-results-viewer
