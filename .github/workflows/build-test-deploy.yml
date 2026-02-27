@@ -41,6 +41,7 @@ jobs:
             miner/build/libs/miner-shaded.jar
           if-no-files-found: error
           retention-days: 14
+          archive: false
       - name: Upload viewer jar file
         uses: actions/upload-artifact@v7.0.0
         with:
@@ -49,6 +50,7 @@ jobs:
             viewer/build/libs/viewer-*.jar
           if-no-files-found: error
           retention-days: 14
+          archive: false
 
   test-miner:
     name: Run miner tests
