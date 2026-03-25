@@ -26,7 +26,7 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.0.0
+        uses: gradle/actions/setup-gradle@v6.0.1
       - name: Build project
         run: |
           ./gradlew \
@@ -69,7 +69,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.0.0
+        uses: gradle/actions/setup-gradle@v6.0.1
 
       - name: Run tests
         run: |
@@ -133,7 +133,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.0.0
+        uses: gradle/actions/setup-gradle@v6.0.1
 
       - name: Run tests
         run: |
@@ -198,7 +198,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.0.0
+        uses: gradle/actions/setup-gradle@v6.0.1
 
       - name: Calculate miner image name
         id: miner-image-name
@@ -229,7 +229,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ vars.JAVA_VERSION }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.0.0
+        uses: gradle/actions/setup-gradle@v6.0.1
 
       - name: Calculate viewer image name
         id: viewer-image-name
