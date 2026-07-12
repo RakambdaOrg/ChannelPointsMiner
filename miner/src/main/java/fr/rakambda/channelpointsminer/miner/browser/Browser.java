@@ -16,10 +16,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v147.network.Network;
-import org.openqa.selenium.devtools.v147.network.model.RequestId;
-import org.openqa.selenium.devtools.v147.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v147.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v150.network.Network;
+import org.openqa.selenium.devtools.v150.network.model.RequestId;
+import org.openqa.selenium.devtools.v150.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v150.network.model.ResponseReceived;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -176,7 +176,7 @@ public class Browser implements AutoCloseable{
 		var loggingPreferences = new LoggingPreferences();
 		loggingPreferences.enable(LogType.BROWSER, Level.WARNING);
 		loggingPreferences.enable(LogType.PERFORMANCE, Level.WARNING);
-		loggingPreferences.enable(LogType.PROFILER, Level.WARNING);
+		loggingPreferences.enable(LogType.DRIVER, Level.WARNING);
 		options.setCapability(ChromeOptions.LOGGING_PREFS, loggingPreferences);
 		
 		return options;
