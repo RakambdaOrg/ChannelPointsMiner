@@ -30,7 +30,7 @@ jacocoVersion = "0.8.12"
 log4j-ecs-version = "1.8.0"
 
 shadow-version = "9.5.1"
-jib-version = "3.5.3"
+jib-version = "3.5.4"
 git-properties-version = "3.0.3"
 springboot-version = "4.1.0"
 springboot-dependencies-version = "1.1.7"
