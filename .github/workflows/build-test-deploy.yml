@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 1
       - name: Set up JDK
@@ -60,7 +60,7 @@ jobs:
       checks: write
     steps:
       - name: Checkout source
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 1
       - name: Set up JDK
@@ -124,7 +124,7 @@ jobs:
       checks: write
     steps:
       - name: Checkout source
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 1
       - name: Set up JDK
@@ -191,7 +191,7 @@ jobs:
     environment: DockerHub
     steps:
       - name: Checkout source
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -222,7 +222,7 @@ jobs:
     environment: DockerHub
     steps:
       - name: Checkout source
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
