@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: '24'
       - name: Install Antora
-        run: npm i antora asciidoctor-kroki
+        run: npm i antora@3.1.15 asciidoctor-kroki@1.0.1
 
       - name: Generate Site
         run: npx antora .github/antora-playbook.yml
