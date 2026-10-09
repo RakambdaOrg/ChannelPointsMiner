@@ -171,7 +171,7 @@ public class TwitchApi{
 					continue;
 				}
 				seenChunks.add(chunkUrlStr);
-				var chunkRequest = unirest.head(chunkUrl.toString()).asBytes();
+				var chunkRequest = unirest.head(chunkUrlStr).asBytes();
 				if(!chunkRequest.isSuccess()){
 					success = false;
 				}
