@@ -2,6 +2,8 @@ package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSelfEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDropSelfEdge;
@@ -59,6 +61,7 @@ public class SyncInventory implements Runnable{
 	private void claimDrops(@NonNull InventoryData inventory){
 		var dropsToClaim = ofNullable(inventory.getCurrentUser().getInventory())
 				.map(Inventory::getDropCampaignsInProgress).stream().flatMap(Collection::stream)
+				.filter(this::isAccountLinked)
 				.flatMap(dropCampaign -> dropCampaign.getTimeBasedDrops().stream())
 				.filter(timeBasedDrop -> Objects.nonNull(timeBasedDrop.getSelf()))
 				.filter(timeBasedDrop -> !timeBasedDrop.getSelf().isClaimed())
@@ -71,6 +74,12 @@ public class SyncInventory implements Runnable{
 		
 		log.debug("Claiming drops {}", dropsToClaim);
 		dropsToClaim.forEach(this::claimDrop);
+	}
+	
+	private boolean isAccountLinked(DropCampaign dropCampaign){
+		return Optional.ofNullable(dropCampaign.getSelf())
+				.map(DropCampaignSelfEdge::getAccountConnected)
+				.orElse(true);
 	}
 	
 	private void claimDrop(@NonNull TimeBasedDrop timeBasedDrop){
