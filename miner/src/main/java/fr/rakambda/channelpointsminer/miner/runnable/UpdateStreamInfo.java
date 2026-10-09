@@ -50,7 +50,7 @@ public class UpdateStreamInfo implements Runnable{
 			
 			updateVideoInfo(streamer);
 			updateSpadeUrl(streamer);
-			// updateM3u8Url(streamer); // Doesn't seem to be required anymore
+			updateM3u8Url(streamer);
 			updateBanStatus(streamer);
 			updatePointsContext(streamer);
 			updateCampaigns(streamer);
