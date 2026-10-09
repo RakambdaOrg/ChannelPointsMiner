@@ -305,7 +305,7 @@ class UpdateStreamInfoTest{
 			when(gqlApi.chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID)).thenReturn(Optional.of(gqlResponseChatRoomBanStatus));
 			when(gqlApi.playbackAccessToken(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponsePlaybackAccessToken));
 			when(twitchApi.getSpadeUrl(streamerUrl)).thenReturn(Optional.of(spadeUrl));
-			when(twitchApi.getM3u8Url(STREAMER_USERNAME, M3U8_SIGNATURE, M3U8_VALUE)).thenReturn(Optional.of(m3u8Url));
+			when(twitchApi.getM3u8Urls(STREAMER_USERNAME, M3U8_SIGNATURE, M3U8_VALUE)).thenReturn(List.of(m3u8Url));
 			
 			var streamPlaybackAccessToken = mock(StreamPlaybackAccessToken.class);
 			when(playbackAccessTokenData.getStreamPlaybackAccessToken()).thenReturn(streamPlaybackAccessToken);

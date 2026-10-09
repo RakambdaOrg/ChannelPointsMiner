@@ -1,5 +1,6 @@
 package fr.rakambda.channelpointsminer.miner.api.twitch;
 
+import com.google.common.collect.EvictingQueue;
 import fr.rakambda.channelpointsminer.miner.api.twitch.data.PlayerEvent;
 import fr.rakambda.channelpointsminer.miner.util.json.JacksonUtils;
 import kong.unirest.core.UnirestException;
@@ -12,9 +13,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -27,6 +30,7 @@ public class TwitchApi{
 	private static final Pattern M3U8_CHUNK_PATTERN = Pattern.compile("^(https://[/\\-.:\\\\,\"=\\w]+\\.(ts|mp4)(\\?[.\\w\\-/=&]+)?)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	
 	private final UnirestInstance unirest;
+	private final Queue<String> seenChunks = EvictingQueue.create(25);
 	
 	@NonNull
 	public Optional<URL> getSpadeUrl(@NonNull URL streamerUrl){
@@ -76,34 +80,23 @@ public class TwitchApi{
 	
 	@NonNull
 	private Optional<URL> extractUrl(@NonNull Pattern pattern, int group, @NonNull String content){
-		return extractUrl(pattern, group, content, false);
+		return extractAllUrls(pattern, group, content).stream().findAny();
 	}
 	
 	@NonNull
-	private Optional<URL> extractUrl(@NonNull Pattern pattern, int group, @NonNull String content, boolean last){
+	private List<URL> extractAllUrls(@NonNull Pattern pattern, int group, @NonNull String content){
+		var elements = new LinkedList<URL>();
 		var matcher = pattern.matcher(content);
-		var matched = false;
-		String foundGroup = null;
-		
-		do{
-			matched = matcher.find();
-			if(matched){
-				foundGroup = matcher.group(group);
+		while(matcher.find()){
+			var foundGroup = matcher.group(group);
+			try{
+				elements.add(URI.create(foundGroup).toURL());
+			}
+			catch(MalformedURLException e){
+				log.error("Failed to parse url", e);
 			}
 		}
-		while(matched && last);
-		
-		if(Objects.isNull(foundGroup)){
-			return Optional.empty();
-		}
-		
-		try{
-			return Optional.of(URI.create(foundGroup).toURL());
-		}
-		catch(MalformedURLException e){
-			log.error("Failed to parse url", e);
-			return Optional.empty();
-		}
+		return elements;
 	}
 	
 	public boolean sendPlayerEvents(@NonNull URL spadeUrl, @NonNull PlayerEvent... events){
@@ -125,7 +118,7 @@ public class TwitchApi{
 	}
 	
 	@NonNull
-	public Optional<URL> getM3u8Url(@NonNull String login, @NonNull String signature, @NonNull String value){
+	public List<URL> getM3u8Urls(@NonNull String login, @NonNull String signature, @NonNull String value){
 		var response = unirest.get("https://usher.ttvnw.net/api/channel/hls/%s.m3u8".formatted(login.toLowerCase(Locale.ROOT)))
 				.queryString("sig", signature)
 				.queryString("token", value)
@@ -141,17 +134,17 @@ public class TwitchApi{
 		if(!response.isSuccess()){
 			if(response.getStatus() == 403){
 				log.trace("Got 403 response for m3u8 content, is streamer region locked? (#783)");
-				return Optional.empty();
+				return List.of();
 			}
 			
 			log.error("Failed to get streamer M3U8 content");
-			return Optional.empty();
+			return List.of();
 		}
 		
-		return extractUrl(M3U8_STREAM_PATTERN, 1, response.getBody(), true);
+		return extractAllUrls(M3U8_STREAM_PATTERN, 1, response.getBody());
 	}
 	
-	public boolean openM3u8LastChunk(@NonNull URL m3u8Url){
+	public boolean openM3u8UnseenChunks(@NonNull URL m3u8Url){
 		try{
 			var playlistResponse = unirest.get(m3u8Url.toString()).asString();
 			
@@ -165,14 +158,25 @@ public class TwitchApi{
 				return false;
 			}
 			
-			var chunkUrl = extractUrl(M3U8_CHUNK_PATTERN, 1, playlistResponse.getBody(), true);
-			if(chunkUrl.isEmpty()){
-				log.error("Failed to get streamer M3U8 chunk from playlist");
+			var chunkUrls = extractAllUrls(M3U8_CHUNK_PATTERN, 1, playlistResponse.getBody());
+			if(chunkUrls.isEmpty()){
+				log.error("Failed to get streamer M3U8 chunks from playlist");
 				return false;
 			}
 			
-			var chunkRequest = unirest.head(chunkUrl.get().toString()).asBytes();
-			return chunkRequest.isSuccess();
+			var success = true;
+			for(var chunkUrl : chunkUrls){
+				var chunkUrlStr = chunkUrl.toString();
+				if(seenChunks.contains(chunkUrlStr)){
+					continue;
+				}
+				seenChunks.add(chunkUrlStr);
+				var chunkRequest = unirest.head(chunkUrl.toString()).asBytes();
+				if(!chunkRequest.isSuccess()){
+					success = false;
+				}
+			}
+			return success;
 		}
 		catch(UnirestException e){
 			log.error("Failed to get streamer M3U8", e);

@@ -101,7 +101,9 @@ public class UpdateStreamInfo implements Runnable{
 				}
 				var token = accessToken.get().getData().getStreamPlaybackAccessToken();
 				
-				miner.getTwitchApi().getM3u8Url(streamer.getUsername(), token.getSignature(), token.getValue())
+				miner.getTwitchApi().getM3u8Urls(streamer.getUsername(), token.getSignature(), token.getValue())
+						.stream()
+						.findAny()
 						.ifPresent(streamer::setM3u8Url);
 			}
 		}
