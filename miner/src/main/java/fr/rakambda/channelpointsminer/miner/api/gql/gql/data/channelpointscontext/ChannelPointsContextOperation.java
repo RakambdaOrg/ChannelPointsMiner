@@ -14,7 +14,7 @@ import java.util.List;
 public class ChannelPointsContextOperation extends IGQLOperation<ChannelPointsContextData>{
     public ChannelPointsContextOperation(@NonNull String username){
         super("ChannelPointsContext");
-        addPersistedQueryExtension(new PersistedQueryExtension(1, "374314de591e69925fce3ddc2bcf085796f56ebb8cad67a0daa3165c03adc345"));
+        addPersistedQueryExtension(new PersistedQueryExtension(1, "33884dcfeab64eb44c2d61255145643cf69ea993e0c6c2ecb0fa46238586a111"));
         addVariable("channelLogin", username);
         addVariable("includeGoalTypes", List.of("CREATOR", "BOOST"));
     }
