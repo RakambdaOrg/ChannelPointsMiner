@@ -20,7 +20,7 @@ public class PlaybackAccessTokenOperation extends IGQLOperation<PlaybackAccessTo
 		addVariable("isVod", false);
 		addVariable("login", login);
 		addVariable("platform", "web");
-		addVariable("playerType", "picture-by-picture");
+		addVariable("playerType", "site");
 		addVariable("vodID", "");
 	}
 	

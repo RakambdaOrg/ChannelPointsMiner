@@ -51,7 +51,7 @@ class SendM3u8MinutesWatchedTest {
 	
 	@Test
 	void sendingMinutesWatched(){
-		when(twitchApi.openM3u8LastChunk(m3u8Url)).thenReturn(true);
+		when(twitchApi.openM3u8UnseenChunks(m3u8Url)).thenReturn(true);
 		
 		assertDoesNotThrow(() -> tested.send(streamer));
 		
@@ -60,7 +60,7 @@ class SendM3u8MinutesWatchedTest {
 	
 	@Test
 	void sendingMinutesWatchedFailed(){
-		when(twitchApi.openM3u8LastChunk(m3u8Url)).thenReturn(false);
+		when(twitchApi.openM3u8UnseenChunks(m3u8Url)).thenReturn(false);
 		
 		assertDoesNotThrow(() -> tested.send(streamer));
 		

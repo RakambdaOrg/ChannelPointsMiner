@@ -60,7 +60,9 @@ class TwitchApiTest{
 			#EXT-X-STREAM-INF:BANDWIDTH=230000,RESOLUTION=284x160,CODECS="avc1.4D401F,mp4a.40.2",VIDEO="160p30",FRAME-RATE=30.000
 			https://stream3.m3u8
 			""";
-	private static final String M3U8_CHUNK_URL = "https://video-edge-stream.test/chunk3.ts";
+	private static final String M3U8_CHUNK_1_URL = "https://video-edge-stream.test/chunk1.ts";
+	private static final String M3U8_CHUNK_2_URL = "https://video-edge-stream.test/chunk2.ts";
+	private static final String M3U8_CHUNK_3_URL = "https://video-edge-stream.test/chunk3.ts";
 	private static final String M3U8_PLAYLIST_BODY = """
 			#EXTM3U
 			#EXT-X-VERSION:3
@@ -75,14 +77,14 @@ class TwitchApiTest{
 			#EXT-X-DATERANGE:ID="trigger-123",CLASS="twitch-trigger",START-DATE="2024-05-15T09:09:00.348Z",END-ON-NEXT=YES,X-TV-TWITCH-TRIGGER-URL="https://stream3.m3u8"
 			#EXT-X-PROGRAM-DATE-TIME:2024-05-15T09:09:49.681Z
 			#EXTINF:4.167,live
-			https://video-edge-stream.test/chunk1.ts
+			%s
 			#EXT-X-PROGRAM-DATE-TIME:2024-05-15T09:09:53.848Z
 			#EXTINF:4.167,live
-			https://video-edge-stream.test/chunk2.ts
+			%s
 			#EXT-X-PROGRAM-DATE-TIME:2024-05-15T09:09:58.015Z
 			#EXTINF:4.166,live
 			%s
-			""".formatted(M3U8_CHUNK_URL);
+			""".formatted(M3U8_CHUNK_1_URL, M3U8_CHUNK_2_URL, M3U8_CHUNK_3_URL);
 	
 	private TwitchApi tested;
     
@@ -310,7 +312,7 @@ class TwitchApiTest{
                 .thenReturn(M3U8_BODY)
                 .withStatus(200);
         
-        assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).contains(URI.create("https://stream3.m3u8").toURL());
+        assertThat(tested.getM3u8Urls(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).contains(URI.create("https://stream3.m3u8").toURL());
     }
     
     @Test
@@ -328,7 +330,7 @@ class TwitchApiTest{
                 .thenReturn("")
                 .withStatus(200);
         
-        assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
+        assertThat(tested.getM3u8Urls(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
     }
     
     @Test
@@ -346,7 +348,7 @@ class TwitchApiTest{
                 .thenReturn("")
                 .withStatus(400);
         
-        assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
+        assertThat(tested.getM3u8Urls(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
     }
     
     @Test
@@ -364,7 +366,7 @@ class TwitchApiTest{
                 .thenReturn()
                 .withStatus(403);
         
-        assertThat(tested.getM3u8Url(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
+        assertThat(tested.getM3u8Urls(CHANNEL_NAME, M3U8_SIGNATURE, M3U8_VALUE)).isEmpty();
     }
 	
 	@Test
@@ -375,11 +377,19 @@ class TwitchApiTest{
 				.thenReturn(M3U8_PLAYLIST_BODY)
 				.withStatus(200);
 		
-		unirest.expect(HEAD, M3U8_CHUNK_URL)
+		unirest.expect(HEAD, M3U8_CHUNK_1_URL)
 				.thenReturn("")
 				.withStatus(200);
 		
-		assertThat(tested.openM3u8LastChunk(url)).isTrue();
+		unirest.expect(HEAD, M3U8_CHUNK_2_URL)
+				.thenReturn("")
+				.withStatus(200);
+		
+		unirest.expect(HEAD, M3U8_CHUNK_3_URL)
+				.thenReturn("")
+				.withStatus(200);
+		
+		assertThat(tested.openM3u8UnseenChunks(url)).isTrue();
 	}
 	
 	@Test
@@ -390,7 +400,7 @@ class TwitchApiTest{
 				.thenReturn(M3U8_PLAYLIST_BODY)
 				.withStatus(404);
 		
-		assertThat(tested.openM3u8LastChunk(url)).isFalse();
+		assertThat(tested.openM3u8UnseenChunks(url)).isFalse();
 	}
 	
 	@Test
@@ -401,7 +411,7 @@ class TwitchApiTest{
 				.thenReturn("")
 				.withStatus(200);
 		
-		assertThat(tested.openM3u8LastChunk(url)).isFalse();
+		assertThat(tested.openM3u8UnseenChunks(url)).isFalse();
 	}
 	
 	@Test
@@ -412,10 +422,18 @@ class TwitchApiTest{
 				.thenReturn(M3U8_PLAYLIST_BODY)
 				.withStatus(200);
 		
-		unirest.expect(HEAD, M3U8_CHUNK_URL)
+		unirest.expect(HEAD, M3U8_CHUNK_1_URL)
 				.thenReturn("")
 				.withStatus(400);
 		
-		assertThat(tested.openM3u8LastChunk(url)).isFalse();
+		unirest.expect(HEAD, M3U8_CHUNK_2_URL)
+				.thenReturn("")
+				.withStatus(400);
+		
+		unirest.expect(HEAD, M3U8_CHUNK_3_URL)
+				.thenReturn("")
+				.withStatus(400);
+		
+		assertThat(tested.openM3u8UnseenChunks(url)).isFalse();
 	}
 }
