@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.Inventory
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefit;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropBenefitEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSelfEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Game;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
@@ -48,6 +49,9 @@ class GQLApiInventoryTest extends AbstractGQLTest{
 														.id("campaign-1")
 														.startAt(ZonedDateTime.of(2021, 10, 21, 16, 0, 0, 0, UTC))
 														.endAt(ZonedDateTime.of(2021, 11, 11, 2, 0, 0, 0, UTC))
+														.self(DropCampaignSelfEdge.builder()
+																.accountConnected(true)
+																.build())
 														.timeBasedDrops(List.of(
 																TimeBasedDrop.builder()
 																		.id("drop-1")
@@ -73,6 +77,9 @@ class GQLApiInventoryTest extends AbstractGQLTest{
 														.id("campaign-2")
 														.startAt(ZonedDateTime.of(2021, 10, 16, 7, 0, 0, 0, UTC))
 														.endAt(ZonedDateTime.of(2021, 11, 7, 23, 30, 0, 0, UTC))
+														.self(DropCampaignSelfEdge.builder()
+																.accountConnected(false)
+																.build())
 														.build()
 										))
 										.gameEventDrops(List.of(

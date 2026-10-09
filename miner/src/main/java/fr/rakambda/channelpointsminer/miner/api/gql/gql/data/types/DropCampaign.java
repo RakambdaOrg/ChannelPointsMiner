@@ -42,4 +42,7 @@ public class DropCampaign extends GQLType{
 	@JsonProperty("summary")
 	@Nullable
 	private DropCampaignSummary summary;
+	@JsonProperty("self")
+	@Nullable
+	private DropCampaignSelfEdge self;
 }

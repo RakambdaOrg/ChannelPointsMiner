@@ -34,6 +34,7 @@ import lombok.Getter;
         @JsonSubTypes.Type(value = StreamPlaybackAccessToken.class, name = "PlaybackAccessToken"),
         @JsonSubTypes.Type(value = DropCampaignSummary.class, name = "DropCampaignSummary"),
         @JsonSubTypes.Type(value = SetDropsCommunityHighlightToHiddenPayload.class, name = "SetDropsCommunityHighlightToHiddenPayload"),
+        @JsonSubTypes.Type(value = DropCampaignSelfEdge.class, name = "DropCampaignSelfEdge"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{

@@ -5,6 +5,7 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropspageclaimdroprewards.DropsPageClaimDropRewardsData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.inventory.InventoryData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSelfEdge;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Inventory;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDrop;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.TimeBasedDropSelfEdge;
@@ -64,6 +65,8 @@ class SyncInventoryTest{
 	@Mock
 	private DropCampaign dropCampaign;
 	@Mock
+	private DropCampaignSelfEdge dropCampaignSelfEdge;
+	@Mock
 	private TimeBasedDrop timeBasedDrop;
 	@Mock
 	private TimeBasedDropSelfEdge timeBasedDropSelfEdge;
@@ -108,6 +111,52 @@ class SyncInventoryTest{
 		}
 	}
 	
+	@Test
+	void updateInventoryWithDropToClaimAccountLinked(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+
+			when(dropCampaign.getSelf()).thenReturn(dropCampaignSelfEdge);
+			when(dropCampaignSelfEdge.getAccountConnected()).thenReturn(true);
+
+			assertDoesNotThrow(() -> tested.run());
+
+			verify(minerData).setInventory(inventoryData);
+			verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
+			verify(eventManager).onEvent(new DropClaimEvent(timeBasedDrop, NOW));
+			verify(eventManager).onEvent(new DropClaimedEvent(timeBasedDrop, NOW));
+		}
+	}
+
+	@Test
+	void updateInventoryWithDropToClaimAccountLinkUnknown(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+
+			when(dropCampaign.getSelf()).thenReturn(dropCampaignSelfEdge);
+			when(dropCampaignSelfEdge.getAccountConnected()).thenReturn(null);
+
+			assertDoesNotThrow(() -> tested.run());
+
+			verify(minerData).setInventory(inventoryData);
+			verify(gqlApi).dropsPageClaimDropRewards(DROP_ID);
+			verify(eventManager).onEvent(new DropClaimEvent(timeBasedDrop, NOW));
+			verify(eventManager).onEvent(new DropClaimedEvent(timeBasedDrop, NOW));
+		}
+	}
+
+	@Test
+	void updateInventoryWithAccountNotLinked(){
+		when(dropCampaign.getSelf()).thenReturn(dropCampaignSelfEdge);
+		when(dropCampaignSelfEdge.getAccountConnected()).thenReturn(false);
+
+		assertDoesNotThrow(() -> tested.run());
+
+		verify(minerData).setInventory(inventoryData);
+		verify(gqlApi, never()).dropsPageClaimDropRewards(any());
+		verify(eventManager, never()).onEvent(any());
+	}
+
 	@Test
 	void updateInventoryWithNoDropId(){
 		when(timeBasedDropSelfEdge.getDropInstanceId()).thenReturn(null);
