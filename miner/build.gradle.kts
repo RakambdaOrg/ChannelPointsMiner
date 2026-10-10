@@ -77,7 +77,9 @@ sourceSets {
 
 tasks {
     processResources {
-        expand(project.properties)
+        filesMatching("log4j2.xml") {
+            expand(project.properties)
+        }
     }
 
     compileJava {
