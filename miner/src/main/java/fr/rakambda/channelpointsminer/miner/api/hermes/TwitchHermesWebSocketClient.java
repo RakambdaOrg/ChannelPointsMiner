@@ -43,7 +43,7 @@ import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 
 @Log4j2
 public class TwitchHermesWebSocketClient extends WebSocketClient{
-	private static final int SOCKET_TIMEOUT_GRACE_SECONDS = 5;
+	private static final long SOCKET_TIMEOUT_GRACE_SECONDS = 5;
 	
 	private final Collection<ITwitchHermesWebSocketListener> listeners;
 	@Getter
