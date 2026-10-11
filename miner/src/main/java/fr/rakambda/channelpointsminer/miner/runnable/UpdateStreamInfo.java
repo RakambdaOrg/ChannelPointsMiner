@@ -4,7 +4,6 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.chatroombanstatus.ChatRoomBanStatusData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropchannelcampaignsprogress.DropChannelCampaignsProgressData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropsCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.SetDropsCommunityHighlightToHiddenPayload;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
@@ -156,12 +155,6 @@ public class UpdateStreamInfo implements Runnable{
 		else{
 			streamer.setDropChannelCampaignsProgress(null);
 		}
-	}
-	
-	private boolean isDismissibleGlobalCampaign(@NonNull DropCampaign dropCampaign){
-		return Optional.ofNullable(dropCampaign.getSummary())
-				.map(summary -> summary.isSitewide() && summary.isPermanentlyDismissible())
-				.orElse(false);
 	}
 	
 	private void dismissCampaign(@NonNull IMiner miner, @NonNull Streamer streamer, @NonNull DropsCampaign dropsCampaign){

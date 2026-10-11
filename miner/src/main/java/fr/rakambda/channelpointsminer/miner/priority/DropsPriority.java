@@ -34,7 +34,7 @@ public class DropsPriority extends IStreamerPriority{
 	public int getScore(@NonNull IMiner miner, @NonNull Streamer streamer){
 		if(streamer.isParticipateCampaigns()
 				&& streamer.isStreamingGame()
-				&& hasCampaigns(miner, streamer)){
+				&& hasCampaigns(streamer)){
 			return getScore();
 		}
 		
@@ -46,15 +46,15 @@ public class DropsPriority extends IStreamerPriority{
 		return true;
 	}
 	
-	private boolean hasCampaigns(@NonNull IMiner miner, @NonNull Streamer streamer){
+	private boolean hasCampaigns(@NonNull Streamer streamer){
 		return Optional.ofNullable(streamer.getDropChannelCampaignsProgress())
 				.stream()
 				.map(DropChannelCampaignsProgressData::getChannelDropCampaignsProgress)
 				.flatMap(Collection::stream)
-				.anyMatch(dropsCampaign -> isValidCampaign(miner, streamer, dropsCampaign));
+				.anyMatch(dropsCampaign -> isValidCampaign(streamer, dropsCampaign));
 	}
 	
-	private boolean isValidCampaign(@NonNull IMiner miner, @NonNull Streamer streamer, @NonNull DropsCampaign dropsCampaign){
+	private boolean isValidCampaign(@NonNull Streamer streamer, @NonNull DropsCampaign dropsCampaign){
 		var now = TimeFactory.nowZoned();
 		
 		if(Optional.ofNullable(dropsCampaign.getStartAt()).map(date -> date.isAfter(now)).orElse(false)){
