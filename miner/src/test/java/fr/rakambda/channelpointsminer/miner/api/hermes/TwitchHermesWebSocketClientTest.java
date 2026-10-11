@@ -109,6 +109,20 @@ class TwitchHermesWebSocketClientTest{
 			assertThat(tested.getLastKeepAlive()).isEqualTo(NOW);
 		}
 	}
+
+	@Test
+	void staleConnectionWithoutWelcome(){
+		try(var timeFactory = mockStatic(TimeFactory.class)){
+			timeFactory.when(TimeFactory::now).thenReturn(NOW);
+			tested.onWebsocketPong(tested, mock(Framedata.class));
+
+			timeFactory.when(TimeFactory::now).thenReturn(NOW.plusSeconds(305));
+			assertThat(tested.isStaleConnection()).isFalse();
+
+			timeFactory.when(TimeFactory::now).thenReturn(NOW.plusSeconds(306));
+			assertThat(tested.isStaleConnection()).isTrue();
+		}
+	}
 	
 	@Test
 	void closeCallsListener() throws InterruptedException{

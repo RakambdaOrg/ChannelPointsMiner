@@ -255,7 +255,7 @@ class TwitchHermesWebSocketPoolTest{
 			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastKeepAlive()).thenReturn(NOW.minusSeconds(600));
+			when(client.isStaleConnection()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.listenPubSubTopic(topic));
 			assertThat(tested.getClientCount()).isEqualTo(1);
@@ -273,7 +273,7 @@ class TwitchHermesWebSocketPoolTest{
 			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastKeepAlive()).thenReturn(NOW.minusSeconds(600));
+			when(client.isStaleConnection()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.listenPubSubTopic(topic));
 			assertThat(tested.getClientCount()).isEqualTo(1);

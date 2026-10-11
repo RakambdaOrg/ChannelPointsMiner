@@ -44,6 +44,7 @@ import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 @Log4j2
 public class TwitchHermesWebSocketClient extends WebSocketClient{
 	private static final long SOCKET_TIMEOUT_GRACE_SECONDS = 5;
+	private static final int DEFAULT_KEEP_ALIVE_SECONDS = 300;
 	
 	private final Collection<ITwitchHermesWebSocketListener> listeners;
 	@Getter
@@ -184,6 +185,6 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	}
 	
 	public boolean isStaleConnection(){
-		return TimeFactory.now().isAfter(lastKeepAlive.plus(keepAliveSeconds + SOCKET_TIMEOUT_GRACE_SECONDS, SECONDS));
+		return TimeFactory.now().isAfter(lastKeepAlive.plus(Objects.requireNonNullElse(keepAliveSeconds, DEFAULT_KEEP_ALIVE_SECONDS) + SOCKET_TIMEOUT_GRACE_SECONDS, SECONDS));
 	}
 }
