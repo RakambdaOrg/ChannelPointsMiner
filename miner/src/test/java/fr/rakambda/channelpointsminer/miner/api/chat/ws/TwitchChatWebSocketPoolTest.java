@@ -292,7 +292,7 @@ class TwitchChatWebSocketPoolTest{
 			
 			assertDoesNotThrow(tested::checkStaleConnection);
 			
-			verify(client).close(eq(ABNORMAL_CLOSE), anyString());
+			verify(client).closeConnection(eq(ABNORMAL_CLOSE), anyString());
 		}
 	}
 	

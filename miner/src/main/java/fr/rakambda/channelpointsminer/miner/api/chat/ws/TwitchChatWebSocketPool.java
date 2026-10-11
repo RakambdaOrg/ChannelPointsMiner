@@ -51,7 +51,7 @@ public class TwitchChatWebSocketPool implements AutoCloseable, ITwitchChatWebSoc
 	public void checkStaleConnection(){
 		clients.stream()
 				.filter(client -> TimeFactory.now().isAfter(client.getLastHeartbeat().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
-				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
+				.forEach(client -> client.closeConnection(ABNORMAL_CLOSE, "Timeout reached"));
 	}
 	
 	@Override

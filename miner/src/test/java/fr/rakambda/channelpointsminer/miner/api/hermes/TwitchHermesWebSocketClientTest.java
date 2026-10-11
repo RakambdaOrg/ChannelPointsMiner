@@ -106,7 +106,7 @@ class TwitchHermesWebSocketClientTest{
 			
 			tested.onWebsocketPong(tested, frame);
 			
-			assertThat(tested.getLastPong()).isEqualTo(NOW);
+			assertThat(tested.getLastKeepAlive()).isEqualTo(NOW);
 		}
 	}
 	

@@ -46,7 +46,7 @@ public class TwitchPubSubWebSocketPool implements AutoCloseable, ITwitchPubSubWe
 	public void checkStaleConnection(){
 		clients.stream()
 				.filter(client -> TimeFactory.now().isAfter(client.getLastPong().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
-				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
+				.forEach(client -> client.closeConnection(ABNORMAL_CLOSE, "Timeout reached"));
 	}
 	
 	public void removeTopic(@NonNull Topic topic){

@@ -267,7 +267,7 @@ class TwitchPubSubWebSocketPoolTest{
 			
 			assertDoesNotThrow(tested::ping);
 			
-			verify(client).close(eq(ABNORMAL_CLOSE), anyString());
+			verify(client).closeConnection(eq(ABNORMAL_CLOSE), anyString());
 		}
 	}
 	
@@ -286,7 +286,7 @@ class TwitchPubSubWebSocketPoolTest{
 			
 			assertDoesNotThrow(tested::ping);
 			
-			verify(client).close(eq(ABNORMAL_CLOSE), anyString());
+			verify(client).closeConnection(eq(ABNORMAL_CLOSE), anyString());
 		}
 	}
 	
