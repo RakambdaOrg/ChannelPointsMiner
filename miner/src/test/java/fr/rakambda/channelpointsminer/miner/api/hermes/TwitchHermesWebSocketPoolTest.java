@@ -255,14 +255,14 @@ class TwitchHermesWebSocketPoolTest{
 			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
+			when(client.isStaleConnection()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.listenPubSubTopic(topic));
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
 			assertDoesNotThrow(tested::ping);
 			
-			verify(client).close(eq(ABNORMAL_CLOSE), anyString());
+			verify(client).closeConnection(eq(ABNORMAL_CLOSE), anyString());
 		}
 	}
 	
@@ -273,14 +273,14 @@ class TwitchHermesWebSocketPoolTest{
 			twitchClientFactory.when(() -> TwitchWebSocketClientFactory.createHermesClient(eventManager)).thenReturn(client);
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
-			when(client.getLastPong()).thenReturn(NOW.minusSeconds(600));
+			when(client.isStaleConnection()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.listenPubSubTopic(topic));
 			assertThat(tested.getClientCount()).isEqualTo(1);
 			
 			assertDoesNotThrow(tested::ping);
 			
-			verify(client).close(eq(ABNORMAL_CLOSE), anyString());
+			verify(client).closeConnection(eq(ABNORMAL_CLOSE), anyString());
 		}
 	}
 	

@@ -38,10 +38,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.java_websocket.framing.CloseFrame.GOING_AWAY;
 
 @Log4j2
 public class TwitchHermesWebSocketClient extends WebSocketClient{
+	private static final long SOCKET_TIMEOUT_GRACE_SECONDS = 5;
+	private static final int DEFAULT_KEEP_ALIVE_SECONDS = 300;
+	
 	private final Collection<ITwitchHermesWebSocketListener> listeners;
 	@Getter
 	private final String uuid;
@@ -51,7 +55,8 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	private final IEventManager eventManager;
 	
 	@Getter
-	private Instant lastPong;
+	private Instant lastKeepAlive;
+	private Integer keepAliveSeconds;
 	
 	public TwitchHermesWebSocketClient(@NonNull URI uri, @NonNull IEventManager eventManager){
 		super(uri);
@@ -61,7 +66,7 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		
 		setConnectionLostTimeout(0);
 		listeners = new ConcurrentLinkedQueue<>();
-		lastPong = Instant.EPOCH;
+		lastKeepAlive = Instant.EPOCH;
 		
 		addHeader("Origin", "https://www.twitch.tv");
 	}
@@ -81,14 +86,17 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 			log.trace("Parsed Hermes message: {}", message);
 			
 			switch(message){
-				case WelcomeResponse welcomeResponse -> log.info("Received Hermes welcome with keep alive of {} seconds", welcomeResponse.getWelcome().getKeepaliveSec());
+				case WelcomeResponse welcomeResponse -> {
+					keepAliveSeconds = welcomeResponse.getWelcome().getKeepaliveSec();
+					log.info("Received Hermes welcome with keep alive of {} seconds", keepAliveSeconds);
+				}
 				case AuthenticateResponse authenticateResponse -> {
 					if(authenticateResponse.hasError()){
 						log.error("Received Hermes error authentication {}", authenticateResponse);
 						close(GOING_AWAY, "Invalid credentials");
 					}
 				}
-				case KeepAliveResponse ignored -> onPong();
+				case KeepAliveResponse ignored -> lastKeepAlive = TimeFactory.now();
 				case SubscribeResponse subscribeResponse -> log.debug("Received Hermes subscribe response with status {}", subscribeResponse.getSubscribeResponse().getResult());
 				case UnsubscribeResponse unsubscribeResponse -> {
 					log.debug("Received Hermes unsubscribe response with status {}", unsubscribeResponse.getUnsubscribeResponse().getResult());
@@ -123,10 +131,6 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 		log.error("Error from Hermes WebSocket", e);
 	}
 	
-	private void onPong(){
-		lastPong = TimeFactory.now();
-	}
-	
 	public void authenticate(@NonNull TwitchLogin twitchLogin){
 		send(new AuthenticateRequest(twitchLogin.getAccessToken()));
 	}
@@ -144,7 +148,7 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	
 	@Override
 	public void onWebsocketPong(WebSocket conn, Framedata f){
-		onPong();
+		lastKeepAlive = TimeFactory.now();
 	}
 	
 	public void addListener(@NonNull ITwitchHermesWebSocketListener listener){
@@ -178,5 +182,9 @@ public class TwitchHermesWebSocketClient extends WebSocketClient{
 	
 	public int getSubscriptionCount(){
 		return subscribeRequests.size();
+	}
+	
+	public boolean isStaleConnection(){
+		return TimeFactory.now().isAfter(lastKeepAlive.plus(Objects.requireNonNullElse(keepAliveSeconds, DEFAULT_KEEP_ALIVE_SECONDS) + SOCKET_TIMEOUT_GRACE_SECONDS, SECONDS));
 	}
 }

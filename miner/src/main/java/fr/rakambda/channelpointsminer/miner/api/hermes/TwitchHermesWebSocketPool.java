@@ -28,8 +28,6 @@ import static org.java_websocket.framing.CloseFrame.NORMAL;
 
 @Log4j2
 public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWebSocketListener{
-	private static final int SOCKET_TIMEOUT_MINUTES = 5;
-	
 	private final int maxSubscriptionPerClient;
 	private final TwitchLogin twitchLogin;
 	private final IEventManager eventManager;
@@ -59,8 +57,8 @@ public class TwitchHermesWebSocketPool implements AutoCloseable, ITwitchHermesWe
 	
 	public void checkStaleConnection(){
 		clients.stream()
-				.filter(client -> TimeFactory.now().isAfter(client.getLastPong().plus(SOCKET_TIMEOUT_MINUTES, MINUTES)))
-				.forEach(client -> client.close(ABNORMAL_CLOSE, "Timeout reached"));
+				.filter(TwitchHermesWebSocketClient::isStaleConnection)
+				.forEach(client -> client.closeConnection(ABNORMAL_CLOSE, "Timeout reached"));
 	}
 	
 	public void removePubSubTopic(@NonNull Topic topic){
