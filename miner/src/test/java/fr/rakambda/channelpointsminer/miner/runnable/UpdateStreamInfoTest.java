@@ -4,12 +4,10 @@ import fr.rakambda.channelpointsminer.miner.api.gql.gql.GQLApi;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.channelpointscontext.ChannelPointsContextData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.chatroombanstatus.ChatRoomBanStatusData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropchannelcampaignsprogress.DropChannelCampaignsProgressData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.playbackaccesstoken.PlaybackAccessTokenData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.ChatRoomBanStatus;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaignSummary;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropsCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.StreamPlaybackAccessToken;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.User;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.videoplayerstreaminfooverlaychannel.VideoPlayerStreamInfoOverlayChannelData;
@@ -75,7 +73,7 @@ class UpdateStreamInfoTest{
 	@Mock
 	private GQLResponse<ChannelPointsContextData> gqlResponseChannelPoints;
 	@Mock
-	private GQLResponse<DropsHighlightServiceAvailableDropsData> dropsHighlightServiceAvailableDrops;
+	private GQLResponse<DropChannelCampaignsProgressData> dropChannelCampaignsProgress;
 	@Mock
 	private GQLResponse<ChatRoomBanStatusData> gqlResponseChatRoomBanStatus;
 	@Mock
@@ -89,13 +87,9 @@ class UpdateStreamInfoTest{
 	@Mock
 	private PlaybackAccessTokenData playbackAccessTokenData;
 	@Mock
-	private DropsHighlightServiceAvailableDropsData dropsHighlightServiceAvailableDropsData;
+	private DropChannelCampaignsProgressData dropChannelCampaignsProgressData;
 	@Mock
-	private Channel channel;
-	@Mock
-	private DropCampaign dropCampaign;
-	@Mock
-	private DropCampaignSummary dropCampaignSummary;
+	private DropsCampaign dropsCampaign;
 	
 	private URL spadeUrl;
 	private URL m3u8Url;
@@ -127,10 +121,9 @@ class UpdateStreamInfoTest{
 		lenient().when(gqlResponseChatRoomBanStatus.getData()).thenReturn(chatRoomBanStatusData);
 		lenient().when(gqlResponsePlaybackAccessToken.getData()).thenReturn(playbackAccessTokenData);
 		
-		lenient().when(dropsHighlightServiceAvailableDrops.getData()).thenReturn(dropsHighlightServiceAvailableDropsData);
-		lenient().when(dropsHighlightServiceAvailableDropsData.getChannel()).thenReturn(channel);
-		lenient().when(channel.getViewerDropCampaigns()).thenReturn(List.of(dropCampaign));
-		lenient().when(dropCampaign.getId()).thenReturn(CAMPAIGN_ID);
+		lenient().when(dropChannelCampaignsProgress.getData()).thenReturn(dropChannelCampaignsProgressData);
+		lenient().when(dropChannelCampaignsProgressData.getChannelDropCampaignsProgress()).thenReturn(List.of(dropsCampaign));
+		lenient().when(dropsCampaign.getId()).thenReturn(CAMPAIGN_ID);
 	}
 	
 	@Test
@@ -146,7 +139,7 @@ class UpdateStreamInfoTest{
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(gqlApi, never()).chatRoomBanStatus(anyString(), anyString());
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
@@ -155,7 +148,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer).setSpadeUrl(null);
 			verify(streamer).setM3u8Url(null);
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setChatBanned(anyBoolean());
 			verify(streamer, never()).setLastOffline(any());
@@ -176,7 +169,7 @@ class UpdateStreamInfoTest{
 			assertDoesNotThrow(() -> tested.run());
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(gqlApi, never()).chatRoomBanStatus(anyString(), anyString());
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any());
@@ -185,7 +178,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(null);
 			verify(streamer).setSpadeUrl(null);
 			verify(streamer).setM3u8Url(null);
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setLastOffline(NOW);
 			verify(streamer).resetWatchedDuration();
@@ -206,7 +199,7 @@ class UpdateStreamInfoTest{
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(gqlApi, never()).chatRoomBanStatus(anyString(), anyString());
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
@@ -215,7 +208,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(null);
 			verify(streamer).setSpadeUrl(null);
 			verify(streamer).setM3u8Url(null);
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setChatBanned(anyBoolean());
 			verify(streamer, never()).setLastOffline(any());
@@ -240,7 +233,7 @@ class UpdateStreamInfoTest{
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 			
@@ -248,7 +241,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -275,7 +268,7 @@ class UpdateStreamInfoTest{
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 			
@@ -283,7 +276,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(true);
 			verify(streamer, never()).setLastOffline(any());
@@ -316,14 +309,14 @@ class UpdateStreamInfoTest{
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(twitchApi).getSpadeUrl(streamerUrl);
 			
 			verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer).setSpadeUrl(spadeUrl);
 			verify(streamer).setM3u8Url(m3u8Url);
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -348,14 +341,14 @@ class UpdateStreamInfoTest{
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(twitchApi).getSpadeUrl(streamerUrl);
 			
 			verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer).setSpadeUrl(spadeUrl);
 			verify(streamer).setM3u8Url(null);
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -380,14 +373,14 @@ class UpdateStreamInfoTest{
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(twitchApi).getSpadeUrl(streamerUrl);
 			
 			verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(null);
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -407,14 +400,14 @@ class UpdateStreamInfoTest{
 			when(streamer.getM3u8Url()).thenReturn(m3u8Url);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
 			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
-			when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.of(dropsHighlightServiceAvailableDrops));
+			when(gqlApi.dropChannelCampaignsProgress(STREAMER_ID)).thenReturn(Optional.of(dropChannelCampaignsProgress));
 			when(gqlApi.chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID)).thenReturn(Optional.of(gqlResponseChatRoomBanStatus));
 			
 			assertDoesNotThrow(() -> tested.run());
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
-			verify(gqlApi).dropsHighlightServiceAvailableDrops(STREAMER_ID);
+			verify(gqlApi).dropChannelCampaignsProgress(STREAMER_ID);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
@@ -423,7 +416,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer).setDropsHighlightServiceAvailableDrops(dropsHighlightServiceAvailableDropsData);
+			verify(streamer).setDropChannelCampaignsProgress(dropChannelCampaignsProgressData);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -437,7 +430,7 @@ class UpdateStreamInfoTest{
 			timeFactory.when(TimeFactory::now).thenReturn(NOW);
 			
 			var dropId = "dc4ff0b4-4de0-11ef-9ec3-621fb0811846";
-			when(dropCampaign.getId()).thenReturn(dropId);
+			when(dropsCampaign.getId()).thenReturn(dropId);
 			
 			when(streamer.isStreaming()).thenReturn(true);
 			when(streamer.isParticipateCampaigns()).thenReturn(true);
@@ -447,18 +440,16 @@ class UpdateStreamInfoTest{
 			when(streamer.getM3u8Url()).thenReturn(m3u8Url);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
 			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
-			when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.of(dropsHighlightServiceAvailableDrops));
+			when(gqlApi.dropChannelCampaignsProgress(STREAMER_ID)).thenReturn(Optional.of(dropChannelCampaignsProgress));
 			when(gqlApi.chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID)).thenReturn(Optional.of(gqlResponseChatRoomBanStatus));
 			
-			when(dropCampaign.getSummary()).thenReturn(dropCampaignSummary);
-			when(dropCampaignSummary.isSitewide()).thenReturn(true);
-			when(dropCampaignSummary.isPermanentlyDismissible()).thenReturn(true);
+			when(dropsCampaign.isPermanentlyDismissible()).thenReturn(true);
 			
 			assertDoesNotThrow(() -> tested.run());
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
-			verify(gqlApi).dropsHighlightServiceAvailableDrops(STREAMER_ID);
+			verify(gqlApi).dropChannelCampaignsProgress(STREAMER_ID);
 			verify(gqlApi).setDropsCommunityHighlightToHidden(STREAMER_ID, dropId);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
 			verify(gqlApi, never()).playbackAccessToken(anyString());
@@ -468,7 +459,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer).setDropsHighlightServiceAvailableDrops(dropsHighlightServiceAvailableDropsData);
+			verify(streamer).setDropChannelCampaignsProgress(dropChannelCampaignsProgressData);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -488,14 +479,14 @@ class UpdateStreamInfoTest{
 			when(streamer.getM3u8Url()).thenReturn(m3u8Url);
 			when(gqlApi.videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseVideoPlayer));
 			when(gqlApi.channelPointsContext(STREAMER_USERNAME)).thenReturn(Optional.of(gqlResponseChannelPoints));
-			when(gqlApi.dropsHighlightServiceAvailableDrops(STREAMER_ID)).thenReturn(Optional.empty());
+			when(gqlApi.dropChannelCampaignsProgress(STREAMER_ID)).thenReturn(Optional.empty());
 			when(gqlApi.chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID)).thenReturn(Optional.of(gqlResponseChatRoomBanStatus));
 			
 			assertDoesNotThrow(() -> tested.run());
 			
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
-			verify(gqlApi).dropsHighlightServiceAvailableDrops(STREAMER_ID);
+			verify(gqlApi).dropChannelCampaignsProgress(STREAMER_ID);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
@@ -504,7 +495,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -531,7 +522,7 @@ class UpdateStreamInfoTest{
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 			verify(gqlApi).chatRoomBanStatus(STREAMER_ID, ACCOUNT_ID);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(gqlApi, never()).playbackAccessToken(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 			
@@ -539,7 +530,7 @@ class UpdateStreamInfoTest{
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -566,7 +557,7 @@ class UpdateStreamInfoTest{
 			verify(streamer, times(2)).setChannelPointsContext(null);
 			verify(streamer, times(2)).setSpadeUrl(null);
 			verify(streamer, times(2)).setM3u8Url(null);
-			verify(streamer, times(2)).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer, times(2)).setDropChannelCampaignsProgress(null);
 			verify(streamer, times(2)).setLastUpdated(NOW);
 			verify(streamer, never()).setChatBanned(false);
 			verify(streamer, never()).setLastOffline(any());
@@ -590,7 +581,7 @@ class UpdateStreamInfoTest{
 			
 			verify(gqlApi, never()).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi, never()).channelPointsContext(STREAMER_USERNAME);
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(gqlApi, never()).chatRoomBanStatus(anyString(), anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 			
@@ -598,7 +589,7 @@ class UpdateStreamInfoTest{
 			verify(streamer, never()).setChannelPointsContext(any());
 			verify(streamer, never()).setSpadeUrl(any());
 			verify(streamer, never()).setM3u8Url(any());
-			verify(streamer, never()).setDropsHighlightServiceAvailableDrops(any());
+			verify(streamer, never()).setDropChannelCampaignsProgress(any());
 			verify(streamer, never()).setLastUpdated(any());
 			verify(streamer, never()).setLastOffline(any());
 			verify(streamer, never()).resetWatchedDuration();
@@ -621,14 +612,14 @@ class UpdateStreamInfoTest{
 			verify(gqlApi).videoPlayerStreamInfoOverlayChannel(STREAMER_USERNAME);
 			verify(gqlApi).channelPointsContext(STREAMER_USERNAME);
 			verify(gqlApi, never()).chatRoomBanStatus(anyString(), anyString());
-			verify(gqlApi, never()).dropsHighlightServiceAvailableDrops(anyString());
+			verify(gqlApi, never()).dropChannelCampaignsProgress(anyString());
 			verify(twitchApi, never()).getSpadeUrl(any(URL.class));
 			
 			verify(streamer).setVideoPlayerStreamInfoOverlayChannel(videoPlayerStreamInfoOverlayChannelData);
 			verify(streamer).setChannelPointsContext(channelPointsContextData);
 			verify(streamer).setSpadeUrl(null);
 			verify(streamer).setM3u8Url(null);
-			verify(streamer).setDropsHighlightServiceAvailableDrops(null);
+			verify(streamer).setDropChannelCampaignsProgress(null);
 			verify(streamer).setLastUpdated(NOW);
 			verify(streamer, never()).setChatBanned(anyBoolean());
 			verify(streamer, never()).setLastOffline(any());

@@ -1,6 +1,7 @@
 package fr.rakambda.channelpointsminer.miner.streamer;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.channelpointscontext.ChannelPointsContextData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropchannelcampaignsprogress.DropChannelCampaignsProgressData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.BroadcastSettings;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
@@ -74,7 +75,7 @@ public class Streamer{
 	@Nullable
 	@Setter
 	@Getter
-	private DropsHighlightServiceAvailableDropsData dropsHighlightServiceAvailableDrops;
+	private DropChannelCampaignsProgressData dropChannelCampaignsProgress;
 	@Nullable
 	@Setter
 	@Getter

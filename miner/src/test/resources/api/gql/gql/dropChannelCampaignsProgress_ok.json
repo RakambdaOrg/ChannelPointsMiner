@@ -1,0 +1,145 @@
+{
+  "data" : {
+    "channelDropCampaignsProgress" : [
+      {
+        "id" : "1234567890",
+        "name" : "campaign 1",
+        "brandName" : "",
+        "detailsURL" : "https://help.twitch.tv/s/article/twitch-chat-badges-guide ",
+        "startAt" : "2026-09-23T14:00:00Z",
+        "endAt" : "2026-09-13T17:59:59.999Z",
+        "imageURL" : "https://test.image",
+        "hasViewerDismissedHighlight" : false,
+        "isPermanentlyDismissible" : false,
+        "game" : {
+          "id" : "123456",
+          "name" : "The Game",
+          "__typename" : "Game"
+        },
+        "rewardGroups" : [
+          {
+            "id" : "123789",
+            "name" : "reward group name",
+            "leaderboardConfig" : null,
+            "progressCriteria" : {
+              "requirementType" : "SUB",
+              "requirements" : {
+                "minutesWatched" : null,
+                "subs" : 1,
+                "turboSubs" : null,
+                "__typename" : "DropsUnlockRequirement"
+              },
+              "isRepeatable" : false,
+              "isAutoProgressable" : true,
+              "repeatableConfig" : null,
+              "channels" : null,
+              "categories" : [
+                {
+                  "id" : "123456",
+                  "displayName" : "The Game",
+                  "__typename" : "Game"
+                }
+              ],
+              "__typename" : "DropsProgressCriteria"
+            },
+            "rewards" : [
+              {
+                "id" : "098765",
+                "name" : "Reward name",
+                "thumbnailURL" : "https://thumb.image/",
+                "distributionType" : "BADGE",
+                "accountLinkURL" : "https://www.twitch.tv/",
+                "isAccountConnected" : false,
+                "pool" : null,
+                "__typename" : "DropsReward"
+              }
+            ],
+            "self" : {
+              "status" : "IN_PROGRESS",
+              "currentMinutesWatched" : null,
+              "currentSubs" : null,
+              "grantCount" : 0,
+              "nextEligibleAt" : null,
+              "currentWindow" : null,
+              "__typename" : "DropsRewardGroupSelfEdge"
+            },
+            "__typename" : "DropsRewardGroup"
+          }
+        ],
+        "__typename" : "DropsCampaign"
+      },
+      {
+        "id" : "65320",
+        "name" : "Campaign 2",
+        "brandName" : "",
+        "detailsURL" : "https://www.ubisoft.com/help/article/000065532",
+        "startAt" : "2026-09-23T12:53:54Z",
+        "endAt" : "2026-10-18T18:59:59.999Z",
+        "imageURL" : "https://image2.url",
+        "hasViewerDismissedHighlight" : false,
+        "isPermanentlyDismissible" : false,
+        "game" : {
+          "id" : "123456",
+          "name" : "The Game",
+          "__typename" : "Game"
+        },
+        "rewardGroups" : [
+          {
+            "id" : "32432",
+            "name" : "Name group 2",
+            "leaderboardConfig" : null,
+            "progressCriteria" : {
+              "requirementType" : "WATCH",
+              "requirements" : {
+                "minutesWatched" : 180,
+                "subs" : null,
+                "turboSubs" : null,
+                "__typename" : "DropsUnlockRequirement"
+              },
+              "isRepeatable" : false,
+              "isAutoProgressable" : true,
+              "repeatableConfig" : null,
+              "channels" : null,
+              "categories" : [
+                {
+                  "id" : "123456",
+                  "displayName" : "The Game",
+                  "__typename" : "Game"
+                }
+              ],
+              "__typename" : "DropsProgressCriteria"
+            },
+            "rewards" : [
+              {
+                "id" : "3902845",
+                "name" : "Reward 2 name",
+                "thumbnailURL" : "https://thumb2.image/",
+                "distributionType" : "DIRECT_ENTITLEMENT",
+                "accountLinkURL" : "https://drops-register.ubi.com/",
+                "isAccountConnected" : true,
+                "pool" : null,
+                "__typename" : "DropsReward"
+              }
+            ],
+            "self" : {
+              "status" : "CLAIMED",
+              "currentMinutesWatched" : 180,
+              "currentSubs" : 0,
+              "grantCount" : 0,
+              "nextEligibleAt" : null,
+              "currentWindow" : null,
+              "__typename" : "DropsRewardGroupSelfEdge"
+            },
+            "__typename" : "DropsRewardGroup"
+          }
+        ],
+        "__typename" : "DropsCampaign"
+      }
+    ]
+  },
+  "extensions" : {
+    "durationMilliseconds" : 31,
+    "requestID" : "request-id",
+    "operationName" : "DropChannelCampaignsProgress"
+  }
+}

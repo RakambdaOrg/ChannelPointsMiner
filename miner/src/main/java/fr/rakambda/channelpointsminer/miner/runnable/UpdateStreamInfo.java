@@ -2,10 +2,9 @@ package fr.rakambda.channelpointsminer.miner.runnable;
 
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.GQLResponse;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.chatroombanstatus.ChatRoomBanStatusData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropshighlightserviceavailabledrops.DropsHighlightServiceAvailableDropsData;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.dropchannelcampaignsprogress.DropChannelCampaignsProgressData;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.setdropscommunityhighlighttohidden.SetDropsCommunityHighlightToHiddenData;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.Channel;
-import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropCampaign;
+import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.DropsCampaign;
 import fr.rakambda.channelpointsminer.miner.api.gql.gql.data.types.SetDropsCommunityHighlightToHiddenPayload;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.log.LogContext;
@@ -138,42 +137,35 @@ public class UpdateStreamInfo implements Runnable{
 	private void updateCampaigns(@NonNull Streamer streamer){
 		log.trace("Updating campaigns");
 		if(streamer.isParticipateCampaigns() && streamer.isStreaming() && streamer.isStreamingGame()){
-			var dropsHighlightServiceAvailableDropsData = miner.getGqlApi().dropsHighlightServiceAvailableDrops(streamer.getId())
+			var dropChannelCampaignsProgress = miner.getGqlApi().dropChannelCampaignsProgress(streamer.getId())
 					.map(GQLResponse::getData);
 			
-			dropsHighlightServiceAvailableDropsData.ifPresentOrElse(
-					streamer::setDropsHighlightServiceAvailableDrops,
-					() -> streamer.setDropsHighlightServiceAvailableDrops(null));
+			dropChannelCampaignsProgress.ifPresentOrElse(
+					streamer::setDropChannelCampaignsProgress,
+					() -> streamer.setDropChannelCampaignsProgress(null));
 			
 			if(streamer.isDismissKnownGlobalCampaigns()){
-				dropsHighlightServiceAvailableDropsData.stream()
-						.map(DropsHighlightServiceAvailableDropsData::getChannel)
-						.map(Channel::getViewerDropCampaigns)
+				dropChannelCampaignsProgress.stream()
+						.map(DropChannelCampaignsProgressData::getChannelDropCampaignsProgress)
 						.flatMap(Collection::stream)
-						.filter(this::isDismissibleGlobalCampaign)
+						.filter(DropsCampaign::isPermanentlyDismissible)
 						.forEach(dropCampaign -> dismissCampaign(miner, streamer, dropCampaign));
 			}
 		}
 		else{
-			streamer.setDropsHighlightServiceAvailableDrops(null);
+			streamer.setDropChannelCampaignsProgress(null);
 		}
 	}
 	
-	private boolean isDismissibleGlobalCampaign(@NonNull DropCampaign dropCampaign){
-		return Optional.ofNullable(dropCampaign.getSummary())
-				.map(summary -> summary.isSitewide() && summary.isPermanentlyDismissible())
-				.orElse(false);
-	}
-	
-	private void dismissCampaign(@NonNull IMiner miner, @NonNull Streamer streamer, @NonNull DropCampaign dropCampaign){
-		var result = miner.getGqlApi().setDropsCommunityHighlightToHidden(streamer.getId(), dropCampaign.getId());
+	private void dismissCampaign(@NonNull IMiner miner, @NonNull Streamer streamer, @NonNull DropsCampaign dropsCampaign){
+		var result = miner.getGqlApi().setDropsCommunityHighlightToHidden(streamer.getId(), dropsCampaign.getId());
 		var isHidden = result
 				.map(GQLResponse::getData)
 				.map(SetDropsCommunityHighlightToHiddenData::getSetDropsCommunityHighlightToHiddenPayload)
 				.map(SetDropsCommunityHighlightToHiddenPayload::isHidden)
 				.orElse(false);
 		
-		log.info("Dismissed campaign {} on streamer {}, result {}", dropCampaign, streamer, isHidden);
+		log.info("Dismissed campaign {} on streamer {}, result {}", dropsCampaign, streamer, isHidden);
 		miner.updateStreamerInfos(streamer);
 	}
 }

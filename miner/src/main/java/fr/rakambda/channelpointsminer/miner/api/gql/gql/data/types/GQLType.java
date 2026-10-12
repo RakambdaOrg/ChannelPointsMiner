@@ -35,6 +35,10 @@ import lombok.Getter;
         @JsonSubTypes.Type(value = DropCampaignSummary.class, name = "DropCampaignSummary"),
         @JsonSubTypes.Type(value = SetDropsCommunityHighlightToHiddenPayload.class, name = "SetDropsCommunityHighlightToHiddenPayload"),
         @JsonSubTypes.Type(value = DropCampaignSelfEdge.class, name = "DropCampaignSelfEdge"),
+        @JsonSubTypes.Type(value = DropsCampaign.class, name = "DropsCampaign"),
+        @JsonSubTypes.Type(value = DropsRewardGroup.class, name = "DropsRewardGroup"),
+        @JsonSubTypes.Type(value = DropsRewardGroupSelfEdge.class, name = "DropsRewardGroupSelfEdge"),
+        @JsonSubTypes.Type(value = DropsProgressCriteria.class, name = "DropsProgressCriteria"),
 })
 @EqualsAndHashCode
 public abstract class GQLType{
