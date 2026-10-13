@@ -69,14 +69,19 @@ public class DropsPriority extends IStreamerPriority{
 				&& Optional.ofNullable(dropsCampaign.getRewardGroups()).stream()
 				.flatMap(Collection::stream)
 				.map(DropsRewardGroup::getProgressCriteria)
-				.map(d -> ((DropsProgressCriteria) d).getRequirementType())
+				.map(DropsProgressCriteria::getRequirementType)
 				.anyMatch(d -> Objects.equals(d, "SUB"))){
 			log.trace("Campaign {} requires subscriptions", dropsCampaign.getId());
 			return false;
 		}
 		
+		if(dropsCampaign.getRewardGroups().stream().anyMatch(e -> e.getSelf() == null)){
+			log.warn("Campaign {} has no self reward group", dropsCampaign);
+		}
+		
 		var result = dropsCampaign.getRewardGroups().stream()
 				.map(DropsRewardGroup::getSelf)
+				.filter(Objects::nonNull)
 				.map(DropsRewardGroupSelfEdge::getStatus)
 				.anyMatch(d -> Objects.equals(d, "IN_PROGRESS"));
 		if(!result){
