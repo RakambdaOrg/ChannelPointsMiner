@@ -2,6 +2,7 @@ package fr.rakambda.channelpointsminer.miner.tests;
 
 import io.netty.util.internal.ThreadLocalRandom;
 import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 
-public class WebsocketMockServerExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterAllCallback, ParameterResolver{
+public class WebsocketMockServerExtension implements Extension, BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback, ParameterResolver{
 	private final WebsocketMockServer server;
 	
 	public WebsocketMockServerExtension(){
@@ -33,6 +34,11 @@ public class WebsocketMockServerExtension implements Extension, BeforeAllCallbac
 	@Override
 	public void beforeEach(ExtensionContext context){
 		server.reset();
+	}
+	
+	@Override
+	public void afterEach(ExtensionContext context){
+		server.removeClients();
 	}
 	
 	@Override

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -44,7 +43,7 @@ class TwitchPubSubWebSocketClientResponseTest{
 		tested.onMessage(TestUtils.getAllResourceContent("api/ws/response_badAuth.json"));
 		
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketClosed(eq(tested), anyInt(), anyString(), anyBoolean());
-		assertThat(server.isReceivedClose()).isTrue();
+		server.awaitClose();
 	}
 	
 	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)

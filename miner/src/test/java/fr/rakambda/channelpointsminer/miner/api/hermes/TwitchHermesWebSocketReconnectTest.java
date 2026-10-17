@@ -51,7 +51,7 @@ class TwitchHermesWebSocketReconnectTest{
 				.reconnect(ReconnectResponse.Reconnect.builder().build())
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
-		verify(listener).onWebSocketClosed(eq(tested), eq(GOING_AWAY), anyString(), anyBoolean());
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketClosed(eq(tested), eq(GOING_AWAY), anyString(), anyBoolean());
 	}
 	
 	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)
@@ -68,7 +68,7 @@ class TwitchHermesWebSocketReconnectTest{
 						.build())
 				.build();
 		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketMessage(expected);
-		verify(listener).onWebSocketClosed(eq(tested), eq(GOING_AWAY), anyString(), anyBoolean());
+		verify(listener, timeout(MESSAGE_TIMEOUT)).onWebSocketClosed(eq(tested), eq(GOING_AWAY), anyString(), anyBoolean());
 	}
 	
 	@BeforeEach
