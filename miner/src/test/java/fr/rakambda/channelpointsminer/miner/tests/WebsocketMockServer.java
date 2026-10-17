@@ -11,6 +11,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -25,10 +26,11 @@ public class WebsocketMockServer extends WebSocketServer{
 	@Getter
 	private final Collection<String> receivedMessages;
 	private final Map<String, String> answers;
+	private final Set<WebSocket> openConnections;
 	@Getter
-	private boolean receivedClose;
+	private volatile boolean receivedClose;
 	@Getter
-	private boolean started;
+	private volatile boolean started;
 	
 	public WebsocketMockServer(int port){
 		super(new InetSocketAddress(port));
@@ -39,6 +41,7 @@ public class WebsocketMockServer extends WebSocketServer{
 		
 		receivedMessages = new ConcurrentLinkedQueue<>();
 		answers = new ConcurrentHashMap<>();
+		openConnections = ConcurrentHashMap.newKeySet();
 		receivedClose = false;
 		started = false;
 	}
@@ -46,11 +49,13 @@ public class WebsocketMockServer extends WebSocketServer{
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake){
 		log.debug("WebSocket mock server received connection");
+		openConnections.add(conn);
 	}
 	
 	@Override
 	public void onClose(WebSocket conn, int code, String reason, boolean remote){
 		log.debug("WebSocket mock server closing");
+		openConnections.remove(conn);
 		receivedClose = true;
 	}
 	
@@ -94,14 +99,29 @@ public class WebsocketMockServer extends WebSocketServer{
 	
 	public void removeClients(){
 		getConnections().forEach(c -> c.close(CloseFrame.NORMAL));
+		await("Clients closed").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> openConnections.isEmpty() && getConnections().isEmpty());
 	}
 	
 	public void send(String message){
-		broadcast(message);
+		awaitConnection();
+		broadcast(message, openConnections);
 	}
 	
 	public void sendPing(){
-		getConnections().forEach(WebSocket::sendPing);
+		awaitConnection();
+		openConnections.forEach(WebSocket::sendPing);
+	}
+	
+	/**
+	 * The handshake response is written to the client before the server registers the connection and calls {@link #onOpen(WebSocket, ClientHandshake)}.
+	 * A client's connectBlocking can therefore return before the server knows about the connection, and anything sent in between would be lost.
+	 */
+	private void awaitConnection(){
+		await("Connection await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> !openConnections.isEmpty());
+	}
+	
+	public void awaitClose(){
+		await("Close await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(this::isReceivedClose);
 	}
 	
 	public void awaitMessage(){
