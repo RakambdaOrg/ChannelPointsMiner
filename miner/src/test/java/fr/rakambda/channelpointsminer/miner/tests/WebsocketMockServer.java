@@ -116,7 +116,7 @@ public class WebsocketMockServer extends WebSocketServer{
 	 * The handshake response is written to the client before the server registers the connection and calls {@link #onOpen(WebSocket, ClientHandshake)}.
 	 * A client's connectBlocking can therefore return before the server knows about the connection, and anything sent in between would be lost.
 	 */
-	public void awaitConnection(){
+	private void awaitConnection(){
 		await("Connection await").atMost(MESSAGE_TIMEOUT, TimeUnit.SECONDS).until(() -> !openConnections.isEmpty());
 	}
 	
