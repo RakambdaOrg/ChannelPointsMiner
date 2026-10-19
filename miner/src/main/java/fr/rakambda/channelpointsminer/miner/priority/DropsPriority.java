@@ -75,10 +75,6 @@ public class DropsPriority extends IStreamerPriority{
 			return false;
 		}
 		
-		if(dropsCampaign.getRewardGroups().stream().anyMatch(e -> e.getSelf() == null)){
-			log.warn("Campaign {} has no self reward group", dropsCampaign);
-		}
-		
 		var result = dropsCampaign.getRewardGroups().stream()
 				.map(DropsRewardGroup::getSelf)
 				.filter(Objects::nonNull)
