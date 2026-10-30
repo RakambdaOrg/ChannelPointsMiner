@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.ZonedDateTime;
 
 @Getter
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes(value = {
 		@JsonSubTypes.Type(value = PubSubSubscribeType.class, name = "pubsub"),
 })
