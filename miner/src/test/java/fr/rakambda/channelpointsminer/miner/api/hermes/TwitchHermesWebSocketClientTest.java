@@ -6,8 +6,6 @@ import fr.rakambda.channelpointsminer.miner.event.manager.IEventManager;
 import fr.rakambda.channelpointsminer.miner.factory.TimeFactory;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServer;
 import fr.rakambda.channelpointsminer.miner.tests.WebsocketMockServerExtension;
-import io.github.artsok.RepeatedIfExceptionsTest;
-import org.awaitility.core.ConditionTimeoutException;
 import org.java_websocket.framing.Framedata;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,7 +54,7 @@ class TwitchHermesWebSocketClientTest{
 		server.removeClients();
 	}
 	
-	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)
+	@Test
 	void addTopic(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
 		
@@ -134,7 +132,7 @@ class TwitchHermesWebSocketClientTest{
 		verify(listener).onWebSocketClosed(eq(tested), anyInt(), any(String.class), anyBoolean());
 	}
 	
-	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)
+	@Test
 	void removeTopic(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
 		
@@ -157,7 +155,7 @@ class TwitchHermesWebSocketClientTest{
 		assertThat(server.getReceivedMessages()).hasSize(1);
 	}
 	
-	@RepeatedIfExceptionsTest(repeats = 5, exceptions = ConditionTimeoutException.class)
+	@Test
 	void authenticate(WebsocketMockServer server) throws InterruptedException{
 		tested.connectBlocking();
 		tested.authenticate(twitchLogin);
