@@ -1,0 +1,33 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended"
+    ],
+    "enabledManagers": [
+        "custom.regex"
+    ],
+    "customManagers": [
+        {
+            "customType": "regex",
+            "description": "Jib base image in build.gradle(.kts)",
+            "managerFilePatterns": [
+                "/(^|/)build\\.gradle(\\.kts)?$/"
+            ],
+            "matchStrings": [
+                "image\\s*=\\s*\"(?<depName>[^:\"@$]+):(?<currentValue>[^@\"]+)(@(?<currentDigest>sha256:[a-f0-9]+))?\""
+            ],
+            "datasourceTemplate": "docker"
+        }
+    ],
+    "packageRules": [
+        {
+            "matchManagers": [
+                "custom.regex"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "pinDigests": true
+        }
+    ]
+}
