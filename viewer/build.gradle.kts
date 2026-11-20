@@ -79,7 +79,7 @@ jacoco {
 
 jib {
     from {
-        image = "eclipse-temurin:22-jdk"
+        image = "azul/zulu-openjdk:22-jre-headless"
         platforms {
             platform {
                 os = "linux"
