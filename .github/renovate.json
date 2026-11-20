@@ -3,6 +3,7 @@
     "extends": [
         "config:recommended"
     ],
+    "dependencyDashboard": false,
     "enabledManagers": [
         "custom.regex"
     ],
@@ -14,7 +15,7 @@
                 "/(^|/)build\\.gradle(\\.kts)?$/"
             ],
             "matchStrings": [
-                "image\\s*=\\s*\"(?<depName>[^:\"@$]+):(?<currentValue>[^@\"]+)(@(?<currentDigest>sha256:[a-f0-9]+))?\""
+                "(?:image|customBaseImage)\\s*=\\s*\"(?<depName>[^:\"@$]+):(?<currentValue>[^@\"]+)(@(?<currentDigest>sha256:[a-f0-9]+))?\""
             ],
             "datasourceTemplate": "docker"
         }
