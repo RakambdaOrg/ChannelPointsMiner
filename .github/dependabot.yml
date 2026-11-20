@@ -19,6 +19,20 @@ updates:
       actions:
         patterns:
           - actions/*
+  - package-ecosystem: docker
+    directory: /
+    assignees:
+      - Rakambda
+    schedule:
+      interval: cron
+      cronjob: 0 6 * * *
+      timezone: Europe/Paris
+    pull-request-branch-name:
+      separator: '-'
+      word-separator: '-'
+      branch-name-case: lowercase
+    registries:
+      - dockerhub
   - package-ecosystem: gradle
     directory: /
     assignees:
@@ -58,3 +72,10 @@ updates:
       imageio:
         patterns:
           - com.twelvemonkeys.imageio:*
+registries:
+  dockerhub:
+    type: docker-registry
+    url: https://registry.hub.docker.com
+    username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    replaces-base: true
