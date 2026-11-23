@@ -10,6 +10,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build project
@@ -58,6 +61,7 @@ jobs:
     needs: build
     permissions:
       checks: write
+      contents: read
     steps:
       - name: Checkout source
         uses: actions/checkout@v7.0.1
@@ -122,6 +126,7 @@ jobs:
     needs: build
     permissions:
       checks: write
+      contents: read
     steps:
       - name: Checkout source
         uses: actions/checkout@v7.0.1
