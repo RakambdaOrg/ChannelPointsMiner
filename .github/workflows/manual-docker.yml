@@ -10,6 +10,9 @@ on:
         type: boolean
         description: Build as latest
 
+permissions:
+  contents: read
+
 jobs:
   publish-miner:
     name: Publish Miner on DockerHub
