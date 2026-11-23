@@ -5,6 +5,9 @@ on:
     tags:
       - "*.*.*"
 
+permissions:
+  contents: read
+
 jobs:
   publish-docker-miner:
     name: Publish Miner on DockerHub
