@@ -20,11 +20,10 @@ jobs:
     with:
       java-version: "21"
       gradle-tasks: assemble
-      artifact-name: jars
-      artifact-archive: true
-      artifact-path: |
-        miner/build/libs/miner-shaded.jar
-        viewer/build/libs/viewer-*.jar
+      artifact-name: miner-jar
+      artifact-path: miner/build/libs/miner-shaded.jar
+      extra-artifact-name: viewer-jar
+      extra-artifact-path: viewer/build/libs/viewer-*.jar
 
   test-miner:
     name: Run miner tests
